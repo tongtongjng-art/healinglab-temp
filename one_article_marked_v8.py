@@ -3136,566 +3136,733 @@ def split_text_for_card_pages(text, lang="en"):
 
 def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote_raw, quote_translated, today, cover_image=""):
     """
-    V33：
-    恢复为“完整段落图文版”。
-    不再做小红书发布版，不做精选原文，不做今日一句，不加图片。
-    结构只按正文段落：
-    原文1 → 翻译1 → 原文2 → 翻译2 → ...
+    V34-E：
+    手机版单列卡片页，同款于 preview_v2_editable_feeling。
+    不是电脑两列整体版，也不是横滑图片版。
     """
-    source = article.get("source", "")
-    pub_date = display_publish_date(article) or "未知"
-    title_raw = article.get("title", "")
+    source = clean_text(article.get("source", ""))
+    pub_date = display_publish_date(article) or today
+    title_raw = clean_text(article.get("title", ""))
+    title_display = clean_text(title_zh or title_raw or "今日外刊")
+    link = article.get("link", "")
 
-    slides = []
-    slides.append({
-        "type": "cover",
-        "lang": "zh",
-        "title": "今日外刊表达练习",
-        "subtitle": f"{source}｜{pub_date}",
-        "body": clean_text(title_zh or title_raw),
-        "meta": "完整段落图文版",
-        "footer": "原文和翻译逐页对应"
-    })
+    publish_vocab = select_publish_vocab(all_keywords, max_count=5)
+    expressions = [
+        {
+            "text": clean_text(k),
+            "meaning": clean_text(explain_keyword(k))
+        }
+        for k in publish_vocab
+    ]
 
+    paras = []
     for row in paragraph_rows:
-        idx = row.get("idx", "")
-        raw = row.get("raw", "")
-        zh = row.get("zh", "")
-
-        en_chunks = split_text_for_card_pages(raw, "en")
-        zh_chunks = split_text_for_card_pages(zh, "zh")
-
-        for j, chunk in enumerate(en_chunks, 1):
-            suffix = f"-{j}" if len(en_chunks) > 1 else ""
-            slides.append({
-                "type": "paragraph_en",
-                "lang": "en",
-                "title": f"原文 {idx}{suffix}",
-                "subtitle": "",
-                "body": chunk,
-                "meta": "英文原文",
-                "footer": "先读英文"
+        raw = clean_text(row.get("raw", ""))
+        zh = clean_text(row.get("zh", ""))
+        if raw or zh:
+            paras.append({
+                "idx": row.get("idx", len(paras) + 1),
+                "raw": raw,
+                "zh": zh
             })
 
-        for j, chunk in enumerate(zh_chunks, 1):
-            suffix = f"-{j}" if len(zh_chunks) > 1 else ""
-            slides.append({
-                "type": "paragraph_zh",
-                "lang": "zh",
-                "title": f"翻译 {idx}{suffix}",
-                "subtitle": "",
-                "body": chunk,
-                "meta": "中文理解",
-                "footer": "对应前面原文"
-            })
+    overview = build_chinese_overview(article, title_zh, paragraph_rows)
+    first_expr = clean_text(publish_vocab[0]) if publish_vocab else "today's expression"
 
-    # V34-A: 自动追加「重点表达」和「今日复盘」两张图文卡。
-    publish_vocab = select_publish_vocab(all_keywords, max_count=8)
-    if publish_vocab:
-        vocab_body = "\n\n".join([
-            f"{i}. {clean_text(k)}：{clean_text(explain_keyword(k))}"
-            for i, k in enumerate(publish_vocab, 1)
-        ])
-        slides.append({
-            "type": "vocab",
-            "lang": "zh",
-            "title": "重点表达",
-            "subtitle": "今天值得积累的词/短语",
-            "body": vocab_body,
-            "meta": "词汇/表达",
-            "footer": "先记表达，再回看原文"
-        })
-
-    review_body = build_chinese_overview(article, title_zh, paragraph_rows)
-    if publish_vocab:
-        main_expr = clean_text(publish_vocab[0])
-        review_body += "\n\n今日重点：" + main_expr
-        review_body += "\n\n仿写练习：\nPeople have a tendency to ________ when they ________."
-    slides.append({
-        "type": "review",
-        "lang": "zh",
-        "title": "今日复盘",
-        "subtitle": "读完以后记住这几点",
-        "body": review_body,
-        "meta": "复盘",
-        "footer": "下一篇继续拆短外刊"
-    })
-
-    slides_json = json.dumps(slides, ensure_ascii=False)
+    payload = {
+        "today": today,
+        "source": source,
+        "pub_date": pub_date,
+        "title": title_display,
+        "title_raw": title_raw,
+        "link": link,
+        "overview": overview,
+        "paragraphs": paras,
+        "expressions": expressions,
+        "first_expr": first_expr,
+    }
+    payload_json = json.dumps(payload, ensure_ascii=False)
 
     page = """<!doctype html>
 <html lang="zh-CN">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>图文版｜__TODAY__</title>
-<style>
-:root {
-  --paper: #fffdf7;
-  --paper-2: #fbf6ed;
-  --ink: #151922;
-  --text: #252b35;
-  --muted: #687486;
-  --line: #ddd4c7;
-  --blue: #516b84;
-  --blue-2: #7890a7;
-  --bg: #f1eee7;
-  --shadow: rgba(52, 45, 36, .12);
-}
-* { box-sizing: border-box; }
-body {
-  margin: 0;
-  background:
-    radial-gradient(circle at 12% 8%, rgba(255,255,255,.75), transparent 28%),
-    linear-gradient(180deg, #f7f4ee 0%, var(--bg) 100%);
-  color: var(--ink);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", Arial, sans-serif;
-}
-.top {
-  position: sticky;
-  top: 0;
-  z-index: 20;
-  background: rgba(247,244,238,.94);
-  backdrop-filter: blur(10px);
-  padding: 12px 14px;
-  border-bottom: 1px solid rgba(120, 105, 84, .14);
-}
-.top h1 {
-  font-size: 18px;
-  margin: 0 0 5px;
-  color: var(--ink);
-  letter-spacing: .02em;
-}
-.top p {
-  margin: 0;
-  color: var(--muted);
-  font-size: 13px;
-  line-height: 1.55;
-}
-.scroller {
-  display: flex;
-  gap: 18px;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  padding: 18px 14px 26px;
-}
-.slide-wrap {
-  flex: 0 0 auto;
-  width: min(92vw, 410px);
-  scroll-snap-align: center;
-}
-.card {
-  aspect-ratio: 3 / 4;
-  width: 100%;
-  background:
-    linear-gradient(180deg, rgba(255,255,255,.94), rgba(255,252,246,.96)),
-    var(--paper);
-  border-radius: 26px;
-  padding: 27px 24px 21px;
-  box-shadow: 0 18px 46px var(--shadow);
-  display: flex;
-  flex-direction: column;
-  border: 1px solid rgba(136, 116, 89, .18);
-  position: relative;
-  overflow: hidden;
-}
-.card:before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 6px;
-  background: linear-gradient(90deg, #1b2430 0%, var(--blue) 62%, #c9c0b2 100%);
-}
-.card:after {
-  content: "";
-  position: absolute;
-  right: -92px;
-  bottom: -102px;
-  width: 240px;
-  height: 240px;
-  border-radius: 50%;
-  border: 1px solid rgba(81, 107, 132, .10);
-  background: rgba(81, 107, 132, .055);
-}
-.inner {
-  position: relative;
-  z-index: 1;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-.brandline {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 16px;
-  color: var(--muted);
-  font-size: 11px;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-}
-.brandline .seal {
-  border: 1px solid rgba(81,107,132,.24);
-  border-radius: 999px;
-  padding: 4px 8px;
-  color: var(--blue);
-  background: rgba(81,107,132,.045);
-  letter-spacing: .08em;
-}
-.kicker {
-  color: var(--blue);
-  font-size: 12px;
-  letter-spacing: .08em;
-  margin-bottom: 10px;
-}
-.title {
-  font-size: 33px;
-  line-height: 1.13;
-  font-weight: 900;
-  margin-bottom: 14px;
-  color: var(--ink);
-  letter-spacing: -.035em;
-  white-space: pre-wrap;
-}
-.subtitle {
-  font-size: 14px;
-  line-height: 1.45;
-  color: var(--muted);
-  margin-bottom: 18px;
-}
-.body {
-  color: var(--text);
-  white-space: pre-wrap;
-}
-.body.lang-en {
-  font-family: Georgia, "Times New Roman", "Microsoft YaHei", serif;
-  font-size: 24px;
-  line-height: 1.51;
-  letter-spacing: -.01em;
-}
-.body.lang-zh {
-  font-size: 22px;
-  line-height: 1.64;
-}
-.cover-body {
-  margin-top: 18px;
-  padding-top: 18px;
-  border-top: 1px solid var(--line);
-  font-size: 22px;
-  line-height: 1.58;
-  color: #303743;
-  white-space: pre-wrap;
-}
-.expr-list {
-  display: flex;
-  flex-direction: column;
-  gap: 9px;
-  margin-top: 2px;
-}
-.expr-row {
-  border-left: 3px solid rgba(81,107,132,.45);
-  padding: 8px 10px 8px 12px;
-  background: rgba(81,107,132,.045);
-  border-radius: 12px;
-}
-.expr-row .expr {
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: 20px;
-  line-height: 1.22;
-  color: #182331;
-  font-weight: 700;
-}
-.expr-row .meaning {
-  margin-top: 4px;
-  font-size: 15px;
-  line-height: 1.42;
-  color: #596474;
-}
-.review-block {
-  border-top: 1px solid var(--line);
-  padding-top: 12px;
-  margin-top: 4px;
-  white-space: pre-wrap;
-}
-.review-block:first-child { border-top: 0; padding-top: 0; }
-.spacer { flex: 1; }
-.footer {
-  margin-top: auto;
-  font-size: 12px;
-  color: #8a8177;
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-  padding-top: 16px;
-}
-.btn-row {
-  display: flex;
-  gap: 8px;
-  margin-top: 11px;
-  padding: 0 2px;
-}
-.btn {
-  flex: 1;
-  border: 1px solid rgba(108, 93, 70, .24);
-  background: rgba(255,255,255,.68);
-  color: var(--ink);
-  border-radius: 999px;
-  padding: 8px 10px;
-  font-size: 13px;
-  cursor: pointer;
-}
-.btn:active { background: #efe7d8; }
-.hint {
-  padding: 0 16px 14px;
-  color: var(--muted);
-  font-size: 13px;
-  line-height: 1.6;
-}
-@media (min-width: 760px) {
-  .slide-wrap { width: 410px; }
-}
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Healing Lab 每日外刊｜__TODAY__</title>
+  <style>
+    :root {
+      --ink: #1d252c;
+      --text: #344047;
+      --muted: #68747f;
+      --line: #dfe6e8;
+
+      --paper: #fbfaf6;
+      --paper-deep: #f5f2eb;
+      --card: rgba(255, 255, 255, .92);
+
+      --sage: #7fa391;
+      --sage-dark: #426e60;
+      --sage-soft: #eef6f1;
+
+      --clay: #d78768;
+      --clay-soft: #fbf0ea;
+      --honey: #f1c66d;
+
+      --blue: #557da8;
+      --blue-soft: #edf3f8;
+
+      --shadow: 0 18px 46px rgba(44, 57, 64, .12);
+      --radius-lg: 22px;
+      --radius-sm: 12px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+                   "Microsoft YaHei", Arial, sans-serif;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.88), rgba(255,255,255,.96)),
+        radial-gradient(circle at 12% 4%, rgba(127,163,145,.25), transparent 34%),
+        radial-gradient(circle at 92% 14%, rgba(241,198,109,.25), transparent 30%),
+        radial-gradient(circle at 50% 92%, rgba(85,125,168,.16), transparent 36%),
+        var(--paper-deep);
+      min-height: 100vh;
+    }
+
+    button, textarea { font: inherit; }
+
+    .phone-shell {
+      width: min(100%, 480px);
+      margin: 0 auto;
+      padding: env(safe-area-inset-top) 14px 34px;
+    }
+
+    .hero { padding: 28px 4px 16px; }
+
+    .brand-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    .brand-mark {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: var(--sage-dark);
+      color: #fff;
+      font-weight: 900;
+      letter-spacing: .02em;
+      box-shadow: 0 14px 30px rgba(66,110,96,.25);
+    }
+
+    .date-pill {
+      background: rgba(255,255,255,.78);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 9px 13px;
+      color: var(--sage-dark);
+      font-weight: 800;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-size: clamp(40px, 13vw, 58px);
+      line-height: .98;
+      letter-spacing: -.055em;
+    }
+
+    .hero .subtitle {
+      margin: 12px 0 0;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.65;
+    }
+
+    .quick-nav {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      margin: 4px -14px 16px;
+      padding: 10px 14px;
+      overflow-x: auto;
+      display: flex;
+      gap: 8px;
+      background: rgba(245,242,235,.72);
+      backdrop-filter: blur(12px);
+      border-top: 1px solid rgba(223,230,232,.7);
+      border-bottom: 1px solid rgba(223,230,232,.7);
+    }
+
+    .quick-nav a {
+      flex: 0 0 auto;
+      text-decoration: none;
+      color: var(--sage-dark);
+      background: rgba(255,255,255,.78);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 7px 11px;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .section-stack {
+      display: grid;
+      gap: 14px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .article-cover {
+      min-height: 292px;
+      padding: 22px;
+      background:
+        linear-gradient(rgba(255,255,255,.18), rgba(255,255,255,.05)),
+        linear-gradient(135deg, #e9f2ec 0%, #f8f0df 54%, #eef3f8 100%);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .article-cover::after {
+      content: "";
+      position: absolute;
+      inset: 15px;
+      border: 1px solid rgba(66,110,96,.22);
+      border-radius: 14px;
+      pointer-events: none;
+    }
+
+    .eyebrow {
+      position: relative;
+      z-index: 1;
+      width: fit-content;
+      max-width: 100%;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: var(--sage-dark);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .article-title {
+      position: relative;
+      z-index: 1;
+      margin: 46px 0 0;
+      max-width: 10.8em;
+      font-size: clamp(34px, 10.5vw, 46px);
+      line-height: 1.06;
+      letter-spacing: -.045em;
+      white-space: pre-wrap;
+    }
+
+    .meta-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      padding: 14px;
+    }
+
+    .meta-box {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+    }
+
+    .meta-box span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 6px;
+    }
+
+    .meta-box b {
+      font-size: 14.5px;
+      line-height: 1.4;
+    }
+
+    .tags {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      padding: 0 14px 14px;
+    }
+
+    .tag {
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 900;
+      background: var(--sage-soft);
+      color: var(--sage-dark);
+    }
+
+    .tag.level { background: var(--clay-soft); color: #9b4e35; }
+    .tag.topic { background: var(--blue-soft); color: var(--blue); }
+
+    .summary {
+      margin: 0 14px 16px;
+      padding: 13px 14px;
+      border-left: 4px solid var(--clay);
+      background: #fff8f2;
+      border-radius: 10px;
+      color: #37434a;
+      line-height: 1.7;
+      font-size: 14.5px;
+      white-space: pre-wrap;
+    }
+
+    .section { padding: 18px; }
+
+    .section-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .section h2 {
+      margin: 0;
+      font-size: 21px;
+      letter-spacing: -.02em;
+    }
+
+    .mini-label {
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .english {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 18.5px;
+      line-height: 1.78;
+      color: #25323a;
+    }
+
+    .translation {
+      margin: 0;
+      color: #344047;
+      line-height: 1.78;
+      font-size: 15px;
+    }
+
+    .para-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .para-card {
+      border: 1px solid var(--line);
+      background: var(--paper);
+      border-radius: var(--radius-sm);
+      padding: 14px;
+    }
+
+    .para-title {
+      color: var(--sage-dark);
+      font-weight: 900;
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+
+    .para-divider {
+      height: 1px;
+      background: var(--line);
+      margin: 12px 0;
+    }
+
+    .expression-list, .practice-grid, .review-grid {
+      display: grid;
+      gap: 10px;
+    }
+
+    .expression {
+      display: grid;
+      gap: 6px;
+      padding: 13px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      background: var(--paper);
+    }
+
+    .expression b {
+      color: var(--sage-dark);
+      line-height: 1.45;
+      font-size: 15px;
+    }
+
+    .expression span {
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 14px;
+    }
+
+    .practice, .review-box {
+      padding: 14px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--line);
+      background: var(--paper);
+    }
+
+    .practice b, .review-box b {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 15px;
+    }
+
+    .practice p, .review-box p {
+      margin: 0;
+      color: #414b51;
+      line-height: 1.65;
+      font-size: 14.5px;
+    }
+
+    .review-box {
+      border: 1px dashed #b9c7c0;
+      background: #fbfdfb;
+    }
+
+    .note-card {
+      background: linear-gradient(180deg, #ffffff, #fffaf5);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .note-top {
+      padding: 18px 18px 10px;
+      border-bottom: 1px solid var(--line);
+      background:
+        radial-gradient(circle at 6% 10%, rgba(215,135,104,.12), transparent 34%),
+        rgba(255,255,255,.72);
+    }
+
+    .note-top h2 {
+      margin: 0 0 6px;
+      font-size: 22px;
+      letter-spacing: -.02em;
+    }
+
+    .note-top p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .note-body { padding: 14px 18px 18px; }
+
+    .prompt-chip {
+      display: inline-block;
+      margin-bottom: 12px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: var(--clay-soft);
+      color: #9b4e35;
+      font-size: 12px;
+      font-weight: 900;
+      line-height: 1.45;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 150px;
+      resize: vertical;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(255,255,255,.9);
+      color: var(--text);
+      padding: 13px 14px;
+      outline: none;
+      line-height: 1.7;
+      font-size: 15px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.7);
+    }
+
+    textarea:focus {
+      border-color: rgba(66,110,96,.55);
+      box-shadow: 0 0 0 4px rgba(66,110,96,.10);
+    }
+
+    .note-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .btn {
+      flex: 1;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 10px 12px;
+      font-size: 13px;
+      font-weight: 900;
+      background: #fff;
+      color: var(--sage-dark);
+    }
+
+    .btn.primary {
+      background: var(--sage-dark);
+      color: #fff;
+      border-color: var(--sage-dark);
+    }
+
+    .save-state {
+      margin-top: 9px;
+      color: var(--muted);
+      font-size: 12px;
+      min-height: 18px;
+    }
+
+    .source-link {
+      display: inline-flex;
+      width: fit-content;
+      margin-top: 12px;
+      text-decoration: none;
+      color: var(--sage-dark);
+      background: var(--sage-soft);
+      border: 1px solid rgba(66,110,96,.18);
+      border-radius: 999px;
+      padding: 8px 11px;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .bottom-note {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.7;
+      text-align: center;
+      padding: 20px 6px 2px;
+    }
+
+    @media (min-width: 420px) {
+      .meta-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 360px) {
+      .hero h1 { font-size: 38px; }
+      .article-title { font-size: 32px; }
+      .section { padding: 16px; }
+    }
+  </style>
 </head>
 <body>
-<div class="top">
-  <h1>图文版｜__TODAY__</h1>
-  <p>外刊精读卡片：原文、中文理解、重点表达和今日复盘逐页对应。</p>
-</div>
-<div class="scroller" id="scroller"></div>
-<div class="hint">说明：米白外刊风 UI；每页可下载 PNG，用于小红书图文发布。</div>
+  <main class="phone-shell">
+    <header class="hero">
+      <div class="brand-row">
+        <div class="brand-mark">HL</div>
+        <div class="date-pill" id="datePill"></div>
+      </div>
+      <h1>Healing Lab<br>每日外刊</h1>
+      <p class="subtitle">每天一篇短外刊，练阅读、表达和语感。</p>
+    </header>
 
-<script>
-const SLIDES = __SLIDES_JSON__;
+    <nav class="quick-nav" aria-label="页面导航">
+      <a href="#article">今日文章</a>
+      <a href="#text">原文理解</a>
+      <a href="#expressions">重点表达</a>
+      <a href="#practice">句式练习</a>
+      <a href="#feeling">今日感悟</a>
+      <a href="#review">复盘</a>
+    </nav>
 
-function esc(s) {
-  return String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-}
-
-function bodyToHtml(s) {
-  const raw = String(s.body || '');
-  if (s.type === 'cover') {
-    return `<div class="cover-body">${esc(raw)}</div>`;
-  }
-  if (s.type === 'vocab') {
-    const rows = raw.split(/\n\s*\n/).filter(Boolean).map(line => {
-      const cleaned = line.replace(/^\d+\.\s*/, '');
-      const parts = cleaned.split(/[：:]/);
-      const expr = parts.shift() || cleaned;
-      const meaning = parts.join('：');
-      return `<div class="expr-row"><div class="expr">${esc(expr.trim())}</div><div class="meaning">${esc(meaning.trim())}</div></div>`;
-    }).join('');
-    return `<div class="expr-list">${rows}</div>`;
-  }
-  if (s.type === 'review') {
-    const blocks = raw.split(/\n\s*\n/).filter(Boolean).map(x => `<div class="review-block">${esc(x)}</div>`).join('');
-    return `<div class="body lang-zh">${blocks}</div>`;
-  }
-  const langClass = s.lang === 'en' ? 'lang-en' : 'lang-zh';
-  return `<div class="body ${langClass}">${esc(raw)}</div>`;
-}
-
-function buildCards() {
-  const root = document.getElementById('scroller');
-  root.innerHTML = '';
-  SLIDES.forEach((s, i) => {
-    const el = document.createElement('div');
-    el.className = 'slide-wrap';
-
-    el.innerHTML = `
-      <div class="card" id="card-${i}">
-        <div class="inner">
-          <div class="brandline"><span>Healing Lab Daily</span><span class="seal">${String(i + 1).padStart(2, '0')} / ${String(SLIDES.length).padStart(2, '0')}</span></div>
-          <div class="kicker">${esc(s.meta || 'Daily Reading')}</div>
-          <div class="title">${esc(s.title || '')}</div>
-          ${s.subtitle ? `<div class="subtitle">${esc(s.subtitle)}</div>` : ''}
-          ${bodyToHtml(s)}
-          <div class="spacer"></div>
-          <div class="footer"><span>${esc(s.footer || '每日外刊')}</span><span>__TODAY__</span></div>
+    <div class="section-stack">
+      <article class="card" id="article">
+        <div class="article-cover">
+          <span class="eyebrow">今日文章卡片</span>
+          <h2 class="article-title" id="articleTitle"></h2>
         </div>
+
+        <div class="meta-grid">
+          <div class="meta-box"><span>来源</span><b id="sourceText"></b></div>
+          <div class="meta-box"><span>日期</span><b id="pubDateText"></b></div>
+          <div class="meta-box"><span>阅读目标</span><b>精读 · 表达积累</b></div>
+        </div>
+
+        <div class="tags">
+          <span class="tag level">CET-4+</span>
+          <span class="tag topic">Daily Reading</span>
+          <span class="tag">Vocabulary</span>
+          <span class="tag">Review</span>
+        </div>
+
+        <p class="summary" id="overviewText"></p>
+      </article>
+
+      <section class="card section" id="text">
+        <div class="section-head">
+          <h2>英文原文 / 中文理解</h2>
+          <span class="mini-label">Text & Meaning</span>
+        </div>
+        <div class="para-list" id="paragraphList"></div>
+      </section>
+
+      <section class="card section" id="expressions">
+        <div class="section-head">
+          <h2>重点表达</h2>
+          <span class="mini-label">Useful Expressions</span>
+        </div>
+        <div class="expression-list" id="expressionList"></div>
+      </section>
+
+      <section class="card section" id="practice">
+        <div class="section-head">
+          <h2>句式练习</h2>
+          <span class="mini-label">Sentence Practice</span>
+        </div>
+        <div class="practice-grid">
+          <div class="practice">
+            <b>仿写句式</b>
+            <p id="practicePattern"></p>
+          </div>
+          <div class="practice">
+            <b>今日造句</b>
+            <p>把今天的一个表达，放进自己的生活、工作或学习场景里。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="note-card" id="feeling">
+        <div class="note-top">
+          <h2>今日感悟</h2>
+          <p>读完这篇文章，你想到自己的生活、工作、学习或情绪了吗？写几句就可以。</p>
+        </div>
+        <div class="note-body">
+          <span class="prompt-chip">可写：我最有感触的一句话 / 我想到的一个经历 / 我想用上的一个表达</span>
+          <textarea id="dailyFeeling" placeholder="例如：今天这篇让我想到，很多人不是不努力，而是被现实挤压得越来越窄。我想记住一个表达，用来描述自己的日常。"></textarea>
+          <div class="note-actions">
+            <button class="btn primary" id="saveFeeling">保存到本机</button>
+            <button class="btn" id="clearFeeling">清空</button>
+          </div>
+          <div class="save-state" id="saveState">输入内容会临时保存在当前浏览器。</div>
+        </div>
+      </section>
+
+      <section class="card section" id="review">
+        <div class="section-head">
+          <h2>今日复盘</h2>
+          <span class="mini-label">Daily Review</span>
+        </div>
+        <div class="review-grid">
+          <div class="review-box"><b>我读懂了什么</b><p>用一句中文概括文章核心观点。</p></div>
+          <div class="review-box"><b>我想记住的表达</b><p>写下 1-3 个今天最想复用的英文表达。</p></div>
+          <div class="review-box"><b>我能怎么用</b><p>把一个表达放进自己的生活、工作或口语场景。</p></div>
+        </div>
+        <a class="source-link" id="sourceLink" href="#" target="_blank" rel="noopener">查看原文来源</a>
+      </section>
+    </div>
+
+    <p class="bottom-note">Healing Lab Daily Reading · Mobile Card Page</p>
+  </main>
+
+  <script>
+    const DATA = __PAYLOAD_JSON__;
+
+    function esc(s) {
+      return String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    }
+
+    function fmtDate(s) {
+      return String(s || '').replaceAll('-', '.');
+    }
+
+    document.title = 'Healing Lab 每日外刊｜' + (DATA.today || '');
+    document.getElementById('datePill').textContent = 'Today · ' + fmtDate(DATA.today);
+    document.getElementById('articleTitle').textContent = DATA.title || DATA.title_raw || '今日外刊';
+    document.getElementById('sourceText').textContent = DATA.source || 'Daily Reading';
+    document.getElementById('pubDateText').textContent = DATA.pub_date || DATA.today || '';
+    document.getElementById('overviewText').textContent = DATA.overview || '今天这篇适合积累真实外刊表达、观点句和可复述素材。';
+
+    const paraRoot = document.getElementById('paragraphList');
+    paraRoot.innerHTML = (DATA.paragraphs || []).map((p, i) => `
+      <div class="para-card">
+        <div class="para-title">第 ${esc(p.idx || i + 1)} 段</div>
+        <p class="english">${esc(p.raw)}</p>
+        <div class="para-divider"></div>
+        <p class="translation">${esc(p.zh)}</p>
       </div>
-      <div class="btn-row">
-        <button class="btn" onclick="downloadPng(${i})">下载本页 PNG</button>
+    `).join('');
+
+    const exprRoot = document.getElementById('expressionList');
+    const exprs = DATA.expressions || [];
+    exprRoot.innerHTML = exprs.length ? exprs.map(x => `
+      <div class="expression">
+        <b>${esc(x.text)}</b>
+        <span>${esc(x.meaning)}</span>
       </div>
-    `;
-    root.appendChild(el);
-  });
-}
+    `).join('') : `<div class="expression"><b>今日表达</b><span>今天这篇文章适合重点积累原文里的高频短语和观点句。</span></div>`;
 
-function wrapText(ctx, text, x, y, maxWidth, lineHeight, maxLines) {
-  const paragraphs = String(text || '').split('\\n');
-  let linesUsed = 0;
+    document.getElementById('practicePattern').textContent =
+      (DATA.first_expr && DATA.first_expr !== "today's expression")
+        ? 'Try to use "' + DATA.first_expr + '" in one sentence about your own life.'
+        : 'Try to write one sentence with a useful expression from today’s article.';
 
-  function tokensOf(para) {
-    const raw = para.match(/[\\u4e00-\\u9fff]|[^\\u4e00-\\u9fff\\s]+|\\s+/g) || [];
-    return raw.map(t => /^\\s+$/.test(t) ? ' ' : t);
-  }
-
-  for (const para of paragraphs) {
-    const tokens = tokensOf(para);
-    let line = '';
-    if (!tokens.length) {
-      y += lineHeight;
-      linesUsed++;
-      continue;
+    const sourceLink = document.getElementById('sourceLink');
+    if (DATA.link) {
+      sourceLink.href = DATA.link;
+    } else {
+      sourceLink.style.display = 'none';
     }
 
-    for (const token of tokens) {
-      const test = line + token;
-      if (ctx.measureText(test).width > maxWidth && line.trim()) {
-        ctx.fillText(line.trimEnd(), x, y);
-        y += lineHeight;
-        linesUsed++;
-        line = token.trimStart();
-        if (linesUsed >= maxLines) return y;
-      } else {
-        line = test;
-      }
+    const key = 'healinglab_daily_feeling_' + String(DATA.today || 'today').replaceAll('-', '_');
+    const textarea = document.getElementById('dailyFeeling');
+    const state = document.getElementById('saveState');
+
+    textarea.value = localStorage.getItem(key) || '';
+
+    function showState(text) {
+      state.textContent = text;
+      clearTimeout(window.__saveTimer);
+      window.__saveTimer = setTimeout(() => {
+        state.textContent = '输入内容会临时保存在当前浏览器。';
+      }, 1800);
     }
 
-    if (line.trim()) {
-      ctx.fillText(line.trimEnd(), x, y);
-      y += lineHeight;
-      linesUsed++;
-      if (linesUsed >= maxLines) return y;
-    }
-  }
-  return y;
-}
-
-function splitVocabRows(text) {
-  return String(text || '').split(/\n\s*\n/).filter(Boolean).map(line => {
-    const cleaned = line.replace(/^\d+\.\s*/, '');
-    const parts = cleaned.split(/[：:]/);
-    const expr = parts.shift() || cleaned;
-    return { expr: expr.trim(), meaning: parts.join('：').trim() };
-  });
-}
-
-async function downloadPng(i) {
-  const s = SLIDES[i];
-  const canvas = document.createElement('canvas');
-  canvas.width = 1080;
-  canvas.height = 1440;
-  const ctx = canvas.getContext('2d');
-
-  ctx.fillStyle = '#fffdf7';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  const topGrad = ctx.createLinearGradient(0, 0, canvas.width, 0);
-  topGrad.addColorStop(0, '#1b2430');
-  topGrad.addColorStop(.62, '#516b84');
-  topGrad.addColorStop(1, '#c9c0b2');
-  ctx.fillStyle = topGrad;
-  ctx.fillRect(0, 0, canvas.width, 14);
-
-  ctx.fillStyle = 'rgba(81,107,132,.055)';
-  ctx.beginPath(); ctx.arc(1045, 1370, 260, 0, Math.PI * 2); ctx.fill();
-  ctx.strokeStyle = 'rgba(81,107,132,.12)';
-  ctx.lineWidth = 2;
-  ctx.beginPath(); ctx.arc(1045, 1370, 260, 0, Math.PI * 2); ctx.stroke();
-
-  ctx.fillStyle = '#687486';
-  ctx.font = '28px Microsoft YaHei, Arial';
-  ctx.fillText('HEALING LAB DAILY', 68, 84);
-
-  const pageLabel = String(i + 1).padStart(2, '0') + ' / ' + String(SLIDES.length).padStart(2, '0');
-  ctx.strokeStyle = 'rgba(81,107,132,.28)';
-  ctx.fillStyle = '#516b84';
-  ctx.font = '24px Microsoft YaHei, Arial';
-  const labelW = ctx.measureText(pageLabel).width + 38;
-  roundRectPath(ctx, 1012 - labelW, 48, labelW, 44, 22);
-  ctx.stroke();
-  ctx.fillText(pageLabel, 1012 - labelW + 19, 78);
-
-  ctx.fillStyle = '#516b84';
-  ctx.font = '30px Microsoft YaHei, Arial';
-  ctx.fillText(s.meta || 'Daily Reading', 68, 140);
-
-  ctx.fillStyle = '#151922';
-  ctx.font = 'bold 76px Microsoft YaHei, Arial';
-  let y = wrapText(ctx, s.title || '', 68, 230, 944, 84, 3);
-
-  if (s.subtitle) {
-    ctx.fillStyle = '#687486';
-    ctx.font = '34px Microsoft YaHei, Arial';
-    y = wrapText(ctx, s.subtitle || '', 68, y + 18, 944, 48, 2);
-  }
-
-  y += 36;
-
-  if (s.type === 'cover') {
-    ctx.strokeStyle = '#ddd4c7';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(68, y);
-    ctx.lineTo(1012, y);
-    ctx.stroke();
-    y += 56;
-    ctx.fillStyle = '#303743';
-    ctx.font = '42px Microsoft YaHei, Arial';
-    wrapText(ctx, s.body || '', 68, y, 944, 62, 7);
-  } else if (s.type === 'vocab') {
-    let rows = splitVocabRows(s.body).slice(0, 8);
-    rows.forEach(row => {
-      if (y > 1180) return;
-      ctx.fillStyle = 'rgba(81,107,132,.055)';
-      roundRectPath(ctx, 68, y - 30, 944, 88, 22);
-      ctx.fill();
-      ctx.fillStyle = '#182331';
-      ctx.font = 'bold 36px Georgia, "Times New Roman", Microsoft YaHei, serif';
-      ctx.fillText(row.expr, 92, y + 2);
-      ctx.fillStyle = '#596474';
-      ctx.font = '30px Microsoft YaHei, Arial';
-      wrapText(ctx, row.meaning, 92, y + 42, 880, 36, 1);
-      y += 104;
+    textarea.addEventListener('input', () => {
+      localStorage.setItem(key, textarea.value);
+      showState('已自动保存');
     });
-  } else if (s.type === 'review') {
-    ctx.fillStyle = '#252b35';
-    ctx.font = '39px Microsoft YaHei, Arial';
-    wrapText(ctx, s.body || '', 68, y, 944, 58, 16);
-  } else if (s.lang === 'en') {
-    ctx.fillStyle = '#252b35';
-    ctx.font = '45px Georgia, "Times New Roman", Microsoft YaHei, serif';
-    wrapText(ctx, s.body || '', 68, y, 944, 66, 14);
-  } else {
-    ctx.fillStyle = '#252b35';
-    ctx.font = '42px Microsoft YaHei, Arial';
-    wrapText(ctx, s.body || '', 68, y, 944, 62, 15);
-  }
 
-  ctx.fillStyle = '#8a8177';
-  ctx.font = '26px Microsoft YaHei, Arial';
-  ctx.fillText(s.footer || '每日外刊', 68, 1356);
-  const dateText = '__TODAY__';
-  const fw = ctx.measureText(dateText).width;
-  ctx.fillText(dateText, 1012 - fw, 1356);
+    document.getElementById('saveFeeling').addEventListener('click', () => {
+      localStorage.setItem(key, textarea.value);
+      showState('已保存到本机浏览器');
+    });
 
-  const a = document.createElement('a');
-  a.download = `card-${String(i + 1).padStart(2, '0')}.png`;
-  a.href = canvas.toDataURL('image/png');
-  a.click();
-}
-
-function roundRectPath(ctx, x, y, w, h, r) {
-  ctx.beginPath();
-  ctx.moveTo(x + r, y);
-  ctx.arcTo(x + w, y, x + w, y + h, r);
-  ctx.arcTo(x + w, y + h, x, y + h, r);
-  ctx.arcTo(x, y + h, x, y, r);
-  ctx.arcTo(x, y, x + r, y, r);
-  ctx.closePath();
-}
-
-buildCards();
-</script>
+    document.getElementById('clearFeeling').addEventListener('click', () => {
+      textarea.value = '';
+      localStorage.removeItem(key);
+      showState('已清空');
+    });
+  </script>
 </body>
 </html>
 """
     page = page.replace("__TODAY__", esc(today))
-    page = page.replace("__SLIDES_JSON__", slides_json)
+    page = page.replace("__PAYLOAD_JSON__", payload_json)
     return page
 
 
