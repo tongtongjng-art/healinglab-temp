@@ -3136,15 +3136,17 @@ def split_text_for_card_pages(text, lang="en"):
 
 def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote_raw, quote_translated, today, cover_image=""):
     """
-    V34-I：
-    手机端学习卡片页｜编辑型表达模块。
-    目标：更接近人工外刊精读卡片。
-    重点：
-    1）重点表达不少于 6 条，优先句型/短语/可复用表达，不抓孤立普通词。
-    2）增加“今日重点句型”：结构 + 中文理解 + 仿写 + 例句。
-    3）今日复盘变成文章内容复盘 + 今日最值得记的表达。
-    4）难度分级更保守。
-    5）封面英文主标题 + 中文副标题。
+    V34-K：
+    手机端外刊学习页｜紧凑路线 + 主题分类 + 历史文章版。
+
+    修正：
+    1. 学习路线保留，但压缩为 3 步，不占大空间。
+    2. 长难句拆解更像人工讲解：原句 / 主干 / 修饰原因 / 中文顺译 / 仿写。
+    3. 重点表达紧凑展示，优先短语、句型、话题表达，不抓普通孤立词。
+    4. 点击重点词必须给明确中文意思。
+    5. 恢复历史文章，并按主题分类显示。
+    6. 增加主题分类：文化历史、教育、科技、生活、社会工作、健康心理、自然科学等。
+    7. 文章概括只放开头，底部不重复长段。
     """
     source = clean_text(article.get("source", ""))
     pub_date = display_publish_date(article) or today
@@ -3164,11 +3166,7 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
         raw = clean_text(row.get("raw", ""))
         zh = clean_text(row.get("zh", ""))
         if raw or zh:
-            paras.append({
-                "idx": row.get("idx", len(paras) + 1),
-                "raw": raw,
-                "zh": zh
-            })
+            paras.append({"idx": row.get("idx", len(paras) + 1), "raw": raw, "zh": zh})
             if raw:
                 text_all_parts.append(raw)
             if zh:
@@ -3187,30 +3185,66 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
         pat = r"(?<![A-Za-z])" + re.escape(term) + r"(?![A-Za-z])"
         return re.search(pat, text, flags=re.I) is not None
 
+    def topic_category(title, source_name, body):
+        s = f"{title} {source_name} {body[:1800]}".lower()
+        rules = [
+            ("AI科技", [" ai ", "artificial intelligence", "chatgpt", "robot", "algorithm", "machine learning"]),
+            ("科技", ["technology", "tech", "digital", "app", "software", "device", "online"]),
+            ("教育", ["education", "school", "student", "children", "reading", "teacher", "bbc education"]),
+            ("文化历史", ["stonehenge", "archaeolog", "historian", "prehistoric", "heritage", "museum", "ancient", "medieval", "smithsonian"]),
+            ("健康心理", ["health", "sleep", "stress", "mind", "mental", "wellbeing", "habit", "brain"]),
+            ("社会工作", ["job", "work", "employment", "unemployed", "graduate", "society", "social"]),
+            ("自然科学", ["science", "animal", "climate", "space", "experiment", "research", "study"]),
+            ("生活", ["life", "travel", "food", "walk", "home", "family", "lifestyle"]),
+        ]
+        for name, keys in rules:
+            if any(k in s for k in keys):
+                return name
+        return "综合"
+
+    topic = topic_category(title_raw + " " + title_cn, source, text_all)
+
     def difficulty_label_from_text(text):
         try:
             prof = difficulty_profile(text)
             avg = prof.get("avg_sentence_words", 0) or 0
             lw = prof.get("long_word_count", 0) or 0
             wc = prof.get("word_count", 0) or 0
-            if avg >= 25 or lw >= 20:
-                return "C1", "长句和抽象词较多，难点在信息压缩、句间逻辑和观点复述。"
-            if avg >= 19 or lw >= 13:
-                return "B2", "有真实外刊句式和话题表达，难点在长句理解和表达复用。"
-            if avg >= 14 or wc >= 80:
-                return "B1-B2", "整体接近四级+到六级过渡，重点在常用外刊表达和句型积累。"
-            return "B1", "句子和篇幅都较轻，适合基础阅读、跟读和表达复述。"
+            if avg >= 30 and lw >= 24:
+                return "C1", "长句和抽象词明显偏多，难点在信息压缩和句间逻辑。"
+            if avg >= 22 or lw >= 16:
+                return "B2", "真实外刊短文，难点主要在长句结构、文化背景词和表达复用。"
+            if avg >= 13 or wc >= 70:
+                return "B1-B2", "接近四级+到六级过渡，重点在常用外刊表达和句型积累。"
+            return "B1", "篇幅和句式较轻，适合基础阅读、跟读和表达复述。"
         except Exception:
             return "B1-B2", "真实外刊材料，建议按四级+到六级过渡材料精读。"
 
     level, level_note = difficulty_label_from_text(text_all)
 
     expression_bank = [
-        ("suggest that", "表明…… / 研究显示……。常用于引出研究发现。", "研究表达"),
+        # Stonehenge / culture / history
+        ("will have the chance to", "将有机会……。用于介绍某人将获得某种体验或机会。", "可复用句型"),
+        ("experience a unique slice of prehistoric life", "体验一小段独特的史前生活。slice of life 表示“生活的一小部分/片段”。", "亮点表达"),
+        ("a unique slice of prehistoric life", "一小段独特的史前生活。适合描述沉浸式文化体验。", "话题表达"),
+        ("thanks to", "多亏；由于。用于说明某件事发生的原因。", "原因结构"),
+        ("the reconstruction of", "……的重建。常用于历史、建筑、文化遗产话题。", "话题表达"),
+        ("a 4,500-year-old building", "一座有 4500 年历史的建筑。数字-year-old 可作复合形容词。", "描述结构"),
+        ("scholars think", "学者认为……。比 people think 更正式。", "引用结构"),
+        ("once stood near", "曾经位于……附近。once 表示“曾经”。", "历史表达"),
+        ("commissioned by", "由……委托建造/制作。常用于项目、建筑、艺术品。", "被动结构"),
+        ("the charity that manages", "管理……的慈善机构。that 引导定语从句。", "定语从句"),
+        ("hundreds of cultural sites", "数百个文化遗址。适合文化遗产/旅游类文章。", "话题表达"),
+        ("was built with", "以……方式建成；用……建成。后面常接材料、方法或态度。", "被动结构"),
+        ("a painstakingly accurate nod to the past", "对过去高度精确的致敬。painstakingly 表示“煞费苦心地”。", "高级表达"),
+        ("were sourced locally", "是在当地取材的。source 作动词，表示“采购/获取”。", "被动结构"),
+        ("chosen based on what", "根据……来选择。based on what... 可引出选择依据。", "依据结构"),
+        ("available millennia ago", "几千年前可获得的。millennia ago 表示“数千年前”。", "时间表达"),
+
+        # Research / behavior
         ("research suggests that", "研究表明……。适合引出调查、实验或科学发现。", "研究句"),
-        ("studies suggest that", "研究显示……。适合写科学、心理、社会类文章。", "研究句"),
+        ("suggest that", "表明…… / 研究显示……。常用于引出研究发现。", "研究表达"),
         ("more unusual than previously thought", "比之前认为的更不寻常。用于表达“新发现推翻旧认知”。", "比较结构"),
-        ("than previously thought", "比之前认为的……。常用于研究发现类外刊。", "比较结构"),
         ("reveal that", "揭示…… / 表明……。比 say 更正式。", "研究表达"),
         ("amble about", "慢慢走；闲逛；漫步。", "动作表达"),
         ("have a natural tendency to", "天生有……的倾向；自然倾向于……。", "倾向表达"),
@@ -3219,14 +3253,14 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
         ("in an anticlockwise direction", "沿逆时针方向。", "方向表达"),
         ("perform experiments", "进行实验。", "研究表达"),
 
+        # Education / reading
         ("for the first time in five years", "五年来首次。适合写趋势变化：increase / fall / return for the first time in ...", "趋势句"),
         ("for the first time in", "……以来首次。适合写数据、趋势或变化节点。", "趋势句"),
         ("children and young people", "儿童和青少年。教育、阅读、心理健康类文章高频表达。", "话题词组"),
-        ("poorer children", "贫困儿童 / 家境较困难的儿童。注意 poorer 在这里是社会经济语境。", "话题词组"),
+        ("poorer children", "贫困儿童 / 家境较困难的儿童。poorer 是社会经济语境。", "话题词组"),
         ("reading for pleasure", "为乐趣而阅读；非功利阅读。教育类外刊常见表达。", "话题表达"),
         ("enjoy reading", "喜欢阅读。比 like reading 更适合教育类报道。", "基础表达"),
         ("has increased", "有所增加。写数据变化时比 become more 更正式。", "趋势表达"),
-        ("has fallen", "已经下降。写数据、比例、趋势变化时常用。", "趋势表达"),
         ("according to", "根据……。引用报告、研究、调查时常用。", "引用结构"),
         ("a survey of", "一项针对……的调查。适合引出数据来源。", "引用结构"),
         ("be more likely to", "更有可能……。写群体差异、调查结论时高频。", "比较结构"),
@@ -3234,32 +3268,23 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
         ("compared with", "与……相比。数据对比、群体对比常用。", "比较结构"),
         ("the number of", "……的数量。常和 increase / fall / rise 搭配。", "数据表达"),
 
+        # Work / society / life
         ("leave the house", "出门；离开家。适合描述生活范围或状态。", "生活状态"),
         ("apart from", "除了……之外。比 only / except 更适合正式表达。", "连接结构"),
         ("stock up on", "储备；囤积。常用于 food, supplies, essentials。", "动词短语"),
         ("the only other", "唯一另一个……，强调选择很少。", "强调结构"),
-        ("weekly trip", "每周一次的短途外出 / 行程。", "生活表达"),
-        ("frozen meals", "冷冻餐。", "生活表达"),
-        ("takeaway-style", "外卖风格的；像外卖一样的。", "形容词表达"),
         ("the new normal", "新常态。适合描述已经普遍但未必理想的现实。", "观点表达"),
         ("looking for a job", "找工作；求职。", "就业表达"),
         ("come into full focus", "变得非常清晰；更加凸显。", "高级表达"),
-        ("struggle to", "努力做某事；艰难地做某事。", "动词结构"),
-
         ("reduce the number of decisions", "减少需要做决定的次数。效率、习惯、心理负担话题常用。", "观点表达"),
         ("truly need our attention", "真正需要我们注意力的事情。适合表达优先级和精力管理。", "观点表达"),
         ("rarely change a life overnight", "很少会一夜之间改变生活。适合表达变化不是立刻发生的。", "观点句"),
         ("play a role in", "在……中发挥作用。", "学术表达"),
-        ("reshape the way", "重塑……的方式。", "趋势表达"),
-        ("in the long run", "从长远来看。", "逻辑表达"),
-        ("as a result", "结果是；因此。", "逻辑表达"),
         ("rather than", "而不是。", "对比结构"),
         ("instead of", "而不是。", "对比结构"),
-        ("in response to", "作为对……的回应。", "逻辑表达"),
         ("be linked to", "与……有关。", "学术表达"),
         ("be associated with", "与……相关。", "学术表达"),
         ("be expected to", "被预计会……；应该会……。", "预测结构"),
-        ("be likely to", "可能会……。", "判断结构"),
     ]
 
     expressions = []
@@ -3282,6 +3307,10 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
             break
 
     pattern_items = [
+        (r"\b(?:will|would|can|could)\s+have\s+the\s+chance\s+to\b", "将有机会……。用于介绍体验、机会或可能性。", "机会句型"),
+        (r"\bthanks\s+to\s+(?:the\s+)?[a-zA-Z'-]+", "多亏 / 由于……。用于说明原因。", "原因结构"),
+        (r"\b(?:was|were)\s+sourced\s+locally\b", "是在当地取材/采购的。", "被动结构"),
+        (r"\bbased\s+on\s+what\b", "基于……所了解/掌握的内容。", "依据结构"),
         (r"\b(?:research|study|survey|report|findings?)\s+(?:suggests?|shows?|reveals?|finds?)\s+that\b", "研究/调查表明……。适合引出研究发现。", "研究句"),
         (r"\b(?:suggests?|shows?|reveals?|finds?)\s+that\b", "表明…… / 显示……。常用于研究发现或报道结论。", "研究句"),
         (r"\bmore\s+[a-zA-Z-]+\s+than\s+previously\s+thought\b", "比之前认为的更……。用于表达新发现。", "比较结构"),
@@ -3289,9 +3318,6 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
         (r"\bthe number of\s+[a-zA-Z'-]+", "……的数量。适合写数据变化。", "数据表达"),
         (r"\b(?:more|less)\s+likely\s+to\b", "更有可能 / 更不可能……。适合写群体差异。", "比较结构"),
         (r"\baccording to\s+(?:a|an|the)?\s*[A-Za-z'-]+", "根据……。引用报告、研究、调查时常用。", "引用结构"),
-        (r"\b(?:has|have|had)\s+(?:increased|fallen|risen|declined|grown)\b", "已经增加 / 下降 / 增长。写趋势变化常用。", "趋势表达"),
-        (r"\b(?:a|an)\s+survey\s+of\b", "一项针对……的调查。适合引出数据来源。", "引用结构"),
-        (r"\b(?:have|has|had)\s+a\s+(?:natural\s+)?tendency\s+to\b", "有……的倾向。适合写行为规律。", "倾向表达"),
     ]
     for pat, meaning, label in pattern_items:
         for m in re.finditer(pat, text_all, flags=re.I):
@@ -3303,17 +3329,16 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
 
     bad_single = {
         "children", "people", "reading", "article", "school", "student", "students",
-        "work", "life", "time", "year", "years", "education", "survey", "research"
+        "work", "life", "time", "year", "years", "education", "survey", "research",
+        "experience", "available", "reconstruction"
     }
     for k in all_keywords or []:
         kk = norm(k)
         if not kk:
             continue
-        if kk.lower() in used:
+        if kk.lower() in used or kk.lower() in bad_single:
             continue
-        if " " not in kk and len(kk) < 9:
-            continue
-        if kk.lower() in bad_single:
+        if " " not in kk and len(kk) < 10:
             continue
         try:
             meaning = explain_keyword(kk)
@@ -3323,131 +3348,114 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
         if len(expressions) >= 8:
             break
 
-    if len(expressions) < 6:
-        chunks = re.findall(r"\b[a-zA-Z][a-zA-Z'-]+(?:\s+[a-zA-Z][a-zA-Z'-]+){1,4}\b", text_all)
-        stop_heads = {"the", "and", "but", "that", "with", "from", "this", "they", "there", "where", "which"}
-        for ch in chunks:
-            c = norm(ch)
-            low = c.lower()
-            if not c or low in used:
-                continue
-            if low.split()[0] in stop_heads:
-                continue
-            if len(low.split()) < 2:
-                continue
-            if not any(w in low.split() for w in ["to", "of", "in", "for", "with", "from", "than", "on", "about"]):
-                continue
-            add_expr(c, "原文中的可复用短语，可结合上下文理解并尝试造句。", "短语")
-            if len(expressions) >= 8:
-                break
-
-    if not expressions:
-        add_expr("key expression", "今天这篇文章适合重点积累原文中的高频短语和观点句。", "表达")
-
     expressions = expressions[:8]
 
-    def make_sentence_patterns(text):
+    def find_sentence_with(term):
+        if not term:
+            return ""
+        sentences = re.split(r"(?<=[.!?])\s+", text_all)
+        for s in sentences:
+            if contains(term, s):
+                return clean_text(s)
+        return ""
+
+    def longest_sentence():
+        sentences = [clean_text(x) for x in re.split(r"(?<=[.!?])\s+", text_all) if clean_text(x)]
+        if not sentences:
+            return ""
+        return sorted(sentences, key=lambda s: len(s), reverse=True)[0]
+
+    def make_long_sentence_card():
+        # 优先挑真正有结构的句子。
+        target = (
+            find_sentence_with("will have the chance to")
+            or find_sentence_with("Commissioned by")
+            or find_sentence_with("based on what")
+            or find_sentence_with("research suggests")
+            or longest_sentence()
+        )
+        if not target:
+            return {}
+        low = target.lower()
+
+        if "will have the chance to" in low and "thanks to" in low:
+            return {
+                "title": "长难句拆解",
+                "original": target,
+                "core": "Visitors will have the chance to experience ...",
+                "extra": "thanks to the reconstruction of ... 说明原因：为什么游客能体验这种史前生活。",
+                "meaning": "游客将有机会体验一小段独特的史前生活，这要归功于一座古建筑的重建。",
+                "pattern": "A will have the chance to do B, thanks to C.",
+                "example": "Students will have the chance to practise speaking, thanks to the new online tool."
+            }
+
+        if low.startswith("commissioned by") or "commissioned by" in low:
+            return {
+                "title": "长难句拆解",
+                "original": target,
+                "core": "the new hall was built ...",
+                "extra": "Commissioned by ... 是过去分词短语，交代项目来源；with ... 说明建造方式。",
+                "meaning": "这座新大厅由某机构委托建造，并以非常精确的方式向过去致敬。",
+                "pattern": "Commissioned by A, B was built with C.",
+                "example": "Commissioned by the school, the course was designed with a focus on speaking practice."
+            }
+
+        if "based on what" in low or "sourced locally" in low:
+            return {
+                "title": "长难句拆解",
+                "original": target,
+                "core": "Materials were sourced and chosen ...",
+                "extra": "locally 说明来源；based on what ... 说明选择依据。",
+                "meaning": "这些材料是在当地获取的，并根据专家对古代可用材料的了解来选择。",
+                "pattern": "A was chosen based on what B know / need / find.",
+                "example": "The examples were chosen based on what students often find difficult."
+            }
+
+        if "suggest" in low or "reveal" in low:
+            return {
+                "title": "长难句拆解",
+                "original": target,
+                "core": "Research suggests / reveals that ...",
+                "extra": "that 后面是研究发现的具体内容。",
+                "meaning": "研究表明 / 揭示了某个现象或规律。",
+                "pattern": "Research suggests that S + V ...",
+                "example": "Research suggests that people have a tendency to check their phones when they feel nervous."
+            }
+
+        return {
+            "title": "长难句拆解",
+            "original": target,
+            "core": "先找主语 + 谓语，再看后面的修饰信息。",
+            "extra": "长句通常由主干、原因、补充说明或定语从句组成。",
+            "meaning": "先抓主干意思，再把修饰部分补进去。",
+            "pattern": "A + V + B, with / because / thanks to C.",
+            "example": "The project became popular, thanks to its simple design."
+        }
+
+    long_card = make_long_sentence_card()
+
+    def make_patterns():
         rows = []
-        low = text.lower()
+        def add(title, structure, meaning, example, note):
+            rows.append({"title": title, "structure": structure, "meaning": meaning, "example": example, "note": note})
+        low = text_all.lower()
 
-        def add(title, pattern, meaning, example, note):
-            rows.append({
-                "title": title,
-                "pattern": pattern,
-                "meaning": meaning,
-                "example": example,
-                "note": note
-            })
-
-        if "suggest" in low or "research" in low or "study" in low or "reveal" in low:
-            add(
-                "研究发现句",
-                "Research suggests that ________.",
-                "研究表明，……",
-                "Research suggests that people have a tendency to repeat familiar habits.",
-                "适合引出研究发现、调查结论，比 people say 更正式。"
-            )
-
-        if "tendency to" in low:
-            add(
-                "倾向表达句",
-                "People have a tendency to ________ when they ________.",
-                "当人们……时，往往会……",
-                "People have a tendency to check their phones when they feel nervous.",
-                "适合写行为习惯、心理倾向和社会观察。"
-            )
-
-        if "for the first time in" in low or "has increased" in low or "have increased" in low:
-            add(
-                "趋势变化句",
-                "The number of ________ has increased for the first time in ________.",
-                "……的数量在……以来首次增加。",
-                "The number of children who enjoy reading has increased for the first time in five years.",
-                "适合写数据回升、比例变化、社会趋势。"
-            )
-
+        if "will have the chance to" in low:
+            add("机会体验句", "A will have the chance to do B, thanks to C.", "A 将有机会做 B，这要归功于 C。", "Visitors will have the chance to experience prehistoric life, thanks to the reconstruction.", "适合介绍活动、展览、课程和旅行体验。")
+        if "based on what" in low or "sourced locally" in low:
+            add("依据说明句", "A was chosen based on what B know / need / find.", "A 是根据 B 所知道/需要/发现的内容来选择的。", "The sentences were chosen based on what learners often find difficult.", "适合说明材料选择、课程设计、例句筛选依据。")
+        if "for the first time in" in low or "has increased" in low:
+            add("趋势变化句", "The number of A has increased for the first time in B.", "A 的数量在 B 时间以来首次增加。", "The number of children who enjoy reading has increased for the first time in five years.", "适合写数据回升、比例变化、社会趋势。")
         if "according to" in low or "survey" in low:
-            add(
-                "引用调查句",
-                "According to ________, ________.",
-                "根据……，……",
-                "According to a recent survey, more children are reading for pleasure.",
-                "适合引入报告、研究、调查结果。"
-            )
+            add("引用调查句", "According to A, B.", "根据 A，B。", "According to a recent survey, more children are reading for pleasure.", "适合引入报告、研究、调查结果。")
+        if "tendency to" in low:
+            add("倾向表达句", "People have a tendency to do A when they B.", "当人们 B 时，往往会做 A。", "People have a tendency to check their phones when they feel nervous.", "适合写行为习惯和心理倾向。")
+        if not rows and expressions:
+            first = expressions[0]["text"]
+            add("表达复用句", f"Use “{first}” in one sentence.", "用今天的表达写一个自己的句子。", f"I can use “{first}” to describe my own routine.", "适合把外刊表达转成输出。")
+        return rows[:3]
 
-        if "more likely to" in low or "less likely to" in low or "poorer" in low or "compared with" in low:
-            add(
-                "群体对比句",
-                "______ are more / less likely to ________ than ________.",
-                "……比……更可能 / 更不可能……",
-                "Poorer children are less likely to read for pleasure than their peers.",
-                "适合写不同群体之间的差异。"
-            )
-
-        if "apart from" in low:
-            add(
-                "生活状态句",
-                "Apart from ________, the only other thing I regularly do is ________.",
-                "除了……之外，我经常做的另一件事只有……",
-                "Apart from walking his dog, the only other trip he makes is to buy food.",
-                "适合描述日常范围很窄、活动很少的状态。"
-            )
-
-        if "the new normal" in low:
-            add(
-                "观点总结句",
-                "For many people, ________ has become the new normal.",
-                "对很多人来说，……已经成了新常态。",
-                "For many young people, unstable work has become the new normal.",
-                "适合总结一种普遍但未必理想的现实。"
-            )
-
-        if not rows:
-            first = expressions[0]["text"] if expressions else "today's expression"
-            add(
-                "表达复用句",
-                f"Try to use “{first}” in one sentence about your own life.",
-                "试着用今天的表达写一个和自己有关的句子。",
-                "把今天的一个表达，放进自己的生活、工作或学习场景里。",
-                "适合把外刊表达转成自己的输出。"
-            )
-
-        return rows[:4]
-
-    pattern_rows = make_sentence_patterns(text_all)
-
-    def article_review_text():
-        if overview:
-            base = overview
-        elif zh_all:
-            base = zh_all[:120] + ("……" if len(zh_all) > 120 else "")
-        else:
-            base = "这篇文章围绕一个具体社会现象展开，适合练习如何用英文描述趋势、原因和影响。"
-        best = expressions[0]["text"] if expressions else ""
-        best_meaning = expressions[0]["meaning"] if expressions else ""
-        return base, best, best_meaning
-
-    review_base, best_expr, best_meaning = article_review_text()
+    pattern_rows = make_patterns()
 
     def attr_escape(x):
         return html.escape(str(x or ""), quote=True)
@@ -3462,10 +3470,7 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
             pat = re.compile(r"(?<![A-Za-z])(" + re.escape(term) + r")(?![A-Za-z])", re.I)
             def repl(m):
                 word = m.group(1)
-                return (
-                    '<span class="hl-term" data-term="' + attr_escape(term) +
-                    '" data-meaning="' + attr_escape(meaning) + '">' + esc(word) + "</span>"
-                )
+                return '<span class="hl-term" data-term="' + attr_escape(term) + '" data-meaning="' + attr_escape(meaning) + '">' + esc(word) + "</span>"
             safe = pat.sub(repl, safe)
         return safe
 
@@ -3484,10 +3489,34 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
     for item in expressions:
         expression_html += f"""
           <div class="expression" data-term="{attr_escape(item.get('text'))}" data-meaning="{attr_escape(item.get('meaning'))}">
-            <div class="expr-label">{esc(item.get('label', '表达'))}</div>
+            <span class="expr-label">{esc(item.get('label', '表达'))}</span>
             <b>{esc(item.get('text'))}</b>
-            <span>{esc(item.get('meaning'))}</span>
+            <span class="expr-meaning">{esc(item.get('meaning'))}</span>
           </div>
+        """
+
+    if not expression_html:
+        expression_html = '<div class="expression"><span class="expr-label">表达</span><b>今日表达</b><span class="expr-meaning">这篇文章适合积累原文中的可复用句型和话题表达。</span></div>'
+
+    long_sentence_html = ""
+    if long_card:
+        long_sentence_html = f"""
+      <section class="card section" id="longsentence">
+        <div class="section-head">
+          <h2>长难句拆解</h2>
+          <span class="mini-label">Sentence</span>
+        </div>
+        <div class="long-card">
+          <p class="long-original">{esc(long_card.get('original', ''))}</p>
+          <div class="split-box">
+            <p><b>主干：</b>{esc(long_card.get('core', ''))}</p>
+            <p><b>补充：</b>{esc(long_card.get('extra', ''))}</p>
+            <p><b>顺译：</b>{esc(long_card.get('meaning', ''))}</p>
+            <p><b>仿写：</b>{esc(long_card.get('pattern', ''))}</p>
+            <p class="example"><b>例句：</b>{esc(long_card.get('example', ''))}</p>
+          </div>
+        </div>
+      </section>
         """
 
     patterns_html = ""
@@ -3495,17 +3524,71 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
         patterns_html += f"""
           <div class="practice">
             <b>{esc(row.get('title'))}</b>
-            <p class="pattern">{esc(row.get('pattern'))}</p>
-            <p class="meaning">{esc(row.get('meaning'))}</p>
-            <p class="example">{esc(row.get('example'))}</p>
+            <p class="pattern">结构：{esc(row.get('structure'))}</p>
+            <p class="meaning">意思：{esc(row.get('meaning'))}</p>
+            <p class="example">例句：{esc(row.get('example'))}</p>
             <small>{esc(row.get('note'))}</small>
           </div>
         """
+
+    # 历史文章：从 output/archive/day-*.txt 读取，恢复历史记录并加主题分类。
+    def load_history_entries(max_count=8):
+        entries = []
+        archive_dir = OUTPUT_DIR / "archive"
+        if not archive_dir.exists():
+            return entries
+        for txt_path in sorted(archive_dir.glob("day-*.txt"), reverse=True):
+            date_part = txt_path.stem.replace("day-", "")
+            if date_part == today:
+                continue
+            try:
+                t = txt_path.read_text(encoding="utf-8-sig", errors="ignore")
+            except Exception:
+                continue
+            def after_label(label):
+                m = re.search(re.escape(label) + r"\s*\n([^\n]+)", t)
+                return clean_text(m.group(1)) if m else ""
+            en_title = after_label("英文标题：") or "历史外刊"
+            cn_title = after_label("中文标题：")
+            source_line = after_label("来源：")
+            topic_h = topic_category(en_title + " " + cn_title, source_line, t[:1200])
+            level_h, _ = difficulty_label_from_text(t[:2000])
+            href = f"archive/day-{date_part}-xhs.html"
+            if not (archive_dir / f"day-{date_part}-xhs.html").exists():
+                href = f"archive/day-{date_part}.html"
+            entries.append({
+                "date": date_part,
+                "title": en_title,
+                "cn": cn_title,
+                "topic": topic_h,
+                "level": level_h,
+                "href": href
+            })
+            if len(entries) >= max_count:
+                break
+        return entries
+
+    hist = load_history_entries()
+    history_html = ""
+    for h in hist:
+        title_show = h["title"]
+        if len(title_show) > 72:
+            title_show = title_show[:70] + "..."
+        history_html += f"""
+          <a class="history-item" href="{attr_escape(h['href'])}">
+            <span>{esc(h['date'])} · {esc(h['level'])} · {esc(h['topic'])}</span>
+            <b>{esc(title_show)}</b>
+          </a>
+        """
+    if not history_html:
+        history_html = '<div class="history-empty">暂无历史文章</div>'
 
     source_link_html = ""
     if link:
         source_link_html = f'<a class="source-link" href="{attr_escape(link)}" target="_blank" rel="noopener">查看原文来源</a>'
 
+    best_expr = expressions[0]["text"] if expressions else ""
+    best_meaning = expressions[0]["meaning"] if expressions else ""
     today_dot = esc(today).replace("-", ".")
 
     page = f"""<!doctype html>
@@ -3516,563 +3599,101 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
   <title>Healing Lab 每日外刊｜{esc(today)}</title>
   <style>
     :root {{
-      --ink: #1d252c;
-      --text: #344047;
-      --muted: #68747f;
-      --line: #dfe6e8;
-      --paper: #fbfaf6;
-      --paper-deep: #f5f2eb;
-      --card: rgba(255, 255, 255, .92);
-      --sage-dark: #426e60;
-      --sage-soft: #eef6f1;
-      --clay: #d78768;
-      --clay-soft: #fbf0ea;
-      --blue: #557da8;
-      --blue-soft: #edf3f8;
-      --shadow: 0 18px 46px rgba(44, 57, 64, .12);
-      --radius-lg: 22px;
-      --radius-sm: 12px;
+      --ink:#1d252c; --muted:#68747f; --line:#dfe6e8;
+      --paper:#fbfaf6; --paper-deep:#f5f2eb; --card:rgba(255,255,255,.92);
+      --sage-dark:#426e60; --sage-soft:#eef6f1;
+      --clay:#d78768; --clay-soft:#fbf0ea;
+      --blue:#557da8; --blue-soft:#edf3f8;
+      --shadow:0 18px 46px rgba(44,57,64,.12);
+      --radius-lg:22px; --radius-sm:12px;
     }}
-
-    * {{ box-sizing: border-box; }}
-    html {{ scroll-behavior: smooth; }}
-
-    body {{
-      margin: 0;
-      color: var(--ink);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
-      background:
-        linear-gradient(135deg, rgba(255,255,255,.88), rgba(255,255,255,.96)),
-        radial-gradient(circle at 12% 4%, rgba(127,163,145,.25), transparent 34%),
-        radial-gradient(circle at 92% 14%, rgba(241,198,109,.25), transparent 30%),
-        radial-gradient(circle at 50% 92%, rgba(85,125,168,.16), transparent 36%),
-        var(--paper-deep);
-      min-height: 100vh;
-    }}
-
-    .phone-shell {{
-      width: min(100%, 480px);
-      margin: 0 auto;
-      padding: env(safe-area-inset-top) 14px 34px;
-    }}
-
-    .hero {{ padding: 28px 4px 16px; }}
-
-    .brand-row {{
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 14px;
-      margin-bottom: 20px;
-    }}
-
-    .brand-mark {{
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      display: grid;
-      place-items: center;
-      background: var(--sage-dark);
-      color: #fff;
-      font-weight: 900;
-      box-shadow: 0 14px 30px rgba(66,110,96,.25);
-    }}
-
-    .date-pill {{
-      background: rgba(255,255,255,.78);
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      padding: 9px 13px;
-      color: var(--sage-dark);
-      font-weight: 800;
-      font-size: 13px;
-      white-space: nowrap;
-    }}
-
-    .hero h1 {{
-      margin: 0;
-      font-size: clamp(40px, 13vw, 58px);
-      line-height: .98;
-      letter-spacing: -.055em;
-    }}
-
-    .hero .subtitle {{
-      margin: 12px 0 0;
-      color: var(--muted);
-      font-size: 15px;
-      line-height: 1.65;
-    }}
-
-    .quick-nav {{
-      position: sticky;
-      top: 0;
-      z-index: 30;
-      margin: 4px -14px 16px;
-      padding: 10px 14px;
-      overflow-x: auto;
-      display: flex;
-      gap: 8px;
-      background: rgba(245,242,235,.72);
-      backdrop-filter: blur(12px);
-      border-top: 1px solid rgba(223,230,232,.7);
-      border-bottom: 1px solid rgba(223,230,232,.7);
-    }}
-
-    .quick-nav a {{
-      flex: 0 0 auto;
-      text-decoration: none;
-      color: var(--sage-dark);
-      background: rgba(255,255,255,.78);
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      padding: 7px 11px;
-      font-size: 13px;
-      font-weight: 800;
-    }}
-
-    .section-stack {{ display: grid; gap: 14px; }}
-
-    .card {{
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow);
-      overflow: hidden;
-    }}
-
-    .article-cover {{
-      min-height: 292px;
-      padding: 22px;
-      background:
-        linear-gradient(rgba(255,255,255,.18), rgba(255,255,255,.05)),
-        linear-gradient(135deg, #e9f2ec 0%, #f8f0df 54%, #eef3f8 100%);
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }}
-
-    .article-cover::after {{
-      content: "";
-      position: absolute;
-      inset: 15px;
-      border: 1px solid rgba(66,110,96,.22);
-      border-radius: 14px;
-      pointer-events: none;
-    }}
-
-    .eyebrow {{
-      position: relative;
-      z-index: 1;
-      width: fit-content;
-      max-width: 100%;
-      padding: 7px 12px;
-      border-radius: 999px;
-      background: var(--sage-dark);
-      color: #fff;
-      font-size: 13px;
-      font-weight: 900;
-    }}
-
-    .title-box {{
-      position: relative;
-      z-index: 1;
-      margin-top: 34px;
-    }}
-
-    .article-title-en {{
-      margin: 0;
-      font-family: Georgia, "Times New Roman", serif;
-      max-width: 12em;
-      font-size: clamp(30px, 9vw, 43px);
-      line-height: 1.06;
-      letter-spacing: -.035em;
-      color: var(--ink);
-    }}
-
-    .article-title-zh {{
-      margin-top: 14px;
-      max-width: 18em;
-      font-size: 16px;
-      line-height: 1.55;
-      color: #536171;
-      font-weight: 700;
-    }}
-
-    .meta-grid {{
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 10px;
-      padding: 14px;
-    }}
-
-    .meta-box {{
-      background: var(--paper);
-      border: 1px solid var(--line);
-      border-radius: var(--radius-sm);
-      padding: 12px;
-    }}
-
-    .meta-box span {{
-      display: block;
-      color: var(--muted);
-      font-size: 12px;
-      margin-bottom: 6px;
-    }}
-
-    .meta-box b {{
-      font-size: 14.5px;
-      line-height: 1.4;
-    }}
-
-    .tags {{
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      padding: 0 14px 14px;
-    }}
-
-    .tag {{
-      padding: 6px 10px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 900;
-      background: var(--sage-soft);
-      color: var(--sage-dark);
-    }}
-
-    .tag.level {{ background: var(--clay-soft); color: #9b4e35; }}
-    .tag.topic {{ background: var(--blue-soft); color: var(--blue); }}
-
-    .summary {{
-      margin: 0 14px 16px;
-      padding: 13px 14px;
-      border-left: 4px solid var(--clay);
-      background: #fff8f2;
-      border-radius: 10px;
-      color: #37434a;
-      line-height: 1.7;
-      font-size: 14.5px;
-      white-space: pre-wrap;
-    }}
-
-    .section {{ padding: 18px; }}
-
-    .section-head {{
-      display: flex;
-      align-items: baseline;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 12px;
-    }}
-
-    .section h2 {{
-      margin: 0;
-      font-size: 21px;
-      letter-spacing: -.02em;
-    }}
-
-    .mini-label {{
-      color: var(--muted);
-      font-size: 12px;
-      white-space: nowrap;
-    }}
-
-    .level-card, .para-card, .expression, .practice, .review-box {{
-      border: 1px solid var(--line);
-      background: var(--paper);
-      border-radius: var(--radius-sm);
-      padding: 14px;
-    }}
-
-    .level-big {{
-      display: inline-flex;
-      width: fit-content;
-      border-radius: 999px;
-      padding: 6px 11px;
-      background: var(--clay-soft);
-      color: #9b4e35;
-      font-weight: 900;
-      font-size: 13px;
-      margin-bottom: 7px;
-    }}
-
-    .level-note, .translation, .expression span, .practice p, .review-box p {{
-      color: var(--muted);
-      line-height: 1.65;
-      font-size: 14.5px;
-    }}
-
-    .para-list, .expression-list, .practice-grid, .review-grid {{
-      display: grid;
-      gap: 10px;
-    }}
-
-    .para-title {{
-      color: var(--sage-dark);
-      font-weight: 900;
-      margin-bottom: 10px;
-      font-size: 14px;
-    }}
-
-    .para-divider {{
-      height: 1px;
-      background: var(--line);
-      margin: 12px 0;
-    }}
-
-    .english {{
-      margin: 0;
-      font-family: Georgia, "Times New Roman", serif;
-      font-size: 18.5px;
-      line-height: 1.78;
-      color: #25323a;
-    }}
-
-    .hl-term {{
-      color: var(--sage-dark);
-      background: rgba(127,163,145,.16);
-      border-bottom: 1px solid rgba(66,110,96,.38);
-      padding: 0 2px;
-      border-radius: 4px;
-      cursor: pointer;
-    }}
-
-    .expr-label {{
-      width: fit-content;
-      padding: 4px 8px;
-      border-radius: 999px;
-      background: var(--blue-soft);
-      color: var(--blue);
-      font-size: 12px;
-      font-weight: 900;
-    }}
-
-    .expression b {{
-      color: var(--sage-dark);
-      line-height: 1.45;
-      font-size: 16px;
-    }}
-
-    .practice b, .review-box b {{
-      display: block;
-      margin-bottom: 8px;
-      font-size: 15px;
-    }}
-
-    .practice .pattern {{
-      color: #25323a;
-      font-family: Georgia, "Times New Roman", serif;
-      font-size: 16px;
-    }}
-
-    .practice .meaning {{
-      color: #9b4e35;
-      margin-top: 6px;
-    }}
-
-    .practice .example {{
-      color: #414b51;
-      margin-top: 8px;
-    }}
-
-    .practice small {{
-      display: block;
-      color: var(--muted);
-      margin-top: 8px;
-      line-height: 1.55;
-    }}
-
-    .review-box {{
-      border: 1px dashed #b9c7c0;
-      background: #fbfdfb;
-    }}
-
-    .source-link {{
-      display: inline-flex;
-      width: fit-content;
-      margin-top: 12px;
-      text-decoration: none;
-      color: var(--sage-dark);
-      background: var(--sage-soft);
-      border: 1px solid rgba(66,110,96,.18);
-      border-radius: 999px;
-      padding: 8px 11px;
-      font-size: 13px;
-      font-weight: 900;
-    }}
-
-    .tip {{
-      position: fixed;
-      left: 14px;
-      right: 14px;
-      bottom: 16px;
-      z-index: 80;
-      background: #1d252c;
-      color: #fff;
-      border-radius: 16px;
-      padding: 12px 14px;
-      box-shadow: 0 14px 38px rgba(0,0,0,.22);
-      line-height: 1.6;
-      display: none;
-      max-width: 452px;
-      margin: 0 auto;
-    }}
-
-    .tip b {{ color: #f1c66d; }}
-
-    .bottom-note {{
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.7;
-      text-align: center;
-      padding: 20px 6px 2px;
-    }}
-
-    @media (min-width: 420px) {{
-      .meta-grid {{ grid-template-columns: repeat(3, minmax(0, 1fr)); }}
-    }}
-
-    @media (max-width: 360px) {{
-      .hero h1 {{ font-size: 38px; }}
-      .article-title-en {{ font-size: 29px; }}
-      .section {{ padding: 16px; }}
-    }}
+    *{{box-sizing:border-box}} html{{scroll-behavior:smooth}}
+    body{{margin:0;color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",Arial,sans-serif;background:linear-gradient(135deg,rgba(255,255,255,.88),rgba(255,255,255,.96)),radial-gradient(circle at 12% 4%,rgba(127,163,145,.25),transparent 34%),radial-gradient(circle at 92% 14%,rgba(241,198,109,.25),transparent 30%),radial-gradient(circle at 50% 92%,rgba(85,125,168,.16),transparent 36%),var(--paper-deep);min-height:100vh}}
+    .phone-shell{{width:min(100%,480px);margin:0 auto;padding:env(safe-area-inset-top) 14px 34px}}
+    .hero{{padding:28px 4px 16px}} .brand-row{{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:20px}}
+    .brand-mark{{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;background:var(--sage-dark);color:#fff;font-weight:900;box-shadow:0 14px 30px rgba(66,110,96,.25)}}
+    .date-pill{{background:rgba(255,255,255,.78);border:1px solid var(--line);border-radius:999px;padding:9px 13px;color:var(--sage-dark);font-weight:800;font-size:13px;white-space:nowrap}}
+    .hero h1{{margin:0;font-size:clamp(40px,13vw,58px);line-height:.98;letter-spacing:-.055em}} .hero .subtitle{{margin:12px 0 0;color:var(--muted);font-size:15px;line-height:1.65}}
+    .quick-nav{{position:sticky;top:0;z-index:30;margin:4px -14px 16px;padding:10px 14px;overflow-x:auto;display:flex;gap:8px;background:rgba(245,242,235,.72);backdrop-filter:blur(12px);border-top:1px solid rgba(223,230,232,.7);border-bottom:1px solid rgba(223,230,232,.7)}}
+    .quick-nav a{{flex:0 0 auto;text-decoration:none;color:var(--sage-dark);background:rgba(255,255,255,.78);border:1px solid var(--line);border-radius:999px;padding:7px 11px;font-size:13px;font-weight:800}}
+    .section-stack{{display:grid;gap:14px}} .card{{background:var(--card);border:1px solid var(--line);border-radius:var(--radius-lg);box-shadow:var(--shadow);overflow:hidden}}
+    .article-cover{{min-height:292px;padding:22px;background:linear-gradient(rgba(255,255,255,.18),rgba(255,255,255,.05)),linear-gradient(135deg,#e9f2ec 0%,#f8f0df 54%,#eef3f8 100%);position:relative;display:flex;flex-direction:column;justify-content:space-between}}
+    .article-cover::after{{content:"";position:absolute;inset:15px;border:1px solid rgba(66,110,96,.22);border-radius:14px;pointer-events:none}}
+    .eyebrow{{position:relative;z-index:1;width:fit-content;padding:7px 12px;border-radius:999px;background:var(--sage-dark);color:#fff;font-size:13px;font-weight:900}}
+    .title-box{{position:relative;z-index:1;margin-top:34px}} .article-title-en{{margin:0;font-family:Georgia,"Times New Roman",serif;max-width:12em;font-size:clamp(30px,9vw,43px);line-height:1.06;letter-spacing:-.035em;color:var(--ink)}} .article-title-zh{{margin-top:14px;max-width:18em;font-size:16px;line-height:1.55;color:#536171;font-weight:700}}
+    .meta-grid{{display:grid;grid-template-columns:1fr;gap:10px;padding:14px}} .meta-box{{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius-sm);padding:12px}} .meta-box span{{display:block;color:var(--muted);font-size:12px;margin-bottom:6px}} .meta-box b{{font-size:14.5px;line-height:1.4}}
+    .tags{{display:flex;gap:8px;flex-wrap:wrap;padding:0 14px 14px}} .tag{{padding:6px 10px;border-radius:999px;font-size:12px;font-weight:900;background:var(--sage-soft);color:var(--sage-dark)}} .tag.level{{background:var(--clay-soft);color:#9b4e35}} .tag.topic{{background:var(--blue-soft);color:var(--blue)}}
+    .summary{{margin:0 14px 16px;padding:13px 14px;border-left:4px solid var(--clay);background:#fff8f2;border-radius:10px;color:#37434a;line-height:1.7;font-size:14.5px;white-space:pre-wrap}}
+    .section{{padding:18px}} .section-head{{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:12px}} .section h2{{margin:0;font-size:21px;letter-spacing:-.02em}} .mini-label{{color:var(--muted);font-size:12px;white-space:nowrap}}
+    .level-card,.para-card,.practice,.review-box,.long-card{{border:1px solid var(--line);background:var(--paper);border-radius:var(--radius-sm);padding:14px}} .level-big{{display:inline-flex;width:fit-content;border-radius:999px;padding:6px 11px;background:var(--clay-soft);color:#9b4e35;font-weight:900;font-size:13px;margin-bottom:7px}} .level-note,.translation,.practice p,.review-box p{{color:var(--muted);line-height:1.65;font-size:14.5px}}
+    .study-route{{display:grid;grid-template-columns:1fr;gap:8px}} .route-step{{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);background:var(--paper);border-radius:12px;padding:10px}} .route-num{{flex:0 0 auto;width:28px;height:28px;border-radius:50%;background:var(--sage-soft);color:var(--sage-dark);display:grid;place-items:center;font-weight:900;font-size:13px}} .route-step b{{display:block;font-size:14px;margin-bottom:3px}} .route-step span{{color:var(--muted);font-size:13px;line-height:1.45}}
+    .para-list,.expression-list,.practice-grid,.review-grid,.history-list{{display:grid;gap:10px}} .para-title{{color:var(--sage-dark);font-weight:900;margin-bottom:10px;font-size:14px}} .para-divider{{height:1px;background:var(--line);margin:12px 0}} .english{{margin:0;font-family:Georgia,"Times New Roman",serif;font-size:18.5px;line-height:1.78;color:#25323a}}
+    .hl-term{{color:var(--sage-dark);background:rgba(127,163,145,.16);border-bottom:1px solid rgba(66,110,96,.38);padding:0 2px;border-radius:4px;cursor:pointer}}
+    .expression{{display:grid;grid-template-columns:auto 1fr;column-gap:10px;row-gap:3px;align-items:start;border:1px solid var(--line);background:var(--paper);border-radius:10px;padding:9px 10px;cursor:pointer}} .expr-label{{grid-row:1 / span 2;width:fit-content;padding:4px 7px;border-radius:999px;background:var(--blue-soft);color:var(--blue);font-size:12px;font-weight:900;white-space:nowrap}} .expression b{{color:var(--sage-dark);line-height:1.35;font-size:15.5px}} .expr-meaning{{color:var(--muted);line-height:1.5;font-size:14px}}
+    .long-original{{font-family:Georgia,"Times New Roman",serif;font-size:18px;line-height:1.65;color:#25323a;margin:0 0 10px}} .split-box{{background:#fff8f2;border:1px solid #f0d6c9;border-radius:12px;padding:10px}} .split-box p{{margin:6px 0;color:#414b51;line-height:1.6;font-size:14.5px}} .split-box b{{color:#9b4e35}}
+    .practice b,.review-box b{{display:block;margin-bottom:8px;font-size:15px}} .practice .pattern{{color:#25323a;font-family:Georgia,"Times New Roman",serif;font-size:16px}} .practice .meaning{{color:#9b4e35}} .practice .example{{color:#414b51}} .practice small{{display:block;color:var(--muted);margin-top:8px;line-height:1.55}} .review-box{{border:1px dashed #b9c7c0;background:#fbfdfb}}
+    .history-list{{grid-template-columns:1fr}} .history-item{{display:block;text-decoration:none;color:var(--ink);border:1px solid var(--line);background:var(--paper);border-radius:12px;padding:11px}} .history-item span{{display:block;color:var(--muted);font-size:12px;margin-bottom:5px}} .history-item b{{font-size:14.5px;line-height:1.35}} .history-empty{{color:var(--muted);font-size:14px}}
+    .source-link{{display:inline-flex;width:fit-content;margin-top:12px;text-decoration:none;color:var(--sage-dark);background:var(--sage-soft);border:1px solid rgba(66,110,96,.18);border-radius:999px;padding:8px 11px;font-size:13px;font-weight:900}}
+    .tip{{position:fixed;left:14px;right:14px;bottom:16px;z-index:80;background:#1d252c;color:#fff;border-radius:16px;padding:12px 14px;box-shadow:0 14px 38px rgba(0,0,0,.22);line-height:1.6;display:none;max-width:452px;margin:0 auto}} .tip b{{color:#f1c66d}} .bottom-note{{color:var(--muted);font-size:12px;line-height:1.7;text-align:center;padding:20px 6px 2px}}
+    @media (min-width:420px){{.meta-grid{{grid-template-columns:repeat(3,minmax(0,1fr))}}}} @media (max-width:360px){{.hero h1{{font-size:38px}}.article-title-en{{font-size:29px}}.section{{padding:16px}}.expression{{grid-template-columns:1fr}}.expr-label{{grid-row:auto}}}}
   </style>
 </head>
 <body>
   <main class="phone-shell">
     <header class="hero">
-      <div class="brand-row">
-        <div class="brand-mark">HL</div>
-        <div class="date-pill">Today · {today_dot}</div>
-      </div>
+      <div class="brand-row"><div class="brand-mark">HL</div><div class="date-pill">Today · {today_dot}</div></div>
       <h1>Healing Lab<br>每日外刊</h1>
       <p class="subtitle">每天一篇短外刊，练阅读、表达和语感。</p>
     </header>
 
     <nav class="quick-nav" aria-label="页面导航">
-      <a href="#article">今日文章</a>
-      <a href="#level">难度</a>
-      <a href="#text">原文理解</a>
-      <a href="#expressions">重点表达</a>
-      <a href="#practice">句式拆解</a>
-      <a href="#review">复盘</a>
+      <a href="#article">今日文章</a><a href="#route">路线</a><a href="#level">难度</a><a href="#text">精读</a><a href="#longsentence">长句</a><a href="#expressions">表达</a><a href="#archive">历史</a>
     </nav>
 
     <div class="section-stack">
       <article class="card" id="article">
-        <div class="article-cover">
-          <span class="eyebrow">今日文章卡片</span>
-          <div class="title-box">
-            <h2 class="article-title-en">{esc(title_raw)}</h2>
-            <div class="article-title-zh">{esc(title_cn)}</div>
-          </div>
-        </div>
-
-        <div class="meta-grid">
-          <div class="meta-box"><span>来源</span><b>{esc(source or "Daily Reading")}</b></div>
-          <div class="meta-box"><span>日期</span><b>{esc(pub_date)}</b></div>
-          <div class="meta-box"><span>难度</span><b>{esc(level)}</b></div>
-        </div>
-
-        <div class="tags">
-          <span class="tag level">{esc(level)}</span>
-          <span class="tag topic">Daily Reading</span>
-          <span class="tag">Expressions</span>
-          <span class="tag">Patterns</span>
-        </div>
-
+        <div class="article-cover"><span class="eyebrow">今日文章卡片</span><div class="title-box"><h2 class="article-title-en">{esc(title_raw)}</h2><div class="article-title-zh">{esc(title_cn)}</div></div></div>
+        <div class="meta-grid"><div class="meta-box"><span>来源</span><b>{esc(source or "Daily Reading")}</b></div><div class="meta-box"><span>日期</span><b>{esc(pub_date)}</b></div><div class="meta-box"><span>难度</span><b>{esc(level)}</b></div></div>
+        <div class="tags"><span class="tag level">{esc(level)}</span><span class="tag topic">{esc(topic)}</span><span class="tag">Expressions</span><span class="tag">Patterns</span></div>
         <p class="summary">{esc(overview or "今天这篇适合积累真实外刊表达、观点句和可复述素材。")}</p>
       </article>
 
-      <section class="card section" id="level">
-        <div class="section-head">
-          <h2>难度分级</h2>
-          <span class="mini-label">Level</span>
-        </div>
-        <div class="level-card">
-          <span class="level-big">难度：{esc(level)}</span>
-          <div class="level-note">{esc(level_note)}</div>
+      <section class="card section" id="route">
+        <div class="section-head"><h2>今天这样学</h2><span class="mini-label">3 steps</span></div>
+        <div class="study-route">
+          <div class="route-step"><span class="route-num">01</span><div><b>先抓主题</b><span>看中文摘要，知道文章讲什么。</span></div></div>
+          <div class="route-step"><span class="route-num">02</span><div><b>精读 2 段</b><span>只读核心段，不被全文吓退。</span></div></div>
+          <div class="route-step"><span class="route-num">03</span><div><b>拆 1 句 + 记 3 表达</b><span>把外刊变成可复用输出。</span></div></div>
         </div>
       </section>
 
-      <section class="card section" id="text">
-        <div class="section-head">
-          <h2>英文原文 / 中文理解</h2>
-          <span class="mini-label">点击绿色词看释义</span>
-        </div>
-        <div class="para-list">
-          {paragraph_html}
-        </div>
-      </section>
+      <section class="card section" id="level"><div class="section-head"><h2>难度分级</h2><span class="mini-label">Level</span></div><div class="level-card"><span class="level-big">难度：{esc(level)}</span><div class="level-note">{esc(level_note)}</div></div></section>
 
-      <section class="card section" id="expressions">
-        <div class="section-head">
-          <h2>重点表达</h2>
-          <span class="mini-label">Useful Expressions</span>
-        </div>
-        <div class="expression-list">
-          {expression_html}
-        </div>
-      </section>
+      <section class="card section" id="text"><div class="section-head"><h2>今日精读</h2><span class="mini-label">Original + Meaning</span></div><div class="para-list">{paragraph_html}</div></section>
 
-      <section class="card section" id="practice">
-        <div class="section-head">
-          <h2>句式拆解</h2>
-          <span class="mini-label">Sentence Patterns</span>
-        </div>
-        <div class="practice-grid">
-          {patterns_html}
-        </div>
-      </section>
+      {long_sentence_html}
 
-      <section class="card section" id="review">
-        <div class="section-head">
-          <h2>今日复盘</h2>
-          <span class="mini-label">Daily Review</span>
-        </div>
-        <div class="review-grid">
-          <div class="review-box"><b>这篇文章讲的是</b><p>{esc(review_base)}</p></div>
-          <div class="review-box"><b>今天最值得记住</b><p>{esc(best_expr)}<br>{esc(best_meaning)}</p></div>
-          <div class="review-box"><b>怎么用</b><p>选一个表达，改写成自己的生活、学习或工作场景。</p></div>
-        </div>
-        {source_link_html}
-      </section>
+      <section class="card section" id="expressions"><div class="section-head"><h2>重点表达</h2><span class="mini-label">Useful Expressions</span></div><div class="expression-list">{expression_html}</div></section>
+
+      <section class="card section" id="practice"><div class="section-head"><h2>句式练习</h2><span class="mini-label">Output</span></div><div class="practice-grid">{patterns_html}</div></section>
+
+      <section class="card section" id="review"><div class="section-head"><h2>今日复盘</h2><span class="mini-label">Daily Review</span></div><div class="review-grid"><div class="review-box"><b>今天最值得记住</b><p>{esc(best_expr)}<br>{esc(best_meaning)}</p></div><div class="review-box"><b>怎么用</b><p>选一个表达，改写成自己的生活、学习或工作场景。</p></div></div>{source_link_html}</section>
+
+      <section class="card section" id="archive"><div class="section-head"><h2>历史文章</h2><span class="mini-label">Archive by topic</span></div><div class="history-list">{history_html}</div></section>
     </div>
 
     <p class="bottom-note">Healing Lab Daily Reading · Mobile Learning Card Page</p>
   </main>
 
   <div class="tip" id="tip"></div>
-
   <script>
-    function escText(s) {{
-      return String(s || '').replace(/[&<>"']/g, function(c) {{
-        return {{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}}[c];
-      }});
-    }}
-
-    function showTip(term, meaning) {{
-      var tip = document.getElementById('tip');
-      tip.innerHTML = '<b>' + escText(term) + '</b><br>' + escText(meaning || '暂无释义');
-      tip.style.display = 'block';
-      clearTimeout(window.__tipTimer);
-      window.__tipTimer = setTimeout(function() {{
-        tip.style.display = 'none';
-      }}, 2800);
-    }}
-
-    document.body.addEventListener('click', function(e) {{
-      var node = e.target.closest('.hl-term, .expression');
-      if (!node) return;
-      showTip(node.getAttribute('data-term') || '', node.getAttribute('data-meaning') || '');
-    }});
+    function escText(s){{return String(s||'').replace(/[&<>"']/g,function(c){{return {{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}}[c];}});}}
+    function showTip(term,meaning){{var tip=document.getElementById('tip');tip.innerHTML='<b>'+escText(term)+'</b><br>'+escText(meaning||'暂无释义');tip.style.display='block';clearTimeout(window.__tipTimer);window.__tipTimer=setTimeout(function(){{tip.style.display='none';}},2800);}}
+    document.body.addEventListener('click',function(e){{var node=e.target.closest('.hl-term,.expression');if(!node)return;showTip(node.getAttribute('data-term')||'',node.getAttribute('data-meaning')||'');}});
   </script>
 </body>
 </html>"""
     return page
-
 
 def write_outputs(article, selected_paragraphs, rejected_log, article_reject_log, cfg):
     OUTPUT_DIR.mkdir(exist_ok=True)
