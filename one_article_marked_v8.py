@@ -3136,16 +3136,26 @@ def split_text_for_card_pages(text, lang="en"):
 
 def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote_raw, quote_translated, today, cover_image=""):
     """
-    V34-G：
-    手机端学习卡片页｜服务端直出版。
-    修复 V34-F 的空白问题：核心内容不再依赖 JS 填充，Python 直接生成 HTML。
-    JS 只负责点击释义浮层；即使 JS 出错，标题、文章、难度、表达、句式也会显示。
+    V34-H：
+    手机版学习卡片页精修版。
+    修正：
+    1）封面标题层级：英文标题为主，中文标题为辅。
+    2）难度分级更保守，不再把简单四级材料硬说成 B2。
+    3）重点表达改为“高价值表达优先”，不再只抓一个普通词组。
+    4）新增句式拆解，多条可仿写结构。
+    5）英文原文内重点表达可点击看中文释义。
+    6）去掉今日感悟。
     """
     source = clean_text(article.get("source", ""))
     pub_date = display_publish_date(article) or today
     title_raw = clean_text(article.get("title", ""))
-    title_display = clean_text(title_zh or title_raw or "今日外刊")
+    title_cn = clean_text(title_zh or "")
     link = article.get("link", "")
+
+    if not title_raw:
+        title_raw = title_cn or "Daily Reading"
+    if not title_cn or title_cn == title_raw:
+        title_cn = clean_text(title_zh or "今日外刊精读")
 
     paras = []
     text_all_parts = []
@@ -3169,202 +3179,233 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
             prof = difficulty_profile(text)
             avg = prof.get("avg_sentence_words", 0) or 0
             lw = prof.get("long_word_count", 0) or 0
-            expr = prof.get("expression_count", 0) or 0
             wc = prof.get("word_count", 0) or 0
-            if avg >= 24 or lw >= 18:
-                return "C1", "句子较长，抽象词和信息密度偏高，适合进阶精读。"
-            if avg >= 18 or lw >= 10 or expr >= 4:
-                return "B2", "真实外刊句式较多，适合 CET-6 / 考研阅读表达积累。"
-            if wc >= 90:
-                return "B1-B2", "句子难度适中，适合 CET-4+ 到 CET-6 过渡练习。"
-            return "B1", "篇幅较短，适合用来练基础阅读和表达复述。"
+            # 这里故意保守：真实外刊不等于一定 B2/C1。
+            if avg >= 25 or lw >= 20:
+                return "C1", "句子较长，抽象名词和信息压缩较多，适合进阶精读。"
+            if avg >= 19 or lw >= 13:
+                return "B2", "真实外刊表达较多，难点在长句信息整合和话题词积累。"
+            if avg >= 14 or wc >= 80:
+                return "B1-B2", "句子整体不算难，接近四级到六级过渡；重点在话题表达和复述。"
+            return "B1", "篇幅和句式都较轻，适合基础阅读、跟读和表达复用。"
         except Exception:
-            return "B2", "真实外刊材料，适合精读和表达积累。"
+            return "B1-B2", "真实外刊材料，建议按四级+到六级过渡材料精读。"
 
     level, level_note = difficulty_label_from_text(text_all)
 
-    local_phrase_zh = {
-        "leave the house": "出门；离开家。适合描述生活范围或状态。",
-        "apart from": "除了……之外。比 only / except 更适合正式表达。",
-        "stock up on": "储备；囤积。常用于 food, supplies, essentials。",
-        "the only other": "唯一另一个……，强调选择很少。",
-        "weekly trip": "每周一次的短途外出 / 行程。",
-        "frozen meals": "冷冻餐。",
-        "takeaway-style": "外卖风格的；像外卖一样的。",
-        "the new normal": "新常态。适合描述已经普遍但未必理想的现实。",
-        "looking for a job": "找工作；求职。",
-        "come into full focus": "变得非常清晰；更加凸显。",
-        "young people and work": "年轻人与工作这个议题。",
-        "reduce the number of decisions": "减少需要做决定的次数。",
-        "truly need our attention": "真正需要我们注意力的事情。",
-        "rarely change a life overnight": "很少会一夜之间改变生活。",
-        "make room for": "为……腾出空间。",
-        "set a boundary": "设定边界。",
-        "play a role in": "在……中发挥作用。",
-        "reshape the way": "重塑……的方式。",
-        "in the long run": "从长远来看。",
-        "as a result": "结果是；因此。",
-        "rather than": "而不是。",
-        "instead of": "而不是。",
-        "because of": "因为……。",
-        "more likely to": "更有可能……。",
-        "less likely to": "不太可能……。",
-        "a growing number of": "越来越多的……。",
-        "at the same time": "与此同时。",
-        "in response to": "作为对……的回应。",
-        "be linked to": "与……有关。",
-        "be associated with": "与……相关。",
-        "have a tendency to": "倾向于……。",
-        "be expected to": "被预计会……；应该会……。",
-        "be likely to": "可能会……。",
-        "struggle to": "努力做某事；艰难地做某事。",
-        "be forced to": "被迫……。",
-    }
-
-    def normalize_term(x):
+    def norm(x):
         return clean_text(x).strip().strip(".,;:!?\"'“”‘’()[]{}")
 
-    def term_in_text(term, text):
+    def contains(term, text):
         if not term or not text:
             return False
-        pattern = r"(?<![A-Za-z])" + re.escape(term) + r"(?![A-Za-z])"
-        return re.search(pattern, text, flags=re.I) is not None
+        pat = r"(?<![A-Za-z])" + re.escape(term) + r"(?![A-Za-z])"
+        return re.search(pat, text, flags=re.I) is not None
 
-    candidates = []
+    expression_bank = [
+        # 教育 / 阅读 / 儿童话题
+        ("for the first time in five years", "五年来首次。适合写趋势变化：increase / fall / return for the first time in ...", "趋势句"),
+        ("for the first time in", "……以来首次。适合写数据、趋势或变化节点。", "趋势句"),
+        ("children and young people", "儿童和青少年。教育、阅读、心理健康类文章高频表达。", "话题词组"),
+        ("young people", "年轻人；青少年。社会议题、就业、教育类高频表达。", "话题词组"),
+        ("poorer children", "贫困儿童 / 家境较困难的儿童。注意 poorer 在这里是社会经济语境。", "话题词组"),
+        ("enjoy reading", "喜欢阅读。比 like reading 更自然，可用于教育和习惯话题。", "基础表达"),
+        ("reading for pleasure", "为乐趣而阅读；非功利阅读。教育类外刊常见表达。", "话题表达"),
+        ("has increased", "有所增加。写数据变化时比 become more 更正式。", "趋势句"),
+        ("has fallen", "已经下降。写数据变化、比例变化时常用。", "趋势句"),
+        ("according to", "根据……。引用报告、研究、调查时常用。", "引用结构"),
+        ("a survey of", "一项针对……的调查。适合引出数据来源。", "引用结构"),
+        ("be more likely to", "更有可能……。写群体差异、调查结论时高频。", "比较结构"),
+        ("be less likely to", "更不可能……。写群体差异和风险对比时高频。", "比较结构"),
+        ("compared with", "与……相比。数据对比、群体对比常用。", "比较结构"),
+        ("the number of", "……的数量。写趋势时常和 increase / fall / rise 搭配。", "数据表达"),
+        ("a growing number of", "越来越多的……。写社会趋势时常用。", "趋势表达"),
 
-    # 1. 程序原本抽出的词/表达。
+        # 就业 / 社会议题
+        ("leave the house", "出门；离开家。适合描述生活范围或状态。", "生活状态"),
+        ("apart from", "除了……之外。比 only / except 更适合正式表达。", "连接结构"),
+        ("stock up on", "储备；囤积。常用于 food, supplies, essentials。", "动词短语"),
+        ("the only other", "唯一另一个……，强调选择很少。", "强调结构"),
+        ("weekly trip", "每周一次的短途外出 / 行程。", "生活表达"),
+        ("frozen meals", "冷冻餐。", "生活表达"),
+        ("takeaway-style", "外卖风格的；像外卖一样的。", "形容词表达"),
+        ("the new normal", "新常态。适合描述已经普遍但未必理想的现实。", "观点表达"),
+        ("looking for a job", "找工作；求职。", "就业表达"),
+        ("come into full focus", "变得非常清晰；更加凸显。", "高级表达"),
+        ("struggle to", "努力做某事；艰难地做某事。", "动词结构"),
+        ("be forced to", "被迫……。", "被动结构"),
+
+        # 通用外刊表达
+        ("reduce the number of decisions", "减少需要做决定的次数。效率、习惯、心理负担话题常用。", "观点表达"),
+        ("truly need our attention", "真正需要我们注意力的事情。适合表达优先级和精力管理。", "观点表达"),
+        ("rarely change a life overnight", "很少会一夜之间改变生活。适合表达变化不是立刻发生的。", "观点句"),
+        ("make room for", "为……腾出空间。", "动词短语"),
+        ("set a boundary", "设定边界。", "生活表达"),
+        ("play a role in", "在……中发挥作用。", "学术表达"),
+        ("reshape the way", "重塑……的方式。", "趋势表达"),
+        ("in the long run", "从长远来看。", "逻辑表达"),
+        ("as a result", "结果是；因此。", "逻辑表达"),
+        ("rather than", "而不是。", "对比结构"),
+        ("instead of", "而不是。", "对比结构"),
+        ("because of", "因为……。", "原因结构"),
+        ("in response to", "作为对……的回应。", "逻辑表达"),
+        ("be linked to", "与……有关。", "学术表达"),
+        ("be associated with", "与……相关。", "学术表达"),
+        ("have a tendency to", "倾向于……。", "描述倾向"),
+        ("be expected to", "被预计会……；应该会……。", "预测结构"),
+        ("be likely to", "可能会……。", "判断结构"),
+    ]
+
+    expressions = []
+    used = set()
+
+    def add_expr(term, meaning, label="表达"):
+        t = norm(term)
+        if not t:
+            return
+        low = t.lower()
+        if low in used:
+            return
+        used.add(low)
+        expressions.append({"text": t, "meaning": meaning, "label": label})
+
+    # A. 先从高质量表达库里按原文匹配，保证不是乱抓孤立词。
+    for term, meaning, label in expression_bank:
+        if contains(term, text_all):
+            add_expr(term, meaning, label)
+        if len(expressions) >= 8:
+            break
+
+    # B. 再补程序已有关键词，但过滤掉太普通的单词。
+    bad_single = {
+        "children", "people", "reading", "article", "school", "student", "students",
+        "work", "life", "time", "year", "years", "education", "survey"
+    }
     for k in all_keywords or []:
-        kk = normalize_term(k)
+        kk = norm(k)
         if not kk:
             continue
-        if kk.lower() in {x.lower() for x in candidates}:
+        if kk.lower() in used:
             continue
-        if " " in kk or "-" in kk or len(kk) >= 8:
-            candidates.append(kk)
-        if len(candidates) >= 8:
+        if " " not in kk and len(kk) < 9:
+            continue
+        if kk.lower() in bad_single:
+            continue
+        try:
+            meaning = explain_keyword(kk)
+        except Exception:
+            meaning = "可理解为：" + kk
+        add_expr(kk, meaning, "词汇")
+        if len(expressions) >= 8:
             break
 
-    # 2. 高质量短语表补充。
-    for term in sorted(local_phrase_zh.keys(), key=lambda x: -len(x)):
-        if term_in_text(term, text_all) and term.lower() not in {x.lower() for x in candidates}:
-            candidates.append(term)
-        if len(candidates) >= 8:
-            break
-
-    # 3. 本地词库补充。
-    try:
-        local_keys = sorted(LOCAL_VOCAB_ZH.keys(), key=lambda x: -len(x))
-        for term in local_keys:
-            t = normalize_term(term)
-            if not t or len(t) < 5:
-                continue
-            if (" " not in t and len(t) < 9):
-                continue
-            if term_in_text(t, text_all) and t.lower() not in {x.lower() for x in candidates}:
-                candidates.append(t)
-            if len(candidates) >= 8:
-                break
-    except Exception:
-        pass
-
-    # 4. 常见外刊结构兜底抽取。
-    if len(candidates) < 5:
-        phrase_patterns = [
-            r"\b(?:come|go|look|stock|take|make|set|play|bring|reduce|leave|find|turn|get|work|run|move|build|keep|give)\s+(?:[a-zA-Z'-]+\s+){0,2}(?:on|off|up|out|in|into|for|from|with|to)\b",
-            r"\b(?:a|an|the)\s+[a-zA-Z'-]+\s+(?:number|kind|sense|way|part|role|focus|normal|problem|crisis|decision|attention)\b",
+    # C. 正则兜底：抓外刊里常见的介词短语、趋势短语。
+    if len(expressions) < 5:
+        patterns = [
+            r"\bfor the first time in\s+[a-zA-Z0-9 -]+",
+            r"\bthe number of\s+[a-zA-Z'-]+",
             r"\b(?:more|less)\s+likely\s+to\b",
+            r"\baccording to\s+(?:a|an|the)?\s*[A-Za-z'-]+",
+            r"\b(?:has|have|had)\s+(?:increased|fallen|risen|declined|grown)\b",
+            r"\b(?:a|an)\s+survey\s+of\b",
+            r"\b(?:struggle|struggled|struggling)\s+to\b",
+            r"\b(?:come|comes|came)\s+into\s+full\s+focus\b",
         ]
-        for pat in phrase_patterns:
+        for pat in patterns:
             for m in re.finditer(pat, text_all, flags=re.I):
-                t = normalize_term(m.group(0))
-                if t and t.lower() not in {x.lower() for x in candidates}:
-                    candidates.append(t)
-                if len(candidates) >= 8:
+                t = norm(m.group(0))
+                if t:
+                    add_expr(t, "外刊常见结构，可用于阅读理解和写作复述。", "句式")
+                if len(expressions) >= 8:
                     break
-            if len(candidates) >= 8:
+            if len(expressions) >= 8:
                 break
 
-    if not candidates:
-        candidates = ["key expression", "main idea", "useful sentence"]
+    if not expressions:
+        add_expr("key expression", "今天这篇文章适合重点积累原文中的高频短语和观点句。", "表达")
 
-    candidates = candidates[:6]
+    expressions = expressions[:7]
 
-    def expression_meaning(term):
-        low = term.lower().strip()
-        if low in local_phrase_zh:
-            return local_phrase_zh[low]
-        try:
-            if low in LOCAL_VOCAB_ZH:
-                return LOCAL_VOCAB_ZH[low]
-        except Exception:
-            pass
-        try:
-            zh = explain_keyword(term)
-            if zh and not zh.startswith("【翻译失败"):
-                return zh
-        except Exception:
-            pass
-        return "可理解为：" + term
+    def make_sentence_patterns(text):
+        rows = []
 
-    expressions = [{"text": t, "meaning": expression_meaning(t)} for t in candidates]
+        def add(title, pattern, example, note):
+            rows.append({"title": title, "pattern": pattern, "example": example, "note": note})
 
-    def practice_for(term):
-        low = (term or "").lower().strip()
-        if low == "apart from":
-            return {
-                "pattern": "Apart from ________, the only other thing I regularly do is ________.",
-                "example": "Apart from walking my dog, the only other thing I regularly do is look for work online."
-            }
-        if low == "stock up on":
-            return {
-                "pattern": "I usually stock up on ________ when ________.",
-                "example": "I usually stock up on simple meals when I know the week will be busy."
-            }
-        if low == "leave the house":
-            return {
-                "pattern": "I don’t leave the house much except for ________.",
-                "example": "I don’t leave the house much except for walking my dog and buying food."
-            }
-        if low == "the new normal":
-            return {
-                "pattern": "For many people, ________ has become the new normal.",
-                "example": "For many young people, unstable work has become the new normal."
-            }
-        if low == "come into full focus":
-            return {
-                "pattern": "The problem came into full focus when ________.",
-                "example": "The problem came into full focus when more graduates struggled to find stable jobs."
-            }
-        if low == "reduce the number of decisions":
-            return {
-                "pattern": "A simple routine can reduce the number of decisions we ________.",
-                "example": "A simple routine can reduce the number of decisions we have to make every morning."
-            }
-        return {
-            "pattern": f'Try to use “{term}” in one sentence about your own life.',
-            "example": "把今天的一个表达，放进自己的生活、工作或学习场景里。"
-        }
+        low = text.lower()
 
-    practice = practice_for(candidates[0] if candidates else "")
+        if "for the first time in" in low or "has increased" in low or "have increased" in low:
+            add(
+                "趋势变化句",
+                "The number of ________ has increased for the first time in ________.",
+                "The number of children who enjoy reading has increased for the first time in five years.",
+                "适合写数据回升、比例变化、社会趋势。"
+            )
+
+        if "according to" in low or "survey" in low:
+            add(
+                "引用调查句",
+                "According to ________, ________.",
+                "According to a recent survey, more children are reading for pleasure.",
+                "适合引入报告、研究、调查结果。"
+            )
+
+        if "more likely to" in low or "less likely to" in low or "poorer" in low or "compared with" in low:
+            add(
+                "群体对比句",
+                "______ are more / less likely to ________ than ________.",
+                "Poorer children are less likely to read for pleasure than their peers.",
+                "适合写不同群体之间的差异。"
+            )
+
+        if "apart from" in low:
+            add(
+                "生活状态句",
+                "Apart from ________, the only other thing I regularly do is ________.",
+                "Apart from walking his dog, the only other trip he makes is to buy food.",
+                "适合描述日常范围很窄、活动很少的状态。"
+            )
+
+        if "the new normal" in low:
+            add(
+                "观点总结句",
+                "For many people, ________ has become the new normal.",
+                "For many young people, unstable work has become the new normal.",
+                "适合总结一种普遍但未必理想的现实。"
+            )
+
+        if not rows:
+            first = expressions[0]["text"] if expressions else "today's expression"
+            add(
+                "表达复用句",
+                f"Try to use “{first}” in one sentence about your own life.",
+                "把今天的一个表达，放进自己的生活、工作或学习场景里。",
+                "适合把外刊表达转成自己的输出。"
+            )
+
+        return rows[:3]
+
+    pattern_rows = make_sentence_patterns(text_all)
 
     def attr_escape(x):
         return html.escape(str(x or ""), quote=True)
 
     def mark_terms_py(text):
         safe = esc(text)
+        # 只标记真正出现在原文里的表达。
         for item in sorted(expressions, key=lambda x: -len(x.get("text", ""))):
             term = item.get("text", "")
             meaning = item.get("meaning", "")
             if not term or len(term) < 3:
                 continue
-            pattern = re.compile(r"(?<![A-Za-z])(" + re.escape(term) + r")(?![A-Za-z])", re.I)
+            pat = re.compile(r"(?<![A-Za-z])(" + re.escape(term) + r")(?![A-Za-z])", re.I)
             def repl(m):
                 word = m.group(1)
                 return (
                     '<span class="hl-term" data-term="' + attr_escape(term) +
                     '" data-meaning="' + attr_escape(meaning) + '">' + esc(word) + "</span>"
                 )
-            safe = pattern.sub(repl, safe)
+            safe = pat.sub(repl, safe)
         return safe
 
     paragraph_html = ""
@@ -3382,14 +3423,28 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
     for item in expressions:
         expression_html += f"""
           <div class="expression" data-term="{attr_escape(item.get('text'))}" data-meaning="{attr_escape(item.get('meaning'))}">
+            <div class="expr-label">{esc(item.get('label', '表达'))}</div>
             <b>{esc(item.get('text'))}</b>
             <span>{esc(item.get('meaning'))}</span>
+          </div>
+        """
+
+    patterns_html = ""
+    for row in pattern_rows:
+        patterns_html += f"""
+          <div class="practice">
+            <b>{esc(row.get('title'))}</b>
+            <p class="pattern">{esc(row.get('pattern'))}</p>
+            <p class="example">{esc(row.get('example'))}</p>
+            <small>{esc(row.get('note'))}</small>
           </div>
         """
 
     source_link_html = ""
     if link:
         source_link_html = f'<a class="source-link" href="{attr_escape(link)}" target="_blank" rel="noopener">查看原文来源</a>'
+
+    today_dot = esc(today).replace("-", ".")
 
     page = f"""<!doctype html>
 <html lang="zh-CN">
@@ -3403,22 +3458,15 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
       --text: #344047;
       --muted: #68747f;
       --line: #dfe6e8;
-
       --paper: #fbfaf6;
       --paper-deep: #f5f2eb;
       --card: rgba(255, 255, 255, .92);
-
-      --sage: #7fa391;
       --sage-dark: #426e60;
       --sage-soft: #eef6f1;
-
       --clay: #d78768;
       --clay-soft: #fbf0ea;
-      --honey: #f1c66d;
-
       --blue: #557da8;
       --blue-soft: #edf3f8;
-
       --shadow: 0 18px 46px rgba(44, 57, 64, .12);
       --radius-lg: 22px;
       --radius-sm: 12px;
@@ -3430,8 +3478,7 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
     body {{
       margin: 0;
       color: var(--ink);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
-                   "Microsoft YaHei", Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
       background:
         linear-gradient(135deg, rgba(255,255,255,.88), rgba(255,255,255,.96)),
         radial-gradient(circle at 12% 4%, rgba(127,163,145,.25), transparent 34%),
@@ -3466,7 +3513,6 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
       background: var(--sage-dark);
       color: #fff;
       font-weight: 900;
-      letter-spacing: .02em;
       box-shadow: 0 14px 30px rgba(66,110,96,.25);
     }}
 
@@ -3566,15 +3612,29 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
       font-weight: 900;
     }}
 
-    .article-title {{
+    .title-box {{
       position: relative;
       z-index: 1;
-      margin: 46px 0 0;
-      max-width: 10.8em;
-      font-size: clamp(34px, 10.5vw, 46px);
+      margin-top: 34px;
+    }}
+
+    .article-title-en {{
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      max-width: 12em;
+      font-size: clamp(30px, 9vw, 43px);
       line-height: 1.06;
-      letter-spacing: -.045em;
-      white-space: pre-wrap;
+      letter-spacing: -.035em;
+      color: var(--ink);
+    }}
+
+    .article-title-zh {{
+      margin-top: 14px;
+      max-width: 18em;
+      font-size: 16px;
+      line-height: 1.55;
+      color: #536171;
+      font-weight: 700;
     }}
 
     .meta-grid {{
@@ -3656,13 +3716,11 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
       white-space: nowrap;
     }}
 
-    .level-card {{
-      background: var(--paper);
+    .level-card, .para-card, .expression, .practice, .review-box {{
       border: 1px solid var(--line);
+      background: var(--paper);
       border-radius: var(--radius-sm);
-      padding: 13px;
-      display: grid;
-      gap: 7px;
+      padding: 14px;
     }}
 
     .level-big {{
@@ -3674,21 +3732,18 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
       color: #9b4e35;
       font-weight: 900;
       font-size: 13px;
+      margin-bottom: 7px;
     }}
 
-    .level-note {{
+    .level-note, .translation, .expression span, .practice p, .review-box p {{
       color: var(--muted);
-      line-height: 1.6;
-      font-size: 14px;
+      line-height: 1.65;
+      font-size: 14.5px;
     }}
 
-    .para-list {{ display: grid; gap: 12px; }}
-
-    .para-card {{
-      border: 1px solid var(--line);
-      background: var(--paper);
-      border-radius: var(--radius-sm);
-      padding: 14px;
+    .para-list, .expression-list, .practice-grid, .review-grid {{
+      display: grid;
+      gap: 10px;
     }}
 
     .para-title {{
@@ -3712,13 +3767,6 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
       color: #25323a;
     }}
 
-    .translation {{
-      margin: 0;
-      color: #344047;
-      line-height: 1.78;
-      font-size: 15px;
-    }}
-
     .hl-term {{
       color: var(--sage-dark);
       background: rgba(127,163,145,.16);
@@ -3728,57 +3776,20 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
       cursor: pointer;
     }}
 
-    .tip {{
-      position: fixed;
-      left: 14px;
-      right: 14px;
-      bottom: 16px;
-      z-index: 80;
-      background: #1d252c;
-      color: #fff;
-      border-radius: 16px;
-      padding: 12px 14px;
-      box-shadow: 0 14px 38px rgba(0,0,0,.22);
-      line-height: 1.6;
-      display: none;
-      max-width: 452px;
-      margin: 0 auto;
-    }}
-
-    .tip b {{ color: #f1c66d; }}
-
-    .expression-list, .practice-grid, .review-grid {{
-      display: grid;
-      gap: 10px;
-    }}
-
-    .expression {{
-      display: grid;
-      gap: 6px;
-      padding: 13px;
-      border: 1px solid var(--line);
-      border-radius: var(--radius-sm);
-      background: var(--paper);
-      cursor: pointer;
+    .expr-label {{
+      width: fit-content;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: var(--blue-soft);
+      color: var(--blue);
+      font-size: 12px;
+      font-weight: 900;
     }}
 
     .expression b {{
       color: var(--sage-dark);
       line-height: 1.45;
-      font-size: 15px;
-    }}
-
-    .expression span {{
-      color: var(--muted);
-      line-height: 1.6;
-      font-size: 14px;
-    }}
-
-    .practice, .review-box {{
-      padding: 14px;
-      border-radius: var(--radius-sm);
-      border: 1px solid var(--line);
-      background: var(--paper);
+      font-size: 16px;
     }}
 
     .practice b, .review-box b {{
@@ -3787,11 +3798,22 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
       font-size: 15px;
     }}
 
-    .practice p, .review-box p {{
-      margin: 0;
+    .practice .pattern {{
+      color: #25323a;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 16px;
+    }}
+
+    .practice .example {{
       color: #414b51;
-      line-height: 1.65;
-      font-size: 14.5px;
+      margin-top: 8px;
+    }}
+
+    .practice small {{
+      display: block;
+      color: var(--muted);
+      margin-top: 8px;
+      line-height: 1.55;
     }}
 
     .review-box {{
@@ -3813,6 +3835,25 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
       font-weight: 900;
     }}
 
+    .tip {{
+      position: fixed;
+      left: 14px;
+      right: 14px;
+      bottom: 16px;
+      z-index: 80;
+      background: #1d252c;
+      color: #fff;
+      border-radius: 16px;
+      padding: 12px 14px;
+      box-shadow: 0 14px 38px rgba(0,0,0,.22);
+      line-height: 1.6;
+      display: none;
+      max-width: 452px;
+      margin: 0 auto;
+    }}
+
+    .tip b {{ color: #f1c66d; }}
+
     .bottom-note {{
       color: var(--muted);
       font-size: 12px;
@@ -3827,7 +3868,7 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
 
     @media (max-width: 360px) {{
       .hero h1 {{ font-size: 38px; }}
-      .article-title {{ font-size: 32px; }}
+      .article-title-en {{ font-size: 29px; }}
       .section {{ padding: 16px; }}
     }}
   </style>
@@ -3837,7 +3878,7 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
     <header class="hero">
       <div class="brand-row">
         <div class="brand-mark">HL</div>
-        <div class="date-pill">Today · {esc(today).replace("-", ".")}</div>
+        <div class="date-pill">Today · {today_dot}</div>
       </div>
       <h1>Healing Lab<br>每日外刊</h1>
       <p class="subtitle">每天一篇短外刊，练阅读、表达和语感。</p>
@@ -3848,7 +3889,7 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
       <a href="#level">难度</a>
       <a href="#text">原文理解</a>
       <a href="#expressions">重点表达</a>
-      <a href="#practice">句式练习</a>
+      <a href="#practice">句式拆解</a>
       <a href="#review">复盘</a>
     </nav>
 
@@ -3856,7 +3897,10 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
       <article class="card" id="article">
         <div class="article-cover">
           <span class="eyebrow">今日文章卡片</span>
-          <h2 class="article-title">{esc(title_display)}</h2>
+          <div class="title-box">
+            <h2 class="article-title-en">{esc(title_raw)}</h2>
+            <div class="article-title-zh">{esc(title_cn)}</div>
+          </div>
         </div>
 
         <div class="meta-grid">
@@ -3868,8 +3912,8 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
         <div class="tags">
           <span class="tag level">{esc(level)}</span>
           <span class="tag topic">Daily Reading</span>
-          <span class="tag">Vocabulary</span>
-          <span class="tag">Review</span>
+          <span class="tag">Expressions</span>
+          <span class="tag">Patterns</span>
         </div>
 
         <p class="summary">{esc(overview or "今天这篇适合积累真实外刊表达、观点句和可复述素材。")}</p>
@@ -3908,18 +3952,11 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
 
       <section class="card section" id="practice">
         <div class="section-head">
-          <h2>句式练习</h2>
-          <span class="mini-label">Sentence Practice</span>
+          <h2>句式拆解</h2>
+          <span class="mini-label">Sentence Patterns</span>
         </div>
         <div class="practice-grid">
-          <div class="practice">
-            <b>仿写句式</b>
-            <p>{esc(practice.get("pattern", ""))}</p>
-          </div>
-          <div class="practice">
-            <b>今日造句</b>
-            <p>{esc(practice.get("example", ""))}</p>
-          </div>
+          {patterns_html}
         </div>
       </section>
 
@@ -3956,7 +3993,7 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
       clearTimeout(window.__tipTimer);
       window.__tipTimer = setTimeout(function() {{
         tip.style.display = 'none';
-      }}, 2600);
+      }}, 2800);
     }}
 
     document.body.addEventListener('click', function(e) {{
