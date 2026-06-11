@@ -3136,9 +3136,14 @@ def split_text_for_card_pages(text, lang="en"):
 
 def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote_raw, quote_translated, today, cover_image=""):
     """
-    V34-E：
-    手机版单列卡片页，同款于 preview_v2_editable_feeling。
-    不是电脑两列整体版，也不是横滑图片版。
+    V34-F：
+    手机端学习卡片页。
+    修正 V34-E：
+    1）去掉今日感悟。
+    2）恢复/增强重点表达，不再只有“今日表达”占位。
+    3）加入难度分级。
+    4）加入仿写句式。
+    5）英文原文内重点表达可点击，看中文释义。
     """
     source = clean_text(article.get("source", ""))
     pub_date = display_publish_date(article) or today
@@ -3146,16 +3151,9 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
     title_display = clean_text(title_zh or title_raw or "今日外刊")
     link = article.get("link", "")
 
-    publish_vocab = select_publish_vocab(all_keywords, max_count=5)
-    expressions = [
-        {
-            "text": clean_text(k),
-            "meaning": clean_text(explain_keyword(k))
-        }
-        for k in publish_vocab
-    ]
-
     paras = []
+    text_all_parts = []
+    zh_all_parts = []
     for row in paragraph_rows:
         raw = clean_text(row.get("raw", ""))
         zh = clean_text(row.get("zh", ""))
@@ -3165,9 +3163,198 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
                 "raw": raw,
                 "zh": zh
             })
+            if raw:
+                text_all_parts.append(raw)
+            if zh:
+                zh_all_parts.append(zh)
 
+    text_all = " ".join(text_all_parts)
     overview = build_chinese_overview(article, title_zh, paragraph_rows)
-    first_expr = clean_text(publish_vocab[0]) if publish_vocab else "today's expression"
+
+    def difficulty_label_from_text(text):
+        try:
+            prof = difficulty_profile(text)
+            avg = prof.get("avg_sentence_words", 0) or 0
+            lw = prof.get("long_word_count", 0) or 0
+            expr = prof.get("expression_count", 0) or 0
+            wc = prof.get("word_count", 0) or 0
+            if avg >= 24 or lw >= 18:
+                return "C1", "句子较长，抽象词和信息密度偏高，适合进阶精读。"
+            if avg >= 18 or lw >= 10 or expr >= 4:
+                return "B2", "真实外刊句式较多，适合 CET-6 / 考研阅读表达积累。"
+            if wc >= 90:
+                return "B1-B2", "句子难度适中，适合 CET-4+ 到 CET-6 过渡练习。"
+            return "B1", "篇幅较短，适合用来练基础阅读和表达复述。"
+        except Exception:
+            return "B2", "真实外刊材料，适合精读和表达积累。"
+
+    level, level_note = difficulty_label_from_text(text_all)
+
+    local_phrase_zh = {
+        "leave the house": "出门；离开家。适合描述生活范围或状态。",
+        "apart from": "除了……之外。比 only / except 更适合正式表达。",
+        "stock up on": "储备；囤积。常用于 food, supplies, essentials。",
+        "the only other": "唯一另一个……，强调选择很少。",
+        "weekly trip": "每周一次的短途外出 / 行程。",
+        "frozen meals": "冷冻餐。",
+        "takeaway-style": "外卖风格的；像外卖一样的。",
+        "the new normal": "新常态。适合描述已经普遍但未必理想的现实。",
+        "looking for a job": "找工作；求职。",
+        "come into full focus": "变得非常清晰；更加凸显。",
+        "young people and work": "年轻人与工作这个议题。",
+        "reduce the number of decisions": "减少需要做决定的次数。",
+        "truly need our attention": "真正需要我们注意力的事情。",
+        "rarely change a life overnight": "很少会一夜之间改变生活。",
+        "make room for": "为……腾出空间。",
+        "set a boundary": "设定边界。",
+        "play a role in": "在……中发挥作用。",
+        "reshape the way": "重塑……的方式。",
+        "in the long run": "从长远来看。",
+        "as a result": "结果是；因此。",
+        "rather than": "而不是。",
+        "instead of": "而不是。",
+        "because of": "因为……。",
+        "more likely to": "更有可能……。",
+        "less likely to": "不太可能……。",
+        "a growing number of": "越来越多的……。",
+        "at the same time": "与此同时。",
+        "in response to": "作为对……的回应。",
+        "be linked to": "与……有关。",
+        "be associated with": "与……相关。",
+        "have a tendency to": "倾向于……。",
+        "be expected to": "被预计会……；应该会……。",
+        "be likely to": "可能会……。",
+        "struggle to": "努力做某事；艰难地做某事。",
+        "be forced to": "被迫……。",
+    }
+
+    def normalize_term(x):
+        return clean_text(x).strip().strip(".,;:!?\"'“”‘’()[]{}")
+
+    def term_in_text(term, text):
+        if not term or not text:
+            return False
+        pattern = r"(?<![A-Za-z])" + re.escape(term) + r"(?![A-Za-z])"
+        return re.search(pattern, text, flags=re.I) is not None
+
+    candidates = []
+
+    # 1. 优先使用程序原本选出的重点词/短语。
+    for k in all_keywords or []:
+        kk = normalize_term(k)
+        if not kk:
+            continue
+        if kk.lower() in {x.lower() for x in candidates}:
+            continue
+        # 优先保留短语、长词和原文里确实出现的表达。
+        if " " in kk or "-" in kk or len(kk) >= 8:
+            candidates.append(kk)
+        if len(candidates) >= 8:
+            break
+
+    # 2. 从本地高质量表达表里补足。
+    for term in sorted(local_phrase_zh.keys(), key=lambda x: -len(x)):
+        if term_in_text(term, text_all) and term.lower() not in {x.lower() for x in candidates}:
+            candidates.append(term)
+        if len(candidates) >= 8:
+            break
+
+    # 3. 从 LOCAL_VOCAB_ZH 里补短语。
+    try:
+        local_keys = sorted(LOCAL_VOCAB_ZH.keys(), key=lambda x: -len(x))
+        for term in local_keys:
+            t = normalize_term(term)
+            if not t or len(t) < 5:
+                continue
+            if (" " not in t and len(t) < 9):
+                continue
+            if term_in_text(t, text_all) and t.lower() not in {x.lower() for x in candidates}:
+                candidates.append(t)
+            if len(candidates) >= 8:
+                break
+    except Exception:
+        pass
+
+    # 4. 从常见外刊动词短语里兜底抽取。
+    if len(candidates) < 5:
+        phrase_patterns = [
+            r"\b(?:come|go|look|stock|take|make|set|play|bring|reduce|leave|find|turn|get|work|run|move|build|keep|give)\s+(?:[a-zA-Z'-]+\s+){0,2}(?:on|off|up|out|in|into|for|from|with|to)\b",
+            r"\b(?:a|an|the)\s+[a-zA-Z'-]+\s+(?:number|kind|sense|way|part|role|focus|normal|problem|crisis|decision|attention)\b",
+            r"\b(?:more|less)\s+likely\s+to\b",
+        ]
+        for pat in phrase_patterns:
+            for m in re.finditer(pat, text_all, flags=re.I):
+                t = normalize_term(m.group(0))
+                if t and t.lower() not in {x.lower() for x in candidates}:
+                    candidates.append(t)
+                if len(candidates) >= 8:
+                    break
+            if len(candidates) >= 8:
+                break
+
+    # 5. 最后兜底，不再只显示“今日表达”。
+    if not candidates:
+        candidates = ["key expression", "main idea", "useful sentence"]
+
+    candidates = candidates[:6]
+
+    def expression_meaning(term):
+        low = term.lower().strip()
+        if low in local_phrase_zh:
+            return local_phrase_zh[low]
+        try:
+            if low in LOCAL_VOCAB_ZH:
+                return LOCAL_VOCAB_ZH[low]
+        except Exception:
+            pass
+        try:
+            zh = explain_keyword(term)
+            if zh and not zh.startswith("【翻译失败"):
+                return zh
+        except Exception:
+            pass
+        return "可理解为：" + term
+
+    expressions = [{"text": t, "meaning": expression_meaning(t)} for t in candidates]
+
+    def practice_for(term):
+        low = (term or "").lower().strip()
+        if low == "apart from":
+            return {
+                "pattern": "Apart from ________, the only other thing I regularly do is ________.",
+                "example": "Apart from walking my dog, the only other thing I regularly do is look for work online."
+            }
+        if low == "stock up on":
+            return {
+                "pattern": "I usually stock up on ________ when ________.",
+                "example": "I usually stock up on simple meals when I know the week will be busy."
+            }
+        if low == "leave the house":
+            return {
+                "pattern": "I don’t leave the house much except for ________.",
+                "example": "I don’t leave the house much except for walking my dog and buying food."
+            }
+        if low == "the new normal":
+            return {
+                "pattern": "For many people, ________ has become the new normal.",
+                "example": "For many young people, unstable work has become the new normal."
+            }
+        if low == "come into full focus":
+            return {
+                "pattern": "The problem came into full focus when ________.",
+                "example": "The problem came into full focus when more graduates struggled to find stable jobs."
+            }
+        if low == "reduce the number of decisions":
+            return {
+                "pattern": "A simple routine can reduce the number of decisions we ________.",
+                "example": "A simple routine can reduce the number of decisions we have to make every morning."
+            }
+        return {
+            "pattern": f'Try to use “{term}” in one sentence about your own life.',
+            "example": "把今天的一个表达，放进自己的生活、工作或学习场景里。"
+        }
+
+    practice = practice_for(candidates[0] if candidates else "")
 
     payload = {
         "today": today,
@@ -3179,7 +3366,10 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
         "overview": overview,
         "paragraphs": paras,
         "expressions": expressions,
-        "first_expr": first_expr,
+        "first_expr": candidates[0] if candidates else "",
+        "level": level,
+        "level_note": level_note,
+        "practice": practice,
     }
     payload_json = json.dumps(payload, ensure_ascii=False)
 
@@ -3232,8 +3422,6 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
         var(--paper-deep);
       min-height: 100vh;
     }
-
-    button, textarea { font: inherit; }
 
     .phone-shell {
       width: min(100%, 480px);
@@ -3316,10 +3504,7 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
       font-weight: 800;
     }
 
-    .section-stack {
-      display: grid;
-      gap: 14px;
-    }
+    .section-stack { display: grid; gap: 14px; }
 
     .card {
       background: var(--card);
@@ -3453,25 +3638,33 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
       white-space: nowrap;
     }
 
-    .english {
-      margin: 0;
-      font-family: Georgia, "Times New Roman", serif;
-      font-size: 18.5px;
-      line-height: 1.78;
-      color: #25323a;
-    }
-
-    .translation {
-      margin: 0;
-      color: #344047;
-      line-height: 1.78;
-      font-size: 15px;
-    }
-
-    .para-list {
+    .level-card {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      padding: 13px;
       display: grid;
-      gap: 12px;
+      gap: 7px;
     }
+
+    .level-big {
+      display: inline-flex;
+      width: fit-content;
+      border-radius: 999px;
+      padding: 6px 11px;
+      background: var(--clay-soft);
+      color: #9b4e35;
+      font-weight: 900;
+      font-size: 13px;
+    }
+
+    .level-note {
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 14px;
+    }
+
+    .para-list { display: grid; gap: 12px; }
 
     .para-card {
       border: 1px solid var(--line);
@@ -3493,6 +3686,49 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
       margin: 12px 0;
     }
 
+    .english {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 18.5px;
+      line-height: 1.78;
+      color: #25323a;
+    }
+
+    .translation {
+      margin: 0;
+      color: #344047;
+      line-height: 1.78;
+      font-size: 15px;
+    }
+
+    .hl-term {
+      color: var(--sage-dark);
+      background: rgba(127,163,145,.16);
+      border-bottom: 1px solid rgba(66,110,96,.38);
+      padding: 0 2px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .tip {
+      position: fixed;
+      left: 14px;
+      right: 14px;
+      bottom: 16px;
+      z-index: 80;
+      background: #1d252c;
+      color: #fff;
+      border-radius: 16px;
+      padding: 12px 14px;
+      box-shadow: 0 14px 38px rgba(0,0,0,.22);
+      line-height: 1.6;
+      display: none;
+      max-width: 452px;
+      margin: 0 auto;
+    }
+
+    .tip b { color: #f1c66d; }
+
     .expression-list, .practice-grid, .review-grid {
       display: grid;
       gap: 10px;
@@ -3505,6 +3741,7 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
       border: 1px solid var(--line);
       border-radius: var(--radius-sm);
       background: var(--paper);
+      cursor: pointer;
     }
 
     .expression b {
@@ -3542,99 +3779,6 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
     .review-box {
       border: 1px dashed #b9c7c0;
       background: #fbfdfb;
-    }
-
-    .note-card {
-      background: linear-gradient(180deg, #ffffff, #fffaf5);
-      border: 1px solid var(--line);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow);
-      overflow: hidden;
-    }
-
-    .note-top {
-      padding: 18px 18px 10px;
-      border-bottom: 1px solid var(--line);
-      background:
-        radial-gradient(circle at 6% 10%, rgba(215,135,104,.12), transparent 34%),
-        rgba(255,255,255,.72);
-    }
-
-    .note-top h2 {
-      margin: 0 0 6px;
-      font-size: 22px;
-      letter-spacing: -.02em;
-    }
-
-    .note-top p {
-      margin: 0;
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.6;
-    }
-
-    .note-body { padding: 14px 18px 18px; }
-
-    .prompt-chip {
-      display: inline-block;
-      margin-bottom: 12px;
-      padding: 6px 10px;
-      border-radius: 999px;
-      background: var(--clay-soft);
-      color: #9b4e35;
-      font-size: 12px;
-      font-weight: 900;
-      line-height: 1.45;
-    }
-
-    textarea {
-      width: 100%;
-      min-height: 150px;
-      resize: vertical;
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      background: rgba(255,255,255,.9);
-      color: var(--text);
-      padding: 13px 14px;
-      outline: none;
-      line-height: 1.7;
-      font-size: 15px;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.7);
-    }
-
-    textarea:focus {
-      border-color: rgba(66,110,96,.55);
-      box-shadow: 0 0 0 4px rgba(66,110,96,.10);
-    }
-
-    .note-actions {
-      display: flex;
-      gap: 8px;
-      margin-top: 10px;
-    }
-
-    .btn {
-      flex: 1;
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      padding: 10px 12px;
-      font-size: 13px;
-      font-weight: 900;
-      background: #fff;
-      color: var(--sage-dark);
-    }
-
-    .btn.primary {
-      background: var(--sage-dark);
-      color: #fff;
-      border-color: var(--sage-dark);
-    }
-
-    .save-state {
-      margin-top: 9px;
-      color: var(--muted);
-      font-size: 12px;
-      min-height: 18px;
     }
 
     .source-link {
@@ -3683,10 +3827,10 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
 
     <nav class="quick-nav" aria-label="页面导航">
       <a href="#article">今日文章</a>
+      <a href="#level">难度</a>
       <a href="#text">原文理解</a>
       <a href="#expressions">重点表达</a>
       <a href="#practice">句式练习</a>
-      <a href="#feeling">今日感悟</a>
       <a href="#review">复盘</a>
     </nav>
 
@@ -3700,11 +3844,11 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
         <div class="meta-grid">
           <div class="meta-box"><span>来源</span><b id="sourceText"></b></div>
           <div class="meta-box"><span>日期</span><b id="pubDateText"></b></div>
-          <div class="meta-box"><span>阅读目标</span><b>精读 · 表达积累</b></div>
+          <div class="meta-box"><span>难度</span><b id="levelMeta"></b></div>
         </div>
 
         <div class="tags">
-          <span class="tag level">CET-4+</span>
+          <span class="tag level" id="levelTag"></span>
           <span class="tag topic">Daily Reading</span>
           <span class="tag">Vocabulary</span>
           <span class="tag">Review</span>
@@ -3713,10 +3857,21 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
         <p class="summary" id="overviewText"></p>
       </article>
 
+      <section class="card section" id="level">
+        <div class="section-head">
+          <h2>难度分级</h2>
+          <span class="mini-label">Level</span>
+        </div>
+        <div class="level-card">
+          <span class="level-big" id="levelBig"></span>
+          <div class="level-note" id="levelNote"></div>
+        </div>
+      </section>
+
       <section class="card section" id="text">
         <div class="section-head">
           <h2>英文原文 / 中文理解</h2>
-          <span class="mini-label">Text & Meaning</span>
+          <span class="mini-label">点击绿色词看释义</span>
         </div>
         <div class="para-list" id="paragraphList"></div>
       </section>
@@ -3741,24 +3896,8 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
           </div>
           <div class="practice">
             <b>今日造句</b>
-            <p>把今天的一个表达，放进自己的生活、工作或学习场景里。</p>
+            <p id="practiceExample"></p>
           </div>
-        </div>
-      </section>
-
-      <section class="note-card" id="feeling">
-        <div class="note-top">
-          <h2>今日感悟</h2>
-          <p>读完这篇文章，你想到自己的生活、工作、学习或情绪了吗？写几句就可以。</p>
-        </div>
-        <div class="note-body">
-          <span class="prompt-chip">可写：我最有感触的一句话 / 我想到的一个经历 / 我想用上的一个表达</span>
-          <textarea id="dailyFeeling" placeholder="例如：今天这篇让我想到，很多人不是不努力，而是被现实挤压得越来越窄。我想记住一个表达，用来描述自己的日常。"></textarea>
-          <div class="note-actions">
-            <button class="btn primary" id="saveFeeling">保存到本机</button>
-            <button class="btn" id="clearFeeling">清空</button>
-          </div>
-          <div class="save-state" id="saveState">输入内容会临时保存在当前浏览器。</div>
         </div>
       </section>
 
@@ -3776,8 +3915,10 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
       </section>
     </div>
 
-    <p class="bottom-note">Healing Lab Daily Reading · Mobile Card Page</p>
+    <p class="bottom-note">Healing Lab Daily Reading · Mobile Learning Card Page</p>
   </main>
+
+  <div class="tip" id="tip"></div>
 
   <script>
     const DATA = __PAYLOAD_JSON__;
@@ -3790,36 +3931,73 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
       return String(s || '').replaceAll('-', '.');
     }
 
+    function safeRegExp(s) {
+      return String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
+
+    const exprs = DATA.expressions || [];
+    const meaningMap = {};
+    exprs.forEach(x => { meaningMap[String(x.text || '').toLowerCase()] = x.meaning || ''; });
+
+    function markTerms(text) {
+      let out = esc(text);
+      const sorted = [...exprs].filter(x => x.text).sort((a, b) => String(b.text).length - String(a.text).length);
+      sorted.forEach(x => {
+        const term = String(x.text || '').trim();
+        if (!term || term.length < 3) return;
+        const re = new RegExp('(^|[^A-Za-z])(' + safeRegExp(term) + ')(?=$|[^A-Za-z])', 'gi');
+        out = out.replace(re, (m, pre, word) => `${pre}<span class="hl-term" data-term="${esc(term)}" data-meaning="${esc(x.meaning || '')}">${word}</span>`);
+      });
+      return out;
+    }
+
+    function showTip(term, meaning) {
+      const tip = document.getElementById('tip');
+      tip.innerHTML = `<b>${esc(term)}</b><br>${esc(meaning || '暂无释义')}`;
+      tip.style.display = 'block';
+      clearTimeout(window.__tipTimer);
+      window.__tipTimer = setTimeout(() => { tip.style.display = 'none'; }, 2600);
+    }
+
     document.title = 'Healing Lab 每日外刊｜' + (DATA.today || '');
     document.getElementById('datePill').textContent = 'Today · ' + fmtDate(DATA.today);
     document.getElementById('articleTitle').textContent = DATA.title || DATA.title_raw || '今日外刊';
     document.getElementById('sourceText').textContent = DATA.source || 'Daily Reading';
     document.getElementById('pubDateText').textContent = DATA.pub_date || DATA.today || '';
     document.getElementById('overviewText').textContent = DATA.overview || '今天这篇适合积累真实外刊表达、观点句和可复述素材。';
+    document.getElementById('levelMeta').textContent = DATA.level || 'B2';
+    document.getElementById('levelTag').textContent = DATA.level || 'B2';
+    document.getElementById('levelBig').textContent = '难度：' + (DATA.level || 'B2');
+    document.getElementById('levelNote').textContent = DATA.level_note || '真实外刊材料，适合精读和表达积累。';
 
     const paraRoot = document.getElementById('paragraphList');
     paraRoot.innerHTML = (DATA.paragraphs || []).map((p, i) => `
       <div class="para-card">
         <div class="para-title">第 ${esc(p.idx || i + 1)} 段</div>
-        <p class="english">${esc(p.raw)}</p>
+        <p class="english">${markTerms(p.raw)}</p>
         <div class="para-divider"></div>
         <p class="translation">${esc(p.zh)}</p>
       </div>
     `).join('');
 
     const exprRoot = document.getElementById('expressionList');
-    const exprs = DATA.expressions || [];
     exprRoot.innerHTML = exprs.length ? exprs.map(x => `
-      <div class="expression">
+      <div class="expression" data-term="${esc(x.text)}" data-meaning="${esc(x.meaning)}">
         <b>${esc(x.text)}</b>
         <span>${esc(x.meaning)}</span>
       </div>
     `).join('') : `<div class="expression"><b>今日表达</b><span>今天这篇文章适合重点积累原文里的高频短语和观点句。</span></div>`;
 
-    document.getElementById('practicePattern').textContent =
-      (DATA.first_expr && DATA.first_expr !== "today's expression")
-        ? 'Try to use "' + DATA.first_expr + '" in one sentence about your own life.'
-        : 'Try to write one sentence with a useful expression from today’s article.';
+    document.getElementById('practicePattern').textContent = (DATA.practice && DATA.practice.pattern) || 'Try to write one sentence with a useful expression from today’s article.';
+    document.getElementById('practiceExample').textContent = (DATA.practice && DATA.practice.example) || '把今天的一个表达，放进自己的生活、工作或学习场景里。';
+
+    document.body.addEventListener('click', (e) => {
+      const node = e.target.closest('.hl-term, .expression');
+      if (!node) return;
+      const term = node.getAttribute('data-term') || '';
+      const meaning = node.getAttribute('data-meaning') || '';
+      showTip(term, meaning);
+    });
 
     const sourceLink = document.getElementById('sourceLink');
     if (DATA.link) {
@@ -3827,36 +4005,6 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
     } else {
       sourceLink.style.display = 'none';
     }
-
-    const key = 'healinglab_daily_feeling_' + String(DATA.today || 'today').replaceAll('-', '_');
-    const textarea = document.getElementById('dailyFeeling');
-    const state = document.getElementById('saveState');
-
-    textarea.value = localStorage.getItem(key) || '';
-
-    function showState(text) {
-      state.textContent = text;
-      clearTimeout(window.__saveTimer);
-      window.__saveTimer = setTimeout(() => {
-        state.textContent = '输入内容会临时保存在当前浏览器。';
-      }, 1800);
-    }
-
-    textarea.addEventListener('input', () => {
-      localStorage.setItem(key, textarea.value);
-      showState('已自动保存');
-    });
-
-    document.getElementById('saveFeeling').addEventListener('click', () => {
-      localStorage.setItem(key, textarea.value);
-      showState('已保存到本机浏览器');
-    });
-
-    document.getElementById('clearFeeling').addEventListener('click', () => {
-      textarea.value = '';
-      localStorage.removeItem(key);
-      showState('已清空');
-    });
   </script>
 </body>
 </html>
