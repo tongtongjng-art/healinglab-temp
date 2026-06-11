@@ -3136,15 +3136,15 @@ def split_text_for_card_pages(text, lang="en"):
 
 def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote_raw, quote_translated, today, cover_image=""):
     """
-    V34-H：
-    手机版学习卡片页精修版。
-    修正：
-    1）封面标题层级：英文标题为主，中文标题为辅。
-    2）难度分级更保守，不再把简单四级材料硬说成 B2。
-    3）重点表达改为“高价值表达优先”，不再只抓一个普通词组。
-    4）新增句式拆解，多条可仿写结构。
-    5）英文原文内重点表达可点击看中文释义。
-    6）去掉今日感悟。
+    V34-I：
+    手机端学习卡片页｜编辑型表达模块。
+    目标：更接近人工外刊精读卡片。
+    重点：
+    1）重点表达不少于 6 条，优先句型/短语/可复用表达，不抓孤立普通词。
+    2）增加“今日重点句型”：结构 + 中文理解 + 仿写 + 例句。
+    3）今日复盘变成文章内容复盘 + 今日最值得记的表达。
+    4）难度分级更保守。
+    5）封面英文主标题 + 中文副标题。
     """
     source = clean_text(article.get("source", ""))
     pub_date = display_publish_date(article) or today
@@ -3159,6 +3159,7 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
 
     paras = []
     text_all_parts = []
+    zh_all_parts = []
     for row in paragraph_rows:
         raw = clean_text(row.get("raw", ""))
         zh = clean_text(row.get("zh", ""))
@@ -3170,28 +3171,12 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
             })
             if raw:
                 text_all_parts.append(raw)
+            if zh:
+                zh_all_parts.append(zh)
 
     text_all = " ".join(text_all_parts)
+    zh_all = " ".join(zh_all_parts)
     overview = build_chinese_overview(article, title_zh, paragraph_rows)
-
-    def difficulty_label_from_text(text):
-        try:
-            prof = difficulty_profile(text)
-            avg = prof.get("avg_sentence_words", 0) or 0
-            lw = prof.get("long_word_count", 0) or 0
-            wc = prof.get("word_count", 0) or 0
-            # 这里故意保守：真实外刊不等于一定 B2/C1。
-            if avg >= 25 or lw >= 20:
-                return "C1", "句子较长，抽象名词和信息压缩较多，适合进阶精读。"
-            if avg >= 19 or lw >= 13:
-                return "B2", "真实外刊表达较多，难点在长句信息整合和话题词积累。"
-            if avg >= 14 or wc >= 80:
-                return "B1-B2", "句子整体不算难，接近四级到六级过渡；重点在话题表达和复述。"
-            return "B1", "篇幅和句式都较轻，适合基础阅读、跟读和表达复用。"
-        except Exception:
-            return "B1-B2", "真实外刊材料，建议按四级+到六级过渡材料精读。"
-
-    level, level_note = difficulty_label_from_text(text_all)
 
     def norm(x):
         return clean_text(x).strip().strip(".,;:!?\"'“”‘’()[]{}")
@@ -3202,26 +3187,53 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
         pat = r"(?<![A-Za-z])" + re.escape(term) + r"(?![A-Za-z])"
         return re.search(pat, text, flags=re.I) is not None
 
+    def difficulty_label_from_text(text):
+        try:
+            prof = difficulty_profile(text)
+            avg = prof.get("avg_sentence_words", 0) or 0
+            lw = prof.get("long_word_count", 0) or 0
+            wc = prof.get("word_count", 0) or 0
+            if avg >= 25 or lw >= 20:
+                return "C1", "长句和抽象词较多，难点在信息压缩、句间逻辑和观点复述。"
+            if avg >= 19 or lw >= 13:
+                return "B2", "有真实外刊句式和话题表达，难点在长句理解和表达复用。"
+            if avg >= 14 or wc >= 80:
+                return "B1-B2", "整体接近四级+到六级过渡，重点在常用外刊表达和句型积累。"
+            return "B1", "句子和篇幅都较轻，适合基础阅读、跟读和表达复述。"
+        except Exception:
+            return "B1-B2", "真实外刊材料，建议按四级+到六级过渡材料精读。"
+
+    level, level_note = difficulty_label_from_text(text_all)
+
     expression_bank = [
-        # 教育 / 阅读 / 儿童话题
+        ("suggest that", "表明…… / 研究显示……。常用于引出研究发现。", "研究表达"),
+        ("research suggests that", "研究表明……。适合引出调查、实验或科学发现。", "研究句"),
+        ("studies suggest that", "研究显示……。适合写科学、心理、社会类文章。", "研究句"),
+        ("more unusual than previously thought", "比之前认为的更不寻常。用于表达“新发现推翻旧认知”。", "比较结构"),
+        ("than previously thought", "比之前认为的……。常用于研究发现类外刊。", "比较结构"),
+        ("reveal that", "揭示…… / 表明……。比 say 更正式。", "研究表达"),
+        ("amble about", "慢慢走；闲逛；漫步。", "动作表达"),
+        ("have a natural tendency to", "天生有……的倾向；自然倾向于……。", "倾向表达"),
+        ("have a tendency to", "有……的倾向。适合写行为习惯和心理倾向。", "倾向表达"),
+        ("turn to the left", "向左转。", "动作表达"),
+        ("in an anticlockwise direction", "沿逆时针方向。", "方向表达"),
+        ("perform experiments", "进行实验。", "研究表达"),
+
         ("for the first time in five years", "五年来首次。适合写趋势变化：increase / fall / return for the first time in ...", "趋势句"),
         ("for the first time in", "……以来首次。适合写数据、趋势或变化节点。", "趋势句"),
         ("children and young people", "儿童和青少年。教育、阅读、心理健康类文章高频表达。", "话题词组"),
-        ("young people", "年轻人；青少年。社会议题、就业、教育类高频表达。", "话题词组"),
         ("poorer children", "贫困儿童 / 家境较困难的儿童。注意 poorer 在这里是社会经济语境。", "话题词组"),
-        ("enjoy reading", "喜欢阅读。比 like reading 更自然，可用于教育和习惯话题。", "基础表达"),
         ("reading for pleasure", "为乐趣而阅读；非功利阅读。教育类外刊常见表达。", "话题表达"),
-        ("has increased", "有所增加。写数据变化时比 become more 更正式。", "趋势句"),
-        ("has fallen", "已经下降。写数据变化、比例变化时常用。", "趋势句"),
+        ("enjoy reading", "喜欢阅读。比 like reading 更适合教育类报道。", "基础表达"),
+        ("has increased", "有所增加。写数据变化时比 become more 更正式。", "趋势表达"),
+        ("has fallen", "已经下降。写数据、比例、趋势变化时常用。", "趋势表达"),
         ("according to", "根据……。引用报告、研究、调查时常用。", "引用结构"),
         ("a survey of", "一项针对……的调查。适合引出数据来源。", "引用结构"),
         ("be more likely to", "更有可能……。写群体差异、调查结论时高频。", "比较结构"),
         ("be less likely to", "更不可能……。写群体差异和风险对比时高频。", "比较结构"),
         ("compared with", "与……相比。数据对比、群体对比常用。", "比较结构"),
-        ("the number of", "……的数量。写趋势时常和 increase / fall / rise 搭配。", "数据表达"),
-        ("a growing number of", "越来越多的……。写社会趋势时常用。", "趋势表达"),
+        ("the number of", "……的数量。常和 increase / fall / rise 搭配。", "数据表达"),
 
-        # 就业 / 社会议题
         ("leave the house", "出门；离开家。适合描述生活范围或状态。", "生活状态"),
         ("apart from", "除了……之外。比 only / except 更适合正式表达。", "连接结构"),
         ("stock up on", "储备；囤积。常用于 food, supplies, essentials。", "动词短语"),
@@ -3233,25 +3245,19 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
         ("looking for a job", "找工作；求职。", "就业表达"),
         ("come into full focus", "变得非常清晰；更加凸显。", "高级表达"),
         ("struggle to", "努力做某事；艰难地做某事。", "动词结构"),
-        ("be forced to", "被迫……。", "被动结构"),
 
-        # 通用外刊表达
         ("reduce the number of decisions", "减少需要做决定的次数。效率、习惯、心理负担话题常用。", "观点表达"),
         ("truly need our attention", "真正需要我们注意力的事情。适合表达优先级和精力管理。", "观点表达"),
         ("rarely change a life overnight", "很少会一夜之间改变生活。适合表达变化不是立刻发生的。", "观点句"),
-        ("make room for", "为……腾出空间。", "动词短语"),
-        ("set a boundary", "设定边界。", "生活表达"),
         ("play a role in", "在……中发挥作用。", "学术表达"),
         ("reshape the way", "重塑……的方式。", "趋势表达"),
         ("in the long run", "从长远来看。", "逻辑表达"),
         ("as a result", "结果是；因此。", "逻辑表达"),
         ("rather than", "而不是。", "对比结构"),
         ("instead of", "而不是。", "对比结构"),
-        ("because of", "因为……。", "原因结构"),
         ("in response to", "作为对……的回应。", "逻辑表达"),
         ("be linked to", "与……有关。", "学术表达"),
         ("be associated with", "与……相关。", "学术表达"),
-        ("have a tendency to", "倾向于……。", "描述倾向"),
         ("be expected to", "被预计会……；应该会……。", "预测结构"),
         ("be likely to", "可能会……。", "判断结构"),
     ]
@@ -3269,17 +3275,35 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
         used.add(low)
         expressions.append({"text": t, "meaning": meaning, "label": label})
 
-    # A. 先从高质量表达库里按原文匹配，保证不是乱抓孤立词。
     for term, meaning, label in expression_bank:
         if contains(term, text_all):
             add_expr(term, meaning, label)
         if len(expressions) >= 8:
             break
 
-    # B. 再补程序已有关键词，但过滤掉太普通的单词。
+    pattern_items = [
+        (r"\b(?:research|study|survey|report|findings?)\s+(?:suggests?|shows?|reveals?|finds?)\s+that\b", "研究/调查表明……。适合引出研究发现。", "研究句"),
+        (r"\b(?:suggests?|shows?|reveals?|finds?)\s+that\b", "表明…… / 显示……。常用于研究发现或报道结论。", "研究句"),
+        (r"\bmore\s+[a-zA-Z-]+\s+than\s+previously\s+thought\b", "比之前认为的更……。用于表达新发现。", "比较结构"),
+        (r"\bfor the first time in\s+[a-zA-Z0-9 -]+", "……以来首次。适合写趋势变化。", "趋势句"),
+        (r"\bthe number of\s+[a-zA-Z'-]+", "……的数量。适合写数据变化。", "数据表达"),
+        (r"\b(?:more|less)\s+likely\s+to\b", "更有可能 / 更不可能……。适合写群体差异。", "比较结构"),
+        (r"\baccording to\s+(?:a|an|the)?\s*[A-Za-z'-]+", "根据……。引用报告、研究、调查时常用。", "引用结构"),
+        (r"\b(?:has|have|had)\s+(?:increased|fallen|risen|declined|grown)\b", "已经增加 / 下降 / 增长。写趋势变化常用。", "趋势表达"),
+        (r"\b(?:a|an)\s+survey\s+of\b", "一项针对……的调查。适合引出数据来源。", "引用结构"),
+        (r"\b(?:have|has|had)\s+a\s+(?:natural\s+)?tendency\s+to\b", "有……的倾向。适合写行为规律。", "倾向表达"),
+    ]
+    for pat, meaning, label in pattern_items:
+        for m in re.finditer(pat, text_all, flags=re.I):
+            add_expr(m.group(0), meaning, label)
+            if len(expressions) >= 8:
+                break
+        if len(expressions) >= 8:
+            break
+
     bad_single = {
         "children", "people", "reading", "article", "school", "student", "students",
-        "work", "life", "time", "year", "years", "education", "survey"
+        "work", "life", "time", "year", "years", "education", "survey", "research"
     }
     for k in all_keywords or []:
         kk = norm(k)
@@ -3299,45 +3323,65 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
         if len(expressions) >= 8:
             break
 
-    # C. 正则兜底：抓外刊里常见的介词短语、趋势短语。
-    if len(expressions) < 5:
-        patterns = [
-            r"\bfor the first time in\s+[a-zA-Z0-9 -]+",
-            r"\bthe number of\s+[a-zA-Z'-]+",
-            r"\b(?:more|less)\s+likely\s+to\b",
-            r"\baccording to\s+(?:a|an|the)?\s*[A-Za-z'-]+",
-            r"\b(?:has|have|had)\s+(?:increased|fallen|risen|declined|grown)\b",
-            r"\b(?:a|an)\s+survey\s+of\b",
-            r"\b(?:struggle|struggled|struggling)\s+to\b",
-            r"\b(?:come|comes|came)\s+into\s+full\s+focus\b",
-        ]
-        for pat in patterns:
-            for m in re.finditer(pat, text_all, flags=re.I):
-                t = norm(m.group(0))
-                if t:
-                    add_expr(t, "外刊常见结构，可用于阅读理解和写作复述。", "句式")
-                if len(expressions) >= 8:
-                    break
+    if len(expressions) < 6:
+        chunks = re.findall(r"\b[a-zA-Z][a-zA-Z'-]+(?:\s+[a-zA-Z][a-zA-Z'-]+){1,4}\b", text_all)
+        stop_heads = {"the", "and", "but", "that", "with", "from", "this", "they", "there", "where", "which"}
+        for ch in chunks:
+            c = norm(ch)
+            low = c.lower()
+            if not c or low in used:
+                continue
+            if low.split()[0] in stop_heads:
+                continue
+            if len(low.split()) < 2:
+                continue
+            if not any(w in low.split() for w in ["to", "of", "in", "for", "with", "from", "than", "on", "about"]):
+                continue
+            add_expr(c, "原文中的可复用短语，可结合上下文理解并尝试造句。", "短语")
             if len(expressions) >= 8:
                 break
 
     if not expressions:
         add_expr("key expression", "今天这篇文章适合重点积累原文中的高频短语和观点句。", "表达")
 
-    expressions = expressions[:7]
+    expressions = expressions[:8]
 
     def make_sentence_patterns(text):
         rows = []
-
-        def add(title, pattern, example, note):
-            rows.append({"title": title, "pattern": pattern, "example": example, "note": note})
-
         low = text.lower()
+
+        def add(title, pattern, meaning, example, note):
+            rows.append({
+                "title": title,
+                "pattern": pattern,
+                "meaning": meaning,
+                "example": example,
+                "note": note
+            })
+
+        if "suggest" in low or "research" in low or "study" in low or "reveal" in low:
+            add(
+                "研究发现句",
+                "Research suggests that ________.",
+                "研究表明，……",
+                "Research suggests that people have a tendency to repeat familiar habits.",
+                "适合引出研究发现、调查结论，比 people say 更正式。"
+            )
+
+        if "tendency to" in low:
+            add(
+                "倾向表达句",
+                "People have a tendency to ________ when they ________.",
+                "当人们……时，往往会……",
+                "People have a tendency to check their phones when they feel nervous.",
+                "适合写行为习惯、心理倾向和社会观察。"
+            )
 
         if "for the first time in" in low or "has increased" in low or "have increased" in low:
             add(
                 "趋势变化句",
                 "The number of ________ has increased for the first time in ________.",
+                "……的数量在……以来首次增加。",
                 "The number of children who enjoy reading has increased for the first time in five years.",
                 "适合写数据回升、比例变化、社会趋势。"
             )
@@ -3346,6 +3390,7 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
             add(
                 "引用调查句",
                 "According to ________, ________.",
+                "根据……，……",
                 "According to a recent survey, more children are reading for pleasure.",
                 "适合引入报告、研究、调查结果。"
             )
@@ -3354,6 +3399,7 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
             add(
                 "群体对比句",
                 "______ are more / less likely to ________ than ________.",
+                "……比……更可能 / 更不可能……",
                 "Poorer children are less likely to read for pleasure than their peers.",
                 "适合写不同群体之间的差异。"
             )
@@ -3362,6 +3408,7 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
             add(
                 "生活状态句",
                 "Apart from ________, the only other thing I regularly do is ________.",
+                "除了……之外，我经常做的另一件事只有……",
                 "Apart from walking his dog, the only other trip he makes is to buy food.",
                 "适合描述日常范围很窄、活动很少的状态。"
             )
@@ -3370,6 +3417,7 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
             add(
                 "观点总结句",
                 "For many people, ________ has become the new normal.",
+                "对很多人来说，……已经成了新常态。",
                 "For many young people, unstable work has become the new normal.",
                 "适合总结一种普遍但未必理想的现实。"
             )
@@ -3379,20 +3427,33 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
             add(
                 "表达复用句",
                 f"Try to use “{first}” in one sentence about your own life.",
+                "试着用今天的表达写一个和自己有关的句子。",
                 "把今天的一个表达，放进自己的生活、工作或学习场景里。",
                 "适合把外刊表达转成自己的输出。"
             )
 
-        return rows[:3]
+        return rows[:4]
 
     pattern_rows = make_sentence_patterns(text_all)
+
+    def article_review_text():
+        if overview:
+            base = overview
+        elif zh_all:
+            base = zh_all[:120] + ("……" if len(zh_all) > 120 else "")
+        else:
+            base = "这篇文章围绕一个具体社会现象展开，适合练习如何用英文描述趋势、原因和影响。"
+        best = expressions[0]["text"] if expressions else ""
+        best_meaning = expressions[0]["meaning"] if expressions else ""
+        return base, best, best_meaning
+
+    review_base, best_expr, best_meaning = article_review_text()
 
     def attr_escape(x):
         return html.escape(str(x or ""), quote=True)
 
     def mark_terms_py(text):
         safe = esc(text)
-        # 只标记真正出现在原文里的表达。
         for item in sorted(expressions, key=lambda x: -len(x.get("text", ""))):
             term = item.get("text", "")
             meaning = item.get("meaning", "")
@@ -3435,6 +3496,7 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
           <div class="practice">
             <b>{esc(row.get('title'))}</b>
             <p class="pattern">{esc(row.get('pattern'))}</p>
+            <p class="meaning">{esc(row.get('meaning'))}</p>
             <p class="example">{esc(row.get('example'))}</p>
             <small>{esc(row.get('note'))}</small>
           </div>
@@ -3804,6 +3866,11 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
       font-size: 16px;
     }}
 
+    .practice .meaning {{
+      color: #9b4e35;
+      margin-top: 6px;
+    }}
+
     .practice .example {{
       color: #414b51;
       margin-top: 8px;
@@ -3966,9 +4033,9 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
           <span class="mini-label">Daily Review</span>
         </div>
         <div class="review-grid">
-          <div class="review-box"><b>我读懂了什么</b><p>用一句中文概括文章核心观点。</p></div>
-          <div class="review-box"><b>我想记住的表达</b><p>写下 1-3 个今天最想复用的英文表达。</p></div>
-          <div class="review-box"><b>我能怎么用</b><p>把一个表达放进自己的生活、工作或口语场景。</p></div>
+          <div class="review-box"><b>这篇文章讲的是</b><p>{esc(review_base)}</p></div>
+          <div class="review-box"><b>今天最值得记住</b><p>{esc(best_expr)}<br>{esc(best_meaning)}</p></div>
+          <div class="review-box"><b>怎么用</b><p>选一个表达，改写成自己的生活、学习或工作场景。</p></div>
         </div>
         {source_link_html}
       </section>
