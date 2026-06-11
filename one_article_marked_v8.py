@@ -3136,14 +3136,10 @@ def split_text_for_card_pages(text, lang="en"):
 
 def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote_raw, quote_translated, today, cover_image=""):
     """
-    V34-F：
-    手机端学习卡片页。
-    修正 V34-E：
-    1）去掉今日感悟。
-    2）恢复/增强重点表达，不再只有“今日表达”占位。
-    3）加入难度分级。
-    4）加入仿写句式。
-    5）英文原文内重点表达可点击，看中文释义。
+    V34-G：
+    手机端学习卡片页｜服务端直出版。
+    修复 V34-F 的空白问题：核心内容不再依赖 JS 填充，Python 直接生成 HTML。
+    JS 只负责点击释义浮层；即使 JS 出错，标题、文章、难度、表达、句式也会显示。
     """
     source = clean_text(article.get("source", ""))
     pub_date = display_publish_date(article) or today
@@ -3153,7 +3149,6 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
 
     paras = []
     text_all_parts = []
-    zh_all_parts = []
     for row in paragraph_rows:
         raw = clean_text(row.get("raw", ""))
         zh = clean_text(row.get("zh", ""))
@@ -3165,8 +3160,6 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
             })
             if raw:
                 text_all_parts.append(raw)
-            if zh:
-                zh_all_parts.append(zh)
 
     text_all = " ".join(text_all_parts)
     overview = build_chinese_overview(article, title_zh, paragraph_rows)
@@ -3239,27 +3232,26 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
 
     candidates = []
 
-    # 1. 优先使用程序原本选出的重点词/短语。
+    # 1. 程序原本抽出的词/表达。
     for k in all_keywords or []:
         kk = normalize_term(k)
         if not kk:
             continue
         if kk.lower() in {x.lower() for x in candidates}:
             continue
-        # 优先保留短语、长词和原文里确实出现的表达。
         if " " in kk or "-" in kk or len(kk) >= 8:
             candidates.append(kk)
         if len(candidates) >= 8:
             break
 
-    # 2. 从本地高质量表达表里补足。
+    # 2. 高质量短语表补充。
     for term in sorted(local_phrase_zh.keys(), key=lambda x: -len(x)):
         if term_in_text(term, text_all) and term.lower() not in {x.lower() for x in candidates}:
             candidates.append(term)
         if len(candidates) >= 8:
             break
 
-    # 3. 从 LOCAL_VOCAB_ZH 里补短语。
+    # 3. 本地词库补充。
     try:
         local_keys = sorted(LOCAL_VOCAB_ZH.keys(), key=lambda x: -len(x))
         for term in local_keys:
@@ -3275,7 +3267,7 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
     except Exception:
         pass
 
-    # 4. 从常见外刊动词短语里兜底抽取。
+    # 4. 常见外刊结构兜底抽取。
     if len(candidates) < 5:
         phrase_patterns = [
             r"\b(?:come|go|look|stock|take|make|set|play|bring|reduce|leave|find|turn|get|work|run|move|build|keep|give)\s+(?:[a-zA-Z'-]+\s+){0,2}(?:on|off|up|out|in|into|for|from|with|to)\b",
@@ -3292,7 +3284,6 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
             if len(candidates) >= 8:
                 break
 
-    # 5. 最后兜底，不再只显示“今日表达”。
     if not candidates:
         candidates = ["key expression", "main idea", "useful sentence"]
 
@@ -3356,31 +3347,58 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
 
     practice = practice_for(candidates[0] if candidates else "")
 
-    payload = {
-        "today": today,
-        "source": source,
-        "pub_date": pub_date,
-        "title": title_display,
-        "title_raw": title_raw,
-        "link": link,
-        "overview": overview,
-        "paragraphs": paras,
-        "expressions": expressions,
-        "first_expr": candidates[0] if candidates else "",
-        "level": level,
-        "level_note": level_note,
-        "practice": practice,
-    }
-    payload_json = json.dumps(payload, ensure_ascii=False)
+    def attr_escape(x):
+        return html.escape(str(x or ""), quote=True)
 
-    page = """<!doctype html>
+    def mark_terms_py(text):
+        safe = esc(text)
+        for item in sorted(expressions, key=lambda x: -len(x.get("text", ""))):
+            term = item.get("text", "")
+            meaning = item.get("meaning", "")
+            if not term or len(term) < 3:
+                continue
+            pattern = re.compile(r"(?<![A-Za-z])(" + re.escape(term) + r")(?![A-Za-z])", re.I)
+            def repl(m):
+                word = m.group(1)
+                return (
+                    '<span class="hl-term" data-term="' + attr_escape(term) +
+                    '" data-meaning="' + attr_escape(meaning) + '">' + esc(word) + "</span>"
+                )
+            safe = pattern.sub(repl, safe)
+        return safe
+
+    paragraph_html = ""
+    for i, p in enumerate(paras):
+        paragraph_html += f"""
+          <div class="para-card">
+            <div class="para-title">第 {esc(p.get('idx', i + 1))} 段</div>
+            <p class="english">{mark_terms_py(p.get('raw', ''))}</p>
+            <div class="para-divider"></div>
+            <p class="translation">{esc(p.get('zh', ''))}</p>
+          </div>
+        """
+
+    expression_html = ""
+    for item in expressions:
+        expression_html += f"""
+          <div class="expression" data-term="{attr_escape(item.get('text'))}" data-meaning="{attr_escape(item.get('meaning'))}">
+            <b>{esc(item.get('text'))}</b>
+            <span>{esc(item.get('meaning'))}</span>
+          </div>
+        """
+
+    source_link_html = ""
+    if link:
+        source_link_html = f'<a class="source-link" href="{attr_escape(link)}" target="_blank" rel="noopener">查看原文来源</a>'
+
+    page = f"""<!doctype html>
 <html lang="zh-CN">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Healing Lab 每日外刊｜__TODAY__</title>
+  <title>Healing Lab 每日外刊｜{esc(today)}</title>
   <style>
-    :root {
+    :root {{
       --ink: #1d252c;
       --text: #344047;
       --muted: #68747f;
@@ -3404,12 +3422,12 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
       --shadow: 0 18px 46px rgba(44, 57, 64, .12);
       --radius-lg: 22px;
       --radius-sm: 12px;
-    }
+    }}
 
-    * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
+    * {{ box-sizing: border-box; }}
+    html {{ scroll-behavior: smooth; }}
 
-    body {
+    body {{
       margin: 0;
       color: var(--ink);
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
@@ -3421,25 +3439,25 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
         radial-gradient(circle at 50% 92%, rgba(85,125,168,.16), transparent 36%),
         var(--paper-deep);
       min-height: 100vh;
-    }
+    }}
 
-    .phone-shell {
+    .phone-shell {{
       width: min(100%, 480px);
       margin: 0 auto;
       padding: env(safe-area-inset-top) 14px 34px;
-    }
+    }}
 
-    .hero { padding: 28px 4px 16px; }
+    .hero {{ padding: 28px 4px 16px; }}
 
-    .brand-row {
+    .brand-row {{
       display: flex;
       justify-content: space-between;
       align-items: center;
       gap: 14px;
       margin-bottom: 20px;
-    }
+    }}
 
-    .brand-mark {
+    .brand-mark {{
       width: 48px;
       height: 48px;
       border-radius: 50%;
@@ -3450,9 +3468,9 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
       font-weight: 900;
       letter-spacing: .02em;
       box-shadow: 0 14px 30px rgba(66,110,96,.25);
-    }
+    }}
 
-    .date-pill {
+    .date-pill {{
       background: rgba(255,255,255,.78);
       border: 1px solid var(--line);
       border-radius: 999px;
@@ -3461,23 +3479,23 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
       font-weight: 800;
       font-size: 13px;
       white-space: nowrap;
-    }
+    }}
 
-    .hero h1 {
+    .hero h1 {{
       margin: 0;
       font-size: clamp(40px, 13vw, 58px);
       line-height: .98;
       letter-spacing: -.055em;
-    }
+    }}
 
-    .hero .subtitle {
+    .hero .subtitle {{
       margin: 12px 0 0;
       color: var(--muted);
       font-size: 15px;
       line-height: 1.65;
-    }
+    }}
 
-    .quick-nav {
+    .quick-nav {{
       position: sticky;
       top: 0;
       z-index: 30;
@@ -3490,9 +3508,9 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
       backdrop-filter: blur(12px);
       border-top: 1px solid rgba(223,230,232,.7);
       border-bottom: 1px solid rgba(223,230,232,.7);
-    }
+    }}
 
-    .quick-nav a {
+    .quick-nav a {{
       flex: 0 0 auto;
       text-decoration: none;
       color: var(--sage-dark);
@@ -3502,19 +3520,19 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
       padding: 7px 11px;
       font-size: 13px;
       font-weight: 800;
-    }
+    }}
 
-    .section-stack { display: grid; gap: 14px; }
+    .section-stack {{ display: grid; gap: 14px; }}
 
-    .card {
+    .card {{
       background: var(--card);
       border: 1px solid var(--line);
       border-radius: var(--radius-lg);
       box-shadow: var(--shadow);
       overflow: hidden;
-    }
+    }}
 
-    .article-cover {
+    .article-cover {{
       min-height: 292px;
       padding: 22px;
       background:
@@ -3524,18 +3542,18 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-    }
+    }}
 
-    .article-cover::after {
+    .article-cover::after {{
       content: "";
       position: absolute;
       inset: 15px;
       border: 1px solid rgba(66,110,96,.22);
       border-radius: 14px;
       pointer-events: none;
-    }
+    }}
 
-    .eyebrow {
+    .eyebrow {{
       position: relative;
       z-index: 1;
       width: fit-content;
@@ -3546,9 +3564,9 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
       color: #fff;
       font-size: 13px;
       font-weight: 900;
-    }
+    }}
 
-    .article-title {
+    .article-title {{
       position: relative;
       z-index: 1;
       margin: 46px 0 0;
@@ -3557,54 +3575,54 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
       line-height: 1.06;
       letter-spacing: -.045em;
       white-space: pre-wrap;
-    }
+    }}
 
-    .meta-grid {
+    .meta-grid {{
       display: grid;
       grid-template-columns: 1fr;
       gap: 10px;
       padding: 14px;
-    }
+    }}
 
-    .meta-box {
+    .meta-box {{
       background: var(--paper);
       border: 1px solid var(--line);
       border-radius: var(--radius-sm);
       padding: 12px;
-    }
+    }}
 
-    .meta-box span {
+    .meta-box span {{
       display: block;
       color: var(--muted);
       font-size: 12px;
       margin-bottom: 6px;
-    }
+    }}
 
-    .meta-box b {
+    .meta-box b {{
       font-size: 14.5px;
       line-height: 1.4;
-    }
+    }}
 
-    .tags {
+    .tags {{
       display: flex;
       gap: 8px;
       flex-wrap: wrap;
       padding: 0 14px 14px;
-    }
+    }}
 
-    .tag {
+    .tag {{
       padding: 6px 10px;
       border-radius: 999px;
       font-size: 12px;
       font-weight: 900;
       background: var(--sage-soft);
       color: var(--sage-dark);
-    }
+    }}
 
-    .tag.level { background: var(--clay-soft); color: #9b4e35; }
-    .tag.topic { background: var(--blue-soft); color: var(--blue); }
+    .tag.level {{ background: var(--clay-soft); color: #9b4e35; }}
+    .tag.topic {{ background: var(--blue-soft); color: var(--blue); }}
 
-    .summary {
+    .summary {{
       margin: 0 14px 16px;
       padding: 13px 14px;
       border-left: 4px solid var(--clay);
@@ -3614,40 +3632,40 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
       line-height: 1.7;
       font-size: 14.5px;
       white-space: pre-wrap;
-    }
+    }}
 
-    .section { padding: 18px; }
+    .section {{ padding: 18px; }}
 
-    .section-head {
+    .section-head {{
       display: flex;
       align-items: baseline;
       justify-content: space-between;
       gap: 12px;
       margin-bottom: 12px;
-    }
+    }}
 
-    .section h2 {
+    .section h2 {{
       margin: 0;
       font-size: 21px;
       letter-spacing: -.02em;
-    }
+    }}
 
-    .mini-label {
+    .mini-label {{
       color: var(--muted);
       font-size: 12px;
       white-space: nowrap;
-    }
+    }}
 
-    .level-card {
+    .level-card {{
       background: var(--paper);
       border: 1px solid var(--line);
       border-radius: var(--radius-sm);
       padding: 13px;
       display: grid;
       gap: 7px;
-    }
+    }}
 
-    .level-big {
+    .level-big {{
       display: inline-flex;
       width: fit-content;
       border-radius: 999px;
@@ -3656,61 +3674,61 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
       color: #9b4e35;
       font-weight: 900;
       font-size: 13px;
-    }
+    }}
 
-    .level-note {
+    .level-note {{
       color: var(--muted);
       line-height: 1.6;
       font-size: 14px;
-    }
+    }}
 
-    .para-list { display: grid; gap: 12px; }
+    .para-list {{ display: grid; gap: 12px; }}
 
-    .para-card {
+    .para-card {{
       border: 1px solid var(--line);
       background: var(--paper);
       border-radius: var(--radius-sm);
       padding: 14px;
-    }
+    }}
 
-    .para-title {
+    .para-title {{
       color: var(--sage-dark);
       font-weight: 900;
       margin-bottom: 10px;
       font-size: 14px;
-    }
+    }}
 
-    .para-divider {
+    .para-divider {{
       height: 1px;
       background: var(--line);
       margin: 12px 0;
-    }
+    }}
 
-    .english {
+    .english {{
       margin: 0;
       font-family: Georgia, "Times New Roman", serif;
       font-size: 18.5px;
       line-height: 1.78;
       color: #25323a;
-    }
+    }}
 
-    .translation {
+    .translation {{
       margin: 0;
       color: #344047;
       line-height: 1.78;
       font-size: 15px;
-    }
+    }}
 
-    .hl-term {
+    .hl-term {{
       color: var(--sage-dark);
       background: rgba(127,163,145,.16);
       border-bottom: 1px solid rgba(66,110,96,.38);
       padding: 0 2px;
       border-radius: 4px;
       cursor: pointer;
-    }
+    }}
 
-    .tip {
+    .tip {{
       position: fixed;
       left: 14px;
       right: 14px;
@@ -3725,16 +3743,16 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
       display: none;
       max-width: 452px;
       margin: 0 auto;
-    }
+    }}
 
-    .tip b { color: #f1c66d; }
+    .tip b {{ color: #f1c66d; }}
 
-    .expression-list, .practice-grid, .review-grid {
+    .expression-list, .practice-grid, .review-grid {{
       display: grid;
       gap: 10px;
-    }
+    }}
 
-    .expression {
+    .expression {{
       display: grid;
       gap: 6px;
       padding: 13px;
@@ -3742,46 +3760,46 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
       border-radius: var(--radius-sm);
       background: var(--paper);
       cursor: pointer;
-    }
+    }}
 
-    .expression b {
+    .expression b {{
       color: var(--sage-dark);
       line-height: 1.45;
       font-size: 15px;
-    }
+    }}
 
-    .expression span {
+    .expression span {{
       color: var(--muted);
       line-height: 1.6;
       font-size: 14px;
-    }
+    }}
 
-    .practice, .review-box {
+    .practice, .review-box {{
       padding: 14px;
       border-radius: var(--radius-sm);
       border: 1px solid var(--line);
       background: var(--paper);
-    }
+    }}
 
-    .practice b, .review-box b {
+    .practice b, .review-box b {{
       display: block;
       margin-bottom: 8px;
       font-size: 15px;
-    }
+    }}
 
-    .practice p, .review-box p {
+    .practice p, .review-box p {{
       margin: 0;
       color: #414b51;
       line-height: 1.65;
       font-size: 14.5px;
-    }
+    }}
 
-    .review-box {
+    .review-box {{
       border: 1px dashed #b9c7c0;
       background: #fbfdfb;
-    }
+    }}
 
-    .source-link {
+    .source-link {{
       display: inline-flex;
       width: fit-content;
       margin-top: 12px;
@@ -3793,25 +3811,25 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
       padding: 8px 11px;
       font-size: 13px;
       font-weight: 900;
-    }
+    }}
 
-    .bottom-note {
+    .bottom-note {{
       color: var(--muted);
       font-size: 12px;
       line-height: 1.7;
       text-align: center;
       padding: 20px 6px 2px;
-    }
+    }}
 
-    @media (min-width: 420px) {
-      .meta-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-    }
+    @media (min-width: 420px) {{
+      .meta-grid {{ grid-template-columns: repeat(3, minmax(0, 1fr)); }}
+    }}
 
-    @media (max-width: 360px) {
-      .hero h1 { font-size: 38px; }
-      .article-title { font-size: 32px; }
-      .section { padding: 16px; }
-    }
+    @media (max-width: 360px) {{
+      .hero h1 {{ font-size: 38px; }}
+      .article-title {{ font-size: 32px; }}
+      .section {{ padding: 16px; }}
+    }}
   </style>
 </head>
 <body>
@@ -3819,7 +3837,7 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
     <header class="hero">
       <div class="brand-row">
         <div class="brand-mark">HL</div>
-        <div class="date-pill" id="datePill"></div>
+        <div class="date-pill">Today · {esc(today).replace("-", ".")}</div>
       </div>
       <h1>Healing Lab<br>每日外刊</h1>
       <p class="subtitle">每天一篇短外刊，练阅读、表达和语感。</p>
@@ -3838,23 +3856,23 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
       <article class="card" id="article">
         <div class="article-cover">
           <span class="eyebrow">今日文章卡片</span>
-          <h2 class="article-title" id="articleTitle"></h2>
+          <h2 class="article-title">{esc(title_display)}</h2>
         </div>
 
         <div class="meta-grid">
-          <div class="meta-box"><span>来源</span><b id="sourceText"></b></div>
-          <div class="meta-box"><span>日期</span><b id="pubDateText"></b></div>
-          <div class="meta-box"><span>难度</span><b id="levelMeta"></b></div>
+          <div class="meta-box"><span>来源</span><b>{esc(source or "Daily Reading")}</b></div>
+          <div class="meta-box"><span>日期</span><b>{esc(pub_date)}</b></div>
+          <div class="meta-box"><span>难度</span><b>{esc(level)}</b></div>
         </div>
 
         <div class="tags">
-          <span class="tag level" id="levelTag"></span>
+          <span class="tag level">{esc(level)}</span>
           <span class="tag topic">Daily Reading</span>
           <span class="tag">Vocabulary</span>
           <span class="tag">Review</span>
         </div>
 
-        <p class="summary" id="overviewText"></p>
+        <p class="summary">{esc(overview or "今天这篇适合积累真实外刊表达、观点句和可复述素材。")}</p>
       </article>
 
       <section class="card section" id="level">
@@ -3863,8 +3881,8 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
           <span class="mini-label">Level</span>
         </div>
         <div class="level-card">
-          <span class="level-big" id="levelBig"></span>
-          <div class="level-note" id="levelNote"></div>
+          <span class="level-big">难度：{esc(level)}</span>
+          <div class="level-note">{esc(level_note)}</div>
         </div>
       </section>
 
@@ -3873,7 +3891,9 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
           <h2>英文原文 / 中文理解</h2>
           <span class="mini-label">点击绿色词看释义</span>
         </div>
-        <div class="para-list" id="paragraphList"></div>
+        <div class="para-list">
+          {paragraph_html}
+        </div>
       </section>
 
       <section class="card section" id="expressions">
@@ -3881,7 +3901,9 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
           <h2>重点表达</h2>
           <span class="mini-label">Useful Expressions</span>
         </div>
-        <div class="expression-list" id="expressionList"></div>
+        <div class="expression-list">
+          {expression_html}
+        </div>
       </section>
 
       <section class="card section" id="practice">
@@ -3892,11 +3914,11 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
         <div class="practice-grid">
           <div class="practice">
             <b>仿写句式</b>
-            <p id="practicePattern"></p>
+            <p>{esc(practice.get("pattern", ""))}</p>
           </div>
           <div class="practice">
             <b>今日造句</b>
-            <p id="practiceExample"></p>
+            <p>{esc(practice.get("example", ""))}</p>
           </div>
         </div>
       </section>
@@ -3911,7 +3933,7 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
           <div class="review-box"><b>我想记住的表达</b><p>写下 1-3 个今天最想复用的英文表达。</p></div>
           <div class="review-box"><b>我能怎么用</b><p>把一个表达放进自己的生活、工作或口语场景。</p></div>
         </div>
-        <a class="source-link" id="sourceLink" href="#" target="_blank" rel="noopener">查看原文来源</a>
+        {source_link_html}
       </section>
     </div>
 
@@ -3921,96 +3943,30 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
   <div class="tip" id="tip"></div>
 
   <script>
-    const DATA = __PAYLOAD_JSON__;
+    function escText(s) {{
+      return String(s || '').replace(/[&<>"']/g, function(c) {{
+        return {{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}}[c];
+      }});
+    }}
 
-    function esc(s) {
-      return String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-    }
-
-    function fmtDate(s) {
-      return String(s || '').replaceAll('-', '.');
-    }
-
-    function safeRegExp(s) {
-      return String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    }
-
-    const exprs = DATA.expressions || [];
-    const meaningMap = {};
-    exprs.forEach(x => { meaningMap[String(x.text || '').toLowerCase()] = x.meaning || ''; });
-
-    function markTerms(text) {
-      let out = esc(text);
-      const sorted = [...exprs].filter(x => x.text).sort((a, b) => String(b.text).length - String(a.text).length);
-      sorted.forEach(x => {
-        const term = String(x.text || '').trim();
-        if (!term || term.length < 3) return;
-        const re = new RegExp('(^|[^A-Za-z])(' + safeRegExp(term) + ')(?=$|[^A-Za-z])', 'gi');
-        out = out.replace(re, (m, pre, word) => `${pre}<span class="hl-term" data-term="${esc(term)}" data-meaning="${esc(x.meaning || '')}">${word}</span>`);
-      });
-      return out;
-    }
-
-    function showTip(term, meaning) {
-      const tip = document.getElementById('tip');
-      tip.innerHTML = `<b>${esc(term)}</b><br>${esc(meaning || '暂无释义')}`;
+    function showTip(term, meaning) {{
+      var tip = document.getElementById('tip');
+      tip.innerHTML = '<b>' + escText(term) + '</b><br>' + escText(meaning || '暂无释义');
       tip.style.display = 'block';
       clearTimeout(window.__tipTimer);
-      window.__tipTimer = setTimeout(() => { tip.style.display = 'none'; }, 2600);
-    }
+      window.__tipTimer = setTimeout(function() {{
+        tip.style.display = 'none';
+      }}, 2600);
+    }}
 
-    document.title = 'Healing Lab 每日外刊｜' + (DATA.today || '');
-    document.getElementById('datePill').textContent = 'Today · ' + fmtDate(DATA.today);
-    document.getElementById('articleTitle').textContent = DATA.title || DATA.title_raw || '今日外刊';
-    document.getElementById('sourceText').textContent = DATA.source || 'Daily Reading';
-    document.getElementById('pubDateText').textContent = DATA.pub_date || DATA.today || '';
-    document.getElementById('overviewText').textContent = DATA.overview || '今天这篇适合积累真实外刊表达、观点句和可复述素材。';
-    document.getElementById('levelMeta').textContent = DATA.level || 'B2';
-    document.getElementById('levelTag').textContent = DATA.level || 'B2';
-    document.getElementById('levelBig').textContent = '难度：' + (DATA.level || 'B2');
-    document.getElementById('levelNote').textContent = DATA.level_note || '真实外刊材料，适合精读和表达积累。';
-
-    const paraRoot = document.getElementById('paragraphList');
-    paraRoot.innerHTML = (DATA.paragraphs || []).map((p, i) => `
-      <div class="para-card">
-        <div class="para-title">第 ${esc(p.idx || i + 1)} 段</div>
-        <p class="english">${markTerms(p.raw)}</p>
-        <div class="para-divider"></div>
-        <p class="translation">${esc(p.zh)}</p>
-      </div>
-    `).join('');
-
-    const exprRoot = document.getElementById('expressionList');
-    exprRoot.innerHTML = exprs.length ? exprs.map(x => `
-      <div class="expression" data-term="${esc(x.text)}" data-meaning="${esc(x.meaning)}">
-        <b>${esc(x.text)}</b>
-        <span>${esc(x.meaning)}</span>
-      </div>
-    `).join('') : `<div class="expression"><b>今日表达</b><span>今天这篇文章适合重点积累原文里的高频短语和观点句。</span></div>`;
-
-    document.getElementById('practicePattern').textContent = (DATA.practice && DATA.practice.pattern) || 'Try to write one sentence with a useful expression from today’s article.';
-    document.getElementById('practiceExample').textContent = (DATA.practice && DATA.practice.example) || '把今天的一个表达，放进自己的生活、工作或学习场景里。';
-
-    document.body.addEventListener('click', (e) => {
-      const node = e.target.closest('.hl-term, .expression');
+    document.body.addEventListener('click', function(e) {{
+      var node = e.target.closest('.hl-term, .expression');
       if (!node) return;
-      const term = node.getAttribute('data-term') || '';
-      const meaning = node.getAttribute('data-meaning') || '';
-      showTip(term, meaning);
-    });
-
-    const sourceLink = document.getElementById('sourceLink');
-    if (DATA.link) {
-      sourceLink.href = DATA.link;
-    } else {
-      sourceLink.style.display = 'none';
-    }
+      showTip(node.getAttribute('data-term') || '', node.getAttribute('data-meaning') || '');
+    }});
   </script>
 </body>
-</html>
-"""
-    page = page.replace("__TODAY__", esc(today))
-    page = page.replace("__PAYLOAD_JSON__", payload_json)
+</html>"""
     return page
 
 
