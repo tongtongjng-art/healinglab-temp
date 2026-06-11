@@ -3230,30 +3230,54 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>图文版｜__TODAY__</title>
 <style>
+:root {
+  --paper: #fffdf7;
+  --paper-2: #fbf6ed;
+  --ink: #151922;
+  --text: #252b35;
+  --muted: #687486;
+  --line: #ddd4c7;
+  --blue: #516b84;
+  --blue-2: #7890a7;
+  --bg: #f1eee7;
+  --shadow: rgba(52, 45, 36, .12);
+}
 * { box-sizing: border-box; }
 body {
   margin: 0;
-  background: #eef0f3;
-  color: #16181d;
+  background:
+    radial-gradient(circle at 12% 8%, rgba(255,255,255,.75), transparent 28%),
+    linear-gradient(180deg, #f7f4ee 0%, var(--bg) 100%);
+  color: var(--ink);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", Arial, sans-serif;
 }
 .top {
   position: sticky;
   top: 0;
   z-index: 20;
-  background: rgba(238,240,243,.96);
-  backdrop-filter: blur(8px);
-  padding: 10px 13px;
-  border-bottom: 1px solid rgba(20,24,30,.08);
+  background: rgba(247,244,238,.94);
+  backdrop-filter: blur(10px);
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(120, 105, 84, .14);
 }
-.top h1 { font-size: 18px; margin: 0 0 4px; color:#16181d; }
-.top p { margin: 0; color: #5f6672; font-size: 13px; line-height: 1.5; }
+.top h1 {
+  font-size: 18px;
+  margin: 0 0 5px;
+  color: var(--ink);
+  letter-spacing: .02em;
+}
+.top p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.55;
+}
 .scroller {
   display: flex;
-  gap: 16px;
+  gap: 18px;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
-  padding: 16px 14px 24px;
+  padding: 18px 14px 26px;
 }
 .slide-wrap {
   flex: 0 0 auto;
@@ -3263,13 +3287,15 @@ body {
 .card {
   aspect-ratio: 3 / 4;
   width: 100%;
-  background: #fbfbfa;
-  border-radius: 24px;
-  padding: 28px 24px 20px;
-  box-shadow: 0 16px 42px rgba(24, 28, 35, .10);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.94), rgba(255,252,246,.96)),
+    var(--paper);
+  border-radius: 26px;
+  padding: 27px 24px 21px;
+  box-shadow: 0 18px 46px var(--shadow);
   display: flex;
   flex-direction: column;
-  border: 1px solid rgba(20,24,30,.09);
+  border: 1px solid rgba(136, 116, 89, .18);
   position: relative;
   overflow: hidden;
 }
@@ -3279,18 +3305,19 @@ body {
   left: 0;
   top: 0;
   width: 100%;
-  height: 7px;
-  background: linear-gradient(90deg, #101318 0%, #7b8491 58%, #d7dbe0 100%);
+  height: 6px;
+  background: linear-gradient(90deg, #1b2430 0%, var(--blue) 62%, #c9c0b2 100%);
 }
 .card:after {
   content: "";
   position: absolute;
-  right: -78px;
-  bottom: -92px;
-  width: 220px;
-  height: 220px;
+  right: -92px;
+  bottom: -102px;
+  width: 240px;
+  height: 240px;
   border-radius: 50%;
-  background: rgba(120, 130, 145, .08);
+  border: 1px solid rgba(81, 107, 132, .10);
+  background: rgba(81, 107, 132, .055);
 }
 .inner {
   position: relative;
@@ -3299,78 +3326,131 @@ body {
   display: flex;
   flex-direction: column;
 }
-.kicker {
-  color: #6b7280;
-  font-size: 12px;
+.brandline {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  color: var(--muted);
+  font-size: 11px;
   letter-spacing: .12em;
-  margin-bottom: 12px;
   text-transform: uppercase;
 }
+.brandline .seal {
+  border: 1px solid rgba(81,107,132,.24);
+  border-radius: 999px;
+  padding: 4px 8px;
+  color: var(--blue);
+  background: rgba(81,107,132,.045);
+  letter-spacing: .08em;
+}
+.kicker {
+  color: var(--blue);
+  font-size: 12px;
+  letter-spacing: .08em;
+  margin-bottom: 10px;
+}
 .title {
-  font-size: 34px;
-  line-height: 1.14;
+  font-size: 33px;
+  line-height: 1.13;
   font-weight: 900;
   margin-bottom: 14px;
-  color: #121418;
-  letter-spacing: -.03em;
+  color: var(--ink);
+  letter-spacing: -.035em;
   white-space: pre-wrap;
 }
 .subtitle {
   font-size: 14px;
   line-height: 1.45;
-  color: #5f6672;
+  color: var(--muted);
   margin-bottom: 18px;
 }
 .body {
-  color: #20242a;
+  color: var(--text);
   white-space: pre-wrap;
 }
 .body.lang-en {
   font-family: Georgia, "Times New Roman", "Microsoft YaHei", serif;
-  font-size: 25px;
-  line-height: 1.48;
+  font-size: 24px;
+  line-height: 1.51;
+  letter-spacing: -.01em;
 }
 .body.lang-zh {
-  font-size: 23px;
-  line-height: 1.62;
+  font-size: 22px;
+  line-height: 1.64;
 }
 .cover-body {
   margin-top: 18px;
   padding-top: 18px;
-  border-top: 1px solid rgba(20,24,30,.12);
-  font-size: 23px;
+  border-top: 1px solid var(--line);
+  font-size: 22px;
   line-height: 1.58;
-  color: #2f343b;
+  color: #303743;
   white-space: pre-wrap;
 }
+.expr-list {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  margin-top: 2px;
+}
+.expr-row {
+  border-left: 3px solid rgba(81,107,132,.45);
+  padding: 8px 10px 8px 12px;
+  background: rgba(81,107,132,.045);
+  border-radius: 12px;
+}
+.expr-row .expr {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 20px;
+  line-height: 1.22;
+  color: #182331;
+  font-weight: 700;
+}
+.expr-row .meaning {
+  margin-top: 4px;
+  font-size: 15px;
+  line-height: 1.42;
+  color: #596474;
+}
+.review-block {
+  border-top: 1px solid var(--line);
+  padding-top: 12px;
+  margin-top: 4px;
+  white-space: pre-wrap;
+}
+.review-block:first-child { border-top: 0; padding-top: 0; }
 .spacer { flex: 1; }
 .footer {
   margin-top: auto;
   font-size: 12px;
-  color: #7c8490;
+  color: #8a8177;
   display: flex;
   justify-content: space-between;
   gap: 10px;
+  padding-top: 16px;
 }
 .btn-row {
   display: flex;
   gap: 8px;
-  margin-top: 10px;
+  margin-top: 11px;
   padding: 0 2px;
 }
 .btn {
   flex: 1;
-  border: 1px solid rgba(20,24,30,.18);
-  background: #fbfbfa;
-  color: #16181d;
+  border: 1px solid rgba(108, 93, 70, .24);
+  background: rgba(255,255,255,.68);
+  color: var(--ink);
   border-radius: 999px;
   padding: 8px 10px;
   font-size: 13px;
   cursor: pointer;
 }
+.btn:active { background: #efe7d8; }
 .hint {
   padding: 0 16px 14px;
-  color: #68707c;
+  color: var(--muted);
   font-size: 13px;
   line-height: 1.6;
 }
@@ -3382,10 +3462,10 @@ body {
 <body>
 <div class="top">
   <h1>图文版｜__TODAY__</h1>
-  <p>完整段落图文版：原文一页、翻译一页，和正文学习页的段落对应。</p>
+  <p>外刊精读卡片：原文、中文理解、重点表达和今日复盘逐页对应。</p>
 </div>
 <div class="scroller" id="scroller"></div>
-<div class="hint">说明：不加图片，不做精选原文，不做今日一句。每页可下载 PNG。</div>
+<div class="hint">说明：米白外刊风 UI；每页可下载 PNG，用于小红书图文发布。</div>
 
 <script>
 const SLIDES = __SLIDES_JSON__;
@@ -3394,26 +3474,46 @@ function esc(s) {
   return String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
+function bodyToHtml(s) {
+  const raw = String(s.body || '');
+  if (s.type === 'cover') {
+    return `<div class="cover-body">${esc(raw)}</div>`;
+  }
+  if (s.type === 'vocab') {
+    const rows = raw.split(/\n\s*\n/).filter(Boolean).map(line => {
+      const cleaned = line.replace(/^\d+\.\s*/, '');
+      const parts = cleaned.split(/[：:]/);
+      const expr = parts.shift() || cleaned;
+      const meaning = parts.join('：');
+      return `<div class="expr-row"><div class="expr">${esc(expr.trim())}</div><div class="meaning">${esc(meaning.trim())}</div></div>`;
+    }).join('');
+    return `<div class="expr-list">${rows}</div>`;
+  }
+  if (s.type === 'review') {
+    const blocks = raw.split(/\n\s*\n/).filter(Boolean).map(x => `<div class="review-block">${esc(x)}</div>`).join('');
+    return `<div class="body lang-zh">${blocks}</div>`;
+  }
+  const langClass = s.lang === 'en' ? 'lang-en' : 'lang-zh';
+  return `<div class="body ${langClass}">${esc(raw)}</div>`;
+}
+
 function buildCards() {
   const root = document.getElementById('scroller');
   root.innerHTML = '';
   SLIDES.forEach((s, i) => {
     const el = document.createElement('div');
     el.className = 'slide-wrap';
-    const langClass = s.lang === 'en' ? 'lang-en' : 'lang-zh';
-    const bodyHtml = s.type === 'cover'
-      ? `<div class="cover-body">${esc(s.body || '')}</div>`
-      : `<div class="body ${langClass}">${esc(s.body || '')}</div>`;
 
     el.innerHTML = `
       <div class="card" id="card-${i}">
         <div class="inner">
+          <div class="brandline"><span>Healing Lab Daily</span><span class="seal">${String(i + 1).padStart(2, '0')} / ${String(SLIDES.length).padStart(2, '0')}</span></div>
           <div class="kicker">${esc(s.meta || 'Daily Reading')}</div>
           <div class="title">${esc(s.title || '')}</div>
           ${s.subtitle ? `<div class="subtitle">${esc(s.subtitle)}</div>` : ''}
-          ${bodyHtml}
+          ${bodyToHtml(s)}
           <div class="spacer"></div>
-          <div class="footer"><span>${String(i + 1).padStart(2, '0')} / ${String(SLIDES.length).padStart(2, '0')}</span><span>${esc(s.footer || '每日外刊')}</span></div>
+          <div class="footer"><span>${esc(s.footer || '每日外刊')}</span><span>__TODAY__</span></div>
         </div>
       </div>
       <div class="btn-row">
@@ -3465,14 +3565,13 @@ function wrapText(ctx, text, x, y, maxWidth, lineHeight, maxLines) {
   return y;
 }
 
-function roundRectPath(ctx, x, y, w, h, r) {
-  ctx.beginPath();
-  ctx.moveTo(x + r, y);
-  ctx.arcTo(x + w, y, x + w, y + h, r);
-  ctx.arcTo(x + w, y + h, x, y + h, r);
-  ctx.arcTo(x, y + h, x, y, r);
-  ctx.arcTo(x, y, x + w, y, r);
-  ctx.closePath();
+function splitVocabRows(text) {
+  return String(text || '').split(/\n\s*\n/).filter(Boolean).map(line => {
+    const cleaned = line.replace(/^\d+\.\s*/, '');
+    const parts = cleaned.split(/[：:]/);
+    const expr = parts.shift() || cleaned;
+    return { expr: expr.trim(), meaning: parts.join('：').trim() };
+  });
 }
 
 async function downloadPng(i) {
@@ -3482,70 +3581,112 @@ async function downloadPng(i) {
   canvas.height = 1440;
   const ctx = canvas.getContext('2d');
 
-  ctx.fillStyle = '#fbfbfa';
+  ctx.fillStyle = '#fffdf7';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   const topGrad = ctx.createLinearGradient(0, 0, canvas.width, 0);
-  topGrad.addColorStop(0, '#101318');
-  topGrad.addColorStop(.58, '#7b8491');
-  topGrad.addColorStop(1, '#d7dbe0');
+  topGrad.addColorStop(0, '#1b2430');
+  topGrad.addColorStop(.62, '#516b84');
+  topGrad.addColorStop(1, '#c9c0b2');
   ctx.fillStyle = topGrad;
   ctx.fillRect(0, 0, canvas.width, 14);
 
-  ctx.fillStyle = 'rgba(120,130,145,.08)';
+  ctx.fillStyle = 'rgba(81,107,132,.055)';
   ctx.beginPath(); ctx.arc(1045, 1370, 260, 0, Math.PI * 2); ctx.fill();
+  ctx.strokeStyle = 'rgba(81,107,132,.12)';
+  ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.arc(1045, 1370, 260, 0, Math.PI * 2); ctx.stroke();
 
-  ctx.fillStyle = '#6b7280';
+  ctx.fillStyle = '#687486';
+  ctx.font = '28px Microsoft YaHei, Arial';
+  ctx.fillText('HEALING LAB DAILY', 68, 84);
+
+  const pageLabel = String(i + 1).padStart(2, '0') + ' / ' + String(SLIDES.length).padStart(2, '0');
+  ctx.strokeStyle = 'rgba(81,107,132,.28)';
+  ctx.fillStyle = '#516b84';
+  ctx.font = '24px Microsoft YaHei, Arial';
+  const labelW = ctx.measureText(pageLabel).width + 38;
+  roundRectPath(ctx, 1012 - labelW, 48, labelW, 44, 22);
+  ctx.stroke();
+  ctx.fillText(pageLabel, 1012 - labelW + 19, 78);
+
+  ctx.fillStyle = '#516b84';
   ctx.font = '30px Microsoft YaHei, Arial';
-  ctx.fillText(s.meta || 'Daily Reading', 68, 86);
+  ctx.fillText(s.meta || 'Daily Reading', 68, 140);
 
-  ctx.fillStyle = '#121418';
+  ctx.fillStyle = '#151922';
   ctx.font = 'bold 76px Microsoft YaHei, Arial';
-  let y = wrapText(ctx, s.title || '', 68, 180, 944, 84, 3);
+  let y = wrapText(ctx, s.title || '', 68, 230, 944, 84, 3);
 
   if (s.subtitle) {
-    ctx.fillStyle = '#5f6672';
+    ctx.fillStyle = '#687486';
     ctx.font = '34px Microsoft YaHei, Arial';
     y = wrapText(ctx, s.subtitle || '', 68, y + 18, 944, 48, 2);
   }
 
-  y += 32;
+  y += 36;
 
   if (s.type === 'cover') {
-    ctx.strokeStyle = 'rgba(20,24,30,.16)';
+    ctx.strokeStyle = '#ddd4c7';
     ctx.lineWidth = 2;
     ctx.beginPath();
     ctx.moveTo(68, y);
     ctx.lineTo(1012, y);
     ctx.stroke();
-
-    y += 52;
-    ctx.fillStyle = '#30343b';
+    y += 56;
+    ctx.fillStyle = '#303743';
     ctx.font = '42px Microsoft YaHei, Arial';
     wrapText(ctx, s.body || '', 68, y, 944, 62, 7);
+  } else if (s.type === 'vocab') {
+    let rows = splitVocabRows(s.body).slice(0, 8);
+    rows.forEach(row => {
+      if (y > 1180) return;
+      ctx.fillStyle = 'rgba(81,107,132,.055)';
+      roundRectPath(ctx, 68, y - 30, 944, 88, 22);
+      ctx.fill();
+      ctx.fillStyle = '#182331';
+      ctx.font = 'bold 36px Georgia, "Times New Roman", Microsoft YaHei, serif';
+      ctx.fillText(row.expr, 92, y + 2);
+      ctx.fillStyle = '#596474';
+      ctx.font = '30px Microsoft YaHei, Arial';
+      wrapText(ctx, row.meaning, 92, y + 42, 880, 36, 1);
+      y += 104;
+    });
+  } else if (s.type === 'review') {
+    ctx.fillStyle = '#252b35';
+    ctx.font = '39px Microsoft YaHei, Arial';
+    wrapText(ctx, s.body || '', 68, y, 944, 58, 16);
+  } else if (s.lang === 'en') {
+    ctx.fillStyle = '#252b35';
+    ctx.font = '45px Georgia, "Times New Roman", Microsoft YaHei, serif';
+    wrapText(ctx, s.body || '', 68, y, 944, 66, 14);
   } else {
-    if (s.lang === 'en') {
-      ctx.fillStyle = '#20242a';
-      ctx.font = '46px Georgia, "Times New Roman", Microsoft YaHei, serif';
-      wrapText(ctx, s.body || '', 68, y, 944, 66, 14);
-    } else {
-      ctx.fillStyle = '#20242a';
-      ctx.font = '43px Microsoft YaHei, Arial';
-      wrapText(ctx, s.body || '', 68, y, 944, 62, 15);
-    }
+    ctx.fillStyle = '#252b35';
+    ctx.font = '42px Microsoft YaHei, Arial';
+    wrapText(ctx, s.body || '', 68, y, 944, 62, 15);
   }
 
-  ctx.fillStyle = '#7c8490';
-  ctx.font = '28px Microsoft YaHei, Arial';
-  ctx.fillText(String(i + 1).padStart(2, '0') + ' / ' + String(SLIDES.length).padStart(2, '0'), 68, 1356);
-  const footer = s.footer || '每日外刊';
-  const fw = ctx.measureText(footer).width;
-  ctx.fillText(footer, 1012 - fw, 1356);
+  ctx.fillStyle = '#8a8177';
+  ctx.font = '26px Microsoft YaHei, Arial';
+  ctx.fillText(s.footer || '每日外刊', 68, 1356);
+  const dateText = '__TODAY__';
+  const fw = ctx.measureText(dateText).width;
+  ctx.fillText(dateText, 1012 - fw, 1356);
 
   const a = document.createElement('a');
   a.download = `card-${String(i + 1).padStart(2, '0')}.png`;
   a.href = canvas.toDataURL('image/png');
   a.click();
+}
+
+function roundRectPath(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + r, y, r);
+  ctx.closePath();
 }
 
 buildCards();
