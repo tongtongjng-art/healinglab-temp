@@ -1,3 +1,4 @@
+# V37_SUBTLE_HIGHLIGHT_TOP3
 import json
 import re
 import sys
@@ -3848,7 +3849,7 @@ textarea{{min-height:68px;resize:vertical}}
 .pattern{{border:1px solid #f0d6c9;background:#fff8f2;border-radius:14px;padding:12px}}
 .pattern p{{margin:7px 0;line-height:1.6}}
 .pattern .ori{{border-left:3px solid var(--orange);padding-left:10px;color:#536171}}
-.hl{{color:var(--green);background:rgba(127,163,145,.16);border-bottom:1px solid rgba(66,110,96,.35);border-radius:4px;padding:0 2px;cursor:pointer}}
+.hl{{color:#315f53;background:linear-gradient(to top,rgba(127,163,145,.18) 0 34%,transparent 34%);border-bottom:1px dotted rgba(49,95,83,.55);border-radius:0;padding:0 .5px;cursor:pointer}}
 .copybox{{position:fixed;left:16px;right:16px;bottom:16px;background:#1d252c;color:white;border-radius:16px;padding:12px 14px;display:none;z-index:99;box-shadow:0 14px 38px rgba(0,0,0,.22);max-width:480px;margin:auto;white-space:pre-wrap}}
 @media(max-width:880px){{.grid{{grid-template-columns:1fr}}.final-meta{{grid-template-columns:1fr}}h1{{font-size:32px}}}}
 @media print{{.top,.left,.right .card-hd,.btns,.tabs,.select-tip{{display:none!important}}.grid{{display:block}}body{{background:white}}.card{{box-shadow:none;border:0}}}}
@@ -3913,7 +3914,7 @@ textarea{{min-height:68px;resize:vertical}}
 
           <div class="import-panel">
             <label>一键导入包</label>
-            <textarea id="importBox" placeholder="把我给你的导入包 JSON 粘贴到这里，然后点“一键导入”。"></textarea>
+            <textarea id="importBox" placeholder="把我给你的导入包 JSON 粘贴到这里，然后点“一键导入”。表达句式会自动只取前 3 个。"></textarea>
             <div class="btns">
               <button class="btn-green" onclick="importFromTextarea()">一键导入</button>
               <button class="btn-light" onclick="importFromClipboard()">从剪贴板导入</button>
@@ -4195,7 +4196,7 @@ function renderFinal(){{
     </div>
   `).join('');
 
-  const patternHtml = state.pattern.map(p => `
+  const patternHtml = state.pattern.slice(0,3).map(p => `
     <div class="pattern">
       <p class="ori">原句：${{escapeHtml(p.original)}}</p>
       <p><b>句式：</b>${{escapeHtml(p.pattern)}}</p>
@@ -4229,7 +4230,7 @@ function renderFinal(){{
         <p class="summary">${{escapeHtml(summary)}}</p>
       </article>
       <section class="final-card final-section"><div class="final-hd"><h2>今日精读</h2><span class="mini">Original + Meaning</span></div><div class="final-list">${{paraHtml}}</div></section>
-      <section class="final-card final-section"><div class="final-hd"><h2>表达句式</h2><span class="mini">Sentence Patterns</span></div><div class="final-list">${{patternHtml}}</div></section>
+      <section class="final-card final-section"><div class="final-hd"><h2>表达句式</h2><span class="mini">Top 3 Sentence Patterns</span></div><div class="final-list">${{patternHtml}}</div></section>
       <section class="final-card final-section"><div class="final-hd"><h2>重点词组</h2><span class="mini">Phrases</span></div><div class="final-list">${{exprHtml}}</div></section>
     </div>
   `;
@@ -4266,7 +4267,7 @@ function applyImportPack(pack){{
 
   state.vocab = normalizeList(pack.vocab || pack.words || []);
   state.phrase = normalizeList(pack.phrases || pack.phrase || []);
-  state.pattern = normalizePatterns(pack.patterns || pack.sentence_patterns || []);
+  state.pattern = normalizePatterns(pack.patterns || pack.sentence_patterns || []).slice(0,3);
 
   renderEditors();
   renderFinal();
@@ -4328,7 +4329,7 @@ function copyXhsText(){{
   }}
   if(state.pattern.length){{
     lines.push('表达句式：');
-    state.pattern.forEach(x => {{
+    state.pattern.slice(0,3).forEach(x => {{
       lines.push('- ' + x.pattern);
       lines.push('  ' + x.zh);
       if(x.example) lines.push('  例句：' + x.example);
