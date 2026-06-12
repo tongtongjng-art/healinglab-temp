@@ -3136,12 +3136,12 @@ def split_text_for_card_pages(text, lang="en"):
 
 def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote_raw, quote_translated, today, cover_image=""):
     """
-    V34-L：
-    手机端外刊学习页｜表达句式优先版。
+    V34-M：
+    手机端外刊学习页｜词汇标注 + 表达句式精修版。
 
     修正：
     1. 删除单独“难度分级”区块，只在文章卡片里保留难度标签。
-    2. 删除“长难句拆解”，改成“表达句式”。
+    2. 表达句式聚焦可迁移结构，不再做空泛长难句。
     3. 表达句式必须给：原句 / 句式 / 中文意思 / 仿写例句。
     4. 重点表达同时保留：句式、短语、核心词汇。核心词汇必须有中文意思。
     5. 补充高频表达库：There comes a point in our lives / It turned out / Irrespective of quality / irritating / spotty / mimicking 等。
@@ -3223,6 +3223,27 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
 
     # 重点表达库：优先句式和短语，其次是核心词汇。
     expression_bank = [
+        # V34-M：当前教育/SEND文章常见表达 + 用户点名结构
+        ("In the absence of sufficient places and timely support", "在缺乏足够名额和及时支持的情况下。absence = 缺乏；timely = 及时的。", "句式"),
+        ("in the absence of", "在缺乏……的情况下。正式写作中常用来说明条件缺失。", "句式"),
+        ("sufficient places", "足够的名额 / 学位 / 位置。教育资源语境中 place 常指学校名额。", "短语"),
+        ("timely support", "及时支持。timely = 及时的。", "短语"),
+        ("This is a testament to", "这证明了……；这体现了……。用于评价某事反映出的事实。", "句式"),
+        ("is a testament to", "证明了……；体现了……。比 shows 更有表达感。", "句式"),
+        ("one in three", "三分之一。用于比例表达。", "数据表达"),
+        ("more than one in five", "超过五分之一。用于比例表达。", "数据表达"),
+        ("make up", "占据；构成；组成。写比例或群体构成时高频。", "短语"),
+        ("pupils with EHCPs", "拥有教育、健康与照护计划的学生。EHCP 是英国特殊教育支持文件。", "话题词组"),
+        ("have autism", "患有/有自闭症。autism = 自闭症。", "话题表达"),
+        ("speech, language and communications needs", "言语、语言和沟通需求。特殊教育语境常见表达。", "话题词组"),
+        ("language and communications needs", "语言和沟通需求。", "话题词组"),
+        ("mainstream", "主流的；普通学校体系的。教育语境中 mainstream school 指普通学校。", "词汇"),
+        ("autism", "自闭症。教育、心理、医疗话题常见词。", "词汇"),
+        ("sufficient", "足够的；充分的。", "词汇"),
+        ("timely", "及时的。", "词汇"),
+        ("absence", "缺乏；不存在。", "词汇"),
+        ("testament", "证明；体现。", "词汇"),
+        ("places", "名额；位置。教育语境中常指学校名额。", "词汇"),
         # 用户点名的表达句式
         ("There comes a point in our lives", "人生中总会有一个时刻……。适合写人生阶段、观念转变、情绪变化。", "句式"),
         ("There comes a point", "总会有一个时刻……。适合引出转折或人生感悟。", "句式"),
@@ -3311,11 +3332,16 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
     for term, meaning, label in expression_bank:
         if contains(term, text_all):
             add_expr(term, meaning, label)
-        if len(expressions) >= 10:
+        if len(expressions) >= 16:
             break
 
     # B. 正则抓结构。
     pattern_items = [
+        (r"\bIn\s+the\s+absence\s+of\s+[^,.]+", "在缺乏……的情况下。用于说明某种条件不存在。", "句式"),
+        (r"\bThis\s+is\s+a\s+testament\s+to\s+[^,.]+", "这证明了……；这体现了……。", "句式"),
+        (r"\b(?:one|two|three|four|five|six|seven|eight|nine|ten)\s+in\s+(?:two|three|four|five|six|seven|eight|nine|ten)\b", "几分之几。用于比例表达。", "数据表达"),
+        (r"\bmore\s+than\s+one\s+in\s+(?:two|three|four|five|six|seven|eight|nine|ten)\b", "超过几分之一。用于比例表达。", "数据表达"),
+        (r"\bmake\s+up\b", "占据；构成；组成。", "短语"),
         (r"\bThere\s+comes\s+a\s+point(?:\s+in\s+our\s+lives)?\b", "人生中总会有一个时刻……。用于引出人生阶段或观念变化。", "句式"),
         (r"\bIt\s+turned\s+out\s+that\b", "结果证明……；后来发现……。", "句式"),
         (r"\bIt\s+turned\s+out\b", "结果证明；后来发现。", "句式"),
@@ -3333,13 +3359,24 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
     for pat, meaning, label in pattern_items:
         for m in re.finditer(pat, text_all, flags=re.I):
             add_expr(m.group(0), meaning, label)
-            if len(expressions) >= 10:
+            if len(expressions) >= 16:
                 break
-        if len(expressions) >= 10:
+        if len(expressions) >= 16:
             break
 
     # C. all_keywords 补充，但保留用户关心的核心词。
     forced_word_meanings = {
+        "autism": "自闭症。",
+        "sufficient": "足够的；充分的。",
+        "timely": "及时的。",
+        "mainstream": "主流的；普通学校体系的。",
+        "absence": "缺乏；不存在。",
+        "testament": "证明；体现。",
+        "places": "名额；位置。教育语境中常指学校名额。",
+        "pupils": "学生；小学生/中学生。",
+        "communications": "沟通；通信；交流。",
+        "needs": "需求；需要。",
+        "support": "支持；帮助。",
         "irritating": "恼人的；令人烦躁的。",
         "spotty": "有斑点的；不稳定的；参差不齐的。",
         "mimicking": "模仿；模拟。",
@@ -3353,7 +3390,7 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
     for word, meaning in forced_word_meanings.items():
         if contains(word, text_all):
             add_expr(word, meaning, "词汇")
-        if len(expressions) >= 10:
+        if len(expressions) >= 16:
             break
 
     bad_single = {"children", "people", "reading", "article", "school", "student", "students", "work", "life", "time", "year", "years", "education", "survey", "research"}
@@ -3370,10 +3407,10 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
         except Exception:
             meaning = "可理解为：" + kk
         add_expr(kk, meaning, "词汇")
-        if len(expressions) >= 10:
+        if len(expressions) >= 16:
             break
 
-    expressions = expressions[:10]
+    expressions = expressions[:16]
 
     def find_sentence_with(term):
         if not term:
@@ -3391,6 +3428,46 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
 
         def add(title, original, structure, meaning, example, note):
             rows.append({"title": title, "original": original, "structure": structure, "meaning": meaning, "example": example, "note": note})
+
+        if "in the absence of" in low:
+            add(
+                "缺失条件句",
+                find_sentence_with("in the absence of"),
+                "In the absence of A, B happens / B becomes difficult.",
+                "在缺乏 A 的情况下，B 发生 / B 变得困难。",
+                "In the absence of enough practice, speaking fluently becomes difficult.",
+                "适合写资源不足、条件缺失、问题产生的原因。"
+            )
+
+        if "testament to" in low:
+            add(
+                "证明评价句",
+                find_sentence_with("testament to"),
+                "This is a testament to A.",
+                "这证明了 A；这体现了 A。",
+                "This result is a testament to the importance of daily practice.",
+                "适合表达某个结果反映出的深层问题或价值。"
+            )
+
+        if "one in three" in low or "one in five" in low:
+            add(
+                "比例表达句",
+                find_sentence_with("one in three") or find_sentence_with("more than one in five"),
+                "One in three A have / are B.",
+                "三分之一的 A 有 / 是 B。",
+                "One in three students say they feel stressed before exams.",
+                "适合写调查数据和社会现象。"
+            )
+
+        if "make up" in low:
+            add(
+                "构成比例句",
+                find_sentence_with("make up"),
+                "A make up B.",
+                "A 构成 B；A 占 B 的一部分。",
+                "Young people make up a large part of the online learning community.",
+                "适合写群体构成、比例、身份分类。"
+            )
 
         if "there comes a point" in low:
             add(
@@ -3516,7 +3593,9 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
         """
 
     expression_html = ""
-    for item in expressions:
+    order = {"句式": 0, "研究句": 0, "数据表达": 0, "让步结构": 0, "短语": 1, "话题词组": 1, "话题表达": 1, "原因结构": 1, "比较结构": 1, "词汇": 2}
+    expressions_sorted = sorted(expressions, key=lambda x: (order.get(x.get("label", ""), 1), len(x.get("text", ""))))
+    for item in expressions_sorted:
         expression_html += f"""
           <div class="expression" data-term="{attr_escape(item.get('text'))}" data-meaning="{attr_escape(item.get('meaning'))}">
             <span class="expr-label">{esc(item.get('label', '表达'))}</span>
@@ -3575,16 +3654,27 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
         return entries
 
     history_html = ""
-    for h in load_history_entries():
-        title_show = h["title"]
-        if len(title_show) > 72:
-            title_show = title_show[:70] + "..."
-        history_html += f"""
-          <a class="history-item" href="{attr_escape(h['href'])}">
-            <span>{esc(h['date'])} · {esc(h['level'])} · {esc(h['topic'])}</span>
-            <b>{esc(title_show)}</b>
-          </a>
-        """
+    groups = {}
+    seen_titles = set()
+    for h in load_history_entries(max_count=30):
+        title_key = h.get("title", "").lower().strip()
+        if title_key in seen_titles:
+            continue
+        seen_titles.add(title_key)
+        groups.setdefault(h.get("topic", "综合"), []).append(h)
+
+    topic_order = ["AI科技", "科技", "教育", "文化历史", "健康心理", "社会工作", "自然科学", "生活", "综合"]
+    for tp in topic_order:
+        items = groups.get(tp, [])
+        if not items:
+            continue
+        history_html += f'<div class="topic-group"><h3>{esc(tp)}</h3>'
+        for h in items[:5]:
+            title_show = h["title"]
+            if len(title_show) > 68:
+                title_show = title_show[:66] + "..."
+            history_html += f'<a class="history-item" href="{attr_escape(h["href"])}"><b>{esc(title_show)}</b></a>'
+        history_html += '</div>'
     if not history_html:
         history_html = '<div class="history-empty">暂无历史文章</div>'
 
@@ -3592,8 +3682,8 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
     if link:
         source_link_html = f'<a class="source-link" href="{attr_escape(link)}" target="_blank" rel="noopener">查看原文来源</a>'
 
-    best_expr = expressions[0]["text"] if expressions else ""
-    best_meaning = expressions[0]["meaning"] if expressions else ""
+    best_expr = expressions_sorted[0]["text"] if expressions_sorted else ""
+    best_meaning = expressions_sorted[0]["meaning"] if expressions_sorted else ""
     today_dot = esc(today).replace("-", ".")
 
     page = f"""<!doctype html>
@@ -3637,7 +3727,7 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
     .expression{{display:grid;grid-template-columns:auto 1fr;column-gap:10px;row-gap:3px;align-items:start;border:1px solid var(--line);background:var(--paper);border-radius:10px;padding:9px 10px;cursor:pointer}} .expr-label{{grid-row:1 / span 2;width:fit-content;padding:4px 7px;border-radius:999px;background:var(--blue-soft);color:var(--blue);font-size:12px;font-weight:900;white-space:nowrap}} .expression b{{color:var(--sage-dark);line-height:1.35;font-size:15.5px}} .expr-meaning{{color:var(--muted);line-height:1.5;font-size:14px}}
     .pattern-card{{border:1px solid #f0d6c9;background:#fff8f2;border-radius:13px;padding:12px}} .pattern-card b{{display:block;font-size:15px;margin-bottom:8px}} .pattern-card p{{margin:7px 0;line-height:1.6;font-size:14.5px}} .pattern-card .original{{color:#536171;border-left:3px solid var(--clay);padding-left:10px}} .pattern-card .pattern{{color:#25323a;font-family:Georgia,"Times New Roman",serif;font-size:16px}} .pattern-card .meaning{{color:#9b4e35}} .pattern-card .example{{color:#414b51}} .pattern-card small{{display:block;color:var(--muted);margin-top:8px;line-height:1.55}}
     .review-box{{border:1px dashed #b9c7c0;background:#fbfdfb}} .review-box b{{display:block;margin-bottom:8px;font-size:15px}}
-    .history-list{{grid-template-columns:1fr}} .history-item{{display:block;text-decoration:none;color:var(--ink);border:1px solid var(--line);background:var(--paper);border-radius:12px;padding:11px}} .history-item span{{display:block;color:var(--muted);font-size:12px;margin-bottom:5px}} .history-item b{{font-size:14.5px;line-height:1.35}} .history-empty{{color:var(--muted);font-size:14px}}
+    .topic-group{{display:grid;gap:8px;margin-bottom:14px}} .topic-group h3{{font-size:16px;margin:0;color:var(--sage-dark)}} .history-item{{display:block;text-decoration:none;color:var(--ink);border:1px solid var(--line);background:var(--paper);border-radius:12px;padding:10px}} .history-item b{{font-size:14.5px;line-height:1.35}} .history-empty{{color:var(--muted);font-size:14px}}
     .source-link{{display:inline-flex;width:fit-content;margin-top:12px;text-decoration:none;color:var(--sage-dark);background:var(--sage-soft);border:1px solid rgba(66,110,96,.18);border-radius:999px;padding:8px 11px;font-size:13px;font-weight:900}}
     .tip{{position:fixed;left:14px;right:14px;bottom:16px;z-index:80;background:#1d252c;color:#fff;border-radius:16px;padding:12px 14px;box-shadow:0 14px 38px rgba(0,0,0,.22);line-height:1.6;display:none;max-width:452px;margin:0 auto}} .tip b{{color:#f1c66d}} .bottom-note{{color:var(--muted);font-size:12px;line-height:1.7;text-align:center;padding:20px 6px 2px}}
     @media (min-width:420px){{.meta-grid{{grid-template-columns:repeat(3,minmax(0,1fr))}}}} @media (max-width:360px){{.hero h1{{font-size:38px}}.article-title-en{{font-size:29px}}.section{{padding:16px}}.expression{{grid-template-columns:1fr}}.expr-label{{grid-row:auto}}}}
@@ -3680,7 +3770,7 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
 
       <section class="card section" id="review"><div class="section-head"><h2>今日复盘</h2><span class="mini-label">Daily Review</span></div><div class="review-grid"><div class="review-box"><b>今天最值得记住</b><p>{esc(best_expr)}<br>{esc(best_meaning)}</p></div><div class="review-box"><b>怎么用</b><p>选一个表达句式，改写成自己的生活、学习或工作场景。</p></div></div>{source_link_html}</section>
 
-      <section class="card section" id="archive"><div class="section-head"><h2>历史文章</h2><span class="mini-label">Archive by topic</span></div><div class="history-list">{history_html}</div></section>
+      <section class="card section" id="archive"><div class="section-head"><h2>历史文章</h2><span class="mini-label">Archive by topic</span></div>{history_html}</section>
     </div>
     <p class="bottom-note">Healing Lab Daily Reading · Mobile Learning Card Page</p>
   </main>
