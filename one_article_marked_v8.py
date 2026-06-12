@@ -1771,6 +1771,22 @@ LOCAL_VOCAB_ZH = {
     "giving it an external place to land": "给它一个外部安放处",
 }
 
+
+LOCAL_VOCAB_ZH.update({
+    "large language models": "\u5927\u578b\u8bed\u8a00\u6a21\u578b\uff1bAI \u8bdd\u9898\u6838\u5fc3\u8bcd\u7ec4\u3002",
+    "job cuts": "\u88c1\u5458\uff1b\u5de5\u4f5c\u5c97\u4f4d\u524a\u51cf\u3002",
+    "be accompanied by": "\u4f34\u968f\u7740\u2026\u2026\uff1b\u5e38\u7528\u4e8e\u63cf\u8ff0\u67d0\u4ef6\u4e8b\u51fa\u73b0\u65f6\u540c\u65f6\u51fa\u73b0\u7684\u53cd\u5e94\u3002",
+    "warnings that": "\u5173\u4e8e\u2026\u2026\u7684\u8b66\u544a\uff1bthat \u540e\u9762\u63a5\u5177\u4f53\u62c5\u5fe7\u3002",
+    "tends to be accompanied by": "\u5f80\u5f80\u4f1a\u4f34\u968f\u7740\u2026\u2026\uff1b\u9002\u5408\u5199\u666e\u904d\u73b0\u8c61\u3002",
+    "across many more industries": "\u904d\u53ca\u66f4\u591a\u884c\u4e1a\uff1bacross \u5f3a\u8c03\u8303\u56f4\u6269\u6563\u3002",
+    "come for us all": "\u6700\u7ec8\u6ce2\u53ca\u6211\u4eec\u6240\u6709\u4eba\uff1b\u8bed\u6c14\u6bd4 affect \u66f4\u6709\u538b\u8feb\u611f\u3002",
+    "be affected": "\u53d7\u5230\u5f71\u54cd\uff1b\u4e2d\u6027\u800c\u9ad8\u9891\u7684\u5916\u520a\u8868\u8fbe\u3002",
+    "lose your job to": "\u628a\u5de5\u4f5c\u4e22\u7ed9 / \u88ab\u2026\u2026\u53d6\u4ee3\u800c\u5931\u4e1a\u3002",
+    "a substitute for": "\u2026\u2026\u7684\u66ff\u4ee3\u54c1\u3002",
+    "but rather": "\u800c\u662f\uff1b\u66f4\u51c6\u786e\u5730\u8bf4\u662f\u2026\u2026\uff0c\u6bd4 but \u66f4\u6b63\u5f0f\u3002",
+    "general labor substitute": "\u901a\u7528\u52b3\u52a8\u529b\u66ff\u4ee3\u7269\uff1b\u7528\u4e8e\u8ba8\u8bba\u6280\u672f\u5bf9\u52b3\u52a8\u7684\u66ff\u4ee3\u3002",
+})
+
 BANNED_VOCAB_WORDS = {
     "kasbah", "toubkal", "morocco", "africa", "guardian", "bbc",
     "mike", "newsletter", "advertisement", "caption", "copyright",
@@ -1793,13 +1809,89 @@ def proper_like_words(text):
     return found
 
 
+GENERIC_QUANTITY_NOUNS = {
+    "workers", "worker", "people", "person", "jobs", "job", "students", "student",
+    "children", "child", "adults", "adult", "years", "year", "months", "month",
+    "days", "day", "companies", "company", "industries", "industry", "users", "user",
+    "schools", "school", "families", "family", "employees", "employee",
+}
+
+GENERIC_PHRASE_HEADS = {
+    "big", "large", "small", "new", "old", "good", "bad", "many", "more", "most",
+    "some", "several", "different", "important", "popular", "common", "major", "minor",
+    "specific", "general", "real", "normal", "daily", "public", "private",
+}
+
+GENERIC_PHRASE_TAILS = GENERIC_QUANTITY_NOUNS | {
+    "things", "thing", "ways", "way", "times", "time", "places", "place", "areas", "area",
+    "issues", "issue", "problems", "problem", "questions", "question", "cases", "case",
+    "reports", "report", "articles", "article", "story", "stories", "news", "data",
+}
+
+VOCAB_PRIORITY_SCORES = {
+    "job cuts": 310,
+    "tends to be accompanied by": 300,
+    "lose your job to": 292,
+    "a substitute for": 288,
+    "but rather": 284,
+    "come for us all": 280,
+    "general labor substitute": 276,
+    "across many more industries": 270,
+    "large language models": 264,
+    "be accompanied by": 245,
+    "warnings that": 230,
+    "be affected": 220,
+    "in the tech industry alone": 180,
+}
+
+DATA_WORDS = r"(?:zero|one|two|three|four|five|six|seven|eight|nine|ten|half|hundred|thousand|million|billion|\d+(?:\.\d+)?)"
+
+LOW_VALUE_VOCAB_PATTERNS = [
+    # Plain data + ordinary noun is useful in the sentence, but weak as a vocabulary card.
+    re.compile(rf"^(?:more than|less than|over|under|around|about|nearly|almost)?\s*(?:a\s+)?(?:{DATA_WORDS}\s+){{1,3}}(?:" + "|".join(sorted(GENERIC_QUANTITY_NOUNS)) + r")$", re.I),
+    re.compile(r"^(?:in|on|at|by|for|with|from|to)\s+(?:the\s+)?(?:world|country|city|year|month|week|day)$", re.I),
+]
+
+
+def is_low_value_vocab_phrase(low):
+    words = re.findall(r"\b[a-zA-Z][a-zA-Z'-]*\b", low)
+    if not words:
+        return True
+
+    if len(words) >= 2:
+        for pat in LOW_VALUE_VOCAB_PATTERNS:
+            if pat.match(low):
+                return True
+
+    if len(words) == 2 and words[0] in GENERIC_PHRASE_HEADS and words[1] in GENERIC_PHRASE_TAILS:
+        return True
+
+    if len(words) == 2 and words[0] in STOPWORDS and words[1] in GENERIC_PHRASE_TAILS:
+        return True
+
+    # Keep strong collocations even if they contain a generic noun.
+    strong_markers = {
+        "job cuts", "labor substitute", "language model", "large language models",
+        "be accompanied by", "come for", "lose your job", "a substitute for",
+        "rather than", "but rather", "tends to", "across many more industries",
+    }
+    if any(marker in low for marker in strong_markers):
+        return False
+
+    return False
+
+
 def is_bad_vocab_term(term, text):
     term = clean_text(term).strip()
     if not term:
         return True
 
-    low = term.lower()
+    low = term.lower().strip(" ,.;:!?\"'\u201c\u201d\u2018\u2019()[]{}")
+    if not low:
+        return True
     if low in BANNED_VOCAB_WORDS:
+        return True
+    if is_low_value_vocab_phrase(low):
         return True
 
     proper_words = proper_like_words(text)
@@ -1820,10 +1912,11 @@ def is_bad_vocab_term(term, text):
 
 
 def add_vocab_candidate(cands, term, score, text):
-    term = clean_text(term).strip(" ,.;:!?\"'“”")
+    term = clean_text(term).strip(" ,.;:!?\"'\u201c\u201d\u2018\u2019()[]{}")
     if is_bad_vocab_term(term, text):
         return
     key = term.lower()
+    score = max(score, VOCAB_PRIORITY_SCORES.get(key, 0))
     if key not in cands or score > cands[key]["score"]:
         cands[key] = {"term": term, "score": score}
 
@@ -1841,6 +1934,10 @@ def extract_key_words(text, count=8):
     # 第一优先级：高价值固定搭配（直接从原文匹配）
     high_value_phrases = [
         # 外刊高频表达搭配
+        "be accompanied by", "warnings that", "tends to be accompanied by",
+        "job cuts", "lose your job to", "a substitute for", "but rather",
+        "come for us all", "across many more industries", "general labor substitute",
+        "large language models", "in the tech industry alone", "be affected",
         "instead of", "rather than", "carry it on", "set off",
         "a flood of", "more and more", "not just", "not only",
         "as a result", "in the long run", "over time", "on top of",
@@ -1885,6 +1982,17 @@ def extract_key_words(text, count=8):
 
     # 第二优先级：动态匹配搭配模式
     collocation_patterns = [
+        r"\btends\s+to\s+be\s+accompanied\s+by\b",
+        r"\bbe\s+accompanied\s+by\b",
+        r"\bjob\s+cuts\b",
+        r"\bacross\s+many\s+more\s+industries\b",
+        r"\bcome\s+for\s+us\s+all\b",
+        r"\b(?:will|would|can|could)?\s*be\s+affected\b",
+        r"\blose\s+(?:your|their|our|one's|his|her)\s+job\s+to\b",
+        r"\ba\s+substitute\s+for\b",
+        r"\bbut\s+rather\b",
+        r"\bgeneral\s+labor\s+substitute\b",
+        r"\blarge\s+language\s+models?\b",
         r"\b(?:associate|assistant|senior|junior|clinical|visiting)\s+professor\b",
         r"\blicensed\s+clinical\s+social\s+worker\b",
         r"\bclinical\s+social\s+worker\b",
@@ -1993,15 +2101,22 @@ def extract_key_words(text, count=8):
     def can_add(selected_items, item):
         term = item["term"]
         low_term = term.lower()
-        for chosen in selected_items:
+        low_words = low_term.split()
+        for chosen in list(selected_items):
             chosen_low = chosen["term"].lower()
-            # 已有长词组，不再展示其中的单个词；已有短词，也不重复展示完全相同词组。
+            chosen_words = chosen_low.split()
             if low_term == chosen_low:
                 return False
+            # If a stronger long phrase is already selected, skip its shorter fragment.
+            if low_term in chosen_low and len(low_words) < len(chosen_words):
+                return False
+            # If the new phrase is a clearer full version, replace the shorter fragment.
+            if chosen_low in low_term and len(chosen_words) < len(low_words):
+                selected_items.remove(chosen)
+                return True
             if low_term in chosen_low and " " not in low_term:
                 return False
-            if chosen_low in low_term and " " not in chosen_low and len(low_term.split()) <= 3:
-                # 用更完整的词组替换短词
+            if chosen_low in low_term and " " not in chosen_low and len(low_words) <= 3:
                 selected_items.remove(chosen)
                 return True
         return True
@@ -3223,6 +3338,14 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
 
     # 重点表达库：优先句式和短语，其次是核心词汇。
     expression_bank = [
+        ("tends to be accompanied by", "\u5f80\u5f80\u4f1a\u4f34\u968f\u7740\u2026\u2026\uff1b\u9002\u5408\u5199\u67d0\u4e2a\u8bdd\u9898\u51fa\u73b0\u65f6\u7684\u5e38\u89c1\u53cd\u5e94\u3002", "\u53e5\u5f0f"),
+        ("be accompanied by", "\u4f34\u968f\u7740\u2026\u2026\uff1b\u6bd4 with \u66f4\u6b63\u5f0f\uff0c\u5916\u520a\u5e38\u7528\u3002", "\u53e5\u5f0f"),
+        ("job cuts", "\u88c1\u5458\uff1b\u8ba8\u8bba\u5c31\u4e1a\u3001\u7ecf\u6d4e\u3001\u6280\u672f\u51b2\u51fb\u65f6\u9ad8\u9891\u3002", "\u8bdd\u9898\u8bcd\u7ec4"),
+        ("across many more industries", "\u904d\u53ca\u66f4\u591a\u884c\u4e1a\uff1bacross \u5f3a\u8c03\u5f71\u54cd\u8303\u56f4\u6269\u6563\u3002", "\u8bdd\u9898\u8bcd\u7ec4"),
+        ("come for us all", "\u6700\u7ec8\u6ce2\u53ca\u6240\u6709\u4eba\uff1b\u8bed\u6c14\u6bd4 affect \u66f4\u5f3a\uff0c\u9002\u5408\u5199\u7126\u8651\u548c\u98ce\u9669\u3002", "\u4eae\u70b9\u8868\u8fbe"),
+        ("lose your job to", "\u56e0\u2026\u2026\u800c\u5931\u53bb\u5de5\u4f5c\uff1blose A to B \u8868\u793a A \u8f93\u7ed9 / \u88ab B \u53d6\u4ee3\u3002", "\u53e5\u5f0f"),
+        ("a substitute for", "\u2026\u2026\u7684\u66ff\u4ee3\u54c1\uff1b\u79d1\u6280\u3001\u6559\u80b2\u3001\u5de5\u4f5c\u8bdd\u9898\u5e38\u7528\u3002", "\u77ed\u8bed"),
+        ("but rather", "\u800c\u662f\uff1b\u66f4\u51c6\u786e\u5730\u8bf4\u662f\u2026\u2026\uff0c\u7528\u6765\u7ea0\u6b63\u524d\u9762\u7684\u8bf4\u6cd5\u3002", "\u8f6c\u6298\u7ed3\u6784"),
         # V34-M：当前教育/SEND文章常见表达 + 用户点名结构
         ("In the absence of sufficient places and timely support", "在缺乏足够名额和及时支持的情况下。absence = 缺乏；timely = 及时的。", "句式"),
         ("in the absence of", "在缺乏……的情况下。正式写作中常用来说明条件缺失。", "句式"),
@@ -3424,140 +3547,131 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
     # 表达句式：不做长难句，改为可复用句式。
     def make_pattern_rows():
         rows = []
-        low = text_all.lower()
+        seen = set()
 
         def add(title, original, structure, meaning, example, note):
+            original = clean_text(original or "")
+            if not original:
+                return
+            key = (structure.lower(), original.lower()[:120])
+            if key in seen:
+                return
+            seen.add(key)
             rows.append({"title": title, "original": original, "structure": structure, "meaning": meaning, "example": example, "note": note})
 
-        if "in the absence of" in low:
-            add(
-                "缺失条件句",
-                find_sentence_with("in the absence of"),
-                "In the absence of A, B happens / B becomes difficult.",
-                "在缺乏 A 的情况下，B 发生 / B 变得困难。",
-                "In the absence of enough practice, speaking fluently becomes difficult.",
-                "适合写资源不足、条件缺失、问题产生的原因。"
-            )
+        def first_sentence_matching(pattern):
+            for s in split_sentences(text_all):
+                if re.search(pattern, s, flags=re.I):
+                    return clean_text(s)
+            return ""
 
-        if "testament to" in low:
-            add(
-                "证明评价句",
-                find_sentence_with("testament to"),
-                "This is a testament to A.",
-                "这证明了 A；这体现了 A。",
-                "This result is a testament to the importance of daily practice.",
-                "适合表达某个结果反映出的深层问题或价值。"
-            )
+        pattern_candidates = [
+            (
+                r"\bSince\s+[^,.]{3,90},\s+[^.?!]{15,220}",
+                "\u65f6\u95f4\u80cc\u666f\u53e5",
+                "Since A, B has / have ...",
+                "\u81ea\u4ece A \u4ee5\u6765\uff0cB \u5df2\u7ecf\u2026\u2026\u3002\u9002\u5408\u5199\u8d8b\u52bf\u3001\u53d8\u5316\u548c\u80cc\u666f\u3002",
+                "Since the rise of short videos, many people have changed the way they read news.",
+                "\u8fd9\u79cd\u53e5\u5f0f\u80fd\u5feb\u901f\u628a\u65f6\u95f4\u8d77\u70b9\u548c\u540e\u7eed\u5f71\u54cd\u8fde\u8d77\u6765\u3002",
+            ),
+            (
+                r"\bAny\s+mention\s+of\s+[^,.]{2,90}\s+tends\s+to\s+be\s+accompanied\s+by\s+warnings\s+that\b[^.?!]*",
+                "\u8bdd\u9898\u53cd\u5e94\u53e5",
+                "Any mention of A tends to be accompanied by warnings that B.",
+                "\u4efb\u4f55\u5173\u4e8e A \u7684\u8ba8\u8bba\uff0c\u5f80\u5f80\u90fd\u4f1a\u4f34\u968f\u7740 B \u8fd9\u6837\u7684\u8b66\u544a\u3002",
+                "Any mention of online learning tends to be accompanied by warnings that students may lose focus.",
+                "\u9002\u5408\u5199 AI\u3001\u6559\u80b2\u3001\u793e\u4f1a\u7126\u8651\u7c7b\u8bdd\u9898\uff0c\u6bd4\u5355\u5199 people worry about \u66f4\u50cf\u5916\u520a\u3002",
+            ),
+            (
+                r"\b(?:You(?:'re| are)|We(?:'re| are)|They(?:'re| are)|People are)\s+not\s+going\s+to\s+lose\s+[^.?!]{1,100}\s+to\s+[^,.;]+,\s+but\s+[^.?!]+",
+                "\u5bf9\u6bd4\u8b66\u793a\u53e5",
+                "You are not going to lose A to B, but to C.",
+                "\u4f60\u4e0d\u662f\u4f1a\u628a A \u8f93\u7ed9 B\uff0c\u800c\u662f\u4f1a\u8f93\u7ed9 C\u3002",
+                "You are not going to lose opportunities to technology, but to people who use it better.",
+                "\u8fd9\u662f\u5f88\u6709\u51b2\u51fb\u529b\u7684\u8f6c\u6298\u53e5\uff0c\u9002\u5408\u5199\u7ade\u4e89\u3001\u6280\u80fd\u548c\u5de5\u4f5c\u53d8\u5316\u3002",
+            ),
+            (
+                r"\b[^.?!]{0,90}\bisn'?t\s+a\s+substitute\s+for\s+[^,.;]+,\s+but\s+rather\s+[^.?!]+",
+                "\u7ea0\u6b63\u5b9a\u4e49\u53e5",
+                "A is not a substitute for B, but rather C.",
+                "A \u4e0d\u662f B \u7684\u66ff\u4ee3\u54c1\uff0c\u800c\u66f4\u51c6\u786e\u5730\u8bf4\u662f C\u3002",
+                "AI is not a substitute for thinking, but rather a tool that changes how we work.",
+                "\u9002\u5408\u628a\u4e00\u4e2a\u5bb9\u6613\u88ab\u8bef\u89e3\u7684\u4e1c\u897f\u91cd\u65b0\u5b9a\u4e49\u3002",
+            ),
+            (
+                r"\bnot\s+[^,.;]{1,80},\s+but\s+rather\s+[^.?!]+",
+                "\u7ea0\u6b63\u8f6c\u6298\u53e5",
+                "not A, but rather B",
+                "\u4e0d\u662f A\uff0c\u800c\u662f B\u3002rather \u8ba9\u8f6c\u6298\u66f4\u6b63\u5f0f\u3001\u66f4\u51c6\u786e\u3002",
+                "The problem is not a lack of time, but rather a lack of clear priorities.",
+                "\u5199\u89c2\u70b9\u6587\u65f6\u5f88\u5b9e\u7528\uff0c\u53ef\u4ee5\u7528\u6765\u63a8\u7ffb\u8868\u9762\u7406\u89e3\u3002",
+            ),
+            (
+                r"\b(?:research|study|survey|report|findings?)\s+(?:suggests?|shows?|reveals?|finds?)\s+that\b[^.?!]*",
+                "\u7814\u7a76\u53d1\u73b0\u53e5",
+                "Research / A study suggests that ...",
+                "\u7814\u7a76 / \u8c03\u67e5\u8868\u660e\u2026\u2026\u3002\u9002\u5408\u5f15\u51fa\u4e8b\u5b9e\u4f9d\u636e\u3002",
+                "Research suggests that regular reading can improve attention over time.",
+                "\u5916\u520a\u91cc\u5e38\u7528\u8fd9\u7c7b\u53e5\u5f0f\u6765\u5e73\u8861\u89c2\u70b9\u548c\u8bc1\u636e\u3002",
+            ),
+            (
+                r"\b(?:more|less)\s+likely\s+to\b[^.?!]*",
+                "\u6982\u7387\u5bf9\u6bd4\u53e5",
+                "A is more / less likely to do B than C.",
+                "A \u6bd4 C \u66f4\u6709 / \u66f4\u4e0d\u592a\u53ef\u80fd\u505a B\u3002",
+                "Students who read every day are more likely to build a strong vocabulary.",
+                "\u9002\u5408\u5199\u7fa4\u4f53\u5dee\u5f02\u3001\u884c\u4e3a\u8d8b\u52bf\u548c\u8c03\u67e5\u7ed3\u8bba\u3002",
+            ),
+            (
+                r"\b(?:make|makes|made)\s+it\s+(?:easier|harder|possible|difficult)\s+to\b[^.?!]*",
+                "\u5f71\u54cd\u7ed3\u679c\u53e5",
+                "A makes it easier / harder to do B.",
+                "A \u8ba9\u505a B \u53d8\u5f97\u66f4\u5bb9\u6613 / \u66f4\u56f0\u96be\u3002",
+                "Clear examples make it easier to remember new expressions.",
+                "\u8fd9\u662f\u5199\u6280\u672f\u3001\u6559\u80b2\u3001\u5de5\u4f5c\u5f71\u54cd\u65f6\u7684\u9ad8\u9891\u7ed3\u6784\u3002",
+            ),
+            (
+                r"\b(?:be|is|are|was|were|been)\s+linked\s+to\b[^.?!]*",
+                "\u5173\u8054\u8bf4\u660e\u53e5",
+                "A is linked to B.",
+                "A \u4e0e B \u6709\u5173\u3002\u6bd4 A causes B \u66f4\u8c28\u614e\u3001\u66f4\u7b26\u5408\u5916\u520a\u5199\u6cd5\u3002",
+                "Long screen time is often linked to poor sleep quality.",
+                "\u9002\u5408\u5199\u4e0d\u60f3\u628a\u56e0\u679c\u8bf4\u5f97\u592a\u7edd\u5bf9\u7684\u8bdd\u9898\u3002",
+            ),
+        ]
 
-        if "one in three" in low or "one in five" in low:
-            add(
-                "比例表达句",
-                find_sentence_with("one in three") or find_sentence_with("more than one in five"),
-                "One in three A have / are B.",
-                "三分之一的 A 有 / 是 B。",
-                "One in three students say they feel stressed before exams.",
-                "适合写调查数据和社会现象。"
-            )
+        for pat, title, structure, meaning, example, note in pattern_candidates:
+            s = first_sentence_matching(pat)
+            if s:
+                add(title, s, structure, meaning, example, note)
+            if len(rows) >= 4:
+                break
 
-        if "make up" in low:
-            add(
-                "构成比例句",
-                find_sentence_with("make up"),
-                "A make up B.",
-                "A 构成 B；A 占 B 的一部分。",
-                "Young people make up a large part of the online learning community.",
-                "适合写群体构成、比例、身份分类。"
-            )
-
-        if "there comes a point" in low:
-            add(
-                "人生转折句",
-                find_sentence_with("There comes a point"),
-                "There comes a point in our lives when ________.",
-                "人生中总会有一个时刻，……",
-                "There comes a point in our lives when we stop trying to please everyone.",
-                "适合写成长、选择、心态变化。"
-            )
-
-        if "it turned out" in low:
-            add(
-                "结果反转句",
-                find_sentence_with("It turned out"),
-                "It turned out that ________.",
-                "结果证明 / 后来发现，……",
-                "It turned out that the simple method worked better than expected.",
-                "适合写结果和预期不同。"
-            )
-
-        if "irrespective of" in low:
-            add(
-                "让步表达句",
-                find_sentence_with("Irrespective of"),
-                "Irrespective of ________, S + V.",
-                "不管……，某事仍然成立。",
-                "Irrespective of quality, the product attracted a lot of attention.",
-                "适合写“不受某条件影响”的判断。"
-            )
-
-        if "will have the chance to" in low:
-            add(
-                "机会体验句",
-                find_sentence_with("will have the chance to"),
-                "A will have the chance to do B, thanks to C.",
-                "A 将有机会做 B，这要归功于 C。",
-                "Visitors will have the chance to experience local culture, thanks to the new exhibition.",
-                "适合介绍活动、展览、课程、旅行体验。"
-            )
-
-        if "commissioned by" in low:
-            add(
-                "项目来源句",
-                find_sentence_with("commissioned by"),
-                "Commissioned by A, B was built / designed with C.",
-                "由 A 委托，B 以 C 的方式建成 / 设计。",
-                "Commissioned by the school, the tool was designed with a focus on speaking practice.",
-                "适合写项目、建筑、课程和活动来源。"
-            )
-
-        if "based on what" in low or "sourced locally" in low:
-            add(
-                "依据说明句",
-                find_sentence_with("based on what") or find_sentence_with("sourced locally"),
-                "A was chosen based on what B know / need / find.",
-                "A 是根据 B 所知道 / 需要 / 发现的内容来选择的。",
-                "The sentences were chosen based on what learners often find difficult.",
-                "适合说明选择标准、课程设计、例句筛选依据。"
-            )
-
-        if "research" in low or "suggest" in low or "reveal" in low:
-            add(
-                "研究发现句",
-                find_sentence_with("suggest") or find_sentence_with("reveal"),
-                "Research suggests that ________.",
-                "研究表明，……",
-                "Research suggests that people have a tendency to repeat familiar habits.",
-                "适合引出研究发现、调查结论。"
-            )
-
-        if "for the first time in" in low or "has increased" in low:
-            add(
-                "趋势变化句",
-                find_sentence_with("for the first time in") or find_sentence_with("has increased"),
-                "The number of A has increased for the first time in B.",
-                "A 的数量在 B 时间以来首次增加。",
-                "The number of children who enjoy reading has increased for the first time in five years.",
-                "适合写数据回升、比例变化、社会趋势。"
-            )
+        if len(rows) < 3:
+            for s in split_sentences(text_all):
+                if len(rows) >= 4:
+                    break
+                if word_count(s) < 10 or word_count(s) > 38:
+                    continue
+                if re.search(r"\btends\s+to\b", s, flags=re.I):
+                    add("\u503e\u5411\u8868\u8fbe\u53e5", s, "A tends to do B.", "A \u5f80\u5f80\u4f1a\u505a B\uff1b\u7528\u4e8e\u6982\u62ec\u5e38\u89c1\u884c\u4e3a\u6216\u73b0\u8c61\u3002", "Public debates tend to focus on risks rather than opportunities.", "\u6bd4 usually \u66f4\u6709\u5916\u520a\u5206\u6790\u611f\u3002")
+                elif re.search(r"\bacross\s+[^.?!]{3,80}", s, flags=re.I):
+                    add("\u8303\u56f4\u6269\u6563\u53e5", s, "A happens across B.", "A \u5728 B \u8303\u56f4\u5185\u53d1\u751f / \u6269\u6563\u3002", "The change is happening across many parts of daily life.", "across \u5f88\u9002\u5408\u5199\u5f71\u54cd\u9762\u3001\u884c\u4e1a\u6216\u5730\u57df\u3002")
+                elif re.search(r"\brather\s+than\b", s, flags=re.I):
+                    add("\u66ff\u4ee3\u9009\u62e9\u53e5", s, "A rather than B", "A \u800c\u4e0d\u662f B\uff1b\u7528\u6765\u5f3a\u8c03\u771f\u6b63\u9009\u62e9\u3002", "I want steady progress rather than quick results.", "\u9002\u5408\u628a\u4e24\u4e2a\u9009\u9879\u5bf9\u6bd4\u6e05\u695a\u3002")
+                elif re.search(r"\bas\s+a\s+result\b", s, flags=re.I):
+                    add("\u7ed3\u679c\u8854\u63a5\u53e5", s, "As a result, S + V.", "\u7ed3\u679c\uff0c\u2026\u2026\u3002\u7528\u6765\u8fde\u63a5\u539f\u56e0\u548c\u540e\u679c\u3002", "As a result, learners remember the expression more easily.", "\u5199\u539f\u56e0\u5206\u6790\u65f6\u5f88\u7a33\u3002")
 
         if not rows and expressions:
             first = expressions[0]["text"]
+            original = find_sentence_with(first) or (split_sentences(text_all)[0] if split_sentences(text_all) else text_all)
             add(
-                "表达复用句",
-                find_sentence_with(first),
-                f"Use “{first}” in one sentence.",
-                "用今天的表达写一个自己的句子。",
-                f"I can use “{first}” to describe a real situation in my life.",
-                "适合把外刊表达转成输出。"
+                "\u8868\u8fbe\u6539\u5199\u53e5",
+                original,
+                "Keep the useful expression, then replace the topic.",
+                "\u4fdd\u7559\u539f\u6587\u7684\u597d\u8868\u8fbe\uff0c\u628a\u4e3b\u9898\u6362\u6210\u81ea\u5df1\u7684\u573a\u666f\u3002",
+                "This expression can be reused to describe study, work, or daily life.",
+                "\u8fd9\u662f\u6700\u540e\u515c\u5e95\uff0c\u4e5f\u4f1a\u4fdd\u7559\u539f\u53e5\uff0c\u4e0d\u518d\u751f\u6210\u7a7a\u6cdb\u7684 Use xxx \u4efb\u52a1\u3002"
             )
 
         return rows[:4]
