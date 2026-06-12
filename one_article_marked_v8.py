@@ -3820,6 +3820,8 @@ button{{border:0;border-radius:999px;padding:9px 12px;font-weight:850;cursor:poi
 label{{display:block;color:var(--muted);font-size:12px;margin:7px 0 4px}}
 input,textarea,select{{width:100%;border:1px solid var(--line);border-radius:10px;background:white;padding:9px 10px;font:inherit;line-height:1.45}}
 textarea{{min-height:68px;resize:vertical}}
+.import-panel{{border:1px solid var(--line);background:var(--paper);border-radius:14px;padding:12px;margin:14px 0}}
+.import-panel textarea{{min-height:92px}}
 .tabs{{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}}
 .tab{{background:white;border:1px solid var(--line);color:var(--green)}}
 .tab.active{{background:var(--green);color:white}}
@@ -3846,7 +3848,7 @@ textarea{{min-height:68px;resize:vertical}}
 .pattern{{border:1px solid #f0d6c9;background:#fff8f2;border-radius:14px;padding:12px}}
 .pattern p{{margin:7px 0;line-height:1.6}}
 .pattern .ori{{border-left:3px solid var(--orange);padding-left:10px;color:#536171}}
-.hl{{color:var(--green);background:rgba(127,163,145,.16);border-bottom:1px solid rgba(66,110,96,.35);border-radius:4px;padding:0 2px}}
+.hl{{color:var(--green);background:rgba(127,163,145,.16);border-bottom:1px solid rgba(66,110,96,.35);border-radius:4px;padding:0 2px;cursor:pointer}}
 .copybox{{position:fixed;left:16px;right:16px;bottom:16px;background:#1d252c;color:white;border-radius:16px;padding:12px 14px;display:none;z-index:99;box-shadow:0 14px 38px rgba(0,0,0,.22);max-width:480px;margin:auto;white-space:pre-wrap}}
 @media(max-width:880px){{.grid{{grid-template-columns:1fr}}.final-meta{{grid-template-columns:1fr}}h1{{font-size:32px}}}}
 @media print{{.top,.left,.right .card-hd,.btns,.tabs,.select-tip{{display:none!important}}.grid{{display:block}}body{{background:white}}.card{{box-shadow:none;border:0}}}}
@@ -3858,6 +3860,7 @@ textarea{{min-height:68px;resize:vertical}}
     <div class="logo"><div class="mark">HL</div><div><h1>V35 人工编辑页</h1><p class="sub">选中文本 → 加入词汇/词组/句式 → 修改中文解释 → 生成最终页</p></div></div>
     <div class="btns">
       <button class="btn-light" onclick="loadDemo()">填入示例</button>
+      <button class="btn-light" onclick="importFromClipboard()">从剪贴板导入</button>
       <button class="btn-orange" onclick="clearAll()">清空编辑</button>
       <button class="btn-green" onclick="renderFinal()">生成最终页</button>
     </div>
@@ -3908,9 +3911,18 @@ textarea{{min-height:68px;resize:vertical}}
             </div>
           </div>
 
+          <div class="import-panel">
+            <label>一键导入包</label>
+            <textarea id="importBox" placeholder="把我给你的导入包 JSON 粘贴到这里，然后点“一键导入”。"></textarea>
+            <div class="btns">
+              <button class="btn-green" onclick="importFromTextarea()">一键导入</button>
+              <button class="btn-light" onclick="importFromClipboard()">从剪贴板导入</button>
+            </div>
+          </div>
+
           <div class="tabs">
-            <button class="tab active" data-tab="vocab" onclick="showTab('vocab')">词汇</button>
-            <button class="tab" data-tab="phrase" onclick="showTab('phrase')">词组</button>
+            <button class="tab active" data-tab="vocab" onclick="showTab('vocab')">标注词汇</button>
+            <button class="tab" data-tab="phrase" onclick="showTab('phrase')">重点词组</button>
             <button class="tab" data-tab="pattern" onclick="showTab('pattern')">表达句式</button>
           </div>
 
@@ -4123,15 +4135,51 @@ function showTab(type){{
   }});
 }}
 
+function isBoundary(ch){{
+  return !ch || !/[A-Za-z]/.test(ch);
+}}
+
 function highlightText(text){{
-  let html = escapeHtml(text);
-  const terms = [...state.phrase, ...state.vocab].map(x => x.text).filter(Boolean).sort((a,b)=>b.length-a.length);
-  terms.forEach(term => {{
-    const esc = term.replace(/[.*+?^${{}}()|[\\]\\\\]/g, '\\\\$&');
-    const reg = new RegExp('(?<![A-Za-z])(' + esc + ')(?![A-Za-z])', 'gi');
-    html = html.replace(reg, '<span class="hl">$1</span>');
-  }});
-  return html;
+  const raw = String(text || '');
+  const items = [
+    ...state.phrase.map(x => ({{...x, kind:'phrase'}})),
+    ...state.vocab.map(x => ({{...x, kind:'vocab'}}))
+  ].filter(x => x.text).sort((a,b)=>b.text.length-a.text.length);
+
+  let out = '';
+  let i = 0;
+  while(i < raw.length){{
+    let best = null;
+    let bestIndex = -1;
+    for(const item of items){{
+      const term = item.text;
+      const lowerRaw = raw.toLowerCase();
+      const lowerTerm = term.toLowerCase();
+      let idx = lowerRaw.indexOf(lowerTerm, i);
+      while(idx !== -1){{
+        const before = raw[idx-1];
+        const after = raw[idx + term.length];
+        if(isBoundary(before) && isBoundary(after)){{
+          if(best === null || idx < bestIndex || (idx === bestIndex && term.length > best.text.length)){{
+            best = item;
+            bestIndex = idx;
+          }}
+          break;
+        }}
+        idx = lowerRaw.indexOf(lowerTerm, idx + 1);
+      }}
+    }}
+    if(!best){{
+      out += escapeHtml(raw.slice(i));
+      break;
+    }}
+    out += escapeHtml(raw.slice(i, bestIndex));
+    const matched = raw.slice(bestIndex, bestIndex + best.text.length);
+    const meaning = best.zh || guessMeaning(best.text) || '';
+    out += '<span class="hl" data-term="' + escapeAttr(best.text) + '" data-meaning="' + escapeAttr(meaning) + '">' + escapeHtml(matched) + '</span>';
+    i = bestIndex + best.text.length;
+  }}
+  return out;
 }}
 
 function renderFinal(){{
@@ -4158,8 +4206,7 @@ function renderFinal(){{
   `).join('') || `<div class="final-row"><span>还没有选择表达句式。</span></div>`;
 
   const exprs = [
-    ...state.phrase.map(x => ({{...x, type:'词组'}})),
-    ...state.vocab.map(x => ({{...x, type:'词汇'}}))
+    ...state.phrase.map(x => ({{...x, type:'词组'}}))
   ];
 
   const exprHtml = exprs.map(x => `
@@ -4183,11 +4230,85 @@ function renderFinal(){{
       </article>
       <section class="final-card final-section"><div class="final-hd"><h2>今日精读</h2><span class="mini">Original + Meaning</span></div><div class="final-list">${{paraHtml}}</div></section>
       <section class="final-card final-section"><div class="final-hd"><h2>表达句式</h2><span class="mini">Sentence Patterns</span></div><div class="final-list">${{patternHtml}}</div></section>
-      <section class="final-card final-section"><div class="final-hd"><h2>重点表达</h2><span class="mini">Phrases + Vocab</span></div><div class="final-list">${{exprHtml}}</div></section>
+      <section class="final-card final-section"><div class="final-hd"><h2>重点词组</h2><span class="mini">Phrases</span></div><div class="final-list">${{exprHtml}}</div></section>
     </div>
   `;
   document.getElementById('finalPreview').scrollIntoView({{behavior:'smooth', block:'start'}});
 }}
+
+
+function normalizeList(list){{
+  if(!Array.isArray(list)) return [];
+  return list.map(x => {{
+    if(Array.isArray(x)) return {{text:x[0]||'', zh:x[1]||'', note:x[2]||''}};
+    return {{text:x.text||x.word||x.phrase||'', zh:x.zh||x.meaning||'', note:x.note||x.reason||''}};
+  }}).filter(x => x.text);
+}}
+
+function normalizePatterns(list){{
+  if(!Array.isArray(list)) return [];
+  return list.map(x => {{
+    if(Array.isArray(x)) return {{original:x[0]||'', pattern:x[1]||'', zh:x[2]||'', example:x[3]||'', note:x[4]||''}};
+    return {{
+      original:x.original||'',
+      pattern:x.pattern||x.structure||'',
+      zh:x.zh||x.meaning||'',
+      example:x.example||'',
+      note:x.note||x.reason||''
+    }};
+  }}).filter(x => x.original || x.pattern);
+}}
+
+function applyImportPack(pack){{
+  if(pack.topic) document.getElementById('topic').value = pack.topic;
+  if(pack.level) document.getElementById('level').value = pack.level;
+  if(pack.summary) document.getElementById('summary').value = pack.summary;
+
+  state.vocab = normalizeList(pack.vocab || pack.words || []);
+  state.phrase = normalizeList(pack.phrases || pack.phrase || []);
+  state.pattern = normalizePatterns(pack.patterns || pack.sentence_patterns || []);
+
+  renderEditors();
+  renderFinal();
+}}
+
+function importFromTextarea(){{
+  const raw = document.getElementById('importBox').value.trim();
+  if(!raw){{
+    alert('先把导入包粘贴到输入框。');
+    return;
+  }}
+  try{{
+    const pack = JSON.parse(raw);
+    applyImportPack(pack);
+  }}catch(e){{
+    alert('导入失败：这不是合法 JSON。复制时不要带 ``` 代码围栏。');
+  }}
+}}
+
+async function importFromClipboard(){{
+  try{{
+    const txt = await navigator.clipboard.readText();
+    document.getElementById('importBox').value = txt.trim();
+    importFromTextarea();
+  }}catch(e){{
+    alert('浏览器不允许直接读取剪贴板。你可以手动粘贴到“一键导入包”框里。');
+  }}
+}}
+
+function showMeaningTip(term, meaning){{
+  const box = document.getElementById('copybox');
+  box.innerHTML = '<b>' + escapeHtml(term) + '</b><br>' + escapeHtml(meaning || '暂无释义');
+  box.style.display = 'block';
+  setTimeout(()=>box.style.display='none', 2600);
+}}
+
+document.addEventListener('click', function(e){{
+  const node = e.target.closest('.hl');
+  if(node){{
+    showMeaningTip(node.getAttribute('data-term')||'', node.getAttribute('data-meaning')||'');
+  }}
+}});
 
 function copyXhsText(){{
   const topic = document.getElementById('topic').value;
@@ -4200,9 +4321,9 @@ function copyXhsText(){{
   lines.push('');
   lines.push(document.getElementById('summary').value);
   lines.push('');
-  if(state.phrase.length || state.vocab.length){{
-    lines.push('重点表达：');
-    [...state.phrase, ...state.vocab].forEach(x => lines.push('- ' + x.text + ' = ' + (x.zh||'')));
+  if(state.phrase.length){{
+    lines.push('重点词组：');
+    state.phrase.forEach(x => lines.push('- ' + x.text + ' = ' + (x.zh||'')));
     lines.push('');
   }}
   if(state.pattern.length){{
