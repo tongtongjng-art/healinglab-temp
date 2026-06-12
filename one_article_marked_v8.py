@@ -1787,6 +1787,27 @@ LOCAL_VOCAB_ZH.update({
     "general labor substitute": "\u901a\u7528\u52b3\u52a8\u529b\u66ff\u4ee3\u7269\uff1b\u7528\u4e8e\u8ba8\u8bba\u6280\u672f\u5bf9\u52b3\u52a8\u7684\u66ff\u4ee3\u3002",
 })
 
+
+LOCAL_VOCAB_ZH.update({
+    "weighing a move from": "???????????????????weigh a move ???????????",
+    "a move from full-time to freelance work": "??????????move ???????/????",
+    "terse email": "????????terse ????????????",
+    "redo a task from scratch": "?????????from scratch ?????????",
+    "from scratch": "??????????",
+    "settled the matter instantly": "??????????settle the matter ????/??????",
+    "settle the matter": "?????????????",
+    "quit on the spot": "?????on the spot ????????",
+    "on the spot": "???????????",
+    "justify their employment": "???????/???????justify ??????????",
+    "or resign": "??????????????????",
+    "turns out": "?????????",
+    "particularly unusual": "????????????????????????",
+    "rude email": "??/???????",
+    "at least one": "?????????????",
+    "has become even more central to": "?????????/???",
+    "central to": "????????????????",
+})
+
 BANNED_VOCAB_WORDS = {
     "kasbah", "toubkal", "morocco", "africa", "guardian", "bbc",
     "mike", "newsletter", "advertisement", "caption", "copyright",
@@ -1829,6 +1850,23 @@ GENERIC_PHRASE_TAILS = GENERIC_QUANTITY_NOUNS | {
 }
 
 VOCAB_PRIORITY_SCORES = {
+    "weighing a move from": 330,
+    "a move from full-time to freelance work": 328,
+    "terse email": 326,
+    "redo a task from scratch": 324,
+    "from scratch": 322,
+    "settled the matter instantly": 320,
+    "settle the matter": 318,
+    "quit on the spot": 316,
+    "on the spot": 314,
+    "justify their employment": 312,
+    "or resign": 300,
+    "turns out": 298,
+    "particularly unusual": 296,
+    "rude email": 294,
+    "at least one": 292,
+    "has become even more central to": 290,
+    "central to": 288,
     "job cuts": 310,
     "tends to be accompanied by": 300,
     "lose your job to": 292,
@@ -1846,6 +1884,11 @@ VOCAB_PRIORITY_SCORES = {
 
 DATA_WORDS = r"(?:zero|one|two|three|four|five|six|seven|eight|nine|ten|half|hundred|thousand|million|billion|\d+(?:\.\d+)?)"
 
+LOW_VALUE_EXACT_TERMS = {
+    "employment", "communication", "communications", "technicality", "government workers",
+    "has become", "have become", "become", "workers", "government",
+}
+
 LOW_VALUE_VOCAB_PATTERNS = [
     # Plain data + ordinary noun is useful in the sentence, but weak as a vocabulary card.
     re.compile(rf"^(?:more than|less than|over|under|around|about|nearly|almost)?\s*(?:a\s+)?(?:{DATA_WORDS}\s+){{1,3}}(?:" + "|".join(sorted(GENERIC_QUANTITY_NOUNS)) + r")$", re.I),
@@ -1854,6 +1897,8 @@ LOW_VALUE_VOCAB_PATTERNS = [
 
 
 def is_low_value_vocab_phrase(low):
+    if low in LOW_VALUE_EXACT_TERMS:
+        return True
     words = re.findall(r"\b[a-zA-Z][a-zA-Z'-]*\b", low)
     if not words:
         return True
@@ -1934,6 +1979,12 @@ def extract_key_words(text, count=8):
     # 第一优先级：高价值固定搭配（直接从原文匹配）
     high_value_phrases = [
         # 外刊高频表达搭配
+        "weighing a move from", "a move from full-time to freelance work",
+        "terse email", "redo a task from scratch", "from scratch",
+        "settled the matter instantly", "settle the matter", "quit on the spot",
+        "on the spot", "justify their employment", "or resign", "turns out",
+        "particularly unusual", "rude email", "at least one",
+        "has become even more central to", "central to",
         "be accompanied by", "warnings that", "tends to be accompanied by",
         "job cuts", "lose your job to", "a substitute for", "but rather",
         "come for us all", "across many more industries", "general labor substitute",
@@ -1941,7 +1992,7 @@ def extract_key_words(text, count=8):
         "instead of", "rather than", "carry it on", "set off",
         "a flood of", "more and more", "not just", "not only",
         "as a result", "in the long run", "over time", "on top of",
-        "when it comes to", "used to", "has become", "have become",
+        "when it comes to", "used to",
         "make it easier", "find it hard", "find it difficult",
         "one reason", "because of", "for many people", "no longer",
         "more likely to", "less likely to", "the fact that",
@@ -1982,6 +2033,23 @@ def extract_key_words(text, count=8):
 
     # 第二优先级：动态匹配搭配模式
     collocation_patterns = [
+        r"\bweighing\s+a\s+move\s+from\s+[^,.;]+?\s+to\s+[^,.;]+",
+        r"\ba\s+move\s+from\s+full-time\s+to\s+freelance\s+work\b",
+        r"\bterse\s+email\b",
+        r"\bredo\s+a\s+task\s+from\s+scratch\b",
+        r"\bfrom\s+scratch\b",
+        r"\bsettled\s+the\s+matter\s+instantly\b",
+        r"\bsettle[sd]?\s+the\s+matter\b",
+        r"\bquit\s+on\s+the\s+spot\b",
+        r"\bon\s+the\s+spot\b",
+        r"\bjustify\s+(?:their|his|her|your|our)\s+employment\b",
+        r"\bor\s+resign\b",
+        r"\bturns\s+out\b",
+        r"\bparticularly\s+unusual\b",
+        r"\brude\s+emails?\b",
+        r"\bat\s+least\s+one\b",
+        r"\bhas\s+become\s+even\s+more\s+central\s+to\b",
+        r"\bcentral\s+to\b",
         r"\btends\s+to\s+be\s+accompanied\s+by\b",
         r"\bbe\s+accompanied\s+by\b",
         r"\bjob\s+cuts\b",
@@ -2045,7 +2113,7 @@ def extract_key_words(text, count=8):
         r"\ban?\s+increase\s+in\s+[a-zA-Z]{6,}(?:\s+and\s+[a-zA-Z]{6,})?\b",
         r"\b[a-zA-Z]{6,}\s+and\s+[a-zA-Z]{6,}\b",
         r"\b(?:valuable|practical|accessible|affordable|preventable|creative|productive|device-free|screen-free)\s+[a-zA-Z]{4,}s?\b",
-        r"\b[a-zA-Z]{5,}\s+(?:meetings|lockdowns|productivity|creativity|education|technology|workplace|workers|habits|skills|lessons|speakers|accidents|sources|students|parents|children|schools|office)\b",
+        r"\b[a-zA-Z]{5,}\s+(?:meetings|lockdowns|productivity|creativity|education|technology|workplace|habits|skills|lessons|speakers|accidents|sources|students|parents|children|schools|office)\b",
         r"\b(?:taking|giving|putting|turning|bringing|moving)\s+(?:something|it|this|that)\s+(?:from|into|to|on)\s+[^.?!,;]{5,55}",
     ]
     for pat in auto_phrase_patterns:
@@ -2065,6 +2133,7 @@ def extract_key_words(text, count=8):
         "through", "between", "without", "within", "across", "around",
         "graduation", "education", "information", "conversation", "definition",
         "intention", "action", "moment", "preventable", "popular", "source", "sources",
+        "employment", "communication", "communications", "technicality", "government", "workers",
     }
 
     quality_words = {
@@ -3338,6 +3407,20 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
 
     # 重点表达库：优先句式和短语，其次是核心词汇。
     expression_bank = [
+        ("weighing a move from", "????? A ?? B?????????????????", "??"),
+        ("a move from full-time to freelance work", "??????????move ?????????", "????"),
+        ("terse email", "????????terse ? short ????????????", "????"),
+        ("redo a task from scratch", "?????????from scratch ???????????", "????"),
+        ("from scratch", "??????????", "??"),
+        ("settled the matter instantly", "??????????settle the matter ????/??????", "????"),
+        ("quit on the spot", "?????on the spot ????????", "????"),
+        ("justify their employment", "???????/???????justify ??????????", "????"),
+        ("turns out", "???????????????????????", "??"),
+        ("particularly unusual", "??????? not particularly unusual ????????????", "????"),
+        ("rude email", "??/???????", "????"),
+        ("at least one", "????????????????", "????"),
+        ("has become even more central to", "?????????/???", "??"),
+        ("central to", "????????????????", "??"),
         ("tends to be accompanied by", "\u5f80\u5f80\u4f1a\u4f34\u968f\u7740\u2026\u2026\uff1b\u9002\u5408\u5199\u67d0\u4e2a\u8bdd\u9898\u51fa\u73b0\u65f6\u7684\u5e38\u89c1\u53cd\u5e94\u3002", "\u53e5\u5f0f"),
         ("be accompanied by", "\u4f34\u968f\u7740\u2026\u2026\uff1b\u6bd4 with \u66f4\u6b63\u5f0f\uff0c\u5916\u520a\u5e38\u7528\u3002", "\u53e5\u5f0f"),
         ("job cuts", "\u88c1\u5458\uff1b\u8ba8\u8bba\u5c31\u4e1a\u3001\u7ecf\u6d4e\u3001\u6280\u672f\u51b2\u51fb\u65f6\u9ad8\u9891\u3002", "\u8bdd\u9898\u8bcd\u7ec4"),
@@ -3516,7 +3599,7 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
         if len(expressions) >= 16:
             break
 
-    bad_single = {"children", "people", "reading", "article", "school", "student", "students", "work", "life", "time", "year", "years", "education", "survey", "research"}
+    bad_single = {"children", "people", "reading", "article", "school", "student", "students", "work", "life", "time", "year", "years", "education", "survey", "research", "employment", "communication", "communications", "technicality", "government", "workers", "has become", "have become"}
     for k in all_keywords or []:
         kk = norm(k)
         if not kk:
@@ -3566,6 +3649,46 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
             return ""
 
         pattern_candidates = [
+            (
+                r"\bWhen\s+I\s+was\s+weighing\s+a\s+move\s+from\s+[^,]+\s+to\s+[^,]+,\s+[^.?!]+",
+                "?????",
+                "When I was weighing a move from A to B, C settled the matter.",
+                "????????? A ?? B ??C ??????????",
+                "When I was weighing a move from office work to remote work, one meeting settled the matter.",
+                "????????????????????????",
+            ),
+            (
+                r"\bNone\s+of\s+this,\s+it\s+turns\s+out,\s+was\s+particularly\s+unusual\b[^.?!]*",
+                "??????",
+                "None of this, it turns out, was particularly unusual.",
+                "?????????????????",
+                "None of this, it turns out, was particularly unusual in modern workplaces.",
+                "??????????????????",
+            ),
+            (
+                r"\bResearch\s+from\s+\d{4}\s+shows\s+[^.?!]+",
+                "?????",
+                "Research from YEAR shows that ...",
+                "????????????????????",
+                "Research from 2024 shows that many workers feel pressure to reply quickly.",
+                "? studies show ????????????",
+            ),
+            (
+                r"\brequiring\s+them\s+to\s+justify\s+their\s+employment\b[^.?!]+",
+                "?????",
+                "A required them to justify B, or resign.",
+                "A ?????? B ???????????",
+                "The company required workers to justify their roles, or leave.",
+                "?????????????????????",
+            ),
+            (
+                r"\bhas\s+become\s+even\s+more\s+central\s+to\s+[^.?!]+",
+                "??????",
+                "A has become even more central to B.",
+                "A ? B ??????/???",
+                "Clear communication has become even more central to remote work.",
+                "??????? has become?????????",
+            ),
             (
                 r"\bSince\s+[^,.]{3,90},\s+[^.?!]{15,220}",
                 "\u65f6\u95f4\u80cc\u666f\u53e5",
@@ -3767,30 +3890,48 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
                 break
         return entries
 
-    history_html = ""
-    groups = {}
+    def history_bucket(topic_name, title_text):
+        s = f"{topic_name} {title_text}".lower()
+        if any(k in s for k in ["ai", "??", "??", "science", "nature", "climate", "robot", "digital", "???", "?"]):
+            return "tech"
+        if any(k in s for k in ["education", "school", "student", "reading", "teacher", "??", "??", "???"]):
+            return "education"
+        if any(k in s for k in ["culture", "history", "book", "museum", "ancient", "heritage", "??", "??", "??", "???", "???"]):
+            return "humanities"
+        return "life"
+
+    history_entries = []
     seen_titles = set()
-    for h in load_history_entries(max_count=30):
+    for h in load_history_entries(max_count=60):
         title_key = h.get("title", "").lower().strip()
-        if title_key in seen_titles:
+        if not title_key or title_key in seen_titles:
             continue
         seen_titles.add(title_key)
-        groups.setdefault(h.get("topic", "综合"), []).append(h)
+        h["bucket"] = history_bucket(h.get("topic", ""), h.get("title", ""))
+        history_entries.append(h)
 
-    topic_order = ["AI科技", "科技", "教育", "文化历史", "健康心理", "社会工作", "自然科学", "生活", "综合"]
-    for tp in topic_order:
-        items = groups.get(tp, [])
-        if not items:
-            continue
-        history_html += f'<div class="topic-group"><h3>{esc(tp)}</h3>'
-        for h in items[:5]:
-            title_show = h["title"]
-            if len(title_show) > 68:
-                title_show = title_show[:66] + "..."
-            history_html += f'<a class="history-item" href="{attr_escape(h["href"])}"><b>{esc(title_show)}</b></a>'
+    bucket_labels = [("tech", "??"), ("education", "??"), ("humanities", "??"), ("life", "??")]
+    first_active = next((key for key, _label in bucket_labels if any(h.get("bucket") == key for h in history_entries)), "tech")
+    history_html = '<div class="history-tabs">'
+    for key, label in bucket_labels:
+        active = ' is-active' if key == first_active else ''
+        history_html += f'<button type="button" class="history-tab{active}" data-history-filter="{key}">{label}</button>'
+    history_html += '</div><div class="history-panels">'
+
+    for key, label in bucket_labels:
+        active = ' is-active' if key == first_active else ''
+        items = [h for h in history_entries if h.get("bucket") == key]
+        history_html += f'<div class="topic-group{active}" data-history-topic="{key}"><h3>{label}</h3>'
+        if items:
+            for h in items[:8]:
+                title_show = h.get("title", "????")
+                if len(title_show) > 68:
+                    title_show = title_show[:66] + "..."
+                history_html += f'<a class="history-item" href="{attr_escape(h.get("href", "#"))}"><b>{esc(title_show)}</b></a>'
+        else:
+            history_html += '<div class="history-empty">????????????</div>'
         history_html += '</div>'
-    if not history_html:
-        history_html = '<div class="history-empty">暂无历史文章</div>'
+    history_html += '</div>'
 
     source_link_html = ""
     if link:
@@ -3841,7 +3982,7 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
     .expression{{display:grid;grid-template-columns:auto 1fr;column-gap:10px;row-gap:3px;align-items:start;border:1px solid var(--line);background:var(--paper);border-radius:10px;padding:9px 10px;cursor:pointer}} .expr-label{{grid-row:1 / span 2;width:fit-content;padding:4px 7px;border-radius:999px;background:var(--blue-soft);color:var(--blue);font-size:12px;font-weight:900;white-space:nowrap}} .expression b{{color:var(--sage-dark);line-height:1.35;font-size:15.5px}} .expr-meaning{{color:var(--muted);line-height:1.5;font-size:14px}}
     .pattern-card{{border:1px solid #f0d6c9;background:#fff8f2;border-radius:13px;padding:12px}} .pattern-card b{{display:block;font-size:15px;margin-bottom:8px}} .pattern-card p{{margin:7px 0;line-height:1.6;font-size:14.5px}} .pattern-card .original{{color:#536171;border-left:3px solid var(--clay);padding-left:10px}} .pattern-card .pattern{{color:#25323a;font-family:Georgia,"Times New Roman",serif;font-size:16px}} .pattern-card .meaning{{color:#9b4e35}} .pattern-card .example{{color:#414b51}} .pattern-card small{{display:block;color:var(--muted);margin-top:8px;line-height:1.55}}
     .review-box{{border:1px dashed #b9c7c0;background:#fbfdfb}} .review-box b{{display:block;margin-bottom:8px;font-size:15px}}
-    .topic-group{{display:grid;gap:8px;margin-bottom:14px}} .topic-group h3{{font-size:16px;margin:0;color:var(--sage-dark)}} .history-item{{display:block;text-decoration:none;color:var(--ink);border:1px solid var(--line);background:var(--paper);border-radius:12px;padding:10px}} .history-item b{{font-size:14.5px;line-height:1.35}} .history-empty{{color:var(--muted);font-size:14px}}
+    .history-tabs{{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:12px}} .history-tab{{border:1px solid var(--line);background:var(--paper);color:var(--sage-dark);border-radius:999px;padding:8px 4px;font-size:13px;font-weight:900;cursor:pointer}} .history-tab.is-active{{background:var(--sage-dark);color:#fff;border-color:var(--sage-dark)}} .history-panels{{display:grid;gap:10px}} .topic-group{{display:none;gap:8px;margin-bottom:4px}} .topic-group.is-active{{display:grid}} .topic-group h3{{font-size:16px;margin:0;color:var(--sage-dark)}} .history-item{{display:block;text-decoration:none;color:var(--ink);border:1px solid var(--line);background:var(--paper);border-radius:12px;padding:10px}} .history-item b{{font-size:14.5px;line-height:1.35}} .history-empty{{color:var(--muted);font-size:14px;border:1px dashed var(--line);border-radius:12px;padding:10px;background:var(--paper)}}
     .source-link{{display:inline-flex;width:fit-content;margin-top:12px;text-decoration:none;color:var(--sage-dark);background:var(--sage-soft);border:1px solid rgba(66,110,96,.18);border-radius:999px;padding:8px 11px;font-size:13px;font-weight:900}}
     .tip{{position:fixed;left:14px;right:14px;bottom:16px;z-index:80;background:#1d252c;color:#fff;border-radius:16px;padding:12px 14px;box-shadow:0 14px 38px rgba(0,0,0,.22);line-height:1.6;display:none;max-width:452px;margin:0 auto}} .tip b{{color:#f1c66d}} .bottom-note{{color:var(--muted);font-size:12px;line-height:1.7;text-align:center;padding:20px 6px 2px}}
     @media (min-width:420px){{.meta-grid{{grid-template-columns:repeat(3,minmax(0,1fr))}}}} @media (max-width:360px){{.hero h1{{font-size:38px}}.article-title-en{{font-size:29px}}.section{{padding:16px}}.expression{{grid-template-columns:1fr}}.expr-label{{grid-row:auto}}}}
@@ -3893,6 +4034,7 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
     function escText(s){{return String(s||'').replace(/[&<>"']/g,function(c){{return {{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}}[c];}});}}
     function showTip(term,meaning){{var tip=document.getElementById('tip');tip.innerHTML='<b>'+escText(term)+'</b><br>'+escText(meaning||'暂无释义');tip.style.display='block';clearTimeout(window.__tipTimer);window.__tipTimer=setTimeout(function(){{tip.style.display='none';}},2800);}}
     document.body.addEventListener('click',function(e){{var node=e.target.closest('.hl-term,.expression');if(!node)return;showTip(node.getAttribute('data-term')||'',node.getAttribute('data-meaning')||'');}});
+    document.body.addEventListener('click',function(e){{var btn=e.target.closest('.history-tab');if(!btn)return;var key=btn.getAttribute('data-history-filter');document.querySelectorAll('.history-tab').forEach(function(x){{x.classList.toggle('is-active',x===btn);}});document.querySelectorAll('.topic-group[data-history-topic]').forEach(function(panel){{panel.classList.toggle('is-active',panel.getAttribute('data-history-topic')===key);}});}});
   </script>
 </body>
 </html>"""
