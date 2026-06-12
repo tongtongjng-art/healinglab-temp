@@ -3856,12 +3856,19 @@ textarea{{min-height:68px;resize:vertical}}
 .vocab-hl{{display:inline!important;width:auto!important;min-width:0!important;max-width:none!important;height:auto!important;line-height:inherit!important;white-space:normal!important;margin:0!important;color:inherit!important;background:rgba(127,163,145,.10)!important;border:0!important;border-radius:2px!important;padding:0 1px!important;cursor:pointer!important;box-decoration-break:clone;-webkit-box-decoration-break:clone}} .hl{{display:inline!important;width:auto!important;background:transparent!important;padding:0!important;margin:0!important}}
 .copybox{{position:fixed;left:16px;right:16px;bottom:16px;background:#1d252c;color:white;border-radius:16px;padding:12px 14px;display:none;z-index:99;box-shadow:0 14px 38px rgba(0,0,0,.22);max-width:480px;margin:auto;white-space:pre-wrap}}
 .tool-note{{font-size:13px;color:var(--muted);line-height:1.6;margin:0 0 10px}}
-.xhs-grid{{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}}
-.xhs-card-preview{{background:#fbfaf6;border:1px solid var(--line);border-radius:16px;aspect-ratio:3/4;padding:14px;overflow:hidden;box-shadow:0 10px 24px rgba(44,57,64,.08)}}
-.xhs-card-preview b{{display:block;color:var(--green);font-size:13px;margin-bottom:8px}}
-.xhs-card-preview h3{{font-size:20px;line-height:1.12;margin:0 0 8px;letter-spacing:-.02em}}
-.xhs-card-preview p{{font-size:12px;line-height:1.55;color:#536171;margin:6px 0}}
-.xhs-chip{{display:inline-flex;border-radius:999px;background:var(--green2);color:var(--green);font-size:11px;font-weight:900;padding:4px 8px;margin:0 4px 6px 0}}
+.xhs-grid{{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;align-items:start}}
+.xhs-card-preview{{position:relative;display:flex;flex-direction:column;justify-content:space-between;gap:12px;background:linear-gradient(145deg,#fffdf8 0%,#f8f0df 58%,#edf5f1 100%);border:1px solid #dce6e3;border-radius:22px;aspect-ratio:3/4;padding:18px;overflow:hidden;box-shadow:0 18px 44px rgba(44,57,64,.14)}}
+.xhs-card-preview::before{{content:"";position:absolute;inset:10px;border:1px solid rgba(66,110,96,.14);border-radius:17px;pointer-events:none}}
+.xhs-card-preview::after{{content:"";position:absolute;right:-34px;bottom:68px;width:190px;height:1px;background:rgba(66,110,96,.18);transform:rotate(-34deg);pointer-events:none}}
+.xhs-card-preview .preview-top{{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:8px;color:var(--green);font-weight:900;font-size:12px}}
+.xhs-card-preview b{{display:block;color:var(--green);font-size:13px;margin:0}}
+.xhs-card-preview .preview-main{{position:relative;z-index:1;display:grid;gap:8px}}
+.xhs-card-preview h3{{font-size:22px;line-height:1.12;margin:0;letter-spacing:0;color:#16242b}}
+.xhs-card-preview .preview-subtitle{{font-size:13px;line-height:1.62;color:#33424b;margin:0;font-weight:700}}
+.xhs-card-preview .preview-lines{{display:grid;gap:5px;max-height:46%;overflow:hidden}}
+.xhs-card-preview p{{font-size:12px;line-height:1.56;color:#536171;margin:0}}
+.xhs-card-preview .preview-foot{{position:relative;z-index:1;border-top:1px solid rgba(66,110,96,.18);padding-top:9px;color:#6a776f;font-size:11px;font-weight:800}}
+.xhs-chip{{display:inline-flex;border-radius:999px;background:rgba(66,110,96,.10);color:var(--green);font-size:11px;font-weight:900;padding:4px 8px;margin:0}}
 @media(max-width:880px){{.grid{{grid-template-columns:1fr}}.final-meta{{grid-template-columns:1fr}}h1{{font-size:32px}}}}
 @media print{{.top,.left,.right .card-hd,.btns,.tabs,.select-tip{{display:none!important}}.grid{{display:block}}body{{background:white}}.card{{box-shadow:none;border:0}}}}
 </style>
@@ -4448,8 +4455,10 @@ function renderXhsCards(){{
   const cards = makeXhsCards();
   const box = document.getElementById('xhsCards');
   box.innerHTML = cards.map(function(card, i){{
-    const lines = (card.lines || []).slice(0,7).map(x => '<p>' + escapeHtml(x) + '</p>').join('');
-    return '<div class="xhs-card-preview"><b>Card ' + String(i+1).padStart(2,'0') + '</b><span class="xhs-chip">' + escapeHtml(card.kind) + '</span><h3>' + escapeHtml(card.title) + '</h3><p>' + escapeHtml(card.subtitle || '') + '</p>' + lines + '</div>';
+    const limit = card.kind === 'paragraph' ? 4 : 6;
+    const lines = (card.lines || []).slice(0, limit).map(x => '<p>' + escapeHtml(x) + '</p>').join('');
+    const subtitle = card.subtitle ? '<p class="preview-subtitle">' + escapeHtml(card.subtitle) + '</p>' : '';
+    return '<div class="xhs-card-preview"><div class="preview-top"><b>Card ' + String(i+1).padStart(2,'0') + '</b><span class="xhs-chip">' + escapeHtml(card.kind) + '</span></div><div class="preview-main"><h3>' + escapeHtml(card.title) + '</h3>' + subtitle + '<div class="preview-lines">' + lines + '</div></div><div class="preview-foot">Healing Lab Daily Reading</div></div>';
   }}).join('');
   box.scrollIntoView({{behavior:'smooth', block:'start'}});
 }}
@@ -4457,7 +4466,7 @@ function renderXhsCards(){{
 function openXhsCardsPage(){{
   renderXhsCards();
   const css = document.querySelector('style').innerHTML;
-  const html = '<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>小红书图文卡片</title><style>' + css + ' body{{background:#f5f2eb}}.xhs-page{{max-width:980px;margin:0 auto;padding:20px}}.xhs-grid{{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}}</style></head><body><div class="xhs-page"><h1>小红书图文卡片</h1><p class="sub">可截图预览；需要 PNG 可回到编辑页点击“下载全部 PNG”。</p><div class="xhs-grid">' + document.getElementById('xhsCards').innerHTML + '</div></div></body></html>';
+  const html = '<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>小红书图文卡片</title><style>' + css + ' body{{background:#f5f2eb}}.xhs-page{{max-width:1080px;margin:0 auto;padding:24px}}.xhs-page h1{{font-size:30px;margin:0 0 8px}}.xhs-grid{{grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px}}</style></head><body><div class="xhs-page"><h1>小红书图文卡片</h1><p class="sub">预览版式已尽量贴近下载 PNG，可先检查构图再导出。</p><div class="xhs-grid">' + document.getElementById('xhsCards').innerHTML + '</div></div></body></html>';
   const win = window.open('', '_blank');
   if(!win){{
     alert('浏览器拦截了新窗口。请允许弹窗。');
@@ -4502,56 +4511,119 @@ function drawCardToCanvas(card, index){{
   canvas.width = 1080;
   canvas.height = 1440;
   const ctx = canvas.getContext('2d');
+  const W = 1080, H = 1440;
+  const green = '#426e60';
+  const ink = '#18252c';
+  const muted = '#5b6a72';
+  const kindNames = {{cover:'cover', summary:'summary', paragraph:'paragraph', phrases:'phrases', pattern:'pattern'}};
 
-  const bg = ctx.createLinearGradient(0,0,1080,1440);
+  const bg = ctx.createLinearGradient(0,0,W,H);
   bg.addColorStop(0,'#fffdf8');
-  bg.addColorStop(0.55,'#f8f1e3');
-  bg.addColorStop(1,'#eef4f1');
+  bg.addColorStop(0.58,'#f7efe2');
+  bg.addColorStop(1,'#edf5f1');
   ctx.fillStyle = bg;
-  ctx.fillRect(0,0,1080,1440);
+  ctx.fillRect(0,0,W,H);
+
+  ctx.save();
+  ctx.beginPath();
+  roundRect(ctx, 66, 66, 948, 1308, 52, false, false);
+  ctx.clip();
+  ctx.fillStyle = 'rgba(66,110,96,.06)';
+  ctx.fillRect(66, 66, 16, 1308);
+  ctx.strokeStyle = 'rgba(66,110,96,.13)';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(780, 1150);
+  ctx.lineTo(1040, 980);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(760, 1200);
+  ctx.lineTo(1060, 1008);
+  ctx.stroke();
+  ctx.restore();
 
   ctx.strokeStyle = '#dce6e3';
   ctx.lineWidth = 3;
-  roundRect(ctx, 70, 70, 940, 1300, 46, false, true);
+  roundRect(ctx, 66, 66, 948, 1308, 52, false, true);
+  ctx.strokeStyle = 'rgba(66,110,96,.14)';
+  ctx.lineWidth = 2;
+  roundRect(ctx, 94, 94, 892, 1252, 36, false, true);
 
-  ctx.fillStyle = '#426e60';
+  ctx.fillStyle = green;
   ctx.beginPath();
-  ctx.arc(140, 145, 42, 0, Math.PI*2);
+  ctx.arc(146, 148, 44, 0, Math.PI*2);
   ctx.fill();
-  ctx.fillStyle = '#ffffff';
+  ctx.fillStyle = '#fffdf8';
   ctx.font = 'bold 28px Arial';
   ctx.textAlign = 'center';
-  ctx.fillText('HL', 140, 155);
+  ctx.fillText('HL', 146, 158);
   ctx.textAlign = 'left';
 
-  ctx.fillStyle = '#426e60';
+  ctx.fillStyle = green;
   ctx.font = 'bold 30px Arial';
-  ctx.fillText('Card ' + String(index+1).padStart(2,'0') + ' · ' + card.kind, 210, 155);
+  ctx.fillText('Card ' + String(index+1).padStart(2,'0') + ' · ' + (kindNames[card.kind] || card.kind), 220, 155);
+  ctx.fillStyle = 'rgba(66,110,96,.10)';
+  roundRect(ctx, 790, 120, 150, 54, 27, true, false);
+  ctx.fillStyle = green;
+  ctx.font = 'bold 22px Arial';
+  ctx.fillText('SAVE', 838, 155);
 
-  ctx.fillStyle = '#1d252c';
-  ctx.font = 'bold 58px Arial';
-  let y = 260;
-  y = wrapCanvasText(ctx, card.title, 105, y, 870, 70, 3);
+  const panelX = 116, panelY = 236, panelW = 848, panelH = 842;
+  ctx.fillStyle = 'rgba(255,255,255,.58)';
+  roundRect(ctx, panelX, panelY, panelW, panelH, 32, true, false);
+
+  let y = panelY + 78;
+  ctx.fillStyle = ink;
+  ctx.font = card.kind === 'cover' ? 'bold 62px Arial' : 'bold 56px Arial';
+  y = wrapCanvasText(ctx, card.title, panelX + 44, y, panelW - 88, card.kind === 'cover' ? 72 : 66, card.kind === 'cover' ? 3 : 2);
 
   if(card.subtitle){{
-    ctx.fillStyle = '#26333b';
-    ctx.font = card.kind === 'paragraph' ? '38px Georgia' : '34px Arial';
-    y += 24;
-    y = wrapCanvasText(ctx, card.subtitle, 105, y, 870, card.kind === 'paragraph' ? 58 : 48, card.kind === 'paragraph' ? 12 : 8);
+    y += 26;
+    ctx.fillStyle = '#2b3a42';
+    ctx.font = card.kind === 'paragraph' ? '36px Georgia' : '32px Arial';
+    y = wrapCanvasText(ctx, card.subtitle, panelX + 44, y, panelW - 88, card.kind === 'paragraph' ? 55 : 47, card.kind === 'paragraph' ? 9 : 5);
   }}
 
-  y += 28;
-  ctx.fillStyle = '#536171';
-  ctx.font = '30px Arial';
-  (card.lines || []).forEach(function(line){{
-    if(y > 1240) return;
-    y = wrapCanvasText(ctx, line, 105, y, 870, 43, 4);
-    y += 16;
-  }});
+  const items = (card.lines || []).filter(Boolean).slice(0, card.kind === 'paragraph' ? 3 : 6);
+  y += 34;
+  if(card.kind === 'phrases' || card.kind === 'pattern'){{
+    items.forEach(function(line, idx){{
+      if(y > panelY + panelH - 118) return;
+      const boxH = card.kind === 'pattern' ? 116 : 92;
+      ctx.fillStyle = idx % 2 ? 'rgba(248,240,223,.72)' : 'rgba(66,110,96,.075)';
+      roundRect(ctx, panelX + 40, y - 38, panelW - 80, boxH, 22, true, false);
+      ctx.fillStyle = muted;
+      ctx.font = '28px Arial';
+      wrapCanvasText(ctx, line, panelX + 72, y + 5, panelW - 144, 38, card.kind === 'pattern' ? 3 : 2);
+      y += boxH + 18;
+    }});
+  }}else{{
+    ctx.fillStyle = muted;
+    ctx.font = '29px Arial';
+    items.forEach(function(line){{
+      if(y > panelY + panelH - 54) return;
+      y = wrapCanvasText(ctx, line, panelX + 44, y, panelW - 88, 43, 3);
+      y += 18;
+    }});
+  }}
+
+  const stripY = 1138;
+  ctx.fillStyle = green;
+  roundRect(ctx, 116, stripY, 848, 118, 30, true, false);
+  ctx.fillStyle = '#fffdf8';
+  ctx.font = 'bold 32px Arial';
+  ctx.fillText(card.kind === 'cover' ? 'DAILY READING' : 'READ · COLLECT · REVIEW', 162, stripY + 54);
+  ctx.font = '24px Arial';
+  ctx.fillStyle = 'rgba(255,253,248,.78)';
+  const line = card.kind === 'paragraph' ? 'Original + Chinese meaning' : 'Useful English expressions';
+  ctx.fillText(line, 162, stripY + 91);
 
   ctx.fillStyle = '#66737d';
   ctx.font = '24px Arial';
-  ctx.fillText('Healing Lab Daily Reading', 105, 1320);
+  ctx.fillText('Healing Lab Daily Reading', 116, 1316);
+  ctx.textAlign = 'right';
+  ctx.fillText(String(index+1).padStart(2,'0') + ' / ' + Math.max(1, makeXhsCards().length), 964, 1316);
+  ctx.textAlign = 'left';
   return canvas;
 }}
 
