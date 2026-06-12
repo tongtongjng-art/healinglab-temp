@@ -1,3 +1,4 @@
+# V41_FINAL_AND_XHS_EXPORT
 # V40_INLINE_WORD_HIGHLIGHT_FIX
 # V39_VOCAB_ONLY_HIGHLIGHT_EXPRESSIONS
 # V38_WORD_ONLY_HIGHLIGHT_PHRASES_FIRST
@@ -3854,6 +3855,13 @@ textarea{{min-height:68px;resize:vertical}}
 .pattern .ori{{border-left:3px solid var(--orange);padding-left:10px;color:#536171}}
 .vocab-hl{{display:inline!important;width:auto!important;min-width:0!important;max-width:none!important;height:auto!important;line-height:inherit!important;white-space:normal!important;margin:0!important;color:inherit!important;background:rgba(127,163,145,.10)!important;border:0!important;border-radius:2px!important;padding:0 1px!important;cursor:pointer!important;box-decoration-break:clone;-webkit-box-decoration-break:clone}} .hl{{display:inline!important;width:auto!important;background:transparent!important;padding:0!important;margin:0!important}}
 .copybox{{position:fixed;left:16px;right:16px;bottom:16px;background:#1d252c;color:white;border-radius:16px;padding:12px 14px;display:none;z-index:99;box-shadow:0 14px 38px rgba(0,0,0,.22);max-width:480px;margin:auto;white-space:pre-wrap}}
+.tool-note{{font-size:13px;color:var(--muted);line-height:1.6;margin:0 0 10px}}
+.xhs-grid{{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}}
+.xhs-card-preview{{background:#fbfaf6;border:1px solid var(--line);border-radius:16px;aspect-ratio:3/4;padding:14px;overflow:hidden;box-shadow:0 10px 24px rgba(44,57,64,.08)}}
+.xhs-card-preview b{{display:block;color:var(--green);font-size:13px;margin-bottom:8px}}
+.xhs-card-preview h3{{font-size:20px;line-height:1.12;margin:0 0 8px;letter-spacing:-.02em}}
+.xhs-card-preview p{{font-size:12px;line-height:1.55;color:#536171;margin:6px 0}}
+.xhs-chip{{display:inline-flex;border-radius:999px;background:var(--green2);color:var(--green);font-size:11px;font-weight:900;padding:4px 8px;margin:0 4px 6px 0}}
 @media(max-width:880px){{.grid{{grid-template-columns:1fr}}.final-meta{{grid-template-columns:1fr}}h1{{font-size:32px}}}}
 @media print{{.top,.left,.right .card-hd,.btns,.tabs,.select-tip{{display:none!important}}.grid{{display:block}}body{{background:white}}.card{{box-shadow:none;border:0}}}}
 </style>
@@ -3865,6 +3873,8 @@ textarea{{min-height:68px;resize:vertical}}
     <div class="btns">
       <button class="btn-light" onclick="loadDemo()">填入示例</button>
       <button class="btn-light" onclick="importFromClipboard()">从剪贴板导入</button>
+      <button class="btn-light" onclick="openFinalPage()">查看正式版</button>
+      <button class="btn-light" onclick="renderXhsCards()">导出图文版</button>
       <button class="btn-orange" onclick="clearAll()">清空编辑</button>
       <button class="btn-green" onclick="renderFinal()">生成最终页</button>
     </div>
@@ -3946,6 +3956,19 @@ textarea{{min-height:68px;resize:vertical}}
         <div class="card-hd"><h2>最终预览</h2><span class="mini">生成后看这里</span></div>
         <div class="preview" id="finalPreview">
           <div class="phone"><p style="color:#66737d">点“生成最终页”后显示。</p></div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:16px">
+        <div class="card-hd"><h2>小红书图文版</h2><span class="mini">Cards Export</span></div>
+        <div class="body">
+          <p class="tool-note">编辑完成后点“生成图文卡片”，确认后点“下载全部 PNG”。</p>
+          <div class="btns">
+            <button class="btn-green" onclick="renderXhsCards()">生成图文卡片</button>
+            <button class="btn-light" onclick="openXhsCardsPage()">打开图文页</button>
+            <button class="btn-light" onclick="downloadAllCards()">下载全部 PNG</button>
+          </div>
+          <div id="xhsCards" class="xhs-grid" style="margin-top:12px"></div>
         </div>
       </div>
     </div>
@@ -4324,6 +4347,243 @@ document.addEventListener('click', function(e){{
   }}
 }});
 
+
+function ensureFinal(){{
+  const final = document.getElementById('finalPreview');
+  if(!final || final.textContent.includes('点“生成最终页”后显示')){{
+    renderFinal();
+  }}
+}}
+
+function getCurrentPack(){{
+  return {{
+    topic: document.getElementById('topic').value,
+    level: document.getElementById('level').value,
+    summary: document.getElementById('summary').value,
+    title_raw: data.title_raw,
+    title_cn: data.title_cn,
+    source: data.source,
+    pub_date: data.pub_date,
+    paragraphs: data.paragraphs,
+    vocab: state.vocab,
+    phrases: state.phrase,
+    patterns: state.pattern.slice(0,3)
+  }};
+}}
+
+function openFinalPage(){{
+  ensureFinal();
+  const css = document.querySelector('style').innerHTML;
+  const content = document.getElementById('finalPreview').innerHTML;
+  const html = '<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Healing Lab 每日外刊正式版</title><style>' + css + ' body{{background:#f5f2eb}}.standalone{{padding:18px}}</style></head><body><div class="standalone">' + content + '</div></body></html>';
+  const win = window.open('', '_blank');
+  if(!win){{
+    alert('浏览器拦截了新窗口。请允许弹窗，或继续在本页最终预览查看。');
+    return;
+  }}
+  win.document.open();
+  win.document.write(html);
+  win.document.close();
+}}
+
+function makeXhsCards(){{
+  const pack = getCurrentPack();
+  const cards = [];
+
+  cards.push({{
+    kind:'cover',
+    title:'Healing Lab 每日外刊',
+    subtitle: pack.title_cn || pack.title_raw,
+    lines:[
+      pack.title_raw,
+      '来源：' + pack.source,
+      '主题：' + pack.topic + ' ｜ 难度：' + pack.level
+    ]
+  }});
+
+  cards.push({{
+    kind:'summary',
+    title:'这篇文章讲的是',
+    subtitle: pack.summary,
+    lines:['先抓主题，再精读段落，最后记 3 个可复用表达句式。']
+  }});
+
+  pack.paragraphs.forEach(function(p){{
+    cards.push({{
+      kind:'paragraph',
+      title:'第 ' + p.idx + ' 段精读',
+      subtitle:p.raw,
+      lines:[p.zh]
+    }});
+  }});
+
+  const phrases = pack.phrases || [];
+  for(let i=0;i<phrases.length;i+=6){{
+    cards.push({{
+      kind:'phrases',
+      title:i===0 ? '重点表达' : '重点表达 ' + (Math.floor(i/6)+1),
+      subtitle:'',
+      lines: phrases.slice(i,i+6).map(x => x.text + ' = ' + (x.zh||''))
+    }});
+  }}
+
+  (pack.patterns || []).slice(0,3).forEach(function(p, i){{
+    cards.push({{
+      kind:'pattern',
+      title:'表达句式 ' + (i+1),
+      subtitle:p.pattern || '',
+      lines:[
+        '意思：' + (p.zh || ''),
+        '例句：' + (p.example || ''),
+        p.note || ''
+      ]
+    }});
+  }});
+
+  return cards;
+}}
+
+function renderXhsCards(){{
+  ensureFinal();
+  const cards = makeXhsCards();
+  const box = document.getElementById('xhsCards');
+  box.innerHTML = cards.map(function(card, i){{
+    const lines = (card.lines || []).slice(0,7).map(x => '<p>' + escapeHtml(x) + '</p>').join('');
+    return '<div class="xhs-card-preview"><b>Card ' + String(i+1).padStart(2,'0') + '</b><span class="xhs-chip">' + escapeHtml(card.kind) + '</span><h3>' + escapeHtml(card.title) + '</h3><p>' + escapeHtml(card.subtitle || '') + '</p>' + lines + '</div>';
+  }}).join('');
+  box.scrollIntoView({{behavior:'smooth', block:'start'}});
+}}
+
+function openXhsCardsPage(){{
+  renderXhsCards();
+  const css = document.querySelector('style').innerHTML;
+  const html = '<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>小红书图文卡片</title><style>' + css + ' body{{background:#f5f2eb}}.xhs-page{{max-width:980px;margin:0 auto;padding:20px}}.xhs-grid{{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}}</style></head><body><div class="xhs-page"><h1>小红书图文卡片</h1><p class="sub">可截图预览；需要 PNG 可回到编辑页点击“下载全部 PNG”。</p><div class="xhs-grid">' + document.getElementById('xhsCards').innerHTML + '</div></div></body></html>';
+  const win = window.open('', '_blank');
+  if(!win){{
+    alert('浏览器拦截了新窗口。请允许弹窗。');
+    return;
+  }}
+  win.document.open();
+  win.document.write(html);
+  win.document.close();
+}}
+
+function wrapCanvasText(ctx, text, x, y, maxWidth, lineHeight, maxLines){{
+  text = String(text || '').replace(/\s+/g, ' ').trim();
+  if(!text) return y;
+  const tokens = text.match(/[\u4e00-\u9fff]|[A-Za-z0-9’'.,;:!?()/%-]+|\S/g) || [];
+  let line = '';
+  let lines = [];
+  for(const token of tokens){{
+    const isCjk = /[\u4e00-\u9fff]/.test(token);
+    const add = isCjk ? token : (line && !line.endsWith(' ') ? ' ' + token : token);
+    const test = line + add;
+    if(ctx.measureText(test).width > maxWidth && line){{
+      lines.push(line.trim());
+      line = token;
+      if(lines.length >= maxLines) break;
+    }}else{{
+      line = test;
+    }}
+  }}
+  if(line && lines.length < maxLines) lines.push(line.trim());
+  lines.forEach(function(l, idx){{
+    if(idx === maxLines - 1 && tokens.length > 0 && lines.length >= maxLines){{
+      if(ctx.measureText(l).width > maxWidth - 30) l = l.slice(0, Math.max(0,l.length-2)) + '…';
+    }}
+    ctx.fillText(l, x, y);
+    y += lineHeight;
+  }});
+  return y;
+}}
+
+function drawCardToCanvas(card, index){{
+  const canvas = document.createElement('canvas');
+  canvas.width = 1080;
+  canvas.height = 1440;
+  const ctx = canvas.getContext('2d');
+
+  const bg = ctx.createLinearGradient(0,0,1080,1440);
+  bg.addColorStop(0,'#fffdf8');
+  bg.addColorStop(0.55,'#f8f1e3');
+  bg.addColorStop(1,'#eef4f1');
+  ctx.fillStyle = bg;
+  ctx.fillRect(0,0,1080,1440);
+
+  ctx.strokeStyle = '#dce6e3';
+  ctx.lineWidth = 3;
+  roundRect(ctx, 70, 70, 940, 1300, 46, false, true);
+
+  ctx.fillStyle = '#426e60';
+  ctx.beginPath();
+  ctx.arc(140, 145, 42, 0, Math.PI*2);
+  ctx.fill();
+  ctx.fillStyle = '#ffffff';
+  ctx.font = 'bold 28px Arial';
+  ctx.textAlign = 'center';
+  ctx.fillText('HL', 140, 155);
+  ctx.textAlign = 'left';
+
+  ctx.fillStyle = '#426e60';
+  ctx.font = 'bold 30px Arial';
+  ctx.fillText('Card ' + String(index+1).padStart(2,'0') + ' · ' + card.kind, 210, 155);
+
+  ctx.fillStyle = '#1d252c';
+  ctx.font = 'bold 58px Arial';
+  let y = 260;
+  y = wrapCanvasText(ctx, card.title, 105, y, 870, 70, 3);
+
+  if(card.subtitle){{
+    ctx.fillStyle = '#26333b';
+    ctx.font = card.kind === 'paragraph' ? '38px Georgia' : '34px Arial';
+    y += 24;
+    y = wrapCanvasText(ctx, card.subtitle, 105, y, 870, card.kind === 'paragraph' ? 58 : 48, card.kind === 'paragraph' ? 12 : 8);
+  }}
+
+  y += 28;
+  ctx.fillStyle = '#536171';
+  ctx.font = '30px Arial';
+  (card.lines || []).forEach(function(line){{
+    if(y > 1240) return;
+    y = wrapCanvasText(ctx, line, 105, y, 870, 43, 4);
+    y += 16;
+  }});
+
+  ctx.fillStyle = '#66737d';
+  ctx.font = '24px Arial';
+  ctx.fillText('Healing Lab Daily Reading', 105, 1320);
+  return canvas;
+}}
+
+function roundRect(ctx, x, y, w, h, r, fill, stroke){{
+  if(w < 2*r) r = w/2;
+  if(h < 2*r) r = h/2;
+  ctx.beginPath();
+  ctx.moveTo(x+r, y);
+  ctx.arcTo(x+w, y, x+w, y+h, r);
+  ctx.arcTo(x+w, y+h, x, y+h, r);
+  ctx.arcTo(x, y+h, x, y, r);
+  ctx.arcTo(x, y, x+w, y, r);
+  ctx.closePath();
+  if(fill) ctx.fill();
+  if(stroke) ctx.stroke();
+}}
+
+function downloadAllCards(){{
+  renderXhsCards();
+  const cards = makeXhsCards();
+  if(!cards.length){{
+    alert('还没有图文卡片。');
+    return;
+  }}
+  cards.forEach(function(card, i){{
+    const canvas = drawCardToCanvas(card, i);
+    const a = document.createElement('a');
+    a.download = 'healinglab-card-' + String(i+1).padStart(2,'0') + '.png';
+    a.href = canvas.toDataURL('image/png');
+    setTimeout(function(){{ a.click(); }}, i * 220);
+  }});
+}}
 function copyXhsText(){{
   const topic = document.getElementById('topic').value;
   const level = document.getElementById('level').value;
