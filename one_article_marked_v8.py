@@ -1,3 +1,4 @@
+# V38_WORD_ONLY_HIGHLIGHT_PHRASES_FIRST
 # V37_SUBTLE_HIGHLIGHT_TOP3
 import json
 import re
@@ -3849,7 +3850,7 @@ textarea{{min-height:68px;resize:vertical}}
 .pattern{{border:1px solid #f0d6c9;background:#fff8f2;border-radius:14px;padding:12px}}
 .pattern p{{margin:7px 0;line-height:1.6}}
 .pattern .ori{{border-left:3px solid var(--orange);padding-left:10px;color:#536171}}
-.hl{{color:#315f53;background:linear-gradient(to top,rgba(127,163,145,.18) 0 34%,transparent 34%);border-bottom:1px dotted rgba(49,95,83,.55);border-radius:0;padding:0 .5px;cursor:pointer}}
+.hl{{color:inherit;background:rgba(127,163,145,.12);border-radius:3px;padding:0 1px;cursor:pointer}}
 .copybox{{position:fixed;left:16px;right:16px;bottom:16px;background:#1d252c;color:white;border-radius:16px;padding:12px 14px;display:none;z-index:99;box-shadow:0 14px 38px rgba(0,0,0,.22);max-width:480px;margin:auto;white-space:pre-wrap}}
 @media(max-width:880px){{.grid{{grid-template-columns:1fr}}.final-meta{{grid-template-columns:1fr}}h1{{font-size:32px}}}}
 @media print{{.top,.left,.right .card-hd,.btns,.tabs,.select-tip{{display:none!important}}.grid{{display:block}}body{{background:white}}.card{{box-shadow:none;border:0}}}}
@@ -4140,6 +4141,13 @@ function isBoundary(ch){{
   return !ch || !/[A-Za-z]/.test(ch);
 }}
 
+function wrapMatchedWords(matched, term, meaning){{
+  return matched.split(/(\s+)/).map(function(part){{
+    if(/^\s+$/.test(part)) return escapeHtml(part);
+    return '<span class="hl" data-term="' + escapeAttr(term) + '" data-meaning="' + escapeAttr(meaning) + '">' + escapeHtml(part) + '</span>';
+  }}).join('');
+}}
+
 function highlightText(text){{
   const raw = String(text || '');
   const items = [
@@ -4152,11 +4160,13 @@ function highlightText(text){{
   while(i < raw.length){{
     let best = null;
     let bestIndex = -1;
+
     for(const item of items){{
       const term = item.text;
       const lowerRaw = raw.toLowerCase();
       const lowerTerm = term.toLowerCase();
       let idx = lowerRaw.indexOf(lowerTerm, i);
+
       while(idx !== -1){{
         const before = raw[idx-1];
         const after = raw[idx + term.length];
@@ -4170,14 +4180,16 @@ function highlightText(text){{
         idx = lowerRaw.indexOf(lowerTerm, idx + 1);
       }}
     }}
+
     if(!best){{
       out += escapeHtml(raw.slice(i));
       break;
     }}
+
     out += escapeHtml(raw.slice(i, bestIndex));
     const matched = raw.slice(bestIndex, bestIndex + best.text.length);
     const meaning = best.zh || guessMeaning(best.text) || '';
-    out += '<span class="hl" data-term="' + escapeAttr(best.text) + '" data-meaning="' + escapeAttr(meaning) + '">' + escapeHtml(matched) + '</span>';
+    out += wrapMatchedWords(matched, best.text, meaning);
     i = bestIndex + best.text.length;
   }}
   return out;
@@ -4230,8 +4242,8 @@ function renderFinal(){{
         <p class="summary">${{escapeHtml(summary)}}</p>
       </article>
       <section class="final-card final-section"><div class="final-hd"><h2>今日精读</h2><span class="mini">Original + Meaning</span></div><div class="final-list">${{paraHtml}}</div></section>
-      <section class="final-card final-section"><div class="final-hd"><h2>表达句式</h2><span class="mini">Top 3 Sentence Patterns</span></div><div class="final-list">${{patternHtml}}</div></section>
       <section class="final-card final-section"><div class="final-hd"><h2>重点词组</h2><span class="mini">Phrases</span></div><div class="final-list">${{exprHtml}}</div></section>
+      <section class="final-card final-section"><div class="final-hd"><h2>表达句式</h2><span class="mini">Top 3 Sentence Patterns</span></div><div class="final-list">${{patternHtml}}</div></section>
     </div>
   `;
   document.getElementById('finalPreview').scrollIntoView({{behavior:'smooth', block:'start'}});
