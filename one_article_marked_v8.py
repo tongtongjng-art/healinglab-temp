@@ -2392,41 +2392,177 @@ def ensure_archive_dirs():
 
 def build_archive_index(today, article_title, title_zh, today_body_html):
     """
-    V10：生成同一个主页面 index.html。
-    顶部是今日练习，底部是历史目录。
-    latest.html 也会写成同样内容，避免旧链接失效。
+    Desktop index page: 今日内容 + 可按主题/难度筛选的历史目录。
     """
     archive_dir = OUTPUT_DIR / "archive"
+
+    def after_label(text, label):
+        m = re.search(re.escape(label) + r"\s*\n([^\n]+)", text)
+        return clean_text(m.group(1)) if m else ""
+
+    def history_topic(title, source, body):
+        s = f" {title} {source} {body[:1800]} ".lower()
+
+        def has_key(keyword):
+            k = keyword.strip().lower()
+            if not k:
+                return False
+            if re.search(r"[^a-z0-9 ]", k):
+                return k in s
+            return re.search(r"(?<![a-z0-9])" + re.escape(k) + r"(?![a-z0-9])", s) is not None
+
+        rules = [
+            ("AI科技", ["ai", "artificial intelligence", "chatgpt", "algorithm", "machine learning"]),
+            ("科技", ["technology", "tech", "digital", "software", "device", "online", "data", "app"]),
+            ("教育", ["education", "school", "student", "teacher", "pupil", "children", "university", "exam"]),
+            ("人文历史", ["history", "historian", "heritage", "culture", "museum", "ancient", "archaeology", "archaeological", "smithsonian", "book", "art"]),
+            ("健康心理", ["health", "sleep", "stress", "mental", "mind", "wellbeing", "brain", "habit"]),
+            ("社会工作", ["work", "job", "employment", "worker", "company", "society", "social", "support"]),
+            ("自然科学", ["science", "animal", "climate", "space", "research", "study", "ecologist", "wolf"]),
+            ("生活", ["life", "home", "family", "food", "travel", "lifestyle", "daily"]),
+        ]
+        for name, keys in rules:
+            if any(has_key(k) for k in keys):
+                return name
+        return "综合"
+
+    def history_level(text):
+        try:
+            prof = difficulty_profile(text)
+            avg = prof.get("avg_sentence_words", 0) or 0
+            lw = prof.get("long_word_count", 0) or 0
+            wc = prof.get("word_count", 0) or 0
+            if avg >= 30 and lw >= 24:
+                return "C1"
+            if avg >= 22 or lw >= 16:
+                return "B2"
+            if avg >= 13 or wc >= 70:
+                return "B1-B2"
+            return "B1"
+        except Exception:
+            return "B1-B2"
+
     entries = []
-    for p in sorted([x for x in archive_dir.glob("day-*.html") if not x.name.endswith("-xhs.html")], reverse=True):
-        date_part = p.stem.replace("day-", "")
-        if date_part.endswith("-xhs"):
-            continue
+    seen_titles = set()
+    if archive_dir.exists():
+        for txt_path in sorted(archive_dir.glob("day-*.txt"), reverse=True):
+            date_part = txt_path.stem.replace("day-", "")
+            if date_part == today:
+                continue
+            try:
+                text = txt_path.read_text(encoding="utf-8-sig", errors="ignore")
+            except Exception:
+                continue
+            en_title = after_label(text, "英文标题：") or "历史外刊"
+            zh_title = after_label(text, "中文标题：")
+            source_line = after_label(text, "来源：")
+            key = en_title.lower().strip()
+            if key in seen_titles:
+                continue
+            seen_titles.add(key)
+            href = f"archive/day-{date_part}.html"
+            html_file = archive_dir / f"day-{date_part}.html"
+            if not html_file.exists():
+                continue
+            entries.append({
+                "date": date_part,
+                "title": en_title,
+                "zh": zh_title,
+                "source": source_line.split("｜")[0] if source_line else "Daily Reading",
+                "topic": history_topic(en_title + " " + zh_title, source_line, text),
+                "level": history_level(text[:2200]),
+                "href": href,
+            })
+            if len(entries) >= 60:
+                break
 
-        # V12.6：历史目录不显示今天，避免页面顶部“今日内容”和底部历史目录重复出现同一天。
-        if date_part == today:
-            continue
+    topic_order = ["全部", "人文历史", "AI科技", "科技", "教育", "健康心理", "社会工作", "自然科学", "生活", "综合"]
+    level_order = ["全部", "B1", "B1-B2", "B2", "C1"]
+    present_topics = {x["topic"] for x in entries}
+    present_levels = {x["level"] for x in entries}
 
-        entries.append((date_part, f"archive/{p.name}"))
+    topic_buttons = ""
+    for tp in topic_order:
+        if tp != "全部" and tp not in present_topics:
+            continue
+        active = " active" if tp == "全部" else ""
+        topic_buttons += f'<button type="button" class="history-filter-btn{active}" data-kind="topic" data-value="{esc(tp)}">{esc(tp)}</button>'
+
+    level_buttons = ""
+    for lv in level_order:
+        if lv != "全部" and lv not in present_levels:
+            continue
+        active = " active" if lv == "全部" else ""
+        level_buttons += f'<button type="button" class="history-filter-btn{active}" data-kind="level" data-value="{esc(lv)}">{esc(lv)}</button>'
 
     items = []
-    for date_part, href in entries:
-        items.append(f"<li><a href='{esc(href)}'>{esc(date_part)}｜外刊表达练习</a></li>")
+    for item in entries:
+        title_show = item["title"]
+        if len(title_show) > 88:
+            title_show = title_show[:86] + "..."
+        zh_line = item["zh"] or item["source"]
+        items.append(f"""
+<a class="history-item" href="{esc(item['href'])}" data-topic="{esc(item['topic'])}" data-level="{esc(item['level'])}">
+  <span class="history-meta">{esc(item['topic'])} · {esc(item['level'])} · {esc(item['date'])}</span>
+  <b>{esc(title_show)}</b>
+  <small>{esc(zh_line)}</small>
+</a>
+""")
 
-    if not items:
-        items.append("<li>暂无历史记录</li>")
+    if items:
+        history_items = "".join(items)
+    else:
+        history_items = '<div class="history-empty">暂无历史记录。生成几天文章后，这里会自动出现。</div>'
 
     history_html = f"""
-<section class="card">
-<h2>六、历史目录</h2>
-<ul class="history-list">
-{''.join(items)}
-</ul>
+<section class="card history-panel" id="history">
+  <div class="history-head">
+    <div>
+      <h2>历史文章</h2>
+      <p class="meta">按主题和难度筛选，适合回看同类文章。</p>
+    </div>
+    <span class="history-count">{len(entries)} 篇</span>
+  </div>
+  <div class="history-filter-wrap">
+    <div class="history-filter-row"><span>主题</span>{topic_buttons}</div>
+    <div class="history-filter-row"><span>难度</span>{level_buttons}</div>
+  </div>
+  <div class="history-list" id="historyList">{history_items}</div>
+  <div class="history-empty" id="historyEmpty" style="display:none;">这个筛选下暂时没有文章</div>
 </section>
+<script>
+(function(){{
+  var root=document.getElementById('history');
+  if(!root) return;
+  var activeTopic='全部', activeLevel='全部';
+  function applyFilter(){{
+    var shown=0;
+    root.querySelectorAll('.history-item').forEach(function(item){{
+      var okTopic=(activeTopic==='全部'||item.getAttribute('data-topic')===activeTopic);
+      var okLevel=(activeLevel==='全部'||item.getAttribute('data-level')===activeLevel);
+      var show=okTopic&&okLevel;
+      item.style.display=show?'block':'none';
+      if(show) shown++;
+    }});
+    var empty=document.getElementById('historyEmpty');
+    if(empty) empty.style.display=shown?'none':'block';
+  }}
+  root.querySelectorAll('.history-filter-btn').forEach(function(btn){{
+    btn.addEventListener('click',function(){{
+      var kind=btn.getAttribute('data-kind');
+      var value=btn.getAttribute('data-value');
+      root.querySelectorAll('.history-filter-btn[data-kind="'+kind+'"]').forEach(function(b){{b.classList.remove('active');}});
+      btn.classList.add('active');
+      if(kind==='topic') activeTopic=value;
+      if(kind==='level') activeLevel=value;
+      applyFilter();
+    }});
+  }});
+}})();
+</script>
 """
 
     unified = today_body_html.replace("</body>", history_html + "\n</body>")
-
     (OUTPUT_DIR / "index.html").write_text(unified, encoding="utf-8-sig")
     (OUTPUT_DIR / "latest.html").write_text(unified, encoding="utf-8-sig")
     return unified
@@ -5077,6 +5213,148 @@ details.translation-fold .fold-content {{
   font-size: 15px;
   line-height: 1.65;
 }}
+.desktop-shell {{
+  width: min(100%, 1180px);
+  margin: 0 auto;
+  padding: 24px 16px 44px;
+}}
+.desktop-hero {{
+  max-width: none;
+  margin: 0 0 16px;
+  padding: 24px;
+  background:
+    linear-gradient(135deg, rgba(255,255,255,.94), rgba(251,250,246,.9)),
+    linear-gradient(135deg,#e9f2ec 0%,#f8f0df 56%,#eef3f8 100%);
+  border: 1px solid #dfe6e8;
+  box-shadow: 0 18px 46px rgba(44,57,64,.11);
+}}
+.hero-kicker {{
+  color: #426e60;
+  font-weight: 900;
+  font-size: 13px;
+  margin-bottom: 10px;
+}}
+.desktop-hero h1 {{
+  font-size: clamp(32px, 4vw, 52px);
+  line-height: 1.05;
+  margin-bottom: 14px;
+}}
+.desktop-hero p {{ max-width: 920px; }}
+.desktop-nav {{
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  max-width: none;
+  margin: 0 0 16px;
+  padding: 10px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  background: rgba(246,246,246,.78);
+  border: 1px solid #dfe6e8;
+  border-radius: 999px;
+  backdrop-filter: blur(12px);
+}}
+.desktop-nav a {{
+  color: #426e60;
+  background: #fffdf8;
+  border: 1px solid #dfe6e8;
+  border-radius: 999px;
+  padding: 7px 12px;
+  font-weight: 800;
+  font-size: 13px;
+}}
+.desktop-layout {{
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 330px;
+  gap: 16px;
+  align-items: start;
+}}
+.read-column, .side-column {{ display: grid; gap: 16px; }}
+.side-column {{ position: sticky; top: 76px; }}
+.read-column .card, .side-column .card, .history-panel {{
+  max-width: none;
+  margin: 0;
+  border: 1px solid #dfe6e8;
+  box-shadow: 0 14px 34px rgba(44,57,64,.08);
+}}
+.read-column .card, .side-column .card {{ padding: 18px; }}
+.section-note {{ color:#66737d;font-size:13px;margin:-4px 0 12px; }}
+.side-card-title {{ display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:12px; }}
+.side-card-title h2 {{ margin:0; }}
+.history-panel {{
+  width: min(100% - 32px, 1180px);
+  margin: 16px auto 44px;
+  padding: 20px;
+}}
+.history-head {{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:16px;
+  margin-bottom:14px;
+}}
+.history-head h2 {{ margin:0 0 6px; }}
+.history-count {{
+  flex:0 0 auto;
+  color:#426e60;
+  background:#edf6f1;
+  border:1px solid rgba(66,110,96,.18);
+  border-radius:999px;
+  padding:7px 11px;
+  font-size:13px;
+  font-weight:900;
+}}
+.history-filter-wrap {{
+  display:grid;
+  gap:10px;
+  padding:12px;
+  border:1px solid #dfe6e8;
+  border-radius:14px;
+  background:#fbfaf6;
+  margin-bottom:14px;
+}}
+.history-filter-row {{ display:flex;gap:8px;align-items:center;flex-wrap:wrap; }}
+.history-filter-row span {{ color:#66737d;font-size:13px;font-weight:900;margin-right:2px; }}
+.history-filter-btn {{
+  border:1px solid #dfe6e8;
+  background:#fff;
+  color:#426e60;
+  border-radius:999px;
+  padding:7px 11px;
+  font-size:13px;
+  font-weight:850;
+  cursor:pointer;
+}}
+.history-filter-btn.active {{ background:#426e60;color:#fff;border-color:#426e60; }}
+.history-panel .history-list {{
+  display:grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap:10px;
+  padding-left:0;
+}}
+.history-item {{
+  display:block;
+  min-height:132px;
+  color:#1d252c;
+  background:#fffdf8;
+  border:1px solid #dfe6e8;
+  border-radius:14px;
+  padding:13px;
+}}
+.history-item:hover {{ border-color:rgba(66,110,96,.38);background:#fbfaf6; }}
+.history-meta {{ display:block;color:#426e60;font-size:12px;font-weight:900;margin-bottom:8px; }}
+.history-item b {{ display:block;font-size:15px;line-height:1.4;margin-bottom:8px; }}
+.history-item small {{ display:block;color:#66737d;font-size:12.5px;line-height:1.45; }}
+.history-empty {{ color:#66737d;line-height:1.7; }}
+@media (max-width: 920px) {{
+  .desktop-shell {{ padding: 12px 10px 28px; }}
+  .desktop-layout {{ grid-template-columns: 1fr; }}
+  .side-column {{ position: static; }}
+  .desktop-nav {{ border-radius: 18px; overflow-x:auto; flex-wrap:nowrap; }}
+  .desktop-nav a {{ flex:0 0 auto; }}
+  .history-panel .history-list {{ grid-template-columns: 1fr; }}
+}}
 @media (max-width: 600px) {{
   body {{ padding: 7px; }}
   .header, .card {{ padding: 12px; border-radius: 14px; }}
@@ -5139,7 +5417,9 @@ details.translation-fold .fold-content {{
 </style>
 </head>
 <body>
-<div class="header">
+<div class="desktop-shell">
+<header class="header desktop-hero" id="top">
+<div class="hero-kicker">Healing Lab Daily Reading</div>
 <h1>今日外刊表达练习｜{today}</h1>
 <p><strong>英文标题：</strong>{esc(article['title'])}</p>
 <p><strong>中文标题：</strong>{esc(title_zh)}</p>
@@ -5148,26 +5428,50 @@ details.translation-fold .fold-content {{
 <div class="action-row">
   <button class="pdf-btn" onclick="exportPDF()">导出 PDF</button>
   <a class="pdf-btn" href="xhs.html" target="_blank">图文版</a>
+  <a class="pdf-btn" href="#history">历史筛选</a>
 </div>
 <p class="meta print-tip">PDF 左下角网址是浏览器“页眉和页脚”，打印时关闭它即可去掉。</p>
-</div>
+</header>
 
-<section class="card">
+<nav class="desktop-nav" aria-label="电脑版导航">
+  <a href="#text">截取原文</a>
+  <a href="#vocab">重点词语</a>
+  <a href="#quote">今日摘抄</a>
+  <a href="#history">历史记录</a>
+</nav>
+
+<div class="desktop-layout">
+<main class="read-column">
+<section class="card" id="text">
 <h2>一、截取原文</h2>
 <p class="meta">共截取 {total_paragraph_count} 段｜重点词/词组 {total_keyword_count} 个｜蓝灰色英文词可点击查看中文</p>
 {''.join(english_html)}
 </section>
 
-<section class="card">
-<h2>二、重点词语/词组</h2>
-<div class="vocab-list">{vocab_html}</div>
-</section>
-
-<section class="card quote-card">
+<section class="card quote-card" id="quote">
 <h2>三、今日一句摘抄</h2>
 <div class="quote-en">{quote_en}</div>
 <div class="quote-zh">{quote_zh}</div>
 </section>
+</main>
+
+<aside class="side-column">
+<section class="card" id="vocab">
+<div class="side-card-title"><h2>二、重点词语/词组</h2><span class="source-tag">Review</span></div>
+<p class="section-note">点原文里的蓝灰色词，可以看中文解释。</p>
+<div class="vocab-list">{vocab_html}</div>
+</section>
+<section class="card">
+<h2>学习路线</h2>
+<p class="meta">先读英文段落，再看中文翻译，最后只记最能复用的表达。</p>
+<div class="action-row">
+  <a class="pdf-btn" href="#text">开始精读</a>
+  <a class="pdf-btn" href="#history">看同主题</a>
+</div>
+</section>
+</aside>
+</div>
+</div>
 
 <div id="wordPopup" class="word-popup hidden">
 <button class="popup-close" onclick="document.getElementById('wordPopup').classList.add('hidden')">×</button>
