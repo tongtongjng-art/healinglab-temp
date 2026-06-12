@@ -2474,10 +2474,14 @@ def auto_upload_outputs(cfg, today):
         upload_file_sftp(sftp, OUTPUT_DIR / "index.html", remote_dir + "/index.html")
         if (OUTPUT_DIR / "xhs.html").exists():
             upload_file_sftp(sftp, OUTPUT_DIR / "xhs.html", remote_dir + "/xhs.html")
+        if (OUTPUT_DIR / "editor.html").exists():
+            upload_file_sftp(sftp, OUTPUT_DIR / "editor.html", remote_dir + "/editor.html")
         upload_file_sftp(sftp, OUTPUT_DIR / "archive" / f"day-{today}.html", remote_dir + f"/archive/day-{today}.html")
         upload_file_sftp(sftp, OUTPUT_DIR / "archive" / f"day-{today}.txt", remote_dir + f"/archive/day-{today}.txt")
         if (OUTPUT_DIR / "archive" / f"day-{today}-xhs.html").exists():
             upload_file_sftp(sftp, OUTPUT_DIR / "archive" / f"day-{today}-xhs.html", remote_dir + f"/archive/day-{today}-xhs.html")
+        if (OUTPUT_DIR / "archive" / f"day-{today}-editor.html").exists():
+            upload_file_sftp(sftp, OUTPUT_DIR / "archive" / f"day-{today}-editor.html", remote_dir + f"/archive/day-{today}-editor.html")
 
         sftp.close()
         transport.close()
@@ -3717,6 +3721,541 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
         page = page.replace(k, v)
     return page
 
+def build_manual_editor_page(article, title_zh, paragraph_rows, all_keywords, today):
+    """
+    V35：
+    人工自由选择编辑页。
+    用户在浏览器里选词、选词组、选表达句式；代码只负责排版，不再硬猜。
+    纯前端本地编辑版：不需要 API，不需要后端保存。
+    """
+    source = clean_text(article.get("source", ""))
+    pub_date = display_publish_date(article) or today
+    title_raw = clean_text(article.get("title", "")) or clean_text(title_zh or "Daily Reading")
+    title_cn = clean_text(title_zh or "")
+    link = article.get("link", "")
+
+    paras = []
+    for row in paragraph_rows:
+        raw = clean_text(row.get("raw", ""))
+        zh = clean_text(row.get("zh", ""))
+        if raw or zh:
+            paras.append({
+                "idx": row.get("idx", len(paras) + 1),
+                "raw": raw,
+                "zh": zh
+            })
+
+    payload = {
+        "today": today,
+        "source": source or "Daily Reading",
+        "pub_date": pub_date,
+        "title_raw": title_raw,
+        "title_cn": title_cn or "今日外刊精读",
+        "link": link,
+        "paragraphs": paras,
+        "keywords": list(all_keywords or [])[:80],
+    }
+
+    payload_json = json.dumps(payload, ensure_ascii=False).replace("</", "<\\/")
+
+    page = f"""<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>V35 人工编辑页｜Healing Lab</title>
+<style>
+:root {{
+  --ink:#1d252c; --muted:#66737d; --line:#dfe6e8;
+  --paper:#fbfaf6; --paper2:#f5f2eb; --card:#ffffff;
+  --green:#426e60; --green2:#edf6f1;
+  --blue:#557da8; --blue2:#edf3f8;
+  --orange:#d78768; --orange2:#fff1e9;
+  --shadow:0 18px 46px rgba(44,57,64,.11);
+}}
+*{{box-sizing:border-box}}
+body{{
+  margin:0;
+  color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",Arial,sans-serif;
+  background:
+    radial-gradient(circle at 10% 0%, rgba(127,163,145,.22), transparent 32%),
+    radial-gradient(circle at 90% 8%, rgba(241,198,109,.18), transparent 28%),
+    linear-gradient(135deg,#fff,#f5f2eb);
+}}
+.shell{{width:min(100%,1180px);margin:0 auto;padding:22px 16px 40px}}
+.top{{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;margin-bottom:18px}}
+.logo{{display:flex;align-items:center;gap:12px}}
+.mark{{width:42px;height:42px;border-radius:50%;background:var(--green);color:white;display:grid;place-items:center;font-weight:900}}
+h1{{font-size:36px;line-height:1;margin:0;letter-spacing:-.04em}}
+.sub{{color:var(--muted);margin:8px 0 0;font-size:14px}}
+.grid{{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(360px,.95fr);gap:16px;align-items:start}}
+.card{{background:rgba(255,255,255,.9);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);overflow:hidden}}
+.card-hd{{padding:16px 18px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:10px}}
+.card-hd h2{{margin:0;font-size:21px}}
+.mini{{color:var(--muted);font-size:12px}}
+.body{{padding:18px}}
+.article-title{{padding:18px;background:linear-gradient(135deg,#eaf3ed,#fbf0df 58%,#eef3f8)}}
+.article-title h2{{font-family:Georgia,"Times New Roman",serif;font-size:32px;line-height:1.08;margin:0 0 10px;letter-spacing:-.03em}}
+.article-title p{{margin:0;color:#536171;line-height:1.65}}
+.meta{{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}}
+.tag{{border-radius:999px;background:var(--green2);color:var(--green);padding:6px 10px;font-size:12px;font-weight:800}}
+.para{{border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:12px;background:var(--paper)}}
+.para b{{display:block;color:var(--green);margin-bottom:8px}}
+.en{{font-family:Georgia,"Times New Roman",serif;font-size:20px;line-height:1.82;margin:0;color:#25323a}}
+.zh{{border-top:1px solid var(--line);padding-top:10px;margin:12px 0 0;color:#5f6d77;line-height:1.72}}
+.select-tip{{position:sticky;top:0;z-index:10;margin:0 -18px 14px;padding:10px 18px;background:rgba(251,250,246,.92);border-bottom:1px solid var(--line);backdrop-filter:blur(10px)}}
+.selected{{background:#fff;border:1px dashed var(--orange);border-radius:12px;padding:10px;margin-top:8px;color:#9b4e35;min-height:42px;line-height:1.5}}
+.btns{{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}}
+button{{border:0;border-radius:999px;padding:9px 12px;font-weight:850;cursor:pointer}}
+.btn-green{{background:var(--green);color:white}}
+.btn-blue{{background:var(--blue);color:white}}
+.btn-orange{{background:var(--orange);color:white}}
+.btn-light{{background:white;color:var(--green);border:1px solid var(--line)}}
+.form-grid{{display:grid;gap:10px}}
+.item{{border:1px solid var(--line);border-radius:14px;background:var(--paper);padding:12px;margin-bottom:10px}}
+.item-top{{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px}}
+.item-type{{display:inline-flex;border-radius:999px;background:var(--blue2);color:var(--blue);padding:4px 8px;font-size:12px;font-weight:900}}
+.del{{background:#fff;color:#b24a34;border:1px solid #f0d6c9;padding:5px 9px;font-size:12px}}
+label{{display:block;color:var(--muted);font-size:12px;margin:7px 0 4px}}
+input,textarea,select{{width:100%;border:1px solid var(--line);border-radius:10px;background:white;padding:9px 10px;font:inherit;line-height:1.45}}
+textarea{{min-height:68px;resize:vertical}}
+.tabs{{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}}
+.tab{{background:white;border:1px solid var(--line);color:var(--green)}}
+.tab.active{{background:var(--green);color:white}}
+.hidden{{display:none}}
+.preview{{background:linear-gradient(135deg,rgba(255,255,255,.88),rgba(255,255,255,.96)),var(--paper2);padding:18px}}
+.phone{{width:min(100%,480px);margin:0 auto}}
+.hero{{padding:24px 4px 14px}}
+.hero h1{{font-size:46px;line-height:.98}}
+.final-card{{background:rgba(255,255,255,.92);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);overflow:hidden;margin-bottom:14px}}
+.final-section{{padding:18px}}
+.cover{{min-height:250px;padding:22px;background:linear-gradient(135deg,#e9f2ec 0%,#f8f0df 54%,#eef3f8 100%);display:flex;flex-direction:column;justify-content:space-between}}
+.cover h2{{font-family:Georgia,"Times New Roman",serif;font-size:36px;line-height:1.08;margin:30px 0 12px;letter-spacing:-.03em}}
+.cover .cn{{font-size:16px;color:#536171;font-weight:700;line-height:1.55}}
+.final-meta{{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:14px}}
+.final-meta div{{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:10px}}
+.final-meta span{{display:block;font-size:12px;color:var(--muted);margin-bottom:5px}}
+.summary{{margin:0 14px 16px;padding:12px;border-left:4px solid var(--orange);background:#fff8f2;border-radius:10px;line-height:1.7;color:#37434a}}
+.final-hd{{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:12px}}
+.final-hd h2{{margin:0;font-size:21px}}
+.final-list{{display:grid;gap:8px}}
+.final-row{{border:1px solid var(--line);border-radius:12px;background:var(--paper);padding:10px}}
+.final-row b{{color:var(--green)}}
+.final-row span{{display:block;color:var(--muted);line-height:1.55;margin-top:4px}}
+.pattern{{border:1px solid #f0d6c9;background:#fff8f2;border-radius:14px;padding:12px}}
+.pattern p{{margin:7px 0;line-height:1.6}}
+.pattern .ori{{border-left:3px solid var(--orange);padding-left:10px;color:#536171}}
+.hl{{color:var(--green);background:rgba(127,163,145,.16);border-bottom:1px solid rgba(66,110,96,.35);border-radius:4px;padding:0 2px}}
+.copybox{{position:fixed;left:16px;right:16px;bottom:16px;background:#1d252c;color:white;border-radius:16px;padding:12px 14px;display:none;z-index:99;box-shadow:0 14px 38px rgba(0,0,0,.22);max-width:480px;margin:auto;white-space:pre-wrap}}
+@media(max-width:880px){{.grid{{grid-template-columns:1fr}}.final-meta{{grid-template-columns:1fr}}h1{{font-size:32px}}}}
+@media print{{.top,.left,.right .card-hd,.btns,.tabs,.select-tip{{display:none!important}}.grid{{display:block}}body{{background:white}}.card{{box-shadow:none;border:0}}}}
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="top">
+    <div class="logo"><div class="mark">HL</div><div><h1>V35 人工编辑页</h1><p class="sub">选中文本 → 加入词汇/词组/句式 → 修改中文解释 → 生成最终页</p></div></div>
+    <div class="btns">
+      <button class="btn-light" onclick="loadDemo()">填入示例</button>
+      <button class="btn-orange" onclick="clearAll()">清空编辑</button>
+      <button class="btn-green" onclick="renderFinal()">生成最终页</button>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="left card">
+      <div class="article-title">
+        <h2 id="titleRaw"></h2>
+        <p id="titleCn"></p>
+        <div class="meta">
+          <span class="tag" id="sourceTag"></span>
+          <span class="tag" id="dateTag"></span>
+        </div>
+      </div>
+      <div class="body">
+        <div class="select-tip">
+          <b>当前选中：</b>
+          <div class="selected" id="selectedText">先在英文原文里拖选词语、词组或整句。</div>
+          <div class="btns">
+            <button class="btn-blue" onclick="addFromSelection('vocab')">加入词汇</button>
+            <button class="btn-green" onclick="addFromSelection('phrase')">加入词组</button>
+            <button class="btn-orange" onclick="addFromSelection('pattern')">加入表达句式</button>
+          </div>
+        </div>
+        <div id="articleBox"></div>
+      </div>
+    </div>
+
+    <div class="right">
+      <div class="card">
+        <div class="card-hd"><h2>编辑内容</h2><span class="mini">全部可直接改</span></div>
+        <div class="body">
+          <div class="form-grid">
+            <div>
+              <label>主题分类</label>
+              <select id="topic">
+                <option>教育</option><option>AI科技</option><option>科技</option><option>文化历史</option><option>健康心理</option><option>社会工作</option><option>自然科学</option><option>生活</option><option>综合</option>
+              </select>
+            </div>
+            <div>
+              <label>难度</label>
+              <select id="level"><option>B1</option><option selected>B1-B2</option><option>B2</option><option>C1</option></select>
+            </div>
+            <div>
+              <label>一句中文摘要</label>
+              <textarea id="summary"></textarea>
+            </div>
+          </div>
+
+          <div class="tabs">
+            <button class="tab active" data-tab="vocab" onclick="showTab('vocab')">词汇</button>
+            <button class="tab" data-tab="phrase" onclick="showTab('phrase')">词组</button>
+            <button class="tab" data-tab="pattern" onclick="showTab('pattern')">表达句式</button>
+          </div>
+
+          <div id="edit-vocab"></div>
+          <div id="edit-phrase" class="hidden"></div>
+          <div id="edit-pattern" class="hidden"></div>
+
+          <div class="btns">
+            <button class="btn-green" onclick="renderFinal()">生成最终页</button>
+            <button class="btn-light" onclick="copyXhsText()">复制小红书正文</button>
+            <button class="btn-light" onclick="window.print()">打印/另存PDF</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:16px">
+        <div class="card-hd"><h2>最终预览</h2><span class="mini">生成后看这里</span></div>
+        <div class="preview" id="finalPreview">
+          <div class="phone"><p style="color:#66737d">点“生成最终页”后显示。</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="copybox" id="copybox"></div>
+
+<script id="payload" type="application/json">{payload_json}</script>
+<script>
+const data = JSON.parse(document.getElementById('payload').textContent);
+const state = {{
+  vocab: [],
+  phrase: [],
+  pattern: []
+}};
+
+const commonMeanings = {{
+  "autism":"自闭症",
+  "sufficient":"足够的；充分的",
+  "timely":"及时的",
+  "mainstream":"主流的；普通学校体系的",
+  "absence":"缺乏；不存在",
+  "testament":"证明；体现",
+  "support":"支持；帮助",
+  "pupils":"学生；小学生/中学生",
+  "places":"名额；位置。教育语境中常指学校名额",
+  "speech":"言语；讲话",
+  "language":"语言",
+  "communications":"沟通；交流；通信",
+  "needs":"需求；需要",
+  "irritating":"恼人的；令人烦躁的",
+  "spotty":"有斑点的；不稳定的；参差不齐的",
+  "mimicking":"模仿；模拟",
+  "according to":"根据……；引用报告、研究、调查时常用",
+  "make up":"构成；占据；组成",
+  "in the absence of":"在缺乏……的情况下",
+  "this is a testament to":"这证明了……；这体现了……",
+  "is a testament to":"证明了……；体现了……",
+  "one in three":"三分之一",
+  "more than one in five":"超过五分之一",
+  "there comes a point":"总会有一个时刻……",
+  "there comes a point in our lives":"人生中总会有一个时刻……",
+  "it turned out":"结果证明；后来发现",
+  "irrespective of":"不管；不论；无论",
+  "sufficient places":"足够的名额 / 学位 / 位置",
+  "timely support":"及时支持",
+  "mainstream schools":"普通学校；主流学校",
+  "speech, language and communications needs":"言语、语言和沟通需求"
+}};
+
+function guessMeaning(text){{
+  const key = String(text||'').trim().toLowerCase().replace(/[“”"'.。,，;；:：!?！？]+$/,'');
+  return commonMeanings[key] || "";
+}}
+
+function init(){{
+  document.getElementById('titleRaw').textContent = data.title_raw;
+  document.getElementById('titleCn').textContent = data.title_cn;
+  document.getElementById('sourceTag').textContent = data.source;
+  document.getElementById('dateTag').textContent = data.pub_date;
+  document.getElementById('summary').value = "这篇文章讲的是：" + data.title_cn;
+
+  document.getElementById('articleBox').innerHTML = data.paragraphs.map(p => `
+    <div class="para">
+      <b>第 ${{p.idx}} 段</b>
+      <p class="en selectable">${{escapeHtml(p.raw)}}</p>
+      <p class="zh">${{escapeHtml(p.zh)}}</p>
+    </div>
+  `).join('');
+
+  document.addEventListener('selectionchange', () => {{
+    const sel = window.getSelection().toString().trim().replace(/\\s+/g,' ');
+    if(sel) document.getElementById('selectedText').textContent = sel;
+  }});
+
+  renderEditors();
+}}
+
+function escapeHtml(s){{
+  return String(s||'').replace(/[&<>"']/g, c => ({{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}}[c]));
+}}
+
+function addFromSelection(type){{
+  const text = window.getSelection().toString().trim().replace(/\\s+/g,' ');
+  if(!text) {{
+    alert('先在英文原文里拖选内容。');
+    return;
+  }}
+  if(type === 'pattern'){{
+    state.pattern.push({{
+      original: text,
+      pattern: patternFrom(text),
+      zh: meaningFromPattern(text),
+      example: exampleFromPattern(text),
+      note: "适合迁移到自己的生活、学习或工作场景。"
+    }});
+  }} else {{
+    state[type].push({{
+      text,
+      zh: guessMeaning(text),
+      note: type === 'vocab' ? "核心词汇" : "可复用词组"
+    }});
+  }}
+  renderEditors();
+  showTab(type);
+}}
+
+function patternFrom(text){{
+  const t = text.toLowerCase();
+  if(t.includes('in the absence of')) return 'In the absence of A, B...';
+  if(t.includes('testament to')) return 'This is a testament to A.';
+  if(/one in \\w+/.test(t)) return 'One in three A have / are B.';
+  if(t.includes('make up')) return 'A make up B.';
+  if(t.includes('there comes a point')) return 'There comes a point in our lives when ...';
+  if(t.includes('it turned out')) return 'It turned out that ...';
+  if(t.includes('irrespective of')) return 'Irrespective of A, B...';
+  if(t.includes('will have the chance to')) return 'A will have the chance to do B, thanks to C.';
+  if(t.includes('according to')) return 'That is according to A.';
+  return 'Use this sentence pattern in your own sentence.';
+}}
+
+function meaningFromPattern(text){{
+  const t = text.toLowerCase();
+  if(t.includes('in the absence of')) return '在缺乏 A 的情况下，B……';
+  if(t.includes('testament to')) return '这证明了 / 体现了 A。';
+  if(/one in \\w+/.test(t)) return '三分之一 / 几分之一的 A 有 / 是 B。';
+  if(t.includes('make up')) return 'A 构成 / 占 B。';
+  if(t.includes('there comes a point')) return '人生中总会有一个时刻，……';
+  if(t.includes('it turned out')) return '结果证明 / 后来发现，……';
+  if(t.includes('irrespective of')) return '不管 A 如何，B……';
+  if(t.includes('will have the chance to')) return 'A 将有机会做 B，这要归功于 C。';
+  if(t.includes('according to')) return '这是根据 A 得出的 / 这是 A 提供的信息。';
+  return '把这个结构迁移到自己的句子里。';
+}}
+
+function exampleFromPattern(text){{
+  const t = text.toLowerCase();
+  if(t.includes('in the absence of')) return 'In the absence of enough practice, speaking fluently becomes difficult.';
+  if(t.includes('testament to')) return 'This result is a testament to the importance of daily practice.';
+  if(/one in \\w+/.test(t)) return 'One in three students say they feel stressed before exams.';
+  if(t.includes('make up')) return 'Young people make up a large part of the online learning community.';
+  if(t.includes('there comes a point')) return 'There comes a point in our lives when we stop trying to please everyone.';
+  if(t.includes('it turned out')) return 'It turned out that the simple method worked better than expected.';
+  if(t.includes('irrespective of')) return 'Irrespective of quality, the product attracted a lot of attention.';
+  if(t.includes('will have the chance to')) return 'Visitors will have the chance to experience local culture, thanks to the new exhibition.';
+  if(t.includes('according to')) return 'That is according to the latest government figures.';
+  return 'I can use this expression to describe a real situation in my life.';
+}}
+
+function renderEditors(){{
+  document.getElementById('edit-vocab').innerHTML = renderList('vocab');
+  document.getElementById('edit-phrase').innerHTML = renderList('phrase');
+  document.getElementById('edit-pattern').innerHTML = renderPatterns();
+}}
+
+function renderList(type){{
+  return state[type].map((it, i) => `
+    <div class="item">
+      <div class="item-top"><span class="item-type">${{type === 'vocab' ? '词汇' : '词组'}}</span><button class="del" onclick="removeItem('${{type}}',${{i}})">删除</button></div>
+      <label>英文</label><input value="${{escapeAttr(it.text)}}" oninput="state.${{type}}[${{i}}].text=this.value">
+      <label>中文意思</label><input value="${{escapeAttr(it.zh)}}" placeholder="写中文意思" oninput="state.${{type}}[${{i}}].zh=this.value">
+      <label>备注</label><input value="${{escapeAttr(it.note||'')}}" oninput="state.${{type}}[${{i}}].note=this.value">
+    </div>
+  `).join('') || `<p style="color:#66737d">暂无。请在左侧选中文本后加入。</p>`;
+}}
+
+function renderPatterns(){{
+  return state.pattern.map((it, i) => `
+    <div class="item">
+      <div class="item-top"><span class="item-type">表达句式</span><button class="del" onclick="removeItem('pattern',${{i}})">删除</button></div>
+      <label>原句</label><textarea oninput="state.pattern[${{i}}].original=this.value">${{escapeHtml(it.original)}}</textarea>
+      <label>句式</label><input value="${{escapeAttr(it.pattern)}}" oninput="state.pattern[${{i}}].pattern=this.value">
+      <label>中文意思</label><input value="${{escapeAttr(it.zh)}}" oninput="state.pattern[${{i}}].zh=this.value">
+      <label>仿写例句</label><textarea oninput="state.pattern[${{i}}].example=this.value">${{escapeHtml(it.example)}}</textarea>
+      <label>适用说明</label><input value="${{escapeAttr(it.note||'')}}" oninput="state.pattern[${{i}}].note=this.value">
+    </div>
+  `).join('') || `<p style="color:#66737d">暂无。请在左侧选中一个完整句子或表达结构后加入。</p>`;
+}}
+
+function escapeAttr(s){{ return escapeHtml(s).replace(/"/g,'&quot;'); }}
+
+function removeItem(type, i){{
+  state[type].splice(i,1);
+  renderEditors();
+}}
+
+function showTab(type){{
+  ['vocab','phrase','pattern'].forEach(t => {{
+    document.getElementById('edit-'+t).classList.toggle('hidden', t!==type);
+    document.querySelector('.tab[data-tab="'+t+'"]').classList.toggle('active', t===type);
+  }});
+}}
+
+function highlightText(text){{
+  let html = escapeHtml(text);
+  const terms = [...state.phrase, ...state.vocab].map(x => x.text).filter(Boolean).sort((a,b)=>b.length-a.length);
+  terms.forEach(term => {{
+    const esc = term.replace(/[.*+?^${{}}()|[\\]\\\\]/g, '\\\\$&');
+    const reg = new RegExp('(?<![A-Za-z])(' + esc + ')(?![A-Za-z])', 'gi');
+    html = html.replace(reg, '<span class="hl">$1</span>');
+  }});
+  return html;
+}}
+
+function renderFinal(){{
+  const topic = document.getElementById('topic').value;
+  const level = document.getElementById('level').value;
+  const summary = document.getElementById('summary').value;
+
+  const paraHtml = data.paragraphs.map(p => `
+    <div class="final-row">
+      <b>第 ${{p.idx}} 段</b>
+      <p class="en">${{highlightText(p.raw)}}</p>
+      <span>${{escapeHtml(p.zh)}}</span>
+    </div>
+  `).join('');
+
+  const patternHtml = state.pattern.map(p => `
+    <div class="pattern">
+      <p class="ori">原句：${{escapeHtml(p.original)}}</p>
+      <p><b>句式：</b>${{escapeHtml(p.pattern)}}</p>
+      <p><b>意思：</b>${{escapeHtml(p.zh)}}</p>
+      <p><b>例句：</b>${{escapeHtml(p.example)}}</p>
+      <small>${{escapeHtml(p.note||'')}}</small>
+    </div>
+  `).join('') || `<div class="final-row"><span>还没有选择表达句式。</span></div>`;
+
+  const exprs = [
+    ...state.phrase.map(x => ({{...x, type:'词组'}})),
+    ...state.vocab.map(x => ({{...x, type:'词汇'}}))
+  ];
+
+  const exprHtml = exprs.map(x => `
+    <div class="final-row">
+      <b>${{escapeHtml(x.text)}}</b>
+      <span>${{escapeHtml(x.zh || '')}}</span>
+    </div>
+  `).join('') || `<div class="final-row"><span>还没有选择重点表达。</span></div>`;
+
+  document.getElementById('finalPreview').innerHTML = `
+    <div class="phone">
+      <div class="hero"><div class="mark">HL</div><h1>Healing Lab<br>每日外刊</h1><p class="sub">每天一篇短外刊，练阅读、表达和语感。</p></div>
+      <article class="final-card">
+        <div class="cover"><div class="tag">今日文章卡片</div><div><h2>${{escapeHtml(data.title_raw)}}</h2><div class="cn">${{escapeHtml(data.title_cn)}}</div></div></div>
+        <div class="final-meta">
+          <div><span>来源</span><b>${{escapeHtml(data.source)}}</b></div>
+          <div><span>难度</span><b>${{escapeHtml(level)}}</b></div>
+          <div><span>主题</span><b>${{escapeHtml(topic)}}</b></div>
+        </div>
+        <p class="summary">${{escapeHtml(summary)}}</p>
+      </article>
+      <section class="final-card final-section"><div class="final-hd"><h2>今日精读</h2><span class="mini">Original + Meaning</span></div><div class="final-list">${{paraHtml}}</div></section>
+      <section class="final-card final-section"><div class="final-hd"><h2>表达句式</h2><span class="mini">Sentence Patterns</span></div><div class="final-list">${{patternHtml}}</div></section>
+      <section class="final-card final-section"><div class="final-hd"><h2>重点表达</h2><span class="mini">Phrases + Vocab</span></div><div class="final-list">${{exprHtml}}</div></section>
+    </div>
+  `;
+  document.getElementById('finalPreview').scrollIntoView({{behavior:'smooth', block:'start'}});
+}}
+
+function copyXhsText(){{
+  const topic = document.getElementById('topic').value;
+  const level = document.getElementById('level').value;
+  const lines = [];
+  lines.push('今日外刊精读｜' + data.title_cn);
+  lines.push('');
+  lines.push('来源：' + data.source);
+  lines.push('主题：' + topic + '｜难度：' + level);
+  lines.push('');
+  lines.push(document.getElementById('summary').value);
+  lines.push('');
+  if(state.phrase.length || state.vocab.length){{
+    lines.push('重点表达：');
+    [...state.phrase, ...state.vocab].forEach(x => lines.push('- ' + x.text + ' = ' + (x.zh||'')));
+    lines.push('');
+  }}
+  if(state.pattern.length){{
+    lines.push('表达句式：');
+    state.pattern.forEach(x => {{
+      lines.push('- ' + x.pattern);
+      lines.push('  ' + x.zh);
+      if(x.example) lines.push('  例句：' + x.example);
+    }});
+  }}
+  const txt = lines.join('\\n');
+  navigator.clipboard && navigator.clipboard.writeText(txt);
+  const box = document.getElementById('copybox');
+  box.textContent = '已生成小红书正文：\\n\\n' + txt;
+  box.style.display='block';
+  setTimeout(()=>box.style.display='none', 4500);
+}}
+
+function loadDemo(){{
+  const raw = data.paragraphs.map(p=>p.raw).join(' ');
+  const candidates = [
+    ['vocab','sufficient'], ['vocab','timely'], ['vocab','mainstream'], ['vocab','autism'],
+    ['phrase','in the absence of'], ['phrase','timely support'], ['phrase','make up'], ['phrase','one in three'],
+    ['phrase','This is a testament to'], ['phrase','according to']
+  ];
+  candidates.forEach(([type,text]) => {{
+    if(raw.toLowerCase().includes(text.toLowerCase())) state[type].push({{text, zh: guessMeaning(text), note: type==='vocab'?'核心词汇':'可复用表达'}});
+  }});
+  ['in the absence of','This is a testament to','one in three','make up','It turned out','There comes a point','Irrespective of','will have the chance to','according to'].forEach(t => {{
+    const sent = findSentence(t);
+    if(sent) state.pattern.push({{original:sent, pattern:patternFrom(sent), zh:meaningFromPattern(sent), example:exampleFromPattern(sent), note:'可迁移表达句式'}});
+  }});
+  renderEditors();
+  renderFinal();
+}}
+
+function findSentence(term){{
+  const sentences = data.paragraphs.map(p=>p.raw).join(' ').split(/(?<=[.!?])\\s+/);
+  return sentences.find(s => s.toLowerCase().includes(term.toLowerCase())) || '';
+}}
+
+function clearAll(){{
+  if(!confirm('确定清空你选的词和句式吗？')) return;
+  state.vocab=[]; state.phrase=[]; state.pattern=[];
+  renderEditors(); renderFinal();
+}}
+
+init();
+</script>
+</body>
+</html>"""
+    return page
+
 def write_outputs(article, selected_paragraphs, rejected_log, article_reject_log, cfg):
     OUTPUT_DIR.mkdir(exist_ok=True)
     today = datetime.now().strftime("%Y-%m-%d")
@@ -4195,6 +4734,7 @@ document.addEventListener('click', function(e) {{
 
     cover_image = save_article_cover_image(article, today)
     xhs_doc = build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote_raw, quote_translated, today, cover_image)
+    editor_doc = build_manual_editor_page(article, title_zh, paragraph_rows, all_keywords, today)
 
     debug_lines = [
         f"筛选调试记录｜{today}",
@@ -4230,7 +4770,16 @@ document.addEventListener('click', function(e) {{
     html_path.write_text(html_doc, encoding="utf-8-sig")
     xhs_html_path.write_text(xhs_doc, encoding="utf-8-sig")
     latest_xhs_html.write_text(xhs_doc, encoding="utf-8-sig")
+    (OUTPUT_DIR / "editor.html").write_text(editor_doc, encoding="utf-8-sig")
     debug_path.write_text("\n".join(debug_lines), encoding="utf-8-sig")
+
+    # 如果是在服务器上运行，直接发布 editor.html，避免额外改 run_daily_on_server.sh
+    try:
+        publish_dir = Path("/var/www/html/daily")
+        if publish_dir.exists():
+            (publish_dir / "editor.html").write_text(editor_doc, encoding="utf-8-sig")
+    except Exception:
+        pass
 
 
     # 历史存档：每天一个独立页面。
@@ -4239,6 +4788,7 @@ document.addEventListener('click', function(e) {{
     archive_html = archive_dir / f"day-{today}.html"
     archive_txt = archive_dir / f"day-{today}.txt"
     archive_xhs_html = archive_dir / f"day-{today}-xhs.html"
+    archive_editor_html = archive_dir / f"day-{today}-editor.html"
 
     if not archive_html.exists():
         archive_html.write_text(html_doc, encoding="utf-8-sig")
@@ -4246,6 +4796,8 @@ document.addEventListener('click', function(e) {{
         archive_txt.write_text(content_txt, encoding="utf-8-sig")
     if not archive_xhs_html.exists():
         archive_xhs_html.write_text(xhs_doc, encoding="utf-8-sig")
+    if not archive_editor_html.exists():
+        archive_editor_html.write_text(editor_doc, encoding="utf-8-sig")
 
     # 同页入口：index.html = 今日练习 + 历史目录；latest.html 同步保持一致。
     unified_html = build_archive_index(today, article["title"], title_zh, html_doc)
@@ -4259,7 +4811,7 @@ document.addEventListener('click', function(e) {{
     # 记录已使用文章，避免后续日期重复选择同一篇。
     save_used_article(article)
 
-    return main_txt, latest_txt, html_path, latest_html, latest_xhs_html, OUTPUT_DIR / "index.html", archive_html, archive_txt, archive_xhs_html, upload_log, debug_path
+    return main_txt, latest_txt, html_path, latest_html, latest_xhs_html, OUTPUT_DIR / "editor.html", OUTPUT_DIR / "index.html", archive_html, archive_txt, archive_xhs_html, archive_editor_html, upload_log, debug_path
 
 def write_no_article_report(article_reject_log):
     """
