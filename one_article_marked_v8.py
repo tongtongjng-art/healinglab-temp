@@ -1,3 +1,5 @@
+# V40_INLINE_WORD_HIGHLIGHT_FIX
+# V39_VOCAB_ONLY_HIGHLIGHT_EXPRESSIONS
 # V38_WORD_ONLY_HIGHLIGHT_PHRASES_FIRST
 # V37_SUBTLE_HIGHLIGHT_TOP3
 import json
@@ -1777,7 +1779,7 @@ BANNED_VOCAB_WORDS = {
     "kasbah", "toubkal", "morocco", "africa", "guardian", "bbc",
     "mike", "newsletter", "advertisement", "caption", "copyright",
     "facebook", "twitter", "instagram",
-    # 图文版重点词组不再展示这些过基础/过泛的单词
+    # 图文版重点表达不再展示这些过基础/过泛的单词
     "graduation", "education", "information", "conversation", "definition",
     "intention", "action", "moment", "according", "variety", "popular",
     "source", "sources", "student", "students", "speaker", "speakers",
@@ -2226,7 +2228,7 @@ def build_click_word_map(paragraph_texts, keywords, cfg):
             if np not in ordered_terms:
                 ordered_terms.append(np)
 
-    # 再补单词，但如果单词已经包含在某个重点词组里，就不重复加入。
+    # 再补单词，但如果单词已经包含在某个重点表达里，就不重复加入。
     for w in re.findall(r"\b[a-zA-Z][a-zA-Z'-]*\b", full_text):
         nw = normalize_click_word(w)
         if not is_click_translatable_word(nw, full_text, min_len):
@@ -3657,7 +3659,7 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
 
       <section class="card section" id="patterns"><div class="section-head"><h2>表达句式</h2><span class="mini-label">Sentence Patterns</span></div><div class="pattern-list">__PATTERNS_HTML__</div></section>
 
-      <section class="card section" id="expressions"><div class="section-head"><h2>重点表达</h2><span class="mini-label">Phrases + Vocab</span></div><div class="expression-list">__EXPRESSION_HTML__</div></section>
+      <section class="card section" id="expressions"><div class="section-head"><h2>重点表达</h2><span class="mini-label">Expressions</span></div><div class="expression-list">__EXPRESSION_HTML__</div></section>
 
       <section class="card section" id="review"><div class="section-head"><h2>今日复盘</h2><span class="mini-label">Daily Review</span></div><div class="review-grid"><div class="review-box"><b>今天最值得记住</b><p>__BEST_EXPR__<br>__BEST_MEANING__</p></div><div class="review-box"><b>怎么用</b><p>选一个表达句式，改写成自己的生活、学习或工作场景。</p></div></div>__SOURCE_LINK__</section>
 
@@ -3850,7 +3852,7 @@ textarea{{min-height:68px;resize:vertical}}
 .pattern{{border:1px solid #f0d6c9;background:#fff8f2;border-radius:14px;padding:12px}}
 .pattern p{{margin:7px 0;line-height:1.6}}
 .pattern .ori{{border-left:3px solid var(--orange);padding-left:10px;color:#536171}}
-.hl{{color:inherit;background:rgba(127,163,145,.12);border-radius:3px;padding:0 1px;cursor:pointer}}
+.vocab-hl{{display:inline!important;width:auto!important;min-width:0!important;max-width:none!important;height:auto!important;line-height:inherit!important;white-space:normal!important;margin:0!important;color:inherit!important;background:rgba(127,163,145,.10)!important;border:0!important;border-radius:2px!important;padding:0 1px!important;cursor:pointer!important;box-decoration-break:clone;-webkit-box-decoration-break:clone}} .hl{{display:inline!important;width:auto!important;background:transparent!important;padding:0!important;margin:0!important}}
 .copybox{{position:fixed;left:16px;right:16px;bottom:16px;background:#1d252c;color:white;border-radius:16px;padding:12px 14px;display:none;z-index:99;box-shadow:0 14px 38px rgba(0,0,0,.22);max-width:480px;margin:auto;white-space:pre-wrap}}
 @media(max-width:880px){{.grid{{grid-template-columns:1fr}}.final-meta{{grid-template-columns:1fr}}h1{{font-size:32px}}}}
 @media print{{.top,.left,.right .card-hd,.btns,.tabs,.select-tip{{display:none!important}}.grid{{display:block}}body{{background:white}}.card{{box-shadow:none;border:0}}}}
@@ -3915,7 +3917,7 @@ textarea{{min-height:68px;resize:vertical}}
 
           <div class="import-panel">
             <label>一键导入包</label>
-            <textarea id="importBox" placeholder="把我给你的导入包 JSON 粘贴到这里，然后点“一键导入”。表达句式会自动只取前 3 个。"></textarea>
+            <textarea id="importBox" placeholder="把我给你的导入包 JSON 粘贴到这里，然后点“一键导入”。表达句式会自动只取前 3 个；正文只标单个词汇，不标词组，不改变段落排版。"></textarea>
             <div class="btns">
               <button class="btn-green" onclick="importFromTextarea()">一键导入</button>
               <button class="btn-light" onclick="importFromClipboard()">从剪贴板导入</button>
@@ -3924,7 +3926,7 @@ textarea{{min-height:68px;resize:vertical}}
 
           <div class="tabs">
             <button class="tab active" data-tab="vocab" onclick="showTab('vocab')">标注词汇</button>
-            <button class="tab" data-tab="phrase" onclick="showTab('phrase')">重点词组</button>
+            <button class="tab" data-tab="phrase" onclick="showTab('phrase')">重点表达</button>
             <button class="tab" data-tab="pattern" onclick="showTab('pattern')">表达句式</button>
           </div>
 
@@ -4141,22 +4143,20 @@ function isBoundary(ch){{
   return !ch || !/[A-Za-z]/.test(ch);
 }}
 
-function wrapMatchedWords(matched, term, meaning){{
-  return matched.split(/(\s+)/).map(function(part){{
-    if(/^\s+$/.test(part)) return escapeHtml(part);
-    return '<span class="hl" data-term="' + escapeAttr(term) + '" data-meaning="' + escapeAttr(meaning) + '">' + escapeHtml(part) + '</span>';
-  }}).join('');
-}}
-
 function highlightText(text){{
   const raw = String(text || '');
-  const items = [
-    ...state.phrase.map(x => ({{...x, kind:'phrase'}})),
-    ...state.vocab.map(x => ({{...x, kind:'vocab'}}))
-  ].filter(x => x.text).sort((a,b)=>b.text.length-a.text.length);
+
+  // V40：正文只标“单个词汇”，不标词组、不标短语、不标整句。
+  // 这样英文仍然是正常一整段阅读，只在需要解释的单词背后有一点很浅的底色。
+  const items = state.vocab
+    .filter(x => x.text)
+    .map(x => ({{...x, text:String(x.text || '').trim()}}))
+    .filter(x => x.text && !/\s/.test(x.text))   // 关键：多词条目不进入正文标注
+    .sort((a,b)=>b.text.length-a.text.length);
 
   let out = '';
   let i = 0;
+
   while(i < raw.length){{
     let best = null;
     let bestIndex = -1;
@@ -4189,9 +4189,10 @@ function highlightText(text){{
     out += escapeHtml(raw.slice(i, bestIndex));
     const matched = raw.slice(bestIndex, bestIndex + best.text.length);
     const meaning = best.zh || guessMeaning(best.text) || '';
-    out += wrapMatchedWords(matched, best.text, meaning);
+    out += '<span class="vocab-hl" data-term="' + escapeAttr(best.text) + '" data-meaning="' + escapeAttr(meaning) + '">' + escapeHtml(matched) + '</span>';
     i = bestIndex + best.text.length;
   }}
+
   return out;
 }}
 
@@ -4242,7 +4243,7 @@ function renderFinal(){{
         <p class="summary">${{escapeHtml(summary)}}</p>
       </article>
       <section class="final-card final-section"><div class="final-hd"><h2>今日精读</h2><span class="mini">Original + Meaning</span></div><div class="final-list">${{paraHtml}}</div></section>
-      <section class="final-card final-section"><div class="final-hd"><h2>重点词组</h2><span class="mini">Phrases</span></div><div class="final-list">${{exprHtml}}</div></section>
+      <section class="final-card final-section"><div class="final-hd"><h2>重点表达</h2><span class="mini">Expressions</span></div><div class="final-list">${{exprHtml}}</div></section>
       <section class="final-card final-section"><div class="final-hd"><h2>表达句式</h2><span class="mini">Top 3 Sentence Patterns</span></div><div class="final-list">${{patternHtml}}</div></section>
     </div>
   `;
@@ -4317,7 +4318,7 @@ function showMeaningTip(term, meaning){{
 }}
 
 document.addEventListener('click', function(e){{
-  const node = e.target.closest('.hl');
+  const node = e.target.closest('.vocab-hl');
   if(node){{
     showMeaningTip(node.getAttribute('data-term')||'', node.getAttribute('data-meaning')||'');
   }}
@@ -4335,7 +4336,7 @@ function copyXhsText(){{
   lines.push(document.getElementById('summary').value);
   lines.push('');
   if(state.phrase.length){{
-    lines.push('重点词组：');
+    lines.push('重点表达：');
     state.phrase.forEach(x => lines.push('- ' + x.text + ' = ' + (x.zh||'')));
     lines.push('');
   }}
