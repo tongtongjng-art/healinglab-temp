@@ -1771,43 +1771,6 @@ LOCAL_VOCAB_ZH = {
     "giving it an external place to land": "给它一个外部安放处",
 }
 
-
-LOCAL_VOCAB_ZH.update({
-    "large language models": "\u5927\u578b\u8bed\u8a00\u6a21\u578b\uff1bAI \u8bdd\u9898\u6838\u5fc3\u8bcd\u7ec4\u3002",
-    "job cuts": "\u88c1\u5458\uff1b\u5de5\u4f5c\u5c97\u4f4d\u524a\u51cf\u3002",
-    "be accompanied by": "\u4f34\u968f\u7740\u2026\u2026\uff1b\u5e38\u7528\u4e8e\u63cf\u8ff0\u67d0\u4ef6\u4e8b\u51fa\u73b0\u65f6\u540c\u65f6\u51fa\u73b0\u7684\u53cd\u5e94\u3002",
-    "warnings that": "\u5173\u4e8e\u2026\u2026\u7684\u8b66\u544a\uff1bthat \u540e\u9762\u63a5\u5177\u4f53\u62c5\u5fe7\u3002",
-    "tends to be accompanied by": "\u5f80\u5f80\u4f1a\u4f34\u968f\u7740\u2026\u2026\uff1b\u9002\u5408\u5199\u666e\u904d\u73b0\u8c61\u3002",
-    "across many more industries": "\u904d\u53ca\u66f4\u591a\u884c\u4e1a\uff1bacross \u5f3a\u8c03\u8303\u56f4\u6269\u6563\u3002",
-    "come for us all": "\u6700\u7ec8\u6ce2\u53ca\u6211\u4eec\u6240\u6709\u4eba\uff1b\u8bed\u6c14\u6bd4 affect \u66f4\u6709\u538b\u8feb\u611f\u3002",
-    "be affected": "\u53d7\u5230\u5f71\u54cd\uff1b\u4e2d\u6027\u800c\u9ad8\u9891\u7684\u5916\u520a\u8868\u8fbe\u3002",
-    "lose your job to": "\u628a\u5de5\u4f5c\u4e22\u7ed9 / \u88ab\u2026\u2026\u53d6\u4ee3\u800c\u5931\u4e1a\u3002",
-    "a substitute for": "\u2026\u2026\u7684\u66ff\u4ee3\u54c1\u3002",
-    "but rather": "\u800c\u662f\uff1b\u66f4\u51c6\u786e\u5730\u8bf4\u662f\u2026\u2026\uff0c\u6bd4 but \u66f4\u6b63\u5f0f\u3002",
-    "general labor substitute": "\u901a\u7528\u52b3\u52a8\u529b\u66ff\u4ee3\u7269\uff1b\u7528\u4e8e\u8ba8\u8bba\u6280\u672f\u5bf9\u52b3\u52a8\u7684\u66ff\u4ee3\u3002",
-})
-
-
-LOCAL_VOCAB_ZH.update({
-    "weighing a move from": "???????????????????weigh a move ???????????",
-    "a move from full-time to freelance work": "??????????move ???????/????",
-    "terse email": "????????terse ????????????",
-    "redo a task from scratch": "?????????from scratch ?????????",
-    "from scratch": "??????????",
-    "settled the matter instantly": "??????????settle the matter ????/??????",
-    "settle the matter": "?????????????",
-    "quit on the spot": "?????on the spot ????????",
-    "on the spot": "???????????",
-    "justify their employment": "???????/???????justify ??????????",
-    "or resign": "??????????????????",
-    "turns out": "?????????",
-    "particularly unusual": "????????????????????????",
-    "rude email": "??/???????",
-    "at least one": "?????????????",
-    "has become even more central to": "?????????/???",
-    "central to": "????????????????",
-})
-
 BANNED_VOCAB_WORDS = {
     "kasbah", "toubkal", "morocco", "africa", "guardian", "bbc",
     "mike", "newsletter", "advertisement", "caption", "copyright",
@@ -1830,113 +1793,13 @@ def proper_like_words(text):
     return found
 
 
-GENERIC_QUANTITY_NOUNS = {
-    "workers", "worker", "people", "person", "jobs", "job", "students", "student",
-    "children", "child", "adults", "adult", "years", "year", "months", "month",
-    "days", "day", "companies", "company", "industries", "industry", "users", "user",
-    "schools", "school", "families", "family", "employees", "employee",
-}
-
-GENERIC_PHRASE_HEADS = {
-    "big", "large", "small", "new", "old", "good", "bad", "many", "more", "most",
-    "some", "several", "different", "important", "popular", "common", "major", "minor",
-    "specific", "general", "real", "normal", "daily", "public", "private",
-}
-
-GENERIC_PHRASE_TAILS = GENERIC_QUANTITY_NOUNS | {
-    "things", "thing", "ways", "way", "times", "time", "places", "place", "areas", "area",
-    "issues", "issue", "problems", "problem", "questions", "question", "cases", "case",
-    "reports", "report", "articles", "article", "story", "stories", "news", "data",
-}
-
-VOCAB_PRIORITY_SCORES = {
-    "weighing a move from": 330,
-    "a move from full-time to freelance work": 328,
-    "terse email": 326,
-    "redo a task from scratch": 324,
-    "from scratch": 322,
-    "settled the matter instantly": 320,
-    "settle the matter": 318,
-    "quit on the spot": 316,
-    "on the spot": 314,
-    "justify their employment": 312,
-    "or resign": 300,
-    "turns out": 298,
-    "particularly unusual": 296,
-    "rude email": 294,
-    "at least one": 292,
-    "has become even more central to": 290,
-    "central to": 288,
-    "job cuts": 310,
-    "tends to be accompanied by": 300,
-    "lose your job to": 292,
-    "a substitute for": 288,
-    "but rather": 284,
-    "come for us all": 280,
-    "general labor substitute": 276,
-    "across many more industries": 270,
-    "large language models": 264,
-    "be accompanied by": 245,
-    "warnings that": 230,
-    "be affected": 220,
-    "in the tech industry alone": 180,
-}
-
-DATA_WORDS = r"(?:zero|one|two|three|four|five|six|seven|eight|nine|ten|half|hundred|thousand|million|billion|\d+(?:\.\d+)?)"
-
-LOW_VALUE_EXACT_TERMS = {
-    "employment", "communication", "communications", "technicality", "government workers",
-    "has become", "have become", "become", "workers", "government",
-}
-
-LOW_VALUE_VOCAB_PATTERNS = [
-    # Plain data + ordinary noun is useful in the sentence, but weak as a vocabulary card.
-    re.compile(rf"^(?:more than|less than|over|under|around|about|nearly|almost)?\s*(?:a\s+)?(?:{DATA_WORDS}\s+){{1,3}}(?:" + "|".join(sorted(GENERIC_QUANTITY_NOUNS)) + r")$", re.I),
-    re.compile(r"^(?:in|on|at|by|for|with|from|to)\s+(?:the\s+)?(?:world|country|city|year|month|week|day)$", re.I),
-]
-
-
-def is_low_value_vocab_phrase(low):
-    if low in LOW_VALUE_EXACT_TERMS:
-        return True
-    words = re.findall(r"\b[a-zA-Z][a-zA-Z'-]*\b", low)
-    if not words:
-        return True
-
-    if len(words) >= 2:
-        for pat in LOW_VALUE_VOCAB_PATTERNS:
-            if pat.match(low):
-                return True
-
-    if len(words) == 2 and words[0] in GENERIC_PHRASE_HEADS and words[1] in GENERIC_PHRASE_TAILS:
-        return True
-
-    if len(words) == 2 and words[0] in STOPWORDS and words[1] in GENERIC_PHRASE_TAILS:
-        return True
-
-    # Keep strong collocations even if they contain a generic noun.
-    strong_markers = {
-        "job cuts", "labor substitute", "language model", "large language models",
-        "be accompanied by", "come for", "lose your job", "a substitute for",
-        "rather than", "but rather", "tends to", "across many more industries",
-    }
-    if any(marker in low for marker in strong_markers):
-        return False
-
-    return False
-
-
 def is_bad_vocab_term(term, text):
     term = clean_text(term).strip()
     if not term:
         return True
 
-    low = term.lower().strip(" ,.;:!?\"'\u201c\u201d\u2018\u2019()[]{}")
-    if not low:
-        return True
+    low = term.lower()
     if low in BANNED_VOCAB_WORDS:
-        return True
-    if is_low_value_vocab_phrase(low):
         return True
 
     proper_words = proper_like_words(text)
@@ -1957,11 +1820,10 @@ def is_bad_vocab_term(term, text):
 
 
 def add_vocab_candidate(cands, term, score, text):
-    term = clean_text(term).strip(" ,.;:!?\"'\u201c\u201d\u2018\u2019()[]{}")
+    term = clean_text(term).strip(" ,.;:!?\"'“”")
     if is_bad_vocab_term(term, text):
         return
     key = term.lower()
-    score = max(score, VOCAB_PRIORITY_SCORES.get(key, 0))
     if key not in cands or score > cands[key]["score"]:
         cands[key] = {"term": term, "score": score}
 
@@ -1979,20 +1841,10 @@ def extract_key_words(text, count=8):
     # 第一优先级：高价值固定搭配（直接从原文匹配）
     high_value_phrases = [
         # 外刊高频表达搭配
-        "weighing a move from", "a move from full-time to freelance work",
-        "terse email", "redo a task from scratch", "from scratch",
-        "settled the matter instantly", "settle the matter", "quit on the spot",
-        "on the spot", "justify their employment", "or resign", "turns out",
-        "particularly unusual", "rude email", "at least one",
-        "has become even more central to", "central to",
-        "be accompanied by", "warnings that", "tends to be accompanied by",
-        "job cuts", "lose your job to", "a substitute for", "but rather",
-        "come for us all", "across many more industries", "general labor substitute",
-        "large language models", "in the tech industry alone", "be affected",
         "instead of", "rather than", "carry it on", "set off",
         "a flood of", "more and more", "not just", "not only",
         "as a result", "in the long run", "over time", "on top of",
-        "when it comes to", "used to",
+        "when it comes to", "used to", "has become", "have become",
         "make it easier", "find it hard", "find it difficult",
         "one reason", "because of", "for many people", "no longer",
         "more likely to", "less likely to", "the fact that",
@@ -2033,34 +1885,6 @@ def extract_key_words(text, count=8):
 
     # 第二优先级：动态匹配搭配模式
     collocation_patterns = [
-        r"\bweighing\s+a\s+move\s+from\s+[^,.;]+?\s+to\s+[^,.;]+",
-        r"\ba\s+move\s+from\s+full-time\s+to\s+freelance\s+work\b",
-        r"\bterse\s+email\b",
-        r"\bredo\s+a\s+task\s+from\s+scratch\b",
-        r"\bfrom\s+scratch\b",
-        r"\bsettled\s+the\s+matter\s+instantly\b",
-        r"\bsettle[sd]?\s+the\s+matter\b",
-        r"\bquit\s+on\s+the\s+spot\b",
-        r"\bon\s+the\s+spot\b",
-        r"\bjustify\s+(?:their|his|her|your|our)\s+employment\b",
-        r"\bor\s+resign\b",
-        r"\bturns\s+out\b",
-        r"\bparticularly\s+unusual\b",
-        r"\brude\s+emails?\b",
-        r"\bat\s+least\s+one\b",
-        r"\bhas\s+become\s+even\s+more\s+central\s+to\b",
-        r"\bcentral\s+to\b",
-        r"\btends\s+to\s+be\s+accompanied\s+by\b",
-        r"\bbe\s+accompanied\s+by\b",
-        r"\bjob\s+cuts\b",
-        r"\bacross\s+many\s+more\s+industries\b",
-        r"\bcome\s+for\s+us\s+all\b",
-        r"\b(?:will|would|can|could)?\s*be\s+affected\b",
-        r"\blose\s+(?:your|their|our|one's|his|her)\s+job\s+to\b",
-        r"\ba\s+substitute\s+for\b",
-        r"\bbut\s+rather\b",
-        r"\bgeneral\s+labor\s+substitute\b",
-        r"\blarge\s+language\s+models?\b",
         r"\b(?:associate|assistant|senior|junior|clinical|visiting)\s+professor\b",
         r"\blicensed\s+clinical\s+social\s+worker\b",
         r"\bclinical\s+social\s+worker\b",
@@ -2113,7 +1937,7 @@ def extract_key_words(text, count=8):
         r"\ban?\s+increase\s+in\s+[a-zA-Z]{6,}(?:\s+and\s+[a-zA-Z]{6,})?\b",
         r"\b[a-zA-Z]{6,}\s+and\s+[a-zA-Z]{6,}\b",
         r"\b(?:valuable|practical|accessible|affordable|preventable|creative|productive|device-free|screen-free)\s+[a-zA-Z]{4,}s?\b",
-        r"\b[a-zA-Z]{5,}\s+(?:meetings|lockdowns|productivity|creativity|education|technology|workplace|habits|skills|lessons|speakers|accidents|sources|students|parents|children|schools|office)\b",
+        r"\b[a-zA-Z]{5,}\s+(?:meetings|lockdowns|productivity|creativity|education|technology|workplace|workers|habits|skills|lessons|speakers|accidents|sources|students|parents|children|schools|office)\b",
         r"\b(?:taking|giving|putting|turning|bringing|moving)\s+(?:something|it|this|that)\s+(?:from|into|to|on)\s+[^.?!,;]{5,55}",
     ]
     for pat in auto_phrase_patterns:
@@ -2133,7 +1957,6 @@ def extract_key_words(text, count=8):
         "through", "between", "without", "within", "across", "around",
         "graduation", "education", "information", "conversation", "definition",
         "intention", "action", "moment", "preventable", "popular", "source", "sources",
-        "employment", "communication", "communications", "technicality", "government", "workers",
     }
 
     quality_words = {
@@ -2170,22 +1993,15 @@ def extract_key_words(text, count=8):
     def can_add(selected_items, item):
         term = item["term"]
         low_term = term.lower()
-        low_words = low_term.split()
-        for chosen in list(selected_items):
+        for chosen in selected_items:
             chosen_low = chosen["term"].lower()
-            chosen_words = chosen_low.split()
+            # 已有长词组，不再展示其中的单个词；已有短词，也不重复展示完全相同词组。
             if low_term == chosen_low:
                 return False
-            # If a stronger long phrase is already selected, skip its shorter fragment.
-            if low_term in chosen_low and len(low_words) < len(chosen_words):
-                return False
-            # If the new phrase is a clearer full version, replace the shorter fragment.
-            if chosen_low in low_term and len(chosen_words) < len(low_words):
-                selected_items.remove(chosen)
-                return True
             if low_term in chosen_low and " " not in low_term:
                 return False
-            if chosen_low in low_term and " " not in chosen_low and len(low_words) <= 3:
+            if chosen_low in low_term and " " not in chosen_low and len(low_term.split()) <= 3:
+                # 用更完整的词组替换短词
                 selected_items.remove(chosen)
                 return True
         return True
@@ -3320,16 +3136,15 @@ def split_text_for_card_pages(text, lang="en"):
 
 def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote_raw, quote_translated, today, cover_image=""):
     """
-    V34-M：
-    手机端外刊学习页｜词汇标注 + 表达句式精修版。
+    V34-N：
+    表达句式 + 词汇标注 + 历史筛选版。
 
-    修正：
-    1. 删除单独“难度分级”区块，只在文章卡片里保留难度标签。
-    2. 表达句式聚焦可迁移结构，不再做空泛长难句。
-    3. 表达句式必须给：原句 / 句式 / 中文意思 / 仿写例句。
-    4. 重点表达同时保留：句式、短语、核心词汇。核心词汇必须有中文意思。
-    5. 补充高频表达库：There comes a point in our lives / It turned out / Irrespective of quality / irritating / spotty / mimicking 等。
-    6. 历史文章与主题分类保留。
+    重点修正：
+    1. 重点不是“长难句”，而是可迁移表达句式。
+    2. 四级+词汇、话题词、短语、句式都要有明确中文意思。
+    3. 原文绿色标注覆盖：核心词汇 + 词组 + 句式。
+    4. 历史目录支持按“主题”和“难度”点击筛选，不再显示日期。
+    5. 历史文章按用户点击的主题/难度动态显示。
     """
     source = clean_text(article.get("source", ""))
     pub_date = display_publish_date(article) or today
@@ -3356,7 +3171,6 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
                 zh_all_parts.append(zh)
 
     text_all = " ".join(text_all_parts)
-    zh_all = " ".join(zh_all_parts)
     overview = build_chinese_overview(article, title_zh, paragraph_rows)
 
     def norm(x):
@@ -3369,14 +3183,14 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
         return re.search(pat, text, flags=re.I) is not None
 
     def topic_category(title, source_name, body):
-        s = f"{title} {source_name} {body[:1800]}".lower()
+        s = f" {title} {source_name} {body[:1800]} ".lower()
         rules = [
-            ("AI科技", [" ai ", "artificial intelligence", "chatgpt", "robot", "algorithm", "machine learning"]),
-            ("科技", ["technology", "tech", "digital", "app", "software", "device", "online"]),
-            ("教育", ["education", "school", "student", "children", "reading", "teacher", "bbc education"]),
+            ("AI科技", [" ai ", "artificial intelligence", "chatgpt", "algorithm", "machine learning"]),
+            ("科技", ["technology", "tech", "digital", "app", "software", "device", "online", "data"]),
+            ("教育", ["education", "school", "student", "pupil", "pupils", "children", "teacher", "autism", "ehcp", "send", "language and communication"]),
             ("文化历史", ["stonehenge", "archaeolog", "historian", "prehistoric", "heritage", "museum", "ancient", "medieval", "smithsonian"]),
-            ("健康心理", ["health", "sleep", "stress", "mind", "mental", "wellbeing", "habit", "brain"]),
-            ("社会工作", ["job", "work", "employment", "unemployed", "graduate", "society", "social"]),
+            ("健康心理", ["health", "sleep", "stress", "mind", "mental", "wellbeing", "habit", "brain", "autism"]),
+            ("社会工作", ["job", "work", "employment", "unemployed", "graduate", "society", "social", "support"]),
             ("自然科学", ["science", "animal", "climate", "space", "experiment", "research", "study"]),
             ("生活", ["life", "travel", "food", "walk", "home", "family", "lifestyle"]),
         ]
@@ -3405,64 +3219,41 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
 
     level = difficulty_label_from_text(text_all)
 
-    # 重点表达库：优先句式和短语，其次是核心词汇。
+    # 句式 / 词组 / 词汇库。顺序很重要：可迁移句式优先于普通词汇。
     expression_bank = [
-        ("weighing a move from", "????? A ?? B?????????????????", "??"),
-        ("a move from full-time to freelance work", "??????????move ?????????", "????"),
-        ("terse email", "????????terse ? short ????????????", "????"),
-        ("redo a task from scratch", "?????????from scratch ???????????", "????"),
-        ("from scratch", "??????????", "??"),
-        ("settled the matter instantly", "??????????settle the matter ????/??????", "????"),
-        ("quit on the spot", "?????on the spot ????????", "????"),
-        ("justify their employment", "???????/???????justify ??????????", "????"),
-        ("turns out", "???????????????????????", "??"),
-        ("particularly unusual", "??????? not particularly unusual ????????????", "????"),
-        ("rude email", "??/???????", "????"),
-        ("at least one", "????????????????", "????"),
-        ("has become even more central to", "?????????/???", "??"),
-        ("central to", "????????????????", "??"),
-        ("tends to be accompanied by", "\u5f80\u5f80\u4f1a\u4f34\u968f\u7740\u2026\u2026\uff1b\u9002\u5408\u5199\u67d0\u4e2a\u8bdd\u9898\u51fa\u73b0\u65f6\u7684\u5e38\u89c1\u53cd\u5e94\u3002", "\u53e5\u5f0f"),
-        ("be accompanied by", "\u4f34\u968f\u7740\u2026\u2026\uff1b\u6bd4 with \u66f4\u6b63\u5f0f\uff0c\u5916\u520a\u5e38\u7528\u3002", "\u53e5\u5f0f"),
-        ("job cuts", "\u88c1\u5458\uff1b\u8ba8\u8bba\u5c31\u4e1a\u3001\u7ecf\u6d4e\u3001\u6280\u672f\u51b2\u51fb\u65f6\u9ad8\u9891\u3002", "\u8bdd\u9898\u8bcd\u7ec4"),
-        ("across many more industries", "\u904d\u53ca\u66f4\u591a\u884c\u4e1a\uff1bacross \u5f3a\u8c03\u5f71\u54cd\u8303\u56f4\u6269\u6563\u3002", "\u8bdd\u9898\u8bcd\u7ec4"),
-        ("come for us all", "\u6700\u7ec8\u6ce2\u53ca\u6240\u6709\u4eba\uff1b\u8bed\u6c14\u6bd4 affect \u66f4\u5f3a\uff0c\u9002\u5408\u5199\u7126\u8651\u548c\u98ce\u9669\u3002", "\u4eae\u70b9\u8868\u8fbe"),
-        ("lose your job to", "\u56e0\u2026\u2026\u800c\u5931\u53bb\u5de5\u4f5c\uff1blose A to B \u8868\u793a A \u8f93\u7ed9 / \u88ab B \u53d6\u4ee3\u3002", "\u53e5\u5f0f"),
-        ("a substitute for", "\u2026\u2026\u7684\u66ff\u4ee3\u54c1\uff1b\u79d1\u6280\u3001\u6559\u80b2\u3001\u5de5\u4f5c\u8bdd\u9898\u5e38\u7528\u3002", "\u77ed\u8bed"),
-        ("but rather", "\u800c\u662f\uff1b\u66f4\u51c6\u786e\u5730\u8bf4\u662f\u2026\u2026\uff0c\u7528\u6765\u7ea0\u6b63\u524d\u9762\u7684\u8bf4\u6cd5\u3002", "\u8f6c\u6298\u7ed3\u6784"),
-        # V34-M：当前教育/SEND文章常见表达 + 用户点名结构
-        ("In the absence of sufficient places and timely support", "在缺乏足够名额和及时支持的情况下。absence = 缺乏；timely = 及时的。", "句式"),
+        # 当前用户反复提到的教育/特殊教育类结构
+        ("In the absence of sufficient places and timely support", "在缺乏足够名额和及时支持的情况下。absence=缺乏；timely=及时的。", "句式"),
         ("in the absence of", "在缺乏……的情况下。正式写作中常用来说明条件缺失。", "句式"),
         ("sufficient places", "足够的名额 / 学位 / 位置。教育资源语境中 place 常指学校名额。", "短语"),
-        ("timely support", "及时支持。timely = 及时的。", "短语"),
+        ("timely support", "及时支持。timely=及时的。", "短语"),
         ("This is a testament to", "这证明了……；这体现了……。用于评价某事反映出的事实。", "句式"),
         ("is a testament to", "证明了……；体现了……。比 shows 更有表达感。", "句式"),
         ("one in three", "三分之一。用于比例表达。", "数据表达"),
         ("more than one in five", "超过五分之一。用于比例表达。", "数据表达"),
         ("make up", "占据；构成；组成。写比例或群体构成时高频。", "短语"),
         ("pupils with EHCPs", "拥有教育、健康与照护计划的学生。EHCP 是英国特殊教育支持文件。", "话题词组"),
-        ("have autism", "患有/有自闭症。autism = 自闭症。", "话题表达"),
+        ("have autism", "有自闭症 / 患有自闭症。", "话题表达"),
         ("speech, language and communications needs", "言语、语言和沟通需求。特殊教育语境常见表达。", "话题词组"),
         ("language and communications needs", "语言和沟通需求。", "话题词组"),
-        ("mainstream", "主流的；普通学校体系的。教育语境中 mainstream school 指普通学校。", "词汇"),
+        ("mainstream schools", "普通学校；主流学校。相对于特殊学校。", "话题词组"),
+        ("mainstream", "主流的；普通学校体系的。", "词汇"),
         ("autism", "自闭症。教育、心理、医疗话题常见词。", "词汇"),
         ("sufficient", "足够的；充分的。", "词汇"),
         ("timely", "及时的。", "词汇"),
         ("absence", "缺乏；不存在。", "词汇"),
         ("testament", "证明；体现。", "词汇"),
-        ("places", "名额；位置。教育语境中常指学校名额。", "词汇"),
-        # 用户点名的表达句式
+
+        # 用户点名的通用表达
         ("There comes a point in our lives", "人生中总会有一个时刻……。适合写人生阶段、观念转变、情绪变化。", "句式"),
         ("There comes a point", "总会有一个时刻……。适合引出转折或人生感悟。", "句式"),
         ("It turned out", "结果证明；后来发现。用于表达事情的发展和原来想的不一样。", "句式"),
         ("Irrespective of quality", "不管质量如何；无论质量好坏。irrespective of = regardless of。", "让步结构"),
         ("irrespective of", "不管；不论。比 regardless of 更正式。", "让步结构"),
-
-        # 词汇：用户点名
         ("irritating", "恼人的；令人烦躁的。常形容声音、习惯、问题。", "词汇"),
         ("spotty", "有斑点的；不稳定的；参差不齐的。具体意思看上下文。", "词汇"),
         ("mimicking", "模仿；模拟。可指行为、声音、系统对真实事物的模拟。", "词汇"),
 
-        # Stonehenge / culture / history
+        # 文化历史类
         ("will have the chance to", "将有机会……。用于介绍某人将获得某种体验或机会。", "句式"),
         ("experience a unique slice of prehistoric life", "体验一小段独特的史前生活。slice of life 表示“生活的一小部分/片段”。", "亮点表达"),
         ("a unique slice of prehistoric life", "一小段独特的史前生活。适合描述沉浸式文化体验。", "话题表达"),
@@ -3472,48 +3263,30 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
         ("scholars think", "学者认为……。比 people think 更正式。", "引用结构"),
         ("once stood near", "曾经位于……附近。once 表示“曾经”。", "历史表达"),
         ("commissioned by", "由……委托建造/制作。常用于项目、建筑、艺术品。", "被动结构"),
-        ("the charity that manages", "管理……的慈善机构。that 引导定语从句。", "定语从句"),
-        ("was built with", "以……方式建成；用……建成。后面常接材料、方法或态度。", "被动结构"),
         ("a painstakingly accurate nod to the past", "对过去高度精确的致敬。painstakingly 表示“煞费苦心地”。", "高级表达"),
         ("were sourced locally", "是在当地取材的。source 作动词，表示“采购/获取”。", "被动结构"),
         ("chosen based on what", "根据……来选择。based on what... 可引出选择依据。", "依据结构"),
-        ("available millennia ago", "几千年前可获得的。millennia ago 表示“数千年前”。", "时间表达"),
 
-        # Research / behavior
+        # 研究/趋势类
         ("research suggests that", "研究表明……。适合引出调查、实验或科学发现。", "研究句"),
         ("suggest that", "表明…… / 研究显示……。常用于引出研究发现。", "研究表达"),
         ("more unusual than previously thought", "比之前认为的更不寻常。用于表达“新发现推翻旧认知”。", "比较结构"),
         ("reveal that", "揭示…… / 表明……。比 say 更正式。", "研究表达"),
         ("have a natural tendency to", "天生有……的倾向；自然倾向于……。", "倾向表达"),
         ("have a tendency to", "有……的倾向。适合写行为习惯和心理倾向。", "倾向表达"),
-        ("turn to the left", "向左转。", "动作表达"),
-        ("in an anticlockwise direction", "沿逆时针方向。", "方向表达"),
-        ("perform experiments", "进行实验。", "研究表达"),
-
-        # Education / reading
         ("for the first time in five years", "五年来首次。适合写趋势变化。", "趋势句"),
         ("for the first time in", "……以来首次。适合写数据、趋势或变化节点。", "趋势句"),
-        ("children and young people", "儿童和青少年。教育、阅读、心理健康类文章高频表达。", "话题词组"),
-        ("poorer children", "贫困儿童 / 家境较困难的儿童。poorer 是社会经济语境。", "话题词组"),
-        ("reading for pleasure", "为乐趣而阅读；非功利阅读。教育类外刊常见表达。", "话题表达"),
-        ("enjoy reading", "喜欢阅读。比 like reading 更适合教育类报道。", "基础表达"),
-        ("according to", "根据……。引用报告、研究、调查时常用。", "引用结构"),
         ("be more likely to", "更有可能……。写群体差异、调查结论时高频。", "比较结构"),
         ("be less likely to", "更不可能……。写群体差异和风险对比时高频。", "比较结构"),
         ("compared with", "与……相比。数据对比、群体对比常用。", "比较结构"),
+        ("according to", "根据……。引用报告、研究、调查时常用。", "引用结构"),
 
-        # Work / society / life
+        # 通用
         ("leave the house", "出门；离开家。适合描述生活范围或状态。", "生活状态"),
         ("apart from", "除了……之外。比 only / except 更适合正式表达。", "连接结构"),
         ("stock up on", "储备；囤积。常用于 food, supplies, essentials。", "动词短语"),
         ("the new normal", "新常态。适合描述已经普遍但未必理想的现实。", "观点表达"),
         ("come into full focus", "变得非常清晰；更加凸显。", "高级表达"),
-
-        # General
-        ("reduce the number of decisions", "减少需要做决定的次数。效率、习惯、心理负担话题常用。", "观点表达"),
-        ("truly need our attention", "真正需要我们注意力的事情。适合表达优先级和精力管理。", "观点表达"),
-        ("rarely change a life overnight", "很少会一夜之间改变生活。适合表达变化不是立刻发生的。", "观点句"),
-        ("play a role in", "在……中发挥作用。", "学术表达"),
         ("rather than", "而不是。", "对比结构"),
         ("instead of", "而不是。", "对比结构"),
         ("be linked to", "与……有关。", "学术表达"),
@@ -3534,55 +3307,44 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
         used.add(low)
         expressions.append({"text": t, "meaning": meaning, "label": label})
 
-    # A. 表达库优先。
     for term, meaning, label in expression_bank:
         if contains(term, text_all):
             add_expr(term, meaning, label)
-        if len(expressions) >= 16:
+        if len(expressions) >= 18:
             break
 
-    # B. 正则抓结构。
+    # 正则抓没有完整进入库的句式。
     pattern_items = [
         (r"\bIn\s+the\s+absence\s+of\s+[^,.]+", "在缺乏……的情况下。用于说明某种条件不存在。", "句式"),
         (r"\bThis\s+is\s+a\s+testament\s+to\s+[^,.]+", "这证明了……；这体现了……。", "句式"),
         (r"\b(?:one|two|three|four|five|six|seven|eight|nine|ten)\s+in\s+(?:two|three|four|five|six|seven|eight|nine|ten)\b", "几分之几。用于比例表达。", "数据表达"),
         (r"\bmore\s+than\s+one\s+in\s+(?:two|three|four|five|six|seven|eight|nine|ten)\b", "超过几分之一。用于比例表达。", "数据表达"),
         (r"\bmake\s+up\b", "占据；构成；组成。", "短语"),
-        (r"\bThere\s+comes\s+a\s+point(?:\s+in\s+our\s+lives)?\b", "人生中总会有一个时刻……。用于引出人生阶段或观念变化。", "句式"),
-        (r"\bIt\s+turned\s+out\s+that\b", "结果证明……；后来发现……。", "句式"),
-        (r"\bIt\s+turned\s+out\b", "结果证明；后来发现。", "句式"),
-        (r"\bIrrespective\s+of\s+[a-zA-Z'-]+", "不管……；无论……如何。", "让步结构"),
-        (r"\b(?:will|would|can|could)\s+have\s+the\s+chance\s+to\b", "将有机会……。用于介绍体验、机会或可能性。", "机会句型"),
+        (r"\bThere\s+comes\s+a\s+point(?:\s+in\s+our\s+lives)?\b", "人生中总会有一个时刻……。", "句式"),
+        (r"\bIt\s+turned\s+out(?:\s+that)?\b", "结果证明；后来发现。", "句式"),
+        (r"\bIrrespective\s+of\s+[^,.]+", "不管……；无论……如何。", "让步结构"),
+        (r"\b(?:will|would|can|could)\s+have\s+the\s+chance\s+to\b", "将有机会……。用于介绍体验、机会或可能性。", "句式"),
         (r"\bthanks\s+to\s+(?:the\s+)?[a-zA-Z'-]+", "多亏 / 由于……。用于说明原因。", "原因结构"),
-        (r"\b(?:was|were)\s+sourced\s+locally\b", "是在当地取材/采购的。", "被动结构"),
         (r"\bbased\s+on\s+what\b", "基于……所了解/掌握的内容。", "依据结构"),
         (r"\b(?:research|study|survey|report|findings?)\s+(?:suggests?|shows?|reveals?|finds?)\s+that\b", "研究/调查表明……。适合引出研究发现。", "研究句"),
-        (r"\b(?:suggests?|shows?|reveals?|finds?)\s+that\b", "表明…… / 显示……。常用于研究发现或报道结论。", "研究句"),
-        (r"\bmore\s+[a-zA-Z-]+\s+than\s+previously\s+thought\b", "比之前认为的更……。用于表达新发现。", "比较结构"),
-        (r"\bfor the first time in\s+[a-zA-Z0-9 -]+", "……以来首次。适合写趋势变化。", "趋势句"),
         (r"\b(?:more|less)\s+likely\s+to\b", "更有可能 / 更不可能……。适合写群体差异。", "比较结构"),
     ]
     for pat, meaning, label in pattern_items:
         for m in re.finditer(pat, text_all, flags=re.I):
             add_expr(m.group(0), meaning, label)
-            if len(expressions) >= 16:
+            if len(expressions) >= 20:
                 break
-        if len(expressions) >= 16:
+        if len(expressions) >= 20:
             break
 
-    # C. all_keywords 补充，但保留用户关心的核心词。
-    forced_word_meanings = {
+    # 四级+核心词补充：有中文意思才加入。
+    core_word_meanings = {
         "autism": "自闭症。",
         "sufficient": "足够的；充分的。",
         "timely": "及时的。",
         "mainstream": "主流的；普通学校体系的。",
         "absence": "缺乏；不存在。",
         "testament": "证明；体现。",
-        "places": "名额；位置。教育语境中常指学校名额。",
-        "pupils": "学生；小学生/中学生。",
-        "communications": "沟通；通信；交流。",
-        "needs": "需求；需要。",
-        "support": "支持；帮助。",
         "irritating": "恼人的；令人烦躁的。",
         "spotty": "有斑点的；不稳定的；参差不齐的。",
         "mimicking": "模仿；模拟。",
@@ -3592,31 +3354,38 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
         "tradespeople": "工匠；技工。",
         "genes": "基因。",
         "achievement": "成就。",
+        "communication": "沟通；交流。",
+        "communications": "沟通；通信；交流。",
+        "needs": "需求；需要。",
+        "pupils": "学生；小学生/中学生。",
+        "support": "支持；帮助。",
+        "places": "名额；位置。教育语境中常指学校名额。",
+        "speech": "言语；讲话。",
+        "language": "语言。",
     }
-    for word, meaning in forced_word_meanings.items():
+    for word, meaning in core_word_meanings.items():
         if contains(word, text_all):
             add_expr(word, meaning, "词汇")
-        if len(expressions) >= 16:
+        if len(expressions) >= 22:
             break
 
-    bad_single = {"children", "people", "reading", "article", "school", "student", "students", "work", "life", "time", "year", "years", "education", "survey", "research", "employment", "communication", "communications", "technicality", "government", "workers", "has become", "have become"}
+    # all_keywords 最后补充，过滤太普通词。
+    bad_single = {"children", "people", "reading", "article", "school", "student", "students", "work", "life", "time", "year", "years", "education", "survey", "research"}
     for k in all_keywords or []:
         kk = norm(k)
         if not kk:
             continue
         if kk.lower() in used or kk.lower() in bad_single:
             continue
-        if " " not in kk and len(kk) < 10:
+        if " " not in kk and len(kk) < 9:
             continue
         try:
             meaning = explain_keyword(kk)
         except Exception:
             meaning = "可理解为：" + kk
         add_expr(kk, meaning, "词汇")
-        if len(expressions) >= 16:
+        if len(expressions) >= 24:
             break
-
-    expressions = expressions[:16]
 
     def find_sentence_with(term):
         if not term:
@@ -3627,177 +3396,35 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
                 return clean_text(s)
         return ""
 
-    # 表达句式：不做长难句，改为可复用句式。
     def make_pattern_rows():
         rows = []
-        seen = set()
+        low = text_all.lower()
 
         def add(title, original, structure, meaning, example, note):
-            original = clean_text(original or "")
-            if not original:
-                return
-            key = (structure.lower(), original.lower()[:120])
-            if key in seen:
-                return
-            seen.add(key)
             rows.append({"title": title, "original": original, "structure": structure, "meaning": meaning, "example": example, "note": note})
 
-        def first_sentence_matching(pattern):
-            for s in split_sentences(text_all):
-                if re.search(pattern, s, flags=re.I):
-                    return clean_text(s)
-            return ""
-
-        pattern_candidates = [
-            (
-                r"\bWhen\s+I\s+was\s+weighing\s+a\s+move\s+from\s+[^,]+\s+to\s+[^,]+,\s+[^.?!]+",
-                "?????",
-                "When I was weighing a move from A to B, C settled the matter.",
-                "????????? A ?? B ??C ??????????",
-                "When I was weighing a move from office work to remote work, one meeting settled the matter.",
-                "????????????????????????",
-            ),
-            (
-                r"\bNone\s+of\s+this,\s+it\s+turns\s+out,\s+was\s+particularly\s+unusual\b[^.?!]*",
-                "??????",
-                "None of this, it turns out, was particularly unusual.",
-                "?????????????????",
-                "None of this, it turns out, was particularly unusual in modern workplaces.",
-                "??????????????????",
-            ),
-            (
-                r"\bResearch\s+from\s+\d{4}\s+shows\s+[^.?!]+",
-                "?????",
-                "Research from YEAR shows that ...",
-                "????????????????????",
-                "Research from 2024 shows that many workers feel pressure to reply quickly.",
-                "? studies show ????????????",
-            ),
-            (
-                r"\brequiring\s+them\s+to\s+justify\s+their\s+employment\b[^.?!]+",
-                "?????",
-                "A required them to justify B, or resign.",
-                "A ?????? B ???????????",
-                "The company required workers to justify their roles, or leave.",
-                "?????????????????????",
-            ),
-            (
-                r"\bhas\s+become\s+even\s+more\s+central\s+to\s+[^.?!]+",
-                "??????",
-                "A has become even more central to B.",
-                "A ? B ??????/???",
-                "Clear communication has become even more central to remote work.",
-                "??????? has become?????????",
-            ),
-            (
-                r"\bSince\s+[^,.]{3,90},\s+[^.?!]{15,220}",
-                "\u65f6\u95f4\u80cc\u666f\u53e5",
-                "Since A, B has / have ...",
-                "\u81ea\u4ece A \u4ee5\u6765\uff0cB \u5df2\u7ecf\u2026\u2026\u3002\u9002\u5408\u5199\u8d8b\u52bf\u3001\u53d8\u5316\u548c\u80cc\u666f\u3002",
-                "Since the rise of short videos, many people have changed the way they read news.",
-                "\u8fd9\u79cd\u53e5\u5f0f\u80fd\u5feb\u901f\u628a\u65f6\u95f4\u8d77\u70b9\u548c\u540e\u7eed\u5f71\u54cd\u8fde\u8d77\u6765\u3002",
-            ),
-            (
-                r"\bAny\s+mention\s+of\s+[^,.]{2,90}\s+tends\s+to\s+be\s+accompanied\s+by\s+warnings\s+that\b[^.?!]*",
-                "\u8bdd\u9898\u53cd\u5e94\u53e5",
-                "Any mention of A tends to be accompanied by warnings that B.",
-                "\u4efb\u4f55\u5173\u4e8e A \u7684\u8ba8\u8bba\uff0c\u5f80\u5f80\u90fd\u4f1a\u4f34\u968f\u7740 B \u8fd9\u6837\u7684\u8b66\u544a\u3002",
-                "Any mention of online learning tends to be accompanied by warnings that students may lose focus.",
-                "\u9002\u5408\u5199 AI\u3001\u6559\u80b2\u3001\u793e\u4f1a\u7126\u8651\u7c7b\u8bdd\u9898\uff0c\u6bd4\u5355\u5199 people worry about \u66f4\u50cf\u5916\u520a\u3002",
-            ),
-            (
-                r"\b(?:You(?:'re| are)|We(?:'re| are)|They(?:'re| are)|People are)\s+not\s+going\s+to\s+lose\s+[^.?!]{1,100}\s+to\s+[^,.;]+,\s+but\s+[^.?!]+",
-                "\u5bf9\u6bd4\u8b66\u793a\u53e5",
-                "You are not going to lose A to B, but to C.",
-                "\u4f60\u4e0d\u662f\u4f1a\u628a A \u8f93\u7ed9 B\uff0c\u800c\u662f\u4f1a\u8f93\u7ed9 C\u3002",
-                "You are not going to lose opportunities to technology, but to people who use it better.",
-                "\u8fd9\u662f\u5f88\u6709\u51b2\u51fb\u529b\u7684\u8f6c\u6298\u53e5\uff0c\u9002\u5408\u5199\u7ade\u4e89\u3001\u6280\u80fd\u548c\u5de5\u4f5c\u53d8\u5316\u3002",
-            ),
-            (
-                r"\b[^.?!]{0,90}\bisn'?t\s+a\s+substitute\s+for\s+[^,.;]+,\s+but\s+rather\s+[^.?!]+",
-                "\u7ea0\u6b63\u5b9a\u4e49\u53e5",
-                "A is not a substitute for B, but rather C.",
-                "A \u4e0d\u662f B \u7684\u66ff\u4ee3\u54c1\uff0c\u800c\u66f4\u51c6\u786e\u5730\u8bf4\u662f C\u3002",
-                "AI is not a substitute for thinking, but rather a tool that changes how we work.",
-                "\u9002\u5408\u628a\u4e00\u4e2a\u5bb9\u6613\u88ab\u8bef\u89e3\u7684\u4e1c\u897f\u91cd\u65b0\u5b9a\u4e49\u3002",
-            ),
-            (
-                r"\bnot\s+[^,.;]{1,80},\s+but\s+rather\s+[^.?!]+",
-                "\u7ea0\u6b63\u8f6c\u6298\u53e5",
-                "not A, but rather B",
-                "\u4e0d\u662f A\uff0c\u800c\u662f B\u3002rather \u8ba9\u8f6c\u6298\u66f4\u6b63\u5f0f\u3001\u66f4\u51c6\u786e\u3002",
-                "The problem is not a lack of time, but rather a lack of clear priorities.",
-                "\u5199\u89c2\u70b9\u6587\u65f6\u5f88\u5b9e\u7528\uff0c\u53ef\u4ee5\u7528\u6765\u63a8\u7ffb\u8868\u9762\u7406\u89e3\u3002",
-            ),
-            (
-                r"\b(?:research|study|survey|report|findings?)\s+(?:suggests?|shows?|reveals?|finds?)\s+that\b[^.?!]*",
-                "\u7814\u7a76\u53d1\u73b0\u53e5",
-                "Research / A study suggests that ...",
-                "\u7814\u7a76 / \u8c03\u67e5\u8868\u660e\u2026\u2026\u3002\u9002\u5408\u5f15\u51fa\u4e8b\u5b9e\u4f9d\u636e\u3002",
-                "Research suggests that regular reading can improve attention over time.",
-                "\u5916\u520a\u91cc\u5e38\u7528\u8fd9\u7c7b\u53e5\u5f0f\u6765\u5e73\u8861\u89c2\u70b9\u548c\u8bc1\u636e\u3002",
-            ),
-            (
-                r"\b(?:more|less)\s+likely\s+to\b[^.?!]*",
-                "\u6982\u7387\u5bf9\u6bd4\u53e5",
-                "A is more / less likely to do B than C.",
-                "A \u6bd4 C \u66f4\u6709 / \u66f4\u4e0d\u592a\u53ef\u80fd\u505a B\u3002",
-                "Students who read every day are more likely to build a strong vocabulary.",
-                "\u9002\u5408\u5199\u7fa4\u4f53\u5dee\u5f02\u3001\u884c\u4e3a\u8d8b\u52bf\u548c\u8c03\u67e5\u7ed3\u8bba\u3002",
-            ),
-            (
-                r"\b(?:make|makes|made)\s+it\s+(?:easier|harder|possible|difficult)\s+to\b[^.?!]*",
-                "\u5f71\u54cd\u7ed3\u679c\u53e5",
-                "A makes it easier / harder to do B.",
-                "A \u8ba9\u505a B \u53d8\u5f97\u66f4\u5bb9\u6613 / \u66f4\u56f0\u96be\u3002",
-                "Clear examples make it easier to remember new expressions.",
-                "\u8fd9\u662f\u5199\u6280\u672f\u3001\u6559\u80b2\u3001\u5de5\u4f5c\u5f71\u54cd\u65f6\u7684\u9ad8\u9891\u7ed3\u6784\u3002",
-            ),
-            (
-                r"\b(?:be|is|are|was|were|been)\s+linked\s+to\b[^.?!]*",
-                "\u5173\u8054\u8bf4\u660e\u53e5",
-                "A is linked to B.",
-                "A \u4e0e B \u6709\u5173\u3002\u6bd4 A causes B \u66f4\u8c28\u614e\u3001\u66f4\u7b26\u5408\u5916\u520a\u5199\u6cd5\u3002",
-                "Long screen time is often linked to poor sleep quality.",
-                "\u9002\u5408\u5199\u4e0d\u60f3\u628a\u56e0\u679c\u8bf4\u5f97\u592a\u7edd\u5bf9\u7684\u8bdd\u9898\u3002",
-            ),
-        ]
-
-        for pat, title, structure, meaning, example, note in pattern_candidates:
-            s = first_sentence_matching(pat)
-            if s:
-                add(title, s, structure, meaning, example, note)
-            if len(rows) >= 4:
-                break
-
-        if len(rows) < 3:
-            for s in split_sentences(text_all):
-                if len(rows) >= 4:
-                    break
-                if word_count(s) < 10 or word_count(s) > 38:
-                    continue
-                if re.search(r"\btends\s+to\b", s, flags=re.I):
-                    add("\u503e\u5411\u8868\u8fbe\u53e5", s, "A tends to do B.", "A \u5f80\u5f80\u4f1a\u505a B\uff1b\u7528\u4e8e\u6982\u62ec\u5e38\u89c1\u884c\u4e3a\u6216\u73b0\u8c61\u3002", "Public debates tend to focus on risks rather than opportunities.", "\u6bd4 usually \u66f4\u6709\u5916\u520a\u5206\u6790\u611f\u3002")
-                elif re.search(r"\bacross\s+[^.?!]{3,80}", s, flags=re.I):
-                    add("\u8303\u56f4\u6269\u6563\u53e5", s, "A happens across B.", "A \u5728 B \u8303\u56f4\u5185\u53d1\u751f / \u6269\u6563\u3002", "The change is happening across many parts of daily life.", "across \u5f88\u9002\u5408\u5199\u5f71\u54cd\u9762\u3001\u884c\u4e1a\u6216\u5730\u57df\u3002")
-                elif re.search(r"\brather\s+than\b", s, flags=re.I):
-                    add("\u66ff\u4ee3\u9009\u62e9\u53e5", s, "A rather than B", "A \u800c\u4e0d\u662f B\uff1b\u7528\u6765\u5f3a\u8c03\u771f\u6b63\u9009\u62e9\u3002", "I want steady progress rather than quick results.", "\u9002\u5408\u628a\u4e24\u4e2a\u9009\u9879\u5bf9\u6bd4\u6e05\u695a\u3002")
-                elif re.search(r"\bas\s+a\s+result\b", s, flags=re.I):
-                    add("\u7ed3\u679c\u8854\u63a5\u53e5", s, "As a result, S + V.", "\u7ed3\u679c\uff0c\u2026\u2026\u3002\u7528\u6765\u8fde\u63a5\u539f\u56e0\u548c\u540e\u679c\u3002", "As a result, learners remember the expression more easily.", "\u5199\u539f\u56e0\u5206\u6790\u65f6\u5f88\u7a33\u3002")
-
+        if "in the absence of" in low:
+            add("缺失条件句", find_sentence_with("in the absence of"), "In the absence of A, B happens / B becomes difficult.", "在缺乏 A 的情况下，B 发生 / B 变得困难。", "In the absence of enough practice, speaking fluently becomes difficult.", "适合写资源不足、条件缺失、问题产生的原因。")
+        if "testament to" in low:
+            add("证明评价句", find_sentence_with("testament to"), "This is a testament to A.", "这证明了 A；这体现了 A。", "This result is a testament to the importance of daily practice.", "适合表达某个结果反映出的深层问题或价值。")
+        if "one in three" in low or "one in five" in low:
+            add("比例表达句", find_sentence_with("one in three") or find_sentence_with("more than one in five"), "One in three A have / are B.", "三分之一的 A 有 / 是 B。", "One in three students say they feel stressed before exams.", "适合写调查数据和社会现象。")
+        if "make up" in low:
+            add("构成比例句", find_sentence_with("make up"), "A make up B.", "A 构成 B；A 占 B 的一部分。", "Young people make up a large part of the online learning community.", "适合写群体构成、比例、身份分类。")
+        if "there comes a point" in low:
+            add("人生转折句", find_sentence_with("There comes a point"), "There comes a point in our lives when ________.", "人生中总会有一个时刻，……", "There comes a point in our lives when we stop trying to please everyone.", "适合写成长、选择、心态变化。")
+        if "it turned out" in low:
+            add("结果反转句", find_sentence_with("It turned out"), "It turned out that ________.", "结果证明 / 后来发现，……", "It turned out that the simple method worked better than expected.", "适合写结果和预期不同。")
+        if "irrespective of" in low:
+            add("让步表达句", find_sentence_with("Irrespective of"), "Irrespective of A, B remains true.", "不管 A 如何，B 仍然成立。", "Irrespective of quality, the product attracted a lot of attention.", "适合写“不受某条件影响”的判断。")
+        if "will have the chance to" in low:
+            add("机会体验句", find_sentence_with("will have the chance to"), "A will have the chance to do B, thanks to C.", "A 将有机会做 B，这要归功于 C。", "Visitors will have the chance to experience local culture, thanks to the new exhibition.", "适合介绍活动、展览、课程、旅行体验。")
+        if "research" in low or "suggest" in low or "reveal" in low:
+            add("研究发现句", find_sentence_with("suggest") or find_sentence_with("reveal"), "Research suggests that ________.", "研究表明，……", "Research suggests that people have a tendency to repeat familiar habits.", "适合引出研究发现、调查结论。")
         if not rows and expressions:
             first = expressions[0]["text"]
-            original = find_sentence_with(first) or (split_sentences(text_all)[0] if split_sentences(text_all) else text_all)
-            add(
-                "\u8868\u8fbe\u6539\u5199\u53e5",
-                original,
-                "Keep the useful expression, then replace the topic.",
-                "\u4fdd\u7559\u539f\u6587\u7684\u597d\u8868\u8fbe\uff0c\u628a\u4e3b\u9898\u6362\u6210\u81ea\u5df1\u7684\u573a\u666f\u3002",
-                "This expression can be reused to describe study, work, or daily life.",
-                "\u8fd9\u662f\u6700\u540e\u515c\u5e95\uff0c\u4e5f\u4f1a\u4fdd\u7559\u539f\u53e5\uff0c\u4e0d\u518d\u751f\u6210\u7a7a\u6cdb\u7684 Use xxx \u4efb\u52a1\u3002"
-            )
-
-        return rows[:4]
+            add("表达复用句", find_sentence_with(first), f"Use “{first}” in one sentence.", "用今天的表达写一个自己的句子。", f"I can use “{first}” to describe a real situation in my life.", "适合把外刊表达转成输出。")
+        return rows[:5]
 
     pattern_rows = make_pattern_rows()
 
@@ -3829,21 +3456,6 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
           </div>
         """
 
-    expression_html = ""
-    order = {"句式": 0, "研究句": 0, "数据表达": 0, "让步结构": 0, "短语": 1, "话题词组": 1, "话题表达": 1, "原因结构": 1, "比较结构": 1, "词汇": 2}
-    expressions_sorted = sorted(expressions, key=lambda x: (order.get(x.get("label", ""), 1), len(x.get("text", ""))))
-    for item in expressions_sorted:
-        expression_html += f"""
-          <div class="expression" data-term="{attr_escape(item.get('text'))}" data-meaning="{attr_escape(item.get('meaning'))}">
-            <span class="expr-label">{esc(item.get('label', '表达'))}</span>
-            <b>{esc(item.get('text'))}</b>
-            <span class="expr-meaning">{esc(item.get('meaning'))}</span>
-          </div>
-        """
-
-    if not expression_html:
-        expression_html = '<div class="expression"><span class="expr-label">表达</span><b>今日表达</b><span class="expr-meaning">这篇文章适合积累原文中的可复用句型和话题表达。</span></div>'
-
     patterns_html = ""
     for row in pattern_rows:
         original_html = ""
@@ -3860,12 +3472,26 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
           </div>
         """
 
-    # 历史文章：从 output/archive/day-*.txt 读取，显示主题分类。
-    def load_history_entries(max_count=8):
+    order = {"句式": 0, "研究句": 0, "数据表达": 0, "让步结构": 0, "短语": 1, "话题词组": 1, "话题表达": 1, "原因结构": 1, "比较结构": 1, "词汇": 2}
+    expressions_sorted = sorted(expressions, key=lambda x: (order.get(x.get("label", ""), 1), len(x.get("text", ""))))
+    expression_html = ""
+    for item in expressions_sorted:
+        expression_html += f"""
+          <div class="expression" data-term="{attr_escape(item.get('text'))}" data-meaning="{attr_escape(item.get('meaning'))}">
+            <span class="expr-label">{esc(item.get('label', '表达'))}</span>
+            <b>{esc(item.get('text'))}</b>
+            <span class="expr-meaning">{esc(item.get('meaning'))}</span>
+          </div>
+        """
+    if not expression_html:
+        expression_html = '<div class="expression"><span class="expr-label">表达</span><b>今日表达</b><span class="expr-meaning">这篇文章适合积累原文中的可复用句型和话题表达。</span></div>'
+
+    def load_history_entries(max_count=40):
         entries = []
         archive_dir = OUTPUT_DIR / "archive"
         if not archive_dir.exists():
             return entries
+        seen_titles = set()
         for txt_path in sorted(archive_dir.glob("day-*.txt"), reverse=True):
             date_part = txt_path.stem.replace("day-", "")
             if date_part == today:
@@ -3878,60 +3504,63 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
                 m = re.search(re.escape(label) + r"\s*\n([^\n]+)", t)
                 return clean_text(m.group(1)) if m else ""
             en_title = after_label("英文标题：") or "历史外刊"
-            cn_title = after_label("中文标题：")
             source_line = after_label("来源：")
-            topic_h = topic_category(en_title + " " + cn_title, source_line, t[:1200])
+            key = en_title.lower().strip()
+            if key in seen_titles:
+                continue
+            seen_titles.add(key)
+            topic_h = topic_category(en_title, source_line, t[:1200])
             level_h = difficulty_label_from_text(t[:2000])
             href = f"archive/day-{date_part}-xhs.html"
             if not (archive_dir / f"day-{date_part}-xhs.html").exists():
                 href = f"archive/day-{date_part}.html"
-            entries.append({"date": date_part, "title": en_title, "topic": topic_h, "level": level_h, "href": href})
+            entries.append({"title": en_title, "topic": topic_h, "level": level_h, "href": href})
             if len(entries) >= max_count:
                 break
         return entries
 
-    def history_bucket(topic_name, title_text):
-        s = f"{topic_name} {title_text}".lower()
-        if any(k in s for k in ["ai", "??", "??", "science", "nature", "climate", "robot", "digital", "???", "?"]):
-            return "tech"
-        if any(k in s for k in ["education", "school", "student", "reading", "teacher", "??", "??", "???"]):
-            return "education"
-        if any(k in s for k in ["culture", "history", "book", "museum", "ancient", "heritage", "??", "??", "??", "???", "???"]):
-            return "humanities"
-        return "life"
+    history_entries = load_history_entries()
+    topic_order = ["全部", "AI科技", "科技", "教育", "文化历史", "健康心理", "社会工作", "自然科学", "生活", "综合"]
+    level_order = ["全部", "B1", "B1-B2", "B2", "C1"]
+    present_topics = set([h["topic"] for h in history_entries])
+    present_levels = set([h["level"] for h in history_entries])
 
-    history_entries = []
-    seen_titles = set()
-    for h in load_history_entries(max_count=60):
-        title_key = h.get("title", "").lower().strip()
-        if not title_key or title_key in seen_titles:
+    topic_buttons = ""
+    for tp in topic_order:
+        if tp != "全部" and tp not in present_topics:
             continue
-        seen_titles.add(title_key)
-        h["bucket"] = history_bucket(h.get("topic", ""), h.get("title", ""))
-        history_entries.append(h)
+        active = " active" if tp == "全部" else ""
+        topic_buttons += f'<button class="filter-btn{active}" data-kind="topic" data-value="{attr_escape(tp)}">{esc(tp)}</button>'
 
-    bucket_labels = [("tech", "??"), ("education", "??"), ("humanities", "??"), ("life", "??")]
-    first_active = next((key for key, _label in bucket_labels if any(h.get("bucket") == key for h in history_entries)), "tech")
-    history_html = '<div class="history-tabs">'
-    for key, label in bucket_labels:
-        active = ' is-active' if key == first_active else ''
-        history_html += f'<button type="button" class="history-tab{active}" data-history-filter="{key}">{label}</button>'
-    history_html += '</div><div class="history-panels">'
+    level_buttons = ""
+    for lv in level_order:
+        if lv != "全部" and lv not in present_levels:
+            continue
+        active = " active" if lv == "全部" else ""
+        level_buttons += f'<button class="filter-btn{active}" data-kind="level" data-value="{attr_escape(lv)}">{esc(lv)}</button>'
 
-    for key, label in bucket_labels:
-        active = ' is-active' if key == first_active else ''
-        items = [h for h in history_entries if h.get("bucket") == key]
-        history_html += f'<div class="topic-group{active}" data-history-topic="{key}"><h3>{label}</h3>'
-        if items:
-            for h in items[:8]:
-                title_show = h.get("title", "????")
-                if len(title_show) > 68:
-                    title_show = title_show[:66] + "..."
-                history_html += f'<a class="history-item" href="{attr_escape(h.get("href", "#"))}"><b>{esc(title_show)}</b></a>'
-        else:
-            history_html += '<div class="history-empty">????????????</div>'
-        history_html += '</div>'
-    history_html += '</div>'
+    history_items = ""
+    for h in history_entries:
+        title_show = h["title"]
+        if len(title_show) > 78:
+            title_show = title_show[:76] + "..."
+        history_items += f"""
+          <a class="history-item" href="{attr_escape(h['href'])}" data-topic="{attr_escape(h['topic'])}" data-level="{attr_escape(h['level'])}">
+            <b>{esc(title_show)}</b>
+            <span>{esc(h['topic'])} · {esc(h['level'])}</span>
+          </a>
+        """
+    if not history_items:
+        history_items = '<div class="history-empty">暂无历史文章</div>'
+
+    history_html = f"""
+      <div class="filter-block">
+        <div class="filter-row"><span>主题</span>{topic_buttons}</div>
+        <div class="filter-row"><span>难度</span>{level_buttons}</div>
+      </div>
+      <div class="history-list" id="historyList">{history_items}</div>
+      <div class="history-empty" id="historyEmpty" style="display:none;">这个筛选下暂时没有文章</div>
+    """
 
     source_link_html = ""
     if link:
@@ -3941,14 +3570,14 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
     best_meaning = expressions_sorted[0]["meaning"] if expressions_sorted else ""
     today_dot = esc(today).replace("-", ".")
 
-    page = f"""<!doctype html>
+    page = """<!doctype html>
 <html lang="zh-CN">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Healing Lab 每日外刊｜{esc(today)}</title>
+  <title>Healing Lab 每日外刊｜__TODAY__</title>
   <style>
-    :root {{
+    :root {
       --ink:#1d252c; --muted:#68747f; --line:#dfe6e8;
       --paper:#fbfaf6; --paper-deep:#f5f2eb; --card:rgba(255,255,255,.92);
       --sage-dark:#426e60; --sage-soft:#eef6f1;
@@ -3956,42 +3585,43 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
       --blue:#557da8; --blue-soft:#edf3f8;
       --shadow:0 18px 46px rgba(44,57,64,.12);
       --radius-lg:22px; --radius-sm:12px;
-    }}
-    *{{box-sizing:border-box}} html{{scroll-behavior:smooth}}
-    body{{margin:0;color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",Arial,sans-serif;background:linear-gradient(135deg,rgba(255,255,255,.88),rgba(255,255,255,.96)),radial-gradient(circle at 12% 4%,rgba(127,163,145,.25),transparent 34%),radial-gradient(circle at 92% 14%,rgba(241,198,109,.25),transparent 30%),radial-gradient(circle at 50% 92%,rgba(85,125,168,.16),transparent 36%),var(--paper-deep);min-height:100vh}}
-    .phone-shell{{width:min(100%,480px);margin:0 auto;padding:env(safe-area-inset-top) 14px 34px}}
-    .hero{{padding:28px 4px 16px}} .brand-row{{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:20px}}
-    .brand-mark{{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;background:var(--sage-dark);color:#fff;font-weight:900;box-shadow:0 14px 30px rgba(66,110,96,.25)}}
-    .date-pill{{background:rgba(255,255,255,.78);border:1px solid var(--line);border-radius:999px;padding:9px 13px;color:var(--sage-dark);font-weight:800;font-size:13px;white-space:nowrap}}
-    .hero h1{{margin:0;font-size:clamp(40px,13vw,58px);line-height:.98;letter-spacing:-.055em}} .hero .subtitle{{margin:12px 0 0;color:var(--muted);font-size:15px;line-height:1.65}}
-    .quick-nav{{position:sticky;top:0;z-index:30;margin:4px -14px 16px;padding:10px 14px;overflow-x:auto;display:flex;gap:8px;background:rgba(245,242,235,.72);backdrop-filter:blur(12px);border-top:1px solid rgba(223,230,232,.7);border-bottom:1px solid rgba(223,230,232,.7)}}
-    .quick-nav a{{flex:0 0 auto;text-decoration:none;color:var(--sage-dark);background:rgba(255,255,255,.78);border:1px solid var(--line);border-radius:999px;padding:7px 11px;font-size:13px;font-weight:800}}
-    .section-stack{{display:grid;gap:14px}} .card{{background:var(--card);border:1px solid var(--line);border-radius:var(--radius-lg);box-shadow:var(--shadow);overflow:hidden}}
-    .article-cover{{min-height:292px;padding:22px;background:linear-gradient(rgba(255,255,255,.18),rgba(255,255,255,.05)),linear-gradient(135deg,#e9f2ec 0%,#f8f0df 54%,#eef3f8 100%);position:relative;display:flex;flex-direction:column;justify-content:space-between}}
-    .article-cover::after{{content:"";position:absolute;inset:15px;border:1px solid rgba(66,110,96,.22);border-radius:14px;pointer-events:none}}
-    .eyebrow{{position:relative;z-index:1;width:fit-content;padding:7px 12px;border-radius:999px;background:var(--sage-dark);color:#fff;font-size:13px;font-weight:900}}
-    .title-box{{position:relative;z-index:1;margin-top:34px}} .article-title-en{{margin:0;font-family:Georgia,"Times New Roman",serif;max-width:12em;font-size:clamp(30px,9vw,43px);line-height:1.06;letter-spacing:-.035em;color:var(--ink)}} .article-title-zh{{margin-top:14px;max-width:18em;font-size:16px;line-height:1.55;color:#536171;font-weight:700}}
-    .meta-grid{{display:grid;grid-template-columns:1fr;gap:10px;padding:14px}} .meta-box{{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius-sm);padding:12px}} .meta-box span{{display:block;color:var(--muted);font-size:12px;margin-bottom:6px}} .meta-box b{{font-size:14.5px;line-height:1.4}}
-    .tags{{display:flex;gap:8px;flex-wrap:wrap;padding:0 14px 14px}} .tag{{padding:6px 10px;border-radius:999px;font-size:12px;font-weight:900;background:var(--sage-soft);color:var(--sage-dark)}} .tag.level{{background:var(--clay-soft);color:#9b4e35}} .tag.topic{{background:var(--blue-soft);color:var(--blue)}}
-    .summary{{margin:0 14px 16px;padding:13px 14px;border-left:4px solid var(--clay);background:#fff8f2;border-radius:10px;color:#37434a;line-height:1.7;font-size:14.5px;white-space:pre-wrap}}
-    .section{{padding:18px}} .section-head{{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:12px}} .section h2{{margin:0;font-size:21px;letter-spacing:-.02em}} .mini-label{{color:var(--muted);font-size:12px;white-space:nowrap}}
-    .para-card,.review-box{{border:1px solid var(--line);background:var(--paper);border-radius:var(--radius-sm);padding:14px}} .translation,.review-box p{{color:var(--muted);line-height:1.65;font-size:14.5px}}
-    .study-route{{display:grid;gap:8px}} .route-step{{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);background:var(--paper);border-radius:12px;padding:10px}} .route-num{{flex:0 0 auto;width:28px;height:28px;border-radius:50%;background:var(--sage-soft);color:var(--sage-dark);display:grid;place-items:center;font-weight:900;font-size:13px}} .route-step b{{display:block;font-size:14px;margin-bottom:3px}} .route-step span{{color:var(--muted);font-size:13px;line-height:1.45}}
-    .para-list,.expression-list,.pattern-list,.review-grid,.history-list{{display:grid;gap:10px}} .para-title{{color:var(--sage-dark);font-weight:900;margin-bottom:10px;font-size:14px}} .para-divider{{height:1px;background:var(--line);margin:12px 0}} .english{{margin:0;font-family:Georgia,"Times New Roman",serif;font-size:18.5px;line-height:1.78;color:#25323a}}
-    .hl-term{{color:var(--sage-dark);background:rgba(127,163,145,.16);border-bottom:1px solid rgba(66,110,96,.38);padding:0 2px;border-radius:4px;cursor:pointer}}
-    .expression{{display:grid;grid-template-columns:auto 1fr;column-gap:10px;row-gap:3px;align-items:start;border:1px solid var(--line);background:var(--paper);border-radius:10px;padding:9px 10px;cursor:pointer}} .expr-label{{grid-row:1 / span 2;width:fit-content;padding:4px 7px;border-radius:999px;background:var(--blue-soft);color:var(--blue);font-size:12px;font-weight:900;white-space:nowrap}} .expression b{{color:var(--sage-dark);line-height:1.35;font-size:15.5px}} .expr-meaning{{color:var(--muted);line-height:1.5;font-size:14px}}
-    .pattern-card{{border:1px solid #f0d6c9;background:#fff8f2;border-radius:13px;padding:12px}} .pattern-card b{{display:block;font-size:15px;margin-bottom:8px}} .pattern-card p{{margin:7px 0;line-height:1.6;font-size:14.5px}} .pattern-card .original{{color:#536171;border-left:3px solid var(--clay);padding-left:10px}} .pattern-card .pattern{{color:#25323a;font-family:Georgia,"Times New Roman",serif;font-size:16px}} .pattern-card .meaning{{color:#9b4e35}} .pattern-card .example{{color:#414b51}} .pattern-card small{{display:block;color:var(--muted);margin-top:8px;line-height:1.55}}
-    .review-box{{border:1px dashed #b9c7c0;background:#fbfdfb}} .review-box b{{display:block;margin-bottom:8px;font-size:15px}}
-    .history-tabs{{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:12px}} .history-tab{{border:1px solid var(--line);background:var(--paper);color:var(--sage-dark);border-radius:999px;padding:8px 4px;font-size:13px;font-weight:900;cursor:pointer}} .history-tab.is-active{{background:var(--sage-dark);color:#fff;border-color:var(--sage-dark)}} .history-panels{{display:grid;gap:10px}} .topic-group{{display:none;gap:8px;margin-bottom:4px}} .topic-group.is-active{{display:grid}} .topic-group h3{{font-size:16px;margin:0;color:var(--sage-dark)}} .history-item{{display:block;text-decoration:none;color:var(--ink);border:1px solid var(--line);background:var(--paper);border-radius:12px;padding:10px}} .history-item b{{font-size:14.5px;line-height:1.35}} .history-empty{{color:var(--muted);font-size:14px;border:1px dashed var(--line);border-radius:12px;padding:10px;background:var(--paper)}}
-    .source-link{{display:inline-flex;width:fit-content;margin-top:12px;text-decoration:none;color:var(--sage-dark);background:var(--sage-soft);border:1px solid rgba(66,110,96,.18);border-radius:999px;padding:8px 11px;font-size:13px;font-weight:900}}
-    .tip{{position:fixed;left:14px;right:14px;bottom:16px;z-index:80;background:#1d252c;color:#fff;border-radius:16px;padding:12px 14px;box-shadow:0 14px 38px rgba(0,0,0,.22);line-height:1.6;display:none;max-width:452px;margin:0 auto}} .tip b{{color:#f1c66d}} .bottom-note{{color:var(--muted);font-size:12px;line-height:1.7;text-align:center;padding:20px 6px 2px}}
-    @media (min-width:420px){{.meta-grid{{grid-template-columns:repeat(3,minmax(0,1fr))}}}} @media (max-width:360px){{.hero h1{{font-size:38px}}.article-title-en{{font-size:29px}}.section{{padding:16px}}.expression{{grid-template-columns:1fr}}.expr-label{{grid-row:auto}}}}
+    }
+    *{box-sizing:border-box} html{scroll-behavior:smooth}
+    body{margin:0;color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",Arial,sans-serif;background:linear-gradient(135deg,rgba(255,255,255,.88),rgba(255,255,255,.96)),radial-gradient(circle at 12% 4%,rgba(127,163,145,.25),transparent 34%),radial-gradient(circle at 92% 14%,rgba(241,198,109,.25),transparent 30%),radial-gradient(circle at 50% 92%,rgba(85,125,168,.16),transparent 36%),var(--paper-deep);min-height:100vh}
+    .phone-shell{width:min(100%,480px);margin:0 auto;padding:env(safe-area-inset-top) 14px 34px}
+    .hero{padding:28px 4px 16px}.brand-row{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:20px}
+    .brand-mark{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;background:var(--sage-dark);color:#fff;font-weight:900;box-shadow:0 14px 30px rgba(66,110,96,.25)}
+    .date-pill{background:rgba(255,255,255,.78);border:1px solid var(--line);border-radius:999px;padding:9px 13px;color:var(--sage-dark);font-weight:800;font-size:13px;white-space:nowrap}
+    .hero h1{margin:0;font-size:clamp(40px,13vw,58px);line-height:.98;letter-spacing:-.055em}.hero .subtitle{margin:12px 0 0;color:var(--muted);font-size:15px;line-height:1.65}
+    .quick-nav{position:sticky;top:0;z-index:30;margin:4px -14px 16px;padding:10px 14px;overflow-x:auto;display:flex;gap:8px;background:rgba(245,242,235,.72);backdrop-filter:blur(12px);border-top:1px solid rgba(223,230,232,.7);border-bottom:1px solid rgba(223,230,232,.7)}
+    .quick-nav a{flex:0 0 auto;text-decoration:none;color:var(--sage-dark);background:rgba(255,255,255,.78);border:1px solid var(--line);border-radius:999px;padding:7px 11px;font-size:13px;font-weight:800}
+    .section-stack{display:grid;gap:14px}.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius-lg);box-shadow:var(--shadow);overflow:hidden}
+    .article-cover{min-height:292px;padding:22px;background:linear-gradient(rgba(255,255,255,.18),rgba(255,255,255,.05)),linear-gradient(135deg,#e9f2ec 0%,#f8f0df 54%,#eef3f8 100%);position:relative;display:flex;flex-direction:column;justify-content:space-between}
+    .article-cover::after{content:"";position:absolute;inset:15px;border:1px solid rgba(66,110,96,.22);border-radius:14px;pointer-events:none}
+    .eyebrow{position:relative;z-index:1;width:fit-content;padding:7px 12px;border-radius:999px;background:var(--sage-dark);color:#fff;font-size:13px;font-weight:900}
+    .title-box{position:relative;z-index:1;margin-top:34px}.article-title-en{margin:0;font-family:Georgia,"Times New Roman",serif;max-width:12em;font-size:clamp(30px,9vw,43px);line-height:1.06;letter-spacing:-.035em;color:var(--ink)}.article-title-zh{margin-top:14px;max-width:18em;font-size:16px;line-height:1.55;color:#536171;font-weight:700}
+    .meta-grid{display:grid;grid-template-columns:1fr;gap:10px;padding:14px}.meta-box{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius-sm);padding:12px}.meta-box span{display:block;color:var(--muted);font-size:12px;margin-bottom:6px}.meta-box b{font-size:14.5px;line-height:1.4}
+    .tags{display:flex;gap:8px;flex-wrap:wrap;padding:0 14px 14px}.tag{padding:6px 10px;border-radius:999px;font-size:12px;font-weight:900;background:var(--sage-soft);color:var(--sage-dark)}.tag.level{background:var(--clay-soft);color:#9b4e35}.tag.topic{background:var(--blue-soft);color:var(--blue)}
+    .summary{margin:0 14px 16px;padding:13px 14px;border-left:4px solid var(--clay);background:#fff8f2;border-radius:10px;color:#37434a;line-height:1.7;font-size:14.5px;white-space:pre-wrap}
+    .section{padding:18px}.section-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:12px}.section h2{margin:0;font-size:21px;letter-spacing:-.02em}.mini-label{color:var(--muted);font-size:12px;white-space:nowrap}
+    .para-card,.review-box{border:1px solid var(--line);background:var(--paper);border-radius:var(--radius-sm);padding:14px}.translation,.review-box p{color:var(--muted);line-height:1.65;font-size:14.5px}
+    .study-route{display:grid;gap:8px}.route-step{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);background:var(--paper);border-radius:12px;padding:10px}.route-num{flex:0 0 auto;width:28px;height:28px;border-radius:50%;background:var(--sage-soft);color:var(--sage-dark);display:grid;place-items:center;font-weight:900;font-size:13px}.route-step b{display:block;font-size:14px;margin-bottom:3px}.route-step span{color:var(--muted);font-size:13px;line-height:1.45}
+    .para-list,.expression-list,.pattern-list,.review-grid{display:grid;gap:10px}.para-title{color:var(--sage-dark);font-weight:900;margin-bottom:10px;font-size:14px}.para-divider{height:1px;background:var(--line);margin:12px 0}.english{margin:0;font-family:Georgia,"Times New Roman",serif;font-size:18.5px;line-height:1.78;color:#25323a}
+    .hl-term{color:var(--sage-dark);background:rgba(127,163,145,.16);border-bottom:1px solid rgba(66,110,96,.38);padding:0 2px;border-radius:4px;cursor:pointer}
+    .expression{display:grid;grid-template-columns:auto 1fr;column-gap:10px;row-gap:3px;align-items:start;border:1px solid var(--line);background:var(--paper);border-radius:10px;padding:9px 10px;cursor:pointer}.expr-label{grid-row:1 / span 2;width:fit-content;padding:4px 7px;border-radius:999px;background:var(--blue-soft);color:var(--blue);font-size:12px;font-weight:900;white-space:nowrap}.expression b{color:var(--sage-dark);line-height:1.35;font-size:15.5px}.expr-meaning{color:var(--muted);line-height:1.5;font-size:14px}
+    .pattern-card{border:1px solid #f0d6c9;background:#fff8f2;border-radius:13px;padding:12px}.pattern-card b{display:block;font-size:15px;margin-bottom:8px}.pattern-card p{margin:7px 0;line-height:1.6;font-size:14.5px}.pattern-card .original{color:#536171;border-left:3px solid var(--clay);padding-left:10px}.pattern-card .pattern{color:#25323a;font-family:Georgia,"Times New Roman",serif;font-size:16px}.pattern-card .meaning{color:#9b4e35}.pattern-card .example{color:#414b51}.pattern-card small{display:block;color:var(--muted);margin-top:8px;line-height:1.55}
+    .review-box{border:1px dashed #b9c7c0;background:#fbfdfb}.review-box b{display:block;margin-bottom:8px;font-size:15px}
+    .filter-block{display:grid;gap:8px;margin-bottom:12px}.filter-row{display:flex;gap:7px;align-items:center;flex-wrap:wrap}.filter-row span{font-size:13px;color:var(--muted);font-weight:800}.filter-btn{border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:6px 10px;color:var(--sage-dark);font-size:13px;font-weight:800;cursor:pointer}.filter-btn.active{background:var(--sage-dark);color:#fff;border-color:var(--sage-dark)}
+    .history-list{display:grid;gap:9px}.history-item{display:block;text-decoration:none;color:var(--ink);border:1px solid var(--line);background:var(--paper);border-radius:12px;padding:10px}.history-item b{display:block;font-size:14.5px;line-height:1.35}.history-item span{display:block;margin-top:5px;color:var(--muted);font-size:12px}.history-empty{color:var(--muted);font-size:14px}
+    .source-link{display:inline-flex;width:fit-content;margin-top:12px;text-decoration:none;color:var(--sage-dark);background:var(--sage-soft);border:1px solid rgba(66,110,96,.18);border-radius:999px;padding:8px 11px;font-size:13px;font-weight:900}
+    .tip{position:fixed;left:14px;right:14px;bottom:16px;z-index:80;background:#1d252c;color:#fff;border-radius:16px;padding:12px 14px;box-shadow:0 14px 38px rgba(0,0,0,.22);line-height:1.6;display:none;max-width:452px;margin:0 auto}.tip b{color:#f1c66d}.bottom-note{color:var(--muted);font-size:12px;line-height:1.7;text-align:center;padding:20px 6px 2px}
+    @media (min-width:420px){.meta-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}@media (max-width:360px){.hero h1{font-size:38px}.article-title-en{font-size:29px}.section{padding:16px}.expression{grid-template-columns:1fr}.expr-label{grid-row:auto}}
   </style>
 </head>
 <body>
   <main class="phone-shell">
     <header class="hero">
-      <div class="brand-row"><div class="brand-mark">HL</div><div class="date-pill">Today · {today_dot}</div></div>
+      <div class="brand-row"><div class="brand-mark">HL</div><div class="date-pill">Today · __TODAY_DOT__</div></div>
       <h1>Healing Lab<br>每日外刊</h1>
       <p class="subtitle">每天一篇短外刊，练阅读、表达和语感。</p>
     </header>
@@ -4002,42 +3632,89 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
 
     <div class="section-stack">
       <article class="card" id="article">
-        <div class="article-cover"><span class="eyebrow">今日文章卡片</span><div class="title-box"><h2 class="article-title-en">{esc(title_raw)}</h2><div class="article-title-zh">{esc(title_cn)}</div></div></div>
-        <div class="meta-grid"><div class="meta-box"><span>来源</span><b>{esc(source or "Daily Reading")}</b></div><div class="meta-box"><span>日期</span><b>{esc(pub_date)}</b></div><div class="meta-box"><span>难度</span><b>{esc(level)}</b></div></div>
-        <div class="tags"><span class="tag level">{esc(level)}</span><span class="tag topic">{esc(topic)}</span><span class="tag">Patterns</span><span class="tag">Expressions</span></div>
-        <p class="summary">{esc(overview or "今天这篇适合积累真实外刊表达、观点句和可复述素材。")}</p>
+        <div class="article-cover"><span class="eyebrow">今日文章卡片</span><div class="title-box"><h2 class="article-title-en">__TITLE_RAW__</h2><div class="article-title-zh">__TITLE_CN__</div></div></div>
+        <div class="meta-grid"><div class="meta-box"><span>来源</span><b>__SOURCE__</b></div><div class="meta-box"><span>日期</span><b>__PUB_DATE__</b></div><div class="meta-box"><span>难度</span><b>__LEVEL__</b></div></div>
+        <div class="tags"><span class="tag level">__LEVEL__</span><span class="tag topic">__TOPIC__</span><span class="tag">Patterns</span><span class="tag">Expressions</span></div>
+        <p class="summary">__OVERVIEW__</p>
       </article>
 
       <section class="card section" id="route">
         <div class="section-head"><h2>今天这样学</h2><span class="mini-label">3 steps</span></div>
         <div class="study-route">
           <div class="route-step"><span class="route-num">01</span><div><b>先抓主题</b><span>看中文摘要，知道文章讲什么。</span></div></div>
-          <div class="route-step"><span class="route-num">02</span><div><b>精读 2 段</b><span>只读核心段，不被全文吓退。</span></div></div>
-          <div class="route-step"><span class="route-num">03</span><div><b>拆句式 + 记表达</b><span>优先记能直接复用的英文结构。</span></div></div>
+          <div class="route-step"><span class="route-num">02</span><div><b>精读 2 段</b><span>看绿色标注，点开查中文意思。</span></div></div>
+          <div class="route-step"><span class="route-num">03</span><div><b>记句式 + 记词组</b><span>优先记能迁移到别的句子的表达。</span></div></div>
         </div>
       </section>
 
-      <section class="card section" id="text"><div class="section-head"><h2>今日精读</h2><span class="mini-label">Original + Meaning</span></div><div class="para-list">{paragraph_html}</div></section>
+      <section class="card section" id="text"><div class="section-head"><h2>今日精读</h2><span class="mini-label">Original + Meaning</span></div><div class="para-list">__PARAGRAPH_HTML__</div></section>
 
-      <section class="card section" id="patterns"><div class="section-head"><h2>表达句式</h2><span class="mini-label">Sentence Patterns</span></div><div class="pattern-list">{patterns_html}</div></section>
+      <section class="card section" id="patterns"><div class="section-head"><h2>表达句式</h2><span class="mini-label">Sentence Patterns</span></div><div class="pattern-list">__PATTERNS_HTML__</div></section>
 
-      <section class="card section" id="expressions"><div class="section-head"><h2>重点表达</h2><span class="mini-label">Useful Expressions</span></div><div class="expression-list">{expression_html}</div></section>
+      <section class="card section" id="expressions"><div class="section-head"><h2>重点表达</h2><span class="mini-label">Phrases + Vocab</span></div><div class="expression-list">__EXPRESSION_HTML__</div></section>
 
-      <section class="card section" id="review"><div class="section-head"><h2>今日复盘</h2><span class="mini-label">Daily Review</span></div><div class="review-grid"><div class="review-box"><b>今天最值得记住</b><p>{esc(best_expr)}<br>{esc(best_meaning)}</p></div><div class="review-box"><b>怎么用</b><p>选一个表达句式，改写成自己的生活、学习或工作场景。</p></div></div>{source_link_html}</section>
+      <section class="card section" id="review"><div class="section-head"><h2>今日复盘</h2><span class="mini-label">Daily Review</span></div><div class="review-grid"><div class="review-box"><b>今天最值得记住</b><p>__BEST_EXPR__<br>__BEST_MEANING__</p></div><div class="review-box"><b>怎么用</b><p>选一个表达句式，改写成自己的生活、学习或工作场景。</p></div></div>__SOURCE_LINK__</section>
 
-      <section class="card section" id="archive"><div class="section-head"><h2>历史文章</h2><span class="mini-label">Archive by topic</span></div>{history_html}</section>
+      <section class="card section" id="archive"><div class="section-head"><h2>历史文章</h2><span class="mini-label">按主题 / 难度筛选</span></div>__HISTORY_HTML__</section>
     </div>
     <p class="bottom-note">Healing Lab Daily Reading · Mobile Learning Card Page</p>
   </main>
   <div class="tip" id="tip"></div>
   <script>
-    function escText(s){{return String(s||'').replace(/[&<>"']/g,function(c){{return {{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}}[c];}});}}
-    function showTip(term,meaning){{var tip=document.getElementById('tip');tip.innerHTML='<b>'+escText(term)+'</b><br>'+escText(meaning||'暂无释义');tip.style.display='block';clearTimeout(window.__tipTimer);window.__tipTimer=setTimeout(function(){{tip.style.display='none';}},2800);}}
-    document.body.addEventListener('click',function(e){{var node=e.target.closest('.hl-term,.expression');if(!node)return;showTip(node.getAttribute('data-term')||'',node.getAttribute('data-meaning')||'');}});
-    document.body.addEventListener('click',function(e){{var btn=e.target.closest('.history-tab');if(!btn)return;var key=btn.getAttribute('data-history-filter');document.querySelectorAll('.history-tab').forEach(function(x){{x.classList.toggle('is-active',x===btn);}});document.querySelectorAll('.topic-group[data-history-topic]').forEach(function(panel){{panel.classList.toggle('is-active',panel.getAttribute('data-history-topic')===key);}});}});
+    function escText(s){return String(s||'').replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+    function showTip(term,meaning){var tip=document.getElementById('tip');tip.innerHTML='<b>'+escText(term)+'</b><br>'+escText(meaning||'暂无释义');tip.style.display='block';clearTimeout(window.__tipTimer);window.__tipTimer=setTimeout(function(){tip.style.display='none';},2800);}
+    document.body.addEventListener('click',function(e){
+      var node=e.target.closest('.hl-term,.expression');
+      if(node){showTip(node.getAttribute('data-term')||'',node.getAttribute('data-meaning')||'');}
+    });
+    var activeTopic='全部', activeLevel='全部';
+    function applyHistoryFilter(){
+      var items=document.querySelectorAll('.history-item');
+      var shown=0;
+      items.forEach(function(item){
+        var okTopic=(activeTopic==='全部'||item.getAttribute('data-topic')===activeTopic);
+        var okLevel=(activeLevel==='全部'||item.getAttribute('data-level')===activeLevel);
+        var show=okTopic&&okLevel;
+        item.style.display=show?'block':'none';
+        if(show) shown++;
+      });
+      var empty=document.getElementById('historyEmpty');
+      if(empty) empty.style.display=shown?'none':'block';
+    }
+    document.querySelectorAll('.filter-btn').forEach(function(btn){
+      btn.addEventListener('click',function(){
+        var kind=btn.getAttribute('data-kind');
+        var value=btn.getAttribute('data-value');
+        document.querySelectorAll('.filter-btn[data-kind="'+kind+'"]').forEach(function(b){b.classList.remove('active');});
+        btn.classList.add('active');
+        if(kind==='topic') activeTopic=value;
+        if(kind==='level') activeLevel=value;
+        applyHistoryFilter();
+      });
+    });
   </script>
 </body>
 </html>"""
+    repls = {
+        "__TODAY__": esc(today),
+        "__TODAY_DOT__": esc(today).replace("-", "."),
+        "__TITLE_RAW__": esc(title_raw),
+        "__TITLE_CN__": esc(title_cn),
+        "__SOURCE__": esc(source or "Daily Reading"),
+        "__PUB_DATE__": esc(pub_date),
+        "__LEVEL__": esc(level),
+        "__TOPIC__": esc(topic),
+        "__OVERVIEW__": esc(overview or "今天这篇适合积累真实外刊表达、观点句和可复述素材。"),
+        "__PARAGRAPH_HTML__": paragraph_html,
+        "__PATTERNS_HTML__": patterns_html,
+        "__EXPRESSION_HTML__": expression_html,
+        "__BEST_EXPR__": esc(best_expr),
+        "__BEST_MEANING__": esc(best_meaning),
+        "__SOURCE_LINK__": source_link_html,
+        "__HISTORY_HTML__": history_html,
+    }
+    for k, v in repls.items():
+        page = page.replace(k, v)
     return page
 
 def write_outputs(article, selected_paragraphs, rejected_log, article_reject_log, cfg):
