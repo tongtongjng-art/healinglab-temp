@@ -2392,140 +2392,84 @@ def ensure_archive_dirs():
 
 def build_archive_index(today, article_title, title_zh, today_body_html):
     """
-    Desktop index page: 今日内容 + 可按主题/难度筛选的历史目录。
+    手机正式学习页底部历史文章：读取 archive/day-*.html，按主题和难度筛选。
+    旧文章没有 topic/level 元信息时，默认 其他 / B2。
     """
     archive_dir = OUTPUT_DIR / "archive"
 
-    def after_label(text, label):
-        m = re.search(re.escape(label) + r"\s*\n([^\n]+)", text)
+    def meta_content(doc, name):
+        pat = r'<meta\s+[^>]*name=["\']' + re.escape(name) + r'["\'][^>]*content=["\']([^"\']*)["\'][^>]*>'
+        m = re.search(pat, doc, flags=re.I)
+        if not m:
+            pat = r'<meta\s+[^>]*content=["\']([^"\']*)["\'][^>]*name=["\']' + re.escape(name) + r'["\'][^>]*>'
+            m = re.search(pat, doc, flags=re.I)
+        return clean_text(html.unescape(m.group(1))) if m else ""
+
+    def fallback_from_txt(date_part, label):
+        txt_path = archive_dir / f"day-{date_part}.txt"
+        if not txt_path.exists():
+            return ""
+        try:
+            t = txt_path.read_text(encoding="utf-8-sig", errors="ignore")
+        except Exception:
+            return ""
+        m = re.search(re.escape(label) + r"\s*\n([^\n]+)", t)
         return clean_text(m.group(1)) if m else ""
 
-    def history_topic(title, source, body):
-        s = f" {title} {source} {body[:1800]} ".lower()
-
-        def has_key(keyword):
-            k = keyword.strip().lower()
-            if not k:
-                return False
-            if re.search(r"[^a-z0-9 ]", k):
-                return k in s
-            return re.search(r"(?<![a-z0-9])" + re.escape(k) + r"(?![a-z0-9])", s) is not None
-
-        rules = [
-            ("AI科技", ["ai", "artificial intelligence", "chatgpt", "algorithm", "machine learning"]),
-            ("科技", ["technology", "tech", "digital", "software", "device", "online", "data", "app"]),
-            ("教育", ["education", "school", "student", "teacher", "pupil", "children", "university", "exam"]),
-            ("人文历史", ["history", "historian", "heritage", "culture", "museum", "ancient", "archaeology", "archaeological", "smithsonian", "book", "art"]),
-            ("健康心理", ["health", "sleep", "stress", "mental", "mind", "wellbeing", "brain", "habit"]),
-            ("社会工作", ["work", "job", "employment", "worker", "company", "society", "social", "support"]),
-            ("自然科学", ["science", "animal", "climate", "space", "research", "study", "ecologist", "wolf"]),
-            ("生活", ["life", "home", "family", "food", "travel", "lifestyle", "daily"]),
-        ]
-        for name, keys in rules:
-            if any(has_key(k) for k in keys):
-                return name
-        return "综合"
-
-    def history_level(text):
-        try:
-            prof = difficulty_profile(text)
-            avg = prof.get("avg_sentence_words", 0) or 0
-            lw = prof.get("long_word_count", 0) or 0
-            wc = prof.get("word_count", 0) or 0
-            if avg >= 30 and lw >= 24:
-                return "C1"
-            if avg >= 22 or lw >= 16:
-                return "B2"
-            if avg >= 13 or wc >= 70:
-                return "B1-B2"
-            return "B1"
-        except Exception:
-            return "B1-B2"
-
     entries = []
-    seen_titles = set()
+    seen = set()
     if archive_dir.exists():
-        for txt_path in sorted(archive_dir.glob("day-*.txt"), reverse=True):
-            date_part = txt_path.stem.replace("day-", "")
+        for html_path in sorted(archive_dir.glob("day-*.html"), reverse=True):
+            name = html_path.name
+            if name.endswith("-xhs.html") or name.endswith("-editor.html"):
+                continue
+            date_part = html_path.stem.replace("day-", "")
             if date_part == today:
                 continue
             try:
-                text = txt_path.read_text(encoding="utf-8-sig", errors="ignore")
+                doc = html_path.read_text(encoding="utf-8-sig", errors="ignore")
             except Exception:
                 continue
-            en_title = after_label(text, "英文标题：") or "历史外刊"
-            zh_title = after_label(text, "中文标题：")
-            source_line = after_label(text, "来源：")
-            key = en_title.lower().strip()
-            if key in seen_titles:
+            title_zh_h = meta_content(doc, "hl-title-zh") or fallback_from_txt(date_part, "中文标题：")
+            title_en_h = meta_content(doc, "hl-title-en") or fallback_from_txt(date_part, "英文标题：")
+            source_h = meta_content(doc, "hl-source") or fallback_from_txt(date_part, "来源：") or "Daily Reading"
+            topic_h = meta_content(doc, "hl-topic") or "其他"
+            level_h = meta_content(doc, "hl-level") or "B2"
+            title_show = title_zh_h or title_en_h or "历史外刊"
+            key = (title_show + date_part).lower()
+            if key in seen:
                 continue
-            seen_titles.add(key)
-            href = f"archive/day-{date_part}.html"
-            html_file = archive_dir / f"day-{date_part}.html"
-            if not html_file.exists():
-                continue
-            entries.append({
-                "date": date_part,
-                "title": en_title,
-                "zh": zh_title,
-                "source": source_line.split("｜")[0] if source_line else "Daily Reading",
-                "topic": history_topic(en_title + " " + zh_title, source_line, text),
-                "level": history_level(text[:2200]),
-                "href": href,
-            })
-            if len(entries) >= 60:
+            seen.add(key)
+            entries.append({"date": date_part, "title": title_show, "source": source_h.split("｜")[0], "topic": topic_h, "level": level_h, "href": f"archive/{name}"})
+            if len(entries) >= 80:
                 break
 
-    topic_order = ["全部", "人文历史", "AI科技", "科技", "教育", "健康心理", "社会工作", "自然科学", "生活", "综合"]
+    topic_order = ["全部", "社会议题", "生态环境", "游戏文化", "教育", "科技", "文化历史", "生活", "自然科学", "其他"]
     level_order = ["全部", "B1", "B1-B2", "B2", "C1"]
-    present_topics = {x["topic"] for x in entries}
-    present_levels = {x["level"] for x in entries}
-
-    topic_buttons = ""
-    for tp in topic_order:
-        if tp != "全部" and tp not in present_topics:
-            continue
-        active = " active" if tp == "全部" else ""
-        topic_buttons += f'<button type="button" class="history-filter-btn{active}" data-kind="topic" data-value="{esc(tp)}">{esc(tp)}</button>'
-
-    level_buttons = ""
-    for lv in level_order:
-        if lv != "全部" and lv not in present_levels:
-            continue
-        active = " active" if lv == "全部" else ""
-        level_buttons += f'<button type="button" class="history-filter-btn{active}" data-kind="level" data-value="{esc(lv)}">{esc(lv)}</button>'
+    topic_buttons = "".join(f'<button type="button" class="history-filter-btn{(" active" if tp == "全部" else "")}" data-kind="topic" data-value="{esc(tp)}">{esc(tp)}</button>' for tp in topic_order)
+    level_buttons = "".join(f'<button type="button" class="history-filter-btn{(" active" if lv == "全部" else "")}" data-kind="level" data-value="{esc(lv)}">{esc(lv)}</button>' for lv in level_order)
 
     items = []
     for item in entries:
         title_show = item["title"]
-        if len(title_show) > 88:
-            title_show = title_show[:86] + "..."
-        zh_line = item["zh"] or item["source"]
+        if len(title_show) > 54:
+            title_show = title_show[:52] + "..."
         items.append(f"""
 <a class="history-item" href="{esc(item['href'])}" data-topic="{esc(item['topic'])}" data-level="{esc(item['level'])}">
-  <span class="history-meta">{esc(item['topic'])} · {esc(item['level'])} · {esc(item['date'])}</span>
+  <div class="history-date">{esc(item['date'])}</div>
   <b>{esc(title_show)}</b>
-  <small>{esc(zh_line)}</small>
+  <span class="history-source">{esc(item['source'])}</span>
+  <div class="history-tags"><span>{esc(item['topic'])}</span><span>{esc(item['level'])}</span></div>
 </a>
 """)
-
-    if items:
-        history_items = "".join(items)
-    else:
-        history_items = '<div class="history-empty">暂无历史记录。生成几天文章后，这里会自动出现。</div>'
+    history_items = "".join(items) if items else '<div class="history-empty">暂无历史文章。多生成几天后，这里会自动出现。</div>'
 
     history_html = f"""
-<section class="card history-panel" id="history">
-  <div class="history-head">
-    <div>
-      <h2>历史文章</h2>
-      <p class="meta">按主题和难度筛选，适合回看同类文章。</p>
-    </div>
-    <span class="history-count">{len(entries)} 篇</span>
-  </div>
+<section class="mobile-section history-panel" id="history">
+  <div class="section-title"><span></span><div><h2>历史文章</h2><p>按主题和难度筛选，回看同类文章。</p></div></div>
   <div class="history-filter-wrap">
-    <div class="history-filter-row"><span>主题</span>{topic_buttons}</div>
-    <div class="history-filter-row"><span>难度</span>{level_buttons}</div>
+    <div class="history-filter-row"><strong>主题</strong>{topic_buttons}</div>
+    <div class="history-filter-row"><strong>难度</strong>{level_buttons}</div>
   </div>
   <div class="history-list" id="historyList">{history_items}</div>
   <div class="history-empty" id="historyEmpty" style="display:none;">这个筛选下暂时没有文章</div>
@@ -2561,8 +2505,7 @@ def build_archive_index(today, article_title, title_zh, today_body_html):
 }})();
 </script>
 """
-
-    unified = today_body_html.replace("</body>", history_html + "\n</body>")
+    unified = today_body_html.replace("<!-- HISTORY_PLACEHOLDER -->", history_html) if "<!-- HISTORY_PLACEHOLDER -->" in today_body_html else today_body_html.replace("</body>", history_html + "\n</body>")
     (OUTPUT_DIR / "index.html").write_text(unified, encoding="utf-8-sig")
     (OUTPUT_DIR / "latest.html").write_text(unified, encoding="utf-8-sig")
     return unified
@@ -4968,16 +4911,76 @@ def write_outputs(article, selected_paragraphs, rejected_log, article_reject_log
         prof = row["prof"]
         clickable_html = clickable_text_for_html(row["raw"], row.get("highlight_terms", []), click_word_meanings)
         english_html.append(f"""
-<div class="para-block">
-<div class="box english">{clickable_html}</div>
-<details class="translation-fold">
-  <summary>展开中文翻译</summary>
-  <div class="fold-content">{esc(row['zh'])}</div>
-</details>
-</div>
+<article class="para-card">
+  <div class="para-index">第 {row['idx']} 段</div>
+  <div class="english">{clickable_html}</div>
+  <div class="translation">{esc(row['zh'])}</div>
+</article>
 """)
 
     vocab_html = format_keywords_html(all_keywords)
+    full_text_for_mobile = " ".join(paragraph_texts)
+
+    def mobile_topic_category(title, source, body):
+        text = f" {title} {source} {body[:2200]} ".lower()
+        def has(keyword):
+            k = keyword.strip().lower()
+            return re.search(r"(?<![a-z0-9])" + re.escape(k) + r"(?![a-z0-9])", text) is not None
+        rules = [
+            ("社会议题", ["society", "social", "government", "policy", "welfare", "care", "vulnerable", "poverty", "inequality", "housing", "worker", "employment", "job"]),
+            ("生态环境", ["environment", "climate", "ecology", "ecologist", "wildlife", "conservation", "forest", "carbon", "pollution", "wolf", "animal"]),
+            ("游戏文化", ["game", "gaming", "video game", "esports", "player", "playstation", "nintendo", "xbox"]),
+            ("教育", ["education", "school", "student", "teacher", "pupil", "children", "university", "exam", "learning"]),
+            ("科技", ["technology", "tech", "ai", "artificial intelligence", "chatgpt", "algorithm", "software", "digital", "data", "app"]),
+            ("文化历史", ["history", "culture", "museum", "heritage", "ancient", "archaeology", "book", "art", "smithsonian"]),
+            ("生活", ["life", "home", "family", "food", "travel", "lifestyle", "habit", "daily"]),
+            ("自然科学", ["science", "research", "study", "space", "experiment", "biology", "physics", "animal"]),
+        ]
+        for name, keys in rules:
+            if any(has(k) for k in keys):
+                return name
+        return "其他"
+
+    def mobile_level_label(text):
+        try:
+            prof = difficulty_profile(text)
+            avg = prof.get("avg_sentence_words", 0) or 0
+            lw = prof.get("long_word_count", 0) or 0
+            wc = prof.get("word_count", 0) or 0
+            if avg >= 30 and lw >= 24:
+                return "C1"
+            if avg >= 22 or lw >= 16:
+                return "B2"
+            if avg >= 13 or wc >= 70:
+                return "B1-B2"
+            return "B1"
+        except Exception:
+            return "B2"
+
+    mobile_topic = mobile_topic_category(article.get("title", "") + " " + title_zh, article.get("source", ""), full_text_for_mobile)
+    mobile_level = mobile_level_label(full_text_for_mobile)
+    pattern_hits_mobile = build_expressions(full_text_for_mobile, 3)
+    pattern_panel_html = ""
+    for name, meaning, example, label in pattern_hits_mobile:
+        pattern_panel_html += f"""
+        <div class="study-item pattern-item">
+          <span>表达句式</span>
+          <b>{esc(name)}</b>
+          <p>{esc(meaning)}</p>
+          <small>{esc(example)}</small>
+        </div>
+        """
+    if not pattern_panel_html:
+        pattern_panel_html = '<div class="study-item pattern-item"><span>表达句式</span><b>今日句式</b><p>从原文中选一个表达，替换主题后仿写一句。</p></div>'
+
+    review_html = f"""
+      <div class="study-item review-item">
+        <span>今日复盘</span>
+        <b>今天最值得记住</b>
+        <p>{quote_en}</p>
+        <small>{quote_zh}</small>
+      </div>
+    """
 
     word_map_json = json.dumps(click_word_meanings, ensure_ascii=False)
 
@@ -4985,520 +4988,40 @@ def write_outputs(article, selected_paragraphs, rejected_log, article_reject_log
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>今日外刊表达练习</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="hl-topic" content="{esc(mobile_topic)}">
+<meta name="hl-level" content="{esc(mobile_level)}">
+<meta name="hl-title-zh" content="{esc(title_zh)}">
+<meta name="hl-title-en" content="{esc(article['title'])}">
+<meta name="hl-source" content="{esc(article['source'])}">
+<title>Healing Lab 每日外刊</title>
 <style>
-body {{
-  margin: 0;
-  padding: 10px;
-  background: #f6f6f6;
-  color: #222;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", Arial, sans-serif;
-  line-height: 1.62;
-}}
-.header, .card {{
-  max-width: 940px;
-  margin: 9px auto;
-  background: #fff;
-  border-radius: 16px;
-  padding: 14px;
-  box-shadow: 0 2px 14px rgba(0,0,0,.06);
-}}
-h1 {{ font-size: 22px; margin: 0 0 8px; }}
-h2 {{ font-size: 18px; margin: 0 0 10px; }}
-h3 {{ font-size: 16px; margin: 12px 0 6px; }}
-.meta {{ color: #666; font-size: 13px; margin: 4px 0 6px; }}
-.level {{
-  display: inline-block;
-  background: #f2efe8;
-  color: #333;
-  border-radius: 999px;
-  padding: 4px 9px;
-  font-size: 13px;
-}}
-.action-row {{
-  margin-top: 12px;
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}}
-.pdf-btn {{
-  border: 1px solid #d8d1bf;
-  background: #fffdf7;
-  color: #333;
-  border-radius: 999px;
-  padding: 7px 12px;
-  font-size: 14px;
-  cursor: pointer;
-}}
-.pdf-btn:active {{
-  background: #f3ead5;
-}}
-.quote-card {{
-  background: #fffdf8;
-}}
-.quote-en {{
-  font-size: 16px;
-  line-height: 1.75;
-  font-weight: 600;
-  color: #26333d;
-}}
-.quote-zh {{
-  margin-top: 8px;
-  color: #6b5f50;
-  line-height: 1.7;
-}}
-.sentence-card {{
-  background: #fafafa;
-  border-left: 4px solid #c8d7df;
-  border-radius: 12px;
-  padding: 11px;
-  margin: 10px 0;
-}}
-.sentence-title {{
-  font-weight: 700;
-  margin-bottom: 6px;
-  color: #2d5263;
-}}
-.sentence-original {{
-  font-size: 15px;
-  line-height: 1.65;
-  margin-bottom: 8px;
-}}
-.analysis-line {{
-  font-size: 14px;
-  margin: 5px 0;
-}}
-.chunk-list {{
-  margin-top: 4px;
-  padding-left: 20px;
-}}
-.chunk-label {{
-  display: inline-block;
-  color: #315c6f;
-  font-weight: 700;
-}}
-.box {{
-  background: #fafafa;
-  border-left: 4px solid #ddd;
-  padding: 10px;
-  border-radius: 10px;
-  font-size: 16px;
-}}
-.english {{
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", Arial, sans-serif;
-  font-size: 16px;
-}}
-.zh {{ background: #fffdf7; }}
-li {{ margin-bottom: 7px; }}
-a {{ color: #185abc; text-decoration: none; }}
-.source-tag {{
-  display: inline-block;
-  font-size: 12px;
-  color: #666;
-  background: #eee;
-  border-radius: 999px;
-  padding: 1px 7px;
-}}
-mark {{
-  background: #fff0a6;
-  padding: 0 2px;
-  border-radius: 4px;
-}}
-.para-block, .trans-block {{ margin-bottom: 14px; }}
-.vocab-list {{
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}}
-.vocab-chip {{
-  display: inline-block;
-  background: #f7f4ec;
-  color: #222;
-  border: 1px solid #eee2c8;
-  border-radius: 999px;
-  padding: 4px 9px;
-  font-size: 13px;
-  line-height: 1.35;
-}}
-.vocab-chip strong {{
-  font-size: 13px;
-}}
-.click-word {{
-  display: inline;
-  font: inherit;
-  font-size: inherit;
-  line-height: inherit;
-  color: #315c6f;
-  background: transparent;
-  border: 0;
-  border-radius: 0;
-  padding: 0;
-  cursor: pointer;
-  text-decoration: none;
-}}
-.click-word.key-word {{
-  display: inline;
-  font: inherit;
-  font-size: inherit;
-  line-height: inherit;
-  color: #315c6f;
-  background: transparent;
-  border: 0;
-  border-radius: 0;
-  padding: 0;
-  text-decoration: none;
-}}
-.click-word:active {{
-  background: #eef5f7;
-  border-radius: 3px;
-}}
-.word-popup {{
-  position: fixed;
-  left: 12px;
-  right: 12px;
-  bottom: 12px;
-  z-index: 9999;
-  background: #222;
-  color: #fff;
-  border-radius: 16px;
-  padding: 13px 14px;
-  box-shadow: 0 6px 24px rgba(0,0,0,.25);
-  font-size: 15px;
-}}
-.word-popup.hidden {{
-  display: none;
-}}
-.popup-word {{
-  font-weight: 700;
-  font-size: 18px;
-  margin-bottom: 5px;
-}}
-.popup-meaning {{
-  line-height: 1.5;
-  color: #f3f3f3;
-}}
-.popup-close {{
-  position: absolute;
-  top: 7px;
-  right: 10px;
-  background: transparent;
-  color: #fff;
-  border: 0;
-  font-size: 22px;
-  cursor: pointer;
-}}
-.history-list {{
-  padding-left: 20px;
-}}
-.history-list li {{
-  margin: 7px 0;
-}}
-details.translation-fold {{
-  margin-top: 8px;
-  background: #fffdf7;
-  border: 1px solid #f0e8cf;
-  border-radius: 10px;
-  padding: 8px 10px;
-}}
-details.translation-fold summary {{
-  cursor: pointer;
-  color: #6a5200;
-  font-size: 14px;
-  user-select: none;
-}}
-details.translation-fold .fold-content {{
-  margin-top: 8px;
-  color: #333;
-  font-size: 15px;
-  line-height: 1.65;
-}}
-.desktop-shell {{
-  width: min(100%, 1180px);
-  margin: 0 auto;
-  padding: 24px 16px 44px;
-}}
-.desktop-hero {{
-  max-width: none;
-  margin: 0 0 16px;
-  padding: 24px;
-  background:
-    linear-gradient(135deg, rgba(255,255,255,.94), rgba(251,250,246,.9)),
-    linear-gradient(135deg,#e9f2ec 0%,#f8f0df 56%,#eef3f8 100%);
-  border: 1px solid #dfe6e8;
-  box-shadow: 0 18px 46px rgba(44,57,64,.11);
-}}
-.hero-kicker {{
-  color: #426e60;
-  font-weight: 900;
-  font-size: 13px;
-  margin-bottom: 10px;
-}}
-.desktop-hero h1 {{
-  font-size: clamp(32px, 4vw, 52px);
-  line-height: 1.05;
-  margin-bottom: 14px;
-}}
-.desktop-hero p {{ max-width: 920px; }}
-.desktop-nav {{
-  position: sticky;
-  top: 0;
-  z-index: 20;
-  max-width: none;
-  margin: 0 0 16px;
-  padding: 10px;
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  background: rgba(246,246,246,.78);
-  border: 1px solid #dfe6e8;
-  border-radius: 999px;
-  backdrop-filter: blur(12px);
-}}
-.desktop-nav a {{
-  color: #426e60;
-  background: #fffdf8;
-  border: 1px solid #dfe6e8;
-  border-radius: 999px;
-  padding: 7px 12px;
-  font-weight: 800;
-  font-size: 13px;
-}}
-.desktop-layout {{
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 330px;
-  gap: 16px;
-  align-items: start;
-}}
-.read-column, .side-column {{ display: grid; gap: 16px; }}
-.side-column {{ position: sticky; top: 76px; }}
-.read-column .card, .side-column .card, .history-panel {{
-  max-width: none;
-  margin: 0;
-  border: 1px solid #dfe6e8;
-  box-shadow: 0 14px 34px rgba(44,57,64,.08);
-}}
-.read-column .card, .side-column .card {{ padding: 18px; }}
-.section-note {{ color:#66737d;font-size:13px;margin:-4px 0 12px; }}
-.side-card-title {{ display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:12px; }}
-.side-card-title h2 {{ margin:0; }}
-.history-panel {{
-  width: min(100% - 32px, 1180px);
-  margin: 16px auto 44px;
-  padding: 20px;
-}}
-.history-head {{
-  display:flex;
-  justify-content:space-between;
-  align-items:flex-start;
-  gap:16px;
-  margin-bottom:14px;
-}}
-.history-head h2 {{ margin:0 0 6px; }}
-.history-count {{
-  flex:0 0 auto;
-  color:#426e60;
-  background:#edf6f1;
-  border:1px solid rgba(66,110,96,.18);
-  border-radius:999px;
-  padding:7px 11px;
-  font-size:13px;
-  font-weight:900;
-}}
-.history-filter-wrap {{
-  display:grid;
-  gap:10px;
-  padding:12px;
-  border:1px solid #dfe6e8;
-  border-radius:14px;
-  background:#fbfaf6;
-  margin-bottom:14px;
-}}
-.history-filter-row {{ display:flex;gap:8px;align-items:center;flex-wrap:wrap; }}
-.history-filter-row span {{ color:#66737d;font-size:13px;font-weight:900;margin-right:2px; }}
-.history-filter-btn {{
-  border:1px solid #dfe6e8;
-  background:#fff;
-  color:#426e60;
-  border-radius:999px;
-  padding:7px 11px;
-  font-size:13px;
-  font-weight:850;
-  cursor:pointer;
-}}
-.history-filter-btn.active {{ background:#426e60;color:#fff;border-color:#426e60; }}
-.history-panel .history-list {{
-  display:grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap:10px;
-  padding-left:0;
-}}
-.history-item {{
-  display:block;
-  min-height:132px;
-  color:#1d252c;
-  background:#fffdf8;
-  border:1px solid #dfe6e8;
-  border-radius:14px;
-  padding:13px;
-}}
-.history-item:hover {{ border-color:rgba(66,110,96,.38);background:#fbfaf6; }}
-.history-meta {{ display:block;color:#426e60;font-size:12px;font-weight:900;margin-bottom:8px; }}
-.history-item b {{ display:block;font-size:15px;line-height:1.4;margin-bottom:8px; }}
-.history-item small {{ display:block;color:#66737d;font-size:12.5px;line-height:1.45; }}
-.history-empty {{ color:#66737d;line-height:1.7; }}
-@media (max-width: 920px) {{
-  .desktop-shell {{ padding: 12px 10px 28px; }}
-  .desktop-layout {{ grid-template-columns: 1fr; }}
-  .side-column {{ position: static; }}
-  .desktop-nav {{ border-radius: 18px; overflow-x:auto; flex-wrap:nowrap; }}
-  .desktop-nav a {{ flex:0 0 auto; }}
-  .history-panel .history-list {{ grid-template-columns: 1fr; }}
-}}
-@media (max-width: 600px) {{
-  body {{ padding: 7px; }}
-  .header, .card {{ padding: 12px; border-radius: 14px; }}
-  h1 {{ font-size: 20px; }}
-  h2 {{ font-size: 17px; }}
-  .box {{ font-size: 15.8px; }}
-  .english {{ font-size: 16.8px; }}
-}}
-
-@page {{
-  size: A4;
-  margin: 12mm;
-}}
-
-@media print {{
-  body {{
-    background: #fff !important;
-    padding: 0 !important;
-    color: #000 !important;
-  }}
-  .header, .card {{
-    max-width: none !important;
-    margin: 0 0 12px !important;
-    box-shadow: none !important;
-    border-radius: 0 !important;
-    border: 0 !important;
-    page-break-inside: avoid;
-  }}
-  .pdf-btn, .action-row, .word-popup, .print-tip {{
-    display: none !important;
-  }}
-  .english {{
-    font-size: 17px !important;
-    line-height: 1.7 !important;
-  }}
-  .box {{
-    font-size: 16px !important;
-  }}
-
-  details.translation-fold {{
-    border: 1px solid #ddd !important;
-    background: #fff !important;
-  }}
-  details.translation-fold[open] {{
-    page-break-inside: avoid;
-  }}
-  a {{
-    color: #000 !important;
-    text-decoration: none !important;
-  }}
-  .click-word {{
-    color: #000 !important;
-  }}
-  .vocab-chip {{
-    border: 1px solid #ddd !important;
-    background: #fff !important;
-  }}
-}}
-
+:root {{ --bg:#f7f5f0; --card:#fff; --ink:#172026; --muted:#66727d; --line:#dce4e8; --blue:#2f6f9f; --blue-soft:#eaf4f8; --sage:#4b8063; --sage-soft:#edf6f0; --clay:#b76e57; --clay-soft:#fff0ea; --ivory:#fffdf8; --shadow:0 14px 34px rgba(35,48,56,.08); }}
+*{{box-sizing:border-box}} html{{scroll-behavior:smooth}} body{{margin:0;background:linear-gradient(180deg,#fbfaf6 0%,var(--bg) 100%);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",Arial,sans-serif;line-height:1.65}} a{{color:inherit;text-decoration:none}}
+.mobile-page{{width:min(100%,520px);margin:0 auto;padding:12px 12px 34px}} .top-nav{{position:sticky;top:0;z-index:30;display:grid;grid-template-columns:repeat(3,1fr);gap:7px;padding:10px 0;background:rgba(247,245,240,.88);backdrop-filter:blur(14px)}} .top-nav a{{display:grid;place-items:center;min-height:38px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.82);color:var(--blue);font-size:13px;font-weight:900}} .top-nav a:first-child{{background:var(--blue);border-color:var(--blue);color:#fff}}
+.article-info{{position:relative;overflow:hidden;background:var(--card);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);margin:8px 0 14px}} .article-info::before{{content:"";position:absolute;inset:0 0 auto 0;height:8px;background:linear-gradient(90deg,var(--blue),var(--sage),var(--clay))}} .info-body{{padding:22px 18px 16px}} .brand{{display:flex;align-items:center;gap:10px;color:var(--blue);font-weight:950;font-size:13px;margin-bottom:16px}} .brand-mark{{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--blue);color:#fff;font-size:13px}} .info-label{{color:var(--muted);font-size:12px;font-weight:900;margin:12px 0 4px}} .title-zh{{font-size:25px;line-height:1.22;font-weight:950;letter-spacing:0;margin:0;color:var(--ink)}} .title-en{{font-family:Georgia,"Times New Roman",serif;font-size:18px;line-height:1.42;margin:0;color:#24323b}} .info-grid{{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:14px}} .info-cell{{background:#f9fbfb;border:1px solid var(--line);border-radius:14px;padding:9px}} .info-cell span{{display:block;color:var(--muted);font-size:11px;font-weight:850;margin-bottom:3px}} .info-cell b{{display:block;font-size:13px;line-height:1.35}}
+.mobile-section{{background:var(--card);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);padding:16px;margin:14px 0}} .section-title{{display:flex;gap:10px;align-items:flex-start;margin-bottom:14px}} .section-title>span{{width:5px;min-height:36px;border-radius:999px;background:var(--blue);margin-top:2px}} .section-title h2{{font-size:21px;line-height:1.1;margin:0 0 5px;letter-spacing:0}} .section-title p{{margin:0;color:var(--muted);font-size:13px;line-height:1.45}}
+.para-list{{display:grid;gap:12px}} .para-card{{background:var(--ivory);border:1px solid #ece4d8;border-radius:16px;padding:14px}} .para-index{{color:var(--sage);font-size:13px;font-weight:950;margin-bottom:8px}} .english{{font-family:Georgia,"Times New Roman",serif;font-size:18px;line-height:1.78;color:#1f2f38}} .translation{{border-top:1px solid #eadfce;margin-top:12px;padding-top:10px;color:#61707a;font-size:14.5px;line-height:1.75}} .click-word,.click-word.key-word{{display:inline;font:inherit;color:#315c6f;background:rgba(75,128,99,.13);border:0;border-radius:4px;padding:0 2px;cursor:pointer;text-decoration:none}} .click-word:active{{background:rgba(47,111,159,.16)}}
+.study-grid{{display:grid;gap:10px}} .study-item{{border:1px solid var(--line);border-radius:16px;padding:13px;background:#fbfcfc}} .study-item span{{display:inline-flex;border-radius:999px;padding:4px 8px;background:var(--blue-soft);color:var(--blue);font-size:12px;font-weight:950;margin-bottom:8px}} .study-item b{{display:block;font-size:16px;line-height:1.35;margin-bottom:5px;color:var(--ink)}} .study-item p{{margin:0;color:#42515a;line-height:1.62;font-size:14px}} .study-item small{{display:block;color:var(--muted);line-height:1.58;margin-top:6px;font-size:13px}} .vocab-list{{display:grid;gap:8px}} .vocab-chip{{display:block;background:var(--sage-soft);border:1px solid rgba(75,128,99,.18);border-radius:14px;padding:10px 11px;color:#35433d;font-size:13.5px;line-height:1.45}} .vocab-chip strong{{display:block;color:var(--sage);font-size:15px;margin-bottom:2px}} .review-item{{background:var(--clay-soft);border-color:#f2d5ca}} .review-item span{{background:#fff7f3;color:var(--clay)}}
+.history-panel{{padding-bottom:18px}} .history-filter-wrap{{display:grid;gap:10px;background:#f8fbfb;border:1px solid var(--line);border-radius:16px;padding:11px;margin-bottom:12px}} .history-filter-row{{display:flex;gap:7px;align-items:center;flex-wrap:wrap}} .history-filter-row strong{{color:var(--muted);font-size:13px;margin-right:2px}} .history-filter-btn{{border:1px solid var(--line);background:#fff;color:#43525b;border-radius:999px;padding:6px 10px;font-size:12.5px;font-weight:850;cursor:pointer}} .history-filter-btn.active{{background:var(--blue);border-color:var(--blue);color:#fff}} .history-list{{display:grid;grid-template-columns:1fr;gap:10px;padding-left:0}} .history-item{{display:block;background:var(--ivory);border:1px solid #ebe3d8;border-radius:16px;padding:13px;color:var(--ink)}} .history-date{{color:var(--blue);font-size:12px;font-weight:950;margin-bottom:5px}} .history-item b{{display:block;font-size:15.5px;line-height:1.42;margin-bottom:6px}} .history-source{{display:block;color:var(--muted);font-size:12.5px;margin-bottom:9px}} .history-tags{{display:flex;gap:6px;flex-wrap:wrap}} .history-tags span{{border-radius:999px;background:var(--sage-soft);color:var(--sage);padding:4px 8px;font-size:12px;font-weight:900}} .history-tags span:last-child{{background:var(--blue-soft);color:var(--blue)}} .history-empty{{color:var(--muted);font-size:14px;line-height:1.7;padding:8px 2px}}
+.word-popup{{position:fixed;left:12px;right:12px;bottom:12px;z-index:9999;background:#172026;color:#fff;border-radius:18px;padding:14px 15px;box-shadow:0 16px 42px rgba(0,0,0,.28);font-size:15px;max-width:496px;margin:auto}} .word-popup.hidden{{display:none}} .popup-word{{font-weight:900;font-size:18px;margin-bottom:5px}} .popup-meaning{{line-height:1.55;color:#f3f5f6}} .popup-close{{position:absolute;top:7px;right:10px;background:transparent;color:#fff;border:0;font-size:22px;cursor:pointer}}
+@media print{{.top-nav,.word-popup{{display:none!important}}body{{background:#fff!important}}.mobile-section,.article-info{{box-shadow:none!important;border:1px solid #ddd!important}}}}
 </style>
 </head>
 <body>
-<div class="desktop-shell">
-<header class="header desktop-hero" id="top">
-<div class="hero-kicker">Healing Lab Daily Reading</div>
-<h1>今日外刊表达练习｜{today}</h1>
-<p><strong>英文标题：</strong>{esc(article['title'])}</p>
-<p><strong>中文标题：</strong>{esc(title_zh)}</p>
-<p class="meta">来源：{esc(article['source'])}｜文章发布日期：{esc(display_publish_date(article) or "未知")}｜<a href="{esc(article['link'])}" target="_blank">打开原文</a></p>
-<p class="level">难度定位：CET4+｜大学英语四级以上｜近90天主题质量优先精选</p>
-<div class="action-row">
-  <button class="pdf-btn" onclick="exportPDF()">导出 PDF</button>
-  <a class="pdf-btn" href="xhs.html" target="_blank">图文版</a>
-  <a class="pdf-btn" href="#history">历史筛选</a>
-</div>
-<p class="meta print-tip">PDF 左下角网址是浏览器“页眉和页脚”，打印时关闭它即可去掉。</p>
-</header>
-
-<nav class="desktop-nav" aria-label="电脑版导航">
-  <a href="#text">截取原文</a>
-  <a href="#vocab">重点词语</a>
-  <a href="#quote">今日摘抄</a>
-  <a href="#history">历史记录</a>
-</nav>
-
-<div class="desktop-layout">
-<main class="read-column">
-<section class="card" id="text">
-<h2>一、截取原文</h2>
-<p class="meta">共截取 {total_paragraph_count} 段｜重点词/词组 {total_keyword_count} 个｜蓝灰色英文词可点击查看中文</p>
-{''.join(english_html)}
-</section>
-
-<section class="card quote-card" id="quote">
-<h2>三、今日一句摘抄</h2>
-<div class="quote-en">{quote_en}</div>
-<div class="quote-zh">{quote_zh}</div>
-</section>
+<main class="mobile-page">
+  <nav class="top-nav" aria-label="页面导航"><a href="#read">今日精读</a><a href="#study">学习面板</a><a href="#history">历史文章</a></nav>
+  <section class="article-info" id="top"><div class="info-body"><div class="brand"><span class="brand-mark">HL</span><span>Healing Lab 每日外刊</span></div><div class="info-label">中文标题</div><h1 class="title-zh">{esc(title_zh)}</h1><div class="info-label">英文标题</div><p class="title-en">{esc(article['title'])}</p><div class="info-grid"><div class="info-cell"><span>来源</span><b>{esc(article['source'])}</b></div><div class="info-cell"><span>日期</span><b>{esc(display_publish_date(article) or today)}</b></div><div class="info-cell"><span>主题</span><b>{esc(mobile_topic)}</b></div><div class="info-cell"><span>难度</span><b>{esc(mobile_level)}</b></div></div></div></section>
+  <section class="mobile-section" id="read"><div class="section-title"><span></span><div><h2>今日精读</h2><p>英文段落 + 中文翻译，浅色标注词可点击查看中文。</p></div></div><div class="para-list">{''.join(english_html)}</div></section>
+  <section class="mobile-section" id="study"><div class="section-title"><span></span><div><h2>学习面板</h2><p>先记重点表达，再挑一个句式仿写。</p></div></div><div class="study-grid"><div class="study-item"><span>重点表达</span><div class="vocab-list">{vocab_html}</div></div>{pattern_panel_html}{review_html}</div></section>
+  <!-- HISTORY_PLACEHOLDER -->
 </main>
-
-<aside class="side-column">
-<section class="card" id="vocab">
-<div class="side-card-title"><h2>二、重点词语/词组</h2><span class="source-tag">Review</span></div>
-<p class="section-note">点原文里的蓝灰色词，可以看中文解释。</p>
-<div class="vocab-list">{vocab_html}</div>
-</section>
-<section class="card">
-<h2>学习路线</h2>
-<p class="meta">先读英文段落，再看中文翻译，最后只记最能复用的表达。</p>
-<div class="action-row">
-  <a class="pdf-btn" href="#text">开始精读</a>
-  <a class="pdf-btn" href="#history">看同主题</a>
-</div>
-</section>
-</aside>
-</div>
-</div>
-
-<div id="wordPopup" class="word-popup hidden">
-<button class="popup-close" onclick="document.getElementById('wordPopup').classList.add('hidden')">×</button>
-<div id="popupWord" class="popup-word"></div>
-<div id="popupMeaning" class="popup-meaning"></div>
-</div>
-
+<div id="wordPopup" class="word-popup hidden"><button class="popup-close" onclick="document.getElementById('wordPopup').classList.add('hidden')">×</button><div id="popupWord" class="popup-word"></div><div id="popupMeaning" class="popup-meaning"></div></div>
 <script>
-function exportPDF() {{
-  const folds = document.querySelectorAll('details.translation-fold');
-  folds.forEach(function(el) {{ el.setAttribute('open', 'open'); }});
-  setTimeout(function() {{ window.print(); }}, 120);
-}}
-
+function exportPDF() {{ window.print(); }}
 const WORD_MEANINGS = {word_map_json};
-document.addEventListener('click', function(e) {{
-  const target = e.target.closest('.click-word');
-  if (!target) return;
-  const key = (target.dataset.word || '').toLowerCase();
-  const word = target.textContent || key;
-  const meaning = WORD_MEANINGS[key] || '暂无中文解释，可结合上下文理解。';
-  document.getElementById('popupWord').textContent = word;
-  document.getElementById('popupMeaning').textContent = meaning;
-  document.getElementById('wordPopup').classList.remove('hidden');
-}});
+document.addEventListener('click', function(e) {{ const target = e.target.closest('.click-word'); if (!target) return; const key = (target.dataset.word || '').toLowerCase(); const word = target.textContent || key; const meaning = WORD_MEANINGS[key] || '暂无中文解释，可结合上下文理解。'; document.getElementById('popupWord').textContent = word; document.getElementById('popupMeaning').textContent = meaning; document.getElementById('wordPopup').classList.remove('hidden'); }});
 </script>
-
 </body>
 </html>
 """
