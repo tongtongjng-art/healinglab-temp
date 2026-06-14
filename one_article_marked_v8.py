@@ -1,4 +1,4 @@
-﻿# V41_FINAL_AND_XHS_EXPORT
+# V41_FINAL_AND_XHS_EXPORT
 # V40_INLINE_WORD_HIGHLIGHT_FIX
 # V39_VOCAB_ONLY_HIGHLIGHT_EXPRESSIONS
 # V38_WORD_ONLY_HIGHLIGHT_PHRASES_FIRST
@@ -4135,7 +4135,7 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
 <html lang="zh-CN">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Healing Lab 每日外刊｜__TODAY__</title>
   <style>
     :root {
@@ -4370,7 +4370,7 @@ def build_manual_editor_page(article, title_zh, paragraph_rows, all_keywords, to
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>V35 人工编辑页｜Healing Lab</title>
 <style>
 :root {{
@@ -4916,15 +4916,17 @@ function initFinalInteractions(root){{
   const modeCurrent = root.querySelector('.mode-current');
   if(modeMenu && modeCurrent && !modeMenu.dataset.ready){{
     modeMenu.dataset.ready = '1';
-    let currentMode = 'bilingual';
+    let currentMode = 'full';
     const modeOptions = modeMenu.querySelector('.mode-options');
     function setMode(mode){{
-      currentMode = (mode === 'full' || mode === 'study') ? mode : 'bilingual';
+      currentMode = mode === 'bilingual' ? 'bilingual' : 'full';
       phone.classList.remove('mode-full','mode-bilingual','mode-study');
-      phone.classList.add('mode-' + currentMode);
-      modeCurrent.textContent = currentMode === 'full' ? '全英模式' : (currentMode === 'study' ? '学习模式' : '中英对照');
+      phone.classList.add(currentMode === 'bilingual' ? 'mode-bilingual' : 'mode-full');
+      modeCurrent.textContent = currentMode === 'bilingual' ? '中英对照' : '全英模式';
       if(modeOptions){{
-        modeOptions.innerHTML = '<button type="button" class="mode-option" data-mode="full">全英模式</button><button type="button" class="mode-option" data-mode="bilingual">中英对照</button><button type="button" class="mode-option" data-mode="study">学习模式</button>';
+        const otherMode = currentMode === 'bilingual' ? 'full' : 'bilingual';
+        const otherText = currentMode === 'bilingual' ? '全英模式' : '中英对照';
+        modeOptions.innerHTML = '<button type="button" class="mode-option" data-mode="' + otherMode + '">' + otherText + '</button>';
       }}
     }}
     setMode('bilingual');
@@ -5081,7 +5083,7 @@ function renderFinal(){{
     <div class="phone">
       <nav class="top-nav"><a href="#read">今日精读</a><a href="#study">学习面板</a><a href="#history">历史文章</a></nav>
       <article class="final-card article-info">
-        <div class="mode-menu"><button type="button" class="mode-current" onclick="event.stopPropagation();this.closest('.mode-menu').classList.toggle('open')">全英模式</button><div class="mode-options"><button type="button" class="mode-option" data-mode="bilingual" onclick="event.stopPropagation();var box=this.closest('.phone')||document.body;var m=this.dataset.mode==='bilingual'?'bilingual':'full';box.classList.remove('mode-full','mode-bilingual','mode-study');box.classList.add('mode-'+m);var c=this.closest('.mode-menu').querySelector('.mode-current');c.textContent=m==='bilingual'?'中英对照':'全英模式';this.dataset.mode=m==='bilingual'?'full':'bilingual';this.textContent=m==='bilingual'?'全英模式':'中英对照';this.closest('.mode-menu').classList.remove('open')">中英对照</button></div></div>
+        <div class="mode-menu"><button type="button" class="mode-current" onclick="event.stopPropagation();this.closest('.mode-menu').classList.toggle('open')">中英对照</button><div class="mode-options"><button type="button" class="mode-option" data-mode="study" onclick="event.stopPropagation();var box=this.closest('.phone')||document.body;var m=this.dataset.mode==='bilingual'?'bilingual':'full';box.classList.remove('mode-full','mode-bilingual','mode-study');box.classList.add('mode-'+m);var c=this.closest('.mode-menu').querySelector('.mode-current');c.textContent=m==='bilingual'?'中英对照':'全英模式';this.dataset.mode=m==='bilingual'?'full':'bilingual';this.textContent=m==='bilingual'?'全英模式':'中英对照';this.closest('.mode-menu').classList.remove('open')">中英对照</button></div></div>
         <div class="cover"><div class="tag">今日文章卡片</div><div><h2>${{escapeHtml(data.title_raw)}}</h2><div class="cn">${{escapeHtml(data.title_cn)}}</div></div></div>${{imageHtml}}
         <div class="final-meta">
           <div><span>来源</span><b>${{escapeHtml(data.source)}}</b></div>
@@ -5838,27 +5840,27 @@ def write_outputs(article, selected_paragraphs, rejected_log, article_reject_log
 <title>Healing Lab 每日外刊</title>
 <style>
 :root {{ --bg:#f7f5f0; --card:#fff; --ink:#172026; --muted:#66727d; --line:#dce4e8; --blue:#2f6f9f; --blue-soft:#eaf4f8; --sage:#4b8063; --sage-soft:#edf6f0; --clay:#b76e57; --clay-soft:#fff0ea; --ivory:#fffdf8; --shadow:0 14px 34px rgba(35,48,56,.08); }}
-*{{box-sizing:border-box}} html{{scroll-behavior:smooth;width:100%;max-width:100%;overflow-x:hidden;-webkit-text-size-adjust:100%;text-size-adjust:100%;touch-action:manipulation}} body{{margin:0;width:100%;max-width:100%;overflow-x:hidden;background:linear-gradient(180deg,#fbfaf6 0%,var(--bg) 100%);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",Arial,sans-serif;line-height:1.65;-webkit-text-size-adjust:100%;text-size-adjust:100%;touch-action:manipulation}} a{{color:inherit;text-decoration:none}}
-.mobile-page{{width:100%;max-width:520px;min-width:0;margin:0 auto;padding:12px 12px 34px;overflow-x:hidden}} .top-nav{{position:sticky;top:0;z-index:30;display:grid;grid-template-columns:repeat(3,1fr);gap:7px;padding:10px 0;background:rgba(247,245,240,.88);backdrop-filter:blur(14px)}} .top-nav a{{display:grid;place-items:center;min-height:38px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.82);color:var(--blue);font-size:13px;font-weight:900}} .top-nav a:first-child{{background:var(--blue);border-color:var(--blue);color:#fff}} body.mode-full .translation,body.mode-full .sentence-analysis-item,body.mode-full .pattern-item,body.mode-full .review-item{{display:none}} body.mode-bilingual .sentence-analysis-item,body.mode-bilingual .pattern-item,body.mode-bilingual .review-item{{display:none}}
-.article-info{{position:relative;max-width:100%;overflow:visible;background:linear-gradient(140deg,#fbf1df 0%,#f7f4ea 54%,#edf5f6 100%);border:1px solid #dce4e8;border-radius:22px;box-shadow:0 18px 44px rgba(35,48,56,.12);margin:8px 0 14px}} .article-info::before{{content:"";position:absolute;inset:16px 16px auto 16px;height:28px;border-radius:999px;background:rgba(237,246,240,.78)}} .article-info::after{{content:"";position:absolute;right:-80px;top:150px;width:210px;height:210px;border-radius:50%;border:1px solid rgba(47,111,159,.10)}} .mode-menu{{position:absolute;right:14px;top:14px;z-index:8}} .mode-current,.mode-select{{border:1px solid rgba(47,111,159,.18);background:rgba(255,255,255,.92);color:var(--blue);border-radius:999px;padding:8px 28px 8px 10px;font-size:12px;font-weight:950;box-shadow:0 8px 18px rgba(35,48,56,.08);cursor:pointer;max-width:136px}} .mode-select{{appearance:auto;-webkit-appearance:menulist;line-height:1.2}} .mode-options{{display:none;position:absolute;right:0;top:38px;min-width:112px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:6px;box-shadow:0 14px 28px rgba(35,48,56,.16)}} .mode-menu.open .mode-options,.mode-menu:focus-within .mode-options{{display:grid;gap:5px}} .mode-option{{border:0;background:#fff;color:#39505d;border-radius:10px;padding:8px 10px;text-align:left;font-size:12px;font-weight:900;cursor:pointer}} .mode-option.active{{background:var(--blue-soft);color:var(--blue)}} .cover-body{{position:relative;z-index:1;padding:24px 22px 0}} .brand{{display:flex;align-items:center;gap:10px;color:var(--blue);font-weight:950;font-size:13px;margin-bottom:22px;padding-right:96px}} .brand-mark{{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--sage);color:#fff;font-size:13px}} .cover-kicker{{display:inline-flex;min-height:28px;align-items:center;color:var(--sage);font-size:13px;font-weight:950;margin-bottom:24px;padding:0 12px;border-radius:999px;background:rgba(237,246,240,.78)}} .title-en{{font-family:Georgia,"Times New Roman",serif;font-size:clamp(28px,8vw,36px);line-height:1.08;font-weight:900;letter-spacing:0;margin:0;color:#102331;text-wrap:balance;max-width:100%;overflow-wrap:break-word}} .title-zh{{font-size:16px;line-height:1.55;font-weight:850;letter-spacing:0;margin:14px 0 0;color:#334756}} .info-grid{{position:relative;z-index:1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:22px;padding:16px;background:rgba(255,255,255,.72);border-top:1px solid rgba(220,228,232,.86);border-radius:0 0 22px 22px}} .info-cell{{background:rgba(255,255,255,.72);border:1px solid var(--line);border-radius:14px;padding:10px}} .info-cell span{{display:block;color:var(--muted);font-size:11px;font-weight:850;margin-bottom:3px}} .info-cell b{{display:block;font-size:13px;line-height:1.35;color:#111d24}}
+*{{box-sizing:border-box}} html{{scroll-behavior:smooth;width:100%;max-width:100%;overflow-x:hidden;-webkit-text-size-adjust:100%;text-size-adjust:100%;}} body{{width:100%;max-width:100%;overflow-x:hidden;overscroll-behavior-x:none;touch-action:pan-y;margin:0;background:linear-gradient(180deg,#fbfaf6 0%,var(--bg) 100%);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",Arial,sans-serif;line-height:1.65}} a{{color:inherit;text-decoration:none}}
+.mobile-page{{width:100%;max-width:520px;margin:0 auto;padding:12px 12px 34px;overflow-x:hidden;transform:none;zoom:1}} .top-nav{{position:sticky;top:0;z-index:30;display:grid;grid-template-columns:repeat(3,1fr);gap:7px;padding:10px 0;background:rgba(247,245,240,.88);backdrop-filter:blur(14px)}} .top-nav a{{display:grid;place-items:center;min-height:38px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.82);color:var(--blue);font-size:13px;font-weight:900}} .top-nav a:first-child{{background:var(--blue);border-color:var(--blue);color:#fff}} body.mode-full .translation,body.mode-full .sentence-analysis-item,body.mode-full .pattern-item,body.mode-full .review-item{{display:none}} body.mode-bilingual .sentence-analysis-item,body.mode-bilingual .pattern-item,body.mode-bilingual .review-item{{display:none}}
+.article-info{{position:relative;overflow:visible;background:linear-gradient(140deg,#fbf1df 0%,#f7f4ea 54%,#edf5f6 100%);border:1px solid #dce4e8;border-radius:22px;box-shadow:0 18px 44px rgba(35,48,56,.12);margin:8px 0 14px}} .article-info::before{{content:"";position:absolute;inset:16px 16px auto 16px;height:28px;border-radius:999px;background:rgba(237,246,240,.78)}} .article-info::after{{content:"";position:absolute;right:-80px;top:150px;width:210px;height:210px;border-radius:50%;border:1px solid rgba(47,111,159,.10)}} .mode-menu{{position:absolute;right:14px;top:14px;z-index:8}} .mode-current{{border:1px solid rgba(47,111,159,.18);background:rgba(255,255,255,.88);color:var(--blue);border-radius:999px;padding:7px 10px;font-size:12px;font-weight:950;box-shadow:0 8px 18px rgba(35,48,56,.08);cursor:pointer}} .mode-options{{display:none;position:absolute;right:0;top:38px;min-width:112px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:6px;box-shadow:0 14px 28px rgba(35,48,56,.16)}} .mode-menu.open .mode-options,.mode-menu:focus-within .mode-options{{display:grid;gap:5px}} .mode-option{{border:0;background:#fff;color:#39505d;border-radius:10px;padding:8px 10px;text-align:left;font-size:12px;font-weight:900;cursor:pointer}} .mode-option.active{{background:var(--blue-soft);color:var(--blue)}} .cover-body{{position:relative;z-index:1;padding:24px 22px 0}} .brand{{display:flex;align-items:center;gap:10px;color:var(--blue);font-weight:950;font-size:13px;margin-bottom:22px;padding-right:96px}} .brand-mark{{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--sage);color:#fff;font-size:13px}} .cover-kicker{{display:inline-flex;min-height:28px;align-items:center;color:var(--sage);font-size:13px;font-weight:950;margin-bottom:24px;padding:0 12px;border-radius:999px;background:rgba(237,246,240,.78)}} .title-en{{font-family:Georgia,"Times New Roman",serif;font-size:36px;line-height:1.06;font-weight:900;letter-spacing:0;margin:0;color:#102331;text-wrap:balance}} .title-zh{{font-size:16px;line-height:1.55;font-weight:850;letter-spacing:0;margin:14px 0 0;color:#334756}} .info-grid{{position:relative;z-index:1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:22px;padding:16px;background:rgba(255,255,255,.72);border-top:1px solid rgba(220,228,232,.86);border-radius:0 0 22px 22px}} .info-cell{{background:rgba(255,255,255,.72);border:1px solid var(--line);border-radius:14px;padding:10px}} .info-cell span{{display:block;color:var(--muted);font-size:11px;font-weight:850;margin-bottom:3px}} .info-cell b{{display:block;font-size:13px;line-height:1.35;color:#111d24}}
 .article-photo{{position:relative;z-index:1;margin:18px 16px 0;border-radius:18px;overflow:hidden;border:1px solid rgba(220,228,232,.9);background:#fff;box-shadow:0 12px 28px rgba(35,48,56,.10)}} .article-photo img{{display:block;width:100%;aspect-ratio:16/10;object-fit:cover;background:#eef3f1}} .article-photo figcaption{{padding:8px 10px;color:var(--muted);font-size:11px;line-height:1.45;background:rgba(255,255,255,.88)}} .article-photo a{{color:var(--blue);font-weight:850}}
 .mobile-section{{background:var(--card);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);padding:16px;margin:14px 0}} .section-title{{display:flex;gap:10px;align-items:flex-start;margin-bottom:14px}} .section-title>span{{width:5px;min-height:36px;border-radius:999px;background:var(--blue);margin-top:2px}} .section-title h2{{font-size:21px;line-height:1.1;margin:0 0 5px;letter-spacing:0}} .section-title p{{margin:0;color:var(--muted);font-size:13px;line-height:1.45}}
 .para-list{{display:grid;gap:12px}} .para-card{{background:var(--ivory);border:1px solid #ece4d8;border-radius:16px;padding:14px}} .para-index{{color:var(--sage);font-size:13px;font-weight:950;margin-bottom:8px}} .english{{font-family:Georgia,"Times New Roman",serif;font-size:18px;line-height:1.78;color:#1f2f38}} .translation{{border-top:1px solid #eadfce;margin-top:12px;padding-top:10px;color:#61707a;font-size:14.5px;line-height:1.75}} .click-word,.click-word.key-word{{display:inline;font:inherit;color:#315c6f;background:rgba(75,128,99,.13);border:0;border-radius:4px;padding:0 2px;cursor:pointer;text-decoration:none}} .click-word:active{{background:rgba(47,111,159,.16)}}
 .study-grid{{display:grid;gap:10px}} .study-item{{border:1px solid var(--line);border-radius:16px;padding:13px;background:#fbfcfc}} .study-item span{{display:inline-flex;border-radius:999px;padding:4px 8px;background:var(--blue-soft);color:var(--blue);font-size:12px;font-weight:950;margin-bottom:8px}} .study-item b{{display:block;font-size:16px;line-height:1.35;margin-bottom:5px;color:var(--ink)}} .study-item p{{margin:0;color:#42515a;line-height:1.62;font-size:14px}} .study-item small{{display:block;color:var(--muted);line-height:1.58;margin-top:6px;font-size:13px}} .vocab-list{{display:grid;gap:8px}} .vocab-chip{{display:block;background:var(--sage-soft);border:1px solid rgba(75,128,99,.18);border-radius:14px;padding:10px 11px;color:#35433d;font-size:13.5px;line-height:1.45}} .vocab-chip strong{{display:block;color:var(--sage);font-size:15px;margin-bottom:2px}} .review-item{{background:var(--clay-soft);border-color:#f2d5ca}} .review-item span{{background:#fff7f3;color:var(--clay)}} .sentence-analysis-card{{border:1px solid #e3edf1;background:#fff;border-radius:16px;padding:13px;margin-top:9px}} .sentence-top{{display:flex;align-items:center;justify-content:space-between;gap:8px}} .sentence-top span,.sentence-category{{color:var(--blue);font-size:12px;font-weight:950}} .save-sentence-btn,.record-btn,#saveWordBtn{{border:1px solid var(--line);background:#fff;color:var(--blue);border-radius:999px;padding:6px 9px;font-size:12px;font-weight:900;cursor:pointer}} .sentence-original{{font-family:Georgia,"Times New Roman",serif;font-size:15.5px;line-height:1.65;color:#20313a;margin:8px 0}} .sentence-parts{{background:var(--blue-soft);border-radius:12px;padding:9px;margin:8px 0}} .sentence-parts p{{margin:4px 0}} .sentence-chunks{{display:grid;gap:6px;list-style:none;padding:0;margin:8px 0}} .sentence-chunks li{{background:var(--ivory);border:1px solid #eee3d5;border-radius:12px;padding:8px}} .sentence-chunks b{{font-size:14px}} .sentence-chunks em{{display:block;color:var(--muted);font-style:normal;font-size:12.5px;margin-top:2px}} .sentence-meaning{{border-top:1px solid var(--line);padding-top:8px;color:#5f6d76}} .record-actions{{display:flex;gap:7px;flex-wrap:wrap;margin:8px 0}} .record-list{{display:grid;gap:7px;margin-top:8px}} .record-row{{border:1px solid var(--line);border-radius:12px;padding:8px;background:#fff}} .record-row b{{font-size:14px}} .record-row small{{color:var(--muted)}}
 .history-panel{{padding-bottom:18px}} .history-filter-wrap{{display:grid;gap:10px;background:#f8fbfb;border:1px solid var(--line);border-radius:16px;padding:11px;margin-bottom:12px}} .history-filter-row{{display:flex;gap:7px;align-items:center;flex-wrap:wrap}} .history-filter-row strong{{color:var(--muted);font-size:13px;margin-right:2px}} .history-filter-btn{{border:1px solid var(--line);background:#fff;color:#43525b;border-radius:999px;padding:6px 10px;font-size:12.5px;font-weight:850;cursor:pointer}} .history-filter-btn.active{{background:var(--blue);border-color:var(--blue);color:#fff}} .history-list{{display:grid;grid-template-columns:1fr;gap:10px;padding-left:0}} .history-item{{display:block;background:var(--ivory);border:1px solid #ebe3d8;border-radius:16px;padding:13px;color:var(--ink);text-decoration:none}} .history-date{{color:var(--blue);font-size:12px;font-weight:950;margin-bottom:6px}} .history-item b{{display:block;font-size:15.5px;line-height:1.42;margin-bottom:7px}} .history-source{{display:block;color:var(--muted);font-size:12.5px;margin-bottom:10px}} .history-tags{{display:flex;gap:6px;flex-wrap:wrap}} .history-tags span{{border-radius:999px;background:var(--sage-soft);color:var(--sage);padding:4px 8px;font-size:12px;font-weight:900}} .history-tags span:last-child{{background:var(--blue-soft);color:var(--blue)}} .history-empty{{color:var(--muted);font-size:14px;line-height:1.7;padding:8px 2px}}
-.word-popup{{position:fixed;left:12px;right:12px;bottom:12px;z-index:9999;background:#172026;color:#fff;border-radius:18px;padding:14px 15px;box-shadow:0 16px 42px rgba(0,0,0,.28);font-size:15px;max-width:496px;margin:auto}} .word-popup.hidden{{display:none}} .manual-word-btn{{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:10000;border:0;border-radius:999px;background:#172026;color:#fff;padding:11px 16px;font-size:14px;font-weight:950;box-shadow:0 12px 30px rgba(0,0,0,.24)}} .manual-word-btn.hidden{{display:none}} .popup-word{{font-weight:900;font-size:18px;margin-bottom:5px}} .popup-meaning{{line-height:1.55;color:#f3f5f6}} .popup-close{{position:absolute;top:7px;right:10px;background:transparent;color:#fff;border:0;font-size:22px;cursor:pointer}}
+.word-popup{{position:fixed;left:12px;right:12px;bottom:12px;z-index:9999;background:#172026;color:#fff;border-radius:18px;padding:14px 15px;box-shadow:0 16px 42px rgba(0,0,0,.28);font-size:15px;max-width:496px;margin:auto}} .word-popup.hidden{{display:none}} .popup-word{{font-weight:900;font-size:18px;margin-bottom:5px}} .popup-meaning{{line-height:1.55;color:#f3f5f6}} .popup-close{{position:absolute;top:7px;right:10px;background:transparent;color:#fff;border:0;font-size:22px;cursor:pointer}}
 @media print{{.top-nav,.word-popup{{display:none!important}}body{{background:#fff!important}}.mobile-section,.article-info{{box-shadow:none!important;border:1px solid #ddd!important}}}}
 </style>
 </head>
 <body>
 <main class="mobile-page">
   <nav class="top-nav" aria-label="页面导航"><a href="#read">今日精读</a><a href="#study">学习面板</a><a href="#history">历史文章</a></nav>
-  <section class="article-info" id="top"><div class="mode-menu"><select id="modeSelect" class="mode-select" aria-label="阅读模式"><option value="bilingual" selected>中英对照</option><option value="full">全英模式</option><option value="study">学习模式</option></select></div><div class="cover-body"><div class="brand"><span class="brand-mark">HL</span><span>Healing Lab 每日外刊</span></div><div class="cover-kicker">今日文章卡片</div><h1 class="title-en">{esc(article['title'])}</h1><p class="title-zh">{esc(title_zh)}</p></div>{article_image_html}<div class="info-grid"><div class="info-cell"><span>来源</span><b>{esc(article['source'])}</b></div><div class="info-cell"><span>日期</span><b>{esc(display_publish_date(article) or today)}</b></div><div class="info-cell"><span>主题</span><b>{esc(mobile_topic)}</b></div><div class="info-cell"><span>难度</span><b>{esc(mobile_level)}</b></div></div></section>
+  <section class="article-info" id="top"><div class="mode-menu"><button type="button" class="mode-current" id="modeCurrent" onclick="event.stopPropagation();this.closest('.mode-menu').classList.toggle('open')">中英对照</button><div class="mode-options"><button type="button" class="mode-option" data-mode="study" onclick="event.stopPropagation();var box=document.body;var m=this.dataset.mode==='bilingual'?'bilingual':'full';box.classList.remove('mode-full','mode-bilingual','mode-study');box.classList.add('mode-'+m);var c=this.closest('.mode-menu').querySelector('.mode-current');c.textContent=m==='bilingual'?'中英对照':'全英模式';this.dataset.mode=m==='bilingual'?'full':'bilingual';this.textContent=m==='bilingual'?'全英模式':'中英对照';this.closest('.mode-menu').classList.remove('open')">中英对照</button></div></div><div class="cover-body"><div class="brand"><span class="brand-mark">HL</span><span>Healing Lab 每日外刊</span></div><div class="cover-kicker">今日文章卡片</div><h1 class="title-en">{esc(article['title'])}</h1><p class="title-zh">{esc(title_zh)}</p></div>{article_image_html}<div class="info-grid"><div class="info-cell"><span>来源</span><b>{esc(article['source'])}</b></div><div class="info-cell"><span>日期</span><b>{esc(display_publish_date(article) or today)}</b></div><div class="info-cell"><span>主题</span><b>{esc(mobile_topic)}</b></div><div class="info-cell"><span>难度</span><b>{esc(mobile_level)}</b></div></div></section>
   <section class="mobile-section" id="read"><div class="section-title"><span></span><div><h2>今日精读</h2><p>英文段落 + 中文翻译，浅色标注词可点击查看中文。</p></div></div><div class="para-list">{''.join(english_html)}</div></section>
   <section class="mobile-section" id="study"><div class="section-title"><span></span><div><h2>学习面板</h2><p>重点词语、表达句式、长难句分析和个人记录。</p></div></div><div class="study-grid"><div class="study-item"><span>重点表达</span><div class="vocab-list">{vocab_html}</div></div>{pattern_panel_html}<div class="study-item sentence-analysis-item"><span>长难句分析</span><b>拆句 + 分类</b>{long_sentence_html}</div>{review_html}<div class="study-item record-study-item"><span>个人学习记录</span><b>我的生词本 / 长难句库</b><div class="record-actions"><button type="button" class="record-btn" data-view="today">今日生词</button><button type="button" class="record-btn" data-view="saved">已收藏生词</button><button type="button" class="record-btn" data-view="sentence">长难句库</button><button type="button" class="record-btn" data-view="article">按文章查看</button><button type="button" class="record-btn" data-view="date">按日期查看</button><button type="button" class="record-btn" data-view="status">已掌握 / 未掌握</button></div><div id="recordList" class="record-list"></div></div></div></section>
   <!-- HISTORY_PLACEHOLDER -->
 </main>
-<div id="wordPopup" class="word-popup hidden"><button class="popup-close" onclick="document.getElementById('wordPopup').classList.add('hidden')">×</button><div id="popupWord" class="popup-word"></div><div id="popupMeaning" class="popup-meaning"></div><button type="button" id="saveWordBtn">加入生词本</button></div><button type="button" id="manualWordBtn" class="manual-word-btn hidden">加入生词</button>
+<div id="wordPopup" class="word-popup hidden"><button class="popup-close" onclick="document.getElementById('wordPopup').classList.add('hidden')">×</button><div id="popupWord" class="popup-word"></div><div id="popupMeaning" class="popup-meaning"></div><button type="button" id="saveWordBtn">加入生词本</button></div>
 <script>
 function exportPDF() {{ window.print(); }}
 const WORD_MEANINGS = {word_map_json};
@@ -5918,24 +5920,40 @@ function renderRecordList(view) {{
   }} else {{
     let list = vocab;
     if(view === 'today') list = vocab.filter(x => x.date === ARTICLE_META.date);
-    rows = list.map(x => '<div class="record-row"><b>' + escHtml(x.word || x.term || '') + '</b><small>' + escHtml(x.meaning || '') + '<br>' + escHtml(x.date || '') + ' · ' + escHtml(x.title || '') + ' · ' + escHtml(x.status || '未掌握') + '</small></div>');
+    rows = list.map(x => '<div class="record-row"><b>' + escHtml(x.word || '') + '</b><small>' + escHtml(x.meaning || '') + '<br>' + escHtml(x.date || '') + ' · ' + escHtml(x.title || '') + ' · ' + escHtml(x.status || '未掌握') + '</small></div>');
   }}
   box.innerHTML = rows.slice(0, 20).join('') || '<div class="history-empty">暂无记录。点击单词后加入生词本，或保存长难句。</div>';
 }}
 function escHtml(s) {{ return String(s || '').replace(/[&<>"']/g, c => ({{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}}[c])); }}
-function applyReadingMode(mode) {{
-  const currentMode = (mode === 'full' || mode === 'study') ? mode : 'bilingual';
-  document.body.classList.remove('mode-full','mode-bilingual','mode-study');
-  document.body.classList.add('mode-' + currentMode);
-}}
-const modeSelect = document.getElementById('modeSelect');
-if(modeSelect) {{
-  modeSelect.addEventListener('change', function() {{
-    applyReadingMode(this.value || 'bilingual');
+const modeMenu = document.querySelector('.mode-menu');
+const modeCurrent = document.getElementById('modeCurrent');
+if(modeMenu && modeCurrent) {{
+  const modeOptions = modeMenu.querySelector('.mode-options');
+  function setReadingMode(mode) {{
+    const currentMode = mode === 'bilingual' ? 'bilingual' : 'full';
+    document.body.classList.remove('mode-full','mode-bilingual','mode-study');
+    document.body.classList.add(currentMode === 'bilingual' ? 'mode-bilingual' : 'mode-full');
+    modeCurrent.textContent = currentMode === 'bilingual' ? '中英对照' : '全英模式';
+    if(modeOptions) {{
+      const otherMode = currentMode === 'bilingual' ? 'full' : 'bilingual';
+      const otherText = currentMode === 'bilingual' ? '全英模式' : '中英对照';
+      modeOptions.innerHTML = '<button type="button" class="mode-option" data-mode="' + otherMode + '">' + otherText + '</button>';
+    }}
+  }}
+  setReadingMode('bilingual');
+  modeCurrent.addEventListener('click', function(e) {{
+    e.stopPropagation();
+    modeMenu.classList.toggle('open');
   }});
-  applyReadingMode(modeSelect.value || 'bilingual');
-}} else {{
-  applyReadingMode('bilingual');
+  modeMenu.addEventListener('click', function(e) {{
+    const btn = e.target.closest('.mode-option');
+    if(btn) {{
+      e.stopPropagation();
+      setReadingMode(btn.dataset.mode || 'bilingual');
+      modeMenu.classList.remove('open');
+    }}
+  }});
+  document.addEventListener('click', function() {{ modeMenu.classList.remove('open'); }});
 }}
 document.addEventListener('click', function(e) {{
   const saveSentenceBtn = e.target.closest('.save-sentence-btn');
@@ -5952,57 +5970,11 @@ document.addEventListener('click', function(e) {{
   const key = (target.dataset.word || '').toLowerCase();
   const word = target.textContent || key;
   const meaning = WORD_MEANINGS[key] || '暂无中文解释，可结合上下文理解。';
-  CURRENT_WORD = {{word, term:word, meaning, source_title:ARTICLE_META.title, title:ARTICLE_META.title, date:ARTICLE_META.date, sentence:currentSentenceFrom(target)}};
-  saveWord(CURRENT_WORD);
+  CURRENT_WORD = {{word, meaning, source_title:ARTICLE_META.title, title:ARTICLE_META.title, date:ARTICLE_META.date, sentence:currentSentenceFrom(target)}};
   document.getElementById('popupWord').textContent = word;
-  document.getElementById('popupMeaning').textContent = meaning + '（已加入今日生词）';
-  const swb = document.getElementById('saveWordBtn');
-  if(swb) swb.textContent = '已加入生词本';
+  document.getElementById('popupMeaning').textContent = meaning;
   document.getElementById('wordPopup').classList.remove('hidden');
 }});
-
-let CURRENT_SELECTED_WORD = null;
-function selectedWordInfo() {{
-  const sel = window.getSelection ? window.getSelection() : null;
-  if(!sel || sel.rangeCount === 0) return null;
-  const text = String(sel.toString() || '').replace(/\s+/g,' ').trim();
-  if(!text || text.length < 2 || text.length > 80) return null;
-  const range = sel.getRangeAt(0);
-  let node = range.commonAncestorContainer;
-  if(node && node.nodeType !== 1) node = node.parentElement;
-  if(!node || !node.closest) return null;
-  const card = node.closest('.para-card');
-  const english = card && card.querySelector('.english');
-  if(!card || !english) return null;
-  return {{word:text, term:text, meaning:'', note:'', source_title:ARTICLE_META.title, title:ARTICLE_META.title, date:ARTICLE_META.date, sentence:(english.innerText || '').slice(0,260)}};
-}}
-function updateManualWordButton() {{
-  const btn = document.getElementById('manualWordBtn');
-  if(!btn) return;
-  const info = selectedWordInfo();
-  CURRENT_SELECTED_WORD = info;
-  btn.classList.toggle('hidden', !info);
-}}
-document.addEventListener('selectionchange', function() {{ setTimeout(updateManualWordButton, 80); }});
-document.addEventListener('mouseup', function() {{ setTimeout(updateManualWordButton, 80); }});
-document.addEventListener('touchend', function() {{ setTimeout(updateManualWordButton, 180); }});
-const manualWordBtn = document.getElementById('manualWordBtn');
-if(manualWordBtn) {{
-  manualWordBtn.addEventListener('click', function() {{
-    const info = CURRENT_SELECTED_WORD || selectedWordInfo();
-    if(!info) return;
-    const meaning = prompt('给这个生词/词组写中文释义：', '');
-    if(meaning === null) return;
-    const note = prompt('备注/用法（可不填）：', '') || '';
-    info.meaning = meaning || '手动添加，待补充释义';
-    info.note = note;
-    saveWord(info);
-    this.textContent = '已加入生词本';
-    setTimeout(() => {{ this.textContent='加入生词'; this.classList.add('hidden'); }}, 1200);
-    try {{ window.getSelection().removeAllRanges(); }} catch(e) {{}}
-  }});
-}}
-
 const saveWordBtn = document.getElementById('saveWordBtn');
 if(saveWordBtn) {{
   saveWordBtn.addEventListener('click', function() {{
@@ -6012,6 +5984,104 @@ if(saveWordBtn) {{
 }}
 renderRecordList('today');
 </script>
+
+<style id="V43_REAL_MOBILE_PATCH_20260614">
+html{{width:100%;max-width:100%;overflow-x:hidden;-webkit-text-size-adjust:100%;text-size-adjust:100%;}}
+body{{width:100%;max-width:100%;overflow-x:hidden;overscroll-behavior-x:none;touch-action:pan-y;background-attachment:scroll!important;}}
+.mobile-page,.phone{{width:100%!important;max-width:520px!important;margin-left:auto!important;margin-right:auto!important;overflow-x:hidden!important;transform:none!important;zoom:1!important;}}
+.article-info,.mobile-section,.para-card,.top-nav,.info-grid{{max-width:100%!important;box-sizing:border-box!important;}}
+.article-info{{overflow:hidden!important;}}
+.article-info::after{{right:-130px!important;max-width:220px!important;}}
+.article-photo,img{{max-width:100%!important;height:auto;}}
+.title-en,.article-title-en{{font-size:clamp(30px,8.6vw,38px)!important;line-height:1.08!important;word-break:normal!important;overflow-wrap:anywhere!important;}}
+.mode-menu{{position:absolute!important;right:14px!important;top:14px!important;z-index:50!important;display:block!important;}}
+.mode-select{{appearance:auto;-webkit-appearance:auto;border:1px solid rgba(47,111,159,.22);background:rgba(255,255,255,.94);color:#2f6f9f;border-radius:999px;padding:7px 10px;font-size:12px;font-weight:950;box-shadow:0 8px 18px rgba(35,48,56,.08);max-width:118px;}}
+body.mode-full .translation,body.mode-full .sentence-analysis-item,body.mode-full .pattern-item,body.mode-full .review-item{{display:none!important;}}
+body.mode-bilingual .sentence-analysis-item,body.mode-bilingual .pattern-item,body.mode-bilingual .review-item{{display:none!important;}}
+body.mode-study .translation,body.mode-study .sentence-analysis-item,body.mode-study .pattern-item,body.mode-study .review-item{{display:block!important;}}
+.select-word-toolbar{{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:9999;display:none;background:#172026;color:#fff;border:0;border-radius:999px;padding:10px 16px;font-size:15px;font-weight:900;box-shadow:0 12px 32px rgba(0,0,0,.22);}}
+.select-word-toolbar.show{{display:block;}}
+.word-popup{{z-index:9998!important;}}
+.click-word,.click-word.key-word{{user-select:text;-webkit-user-select:text;}}
+</style>
+<script id="V43_REAL_MOBILE_PATCH_20260614">
+(function(){{
+  function ready(fn){{ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',fn); else fn(); }}
+  function esc(s){{ return String(s||'').replace(/[&<>"']/g,function(c){{return {{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}}[c]}}); }}
+  function readStore(key){{ try{{return JSON.parse(localStorage.getItem(key)||'[]')}}catch(e){{return []}} }}
+  function writeStore(key,v){{ localStorage.setItem(key,JSON.stringify(v)); }}
+  function articleMeta(){{ return window.ARTICLE_META || {{title:(document.querySelector('.title-zh,.article-title-zh,h1')||{{}}).textContent||'Daily Reading',date:(document.querySelector('meta[name="hl-date"]')||{{}}).content||new Date().toISOString().slice(0,10),source:(document.querySelector('meta[name="hl-source"]')||{{}}).content||''}}; }}
+  function sentenceFromNode(node){{ var card=node&&node.closest&&node.closest('.para-card'); var en=card&&card.querySelector('.english'); return en?(en.innerText||'').slice(0,280):''; }}
+  function saveVocab(item){{
+    if(!item) return;
+    var term=(item.word||item.term||'').trim(); if(!term) return;
+    var meta=articleMeta();
+    var obj={{word:term,term:term,meaning:item.meaning||'',note:item.note||'',sentence:item.sentence||'',source_title:item.source_title||meta.title,title:item.title||meta.title,date:item.date||meta.date,status:item.status||'未掌握'}};
+    var list=readStore('hl_vocab_book');
+    var key=(obj.term+'|'+obj.date+'|'+obj.title).toLowerCase();
+    if(!list.some(function(x){{return String((x.term||x.word||'')+'|'+(x.date||'')+'|'+(x.title||x.source_title||'')).toLowerCase()===key;}})){{
+      list.unshift(obj); writeStore('hl_vocab_book',list.slice(0,500));
+    }}
+    if(typeof window.renderRecordList==='function') {{ try{{ window.renderRecordList('saved'); }}catch(e){{}} }}
+  }}
+  function applyMode(mode){{
+    mode = (mode==='full'||mode==='study'||mode==='bilingual') ? mode : 'bilingual';
+    document.body.classList.remove('mode-full','mode-bilingual','mode-study');
+    document.body.classList.add('mode-'+mode);
+    var sel=document.getElementById('modeSelectV43'); if(sel) sel.value=mode;
+  }}
+  ready(function(){{
+    var meta=document.querySelector('meta[name="viewport"]');
+    if(meta) meta.setAttribute('content','width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover');
+    var menu=document.querySelector('.mode-menu');
+    if(menu){{
+      menu.innerHTML='<select id="modeSelectV43" class="mode-select" aria-label="阅读模式"><option value="bilingual">中英对照</option><option value="full">全英模式</option><option value="study">学习模式</option></select>';
+      var sel=document.getElementById('modeSelectV43');
+      sel.addEventListener('change',function(){{ applyMode(this.value); }});
+    }}
+    applyMode('bilingual');
+    document.addEventListener('click',function(e){{
+      var target=e.target.closest && e.target.closest('.click-word');
+      if(!target) return;
+      var key=(target.dataset.word||target.textContent||'').trim();
+      var meaning='';
+      if(window.WORD_MEANINGS){{ meaning=window.WORD_MEANINGS[(target.dataset.word||'').toLowerCase()] || window.WORD_MEANINGS[key.toLowerCase()] || ''; }}
+      meaning = meaning || '暂无中文解释，可手动补充。';
+      saveVocab({{word:key,term:key,meaning:meaning,sentence:sentenceFromNode(target)}});
+      var btn=document.getElementById('saveWordBtn'); if(btn) btn.textContent='已加入生词本';
+    }},true);
+    var toolbar=document.createElement('button');
+    toolbar.type='button'; toolbar.className='select-word-toolbar'; toolbar.textContent='加入生词';
+    document.body.appendChild(toolbar);
+    var selectedText=''; var selectedSentence='';
+    function updateSelection(){{
+      var sel=window.getSelection(); var text=sel?String(sel.toString()).trim():'';
+      text=text.replace(/\s+/g,' ');
+      if(text && /^[A-Za-z][A-Za-z'’\- ]{{1,80}}$/.test(text)){{
+        var node=sel.anchorNode && (sel.anchorNode.nodeType===1?sel.anchorNode:sel.anchorNode.parentElement);
+        if(node && node.closest && node.closest('.english')){{
+          selectedText=text; selectedSentence=sentenceFromNode(node); toolbar.classList.add('show'); return;
+        }}
+      }}
+      toolbar.classList.remove('show');
+    }}
+    document.addEventListener('selectionchange',function(){{ setTimeout(updateSelection,60); }});
+    document.addEventListener('touchend',function(){{ setTimeout(updateSelection,180); }},{{passive:true}});
+    document.addEventListener('mouseup',function(){{ setTimeout(updateSelection,60); }});
+    toolbar.addEventListener('click',function(){{
+      if(!selectedText) return;
+      var meaning=prompt('给“'+selectedText+'”填写中文释义：','');
+      if(meaning===null) return;
+      var note=prompt('备注/用法，可不填：','') || '';
+      saveVocab({{word:selectedText,term:selectedText,meaning:meaning,note:note,sentence:selectedSentence}});
+      toolbar.textContent='已加入';
+      setTimeout(function(){{ toolbar.textContent='加入生词'; toolbar.classList.remove('show'); }},900);
+      try{{ window.getSelection().removeAllRanges(); }}catch(e){{}}
+    }});
+  }});
+}})();
+</script>
+
 </body>
 </html>
 """
