@@ -1652,6 +1652,41 @@ def translate_text(text: str, enabled=True) -> str:
         return "【翻译失败：可能是网络或翻译服务暂时不可用。】"
 
 
+def naturalize_translation(source_text: str, zh_text: str) -> str:
+    """Lightly reduce machine-translation tone without changing the facts."""
+    source_low = clean_text(source_text).lower()
+    zh = clean_text(zh_text)
+    if not zh:
+        return zh
+
+    replacements = [
+        ("应用程序", "应用"),
+        ("聚集在一起", "凑到一起"),
+        ("令人恼火的问题", "让人头疼的问题"),
+        ("比赛被毁", "比赛泡汤"),
+        ("在短时间内", "临时"),
+        ("以弥补人数", "补上人数"),
+        ("让人们有机会参与和提高", "让更多人有机会参与、提高水平"),
+    ]
+    for old, new in replacements:
+        zh = zh.replace(old, new)
+
+    contextual = [
+        ("late dropout", "迟到", "临时退出"),
+        ("late dropout", "迟到，", "临时退出，"),
+        ("make up the numbers", "补齐人数", "补上人数"),
+        ("make up the numbers", "补上人数", "临时补上"),
+        ("injecting life", "注入活力", "带来活力"),
+        ("marvel to this community", "这个社区的奇迹", "对这个社区来说太有用了"),
+        ("hard-fought", "艰苦的", "踢得胶着的"),
+    ]
+    for marker, old, new in contextual:
+        if marker in source_low:
+            zh = zh.replace(old, new)
+
+    return zh.strip()
+
+
 def build_expressions(text, count):
     found = expression_hits(text)
     used = {x[0] for x in found}
@@ -4291,7 +4326,8 @@ function init(){{
     <div class="para">
       <b>第 ${{p.idx}} 段</b>
       <p class="en selectable">${{escapeHtml(p.raw)}}</p>
-      <p class="zh">${{escapeHtml(p.zh)}}</p>
+      <label>中文翻译，可手动润色</label>
+      <textarea class="zh-edit" data-idx="${{p.idx}}" oninput="updateParagraphZh(${{p.idx}}, this.value)">${{escapeHtml(p.zh)}}</textarea>
     </div>
   `).join('');
 
@@ -4301,6 +4337,11 @@ function init(){{
   }});
 
   renderEditors();
+}}
+
+function updateParagraphZh(idx, value){{
+  const item = data.paragraphs.find(p => String(p.idx) === String(idx));
+  if(item) item.zh = value;
 }}
 
 function escapeHtml(s){{
@@ -4721,7 +4762,14 @@ async function saveFinalPage(){{
         title:data.title_cn || data.title_raw
       }})
     }});
-    const json = await res.json();
+    const text = await res.text();
+    let json = null;
+    try{{
+      json = JSON.parse(text);
+    }}catch(parseErr){{
+      const preview = text.trim().slice(0, 80).replace(/\\s+/g, ' ');
+      throw new Error('保存接口没有接上，服务器返回了网页而不是 JSON：' + preview);
+    }}
     if(!json.ok) throw new Error(json.error || '保存失败');
     if(status) status.innerHTML = '已保存为正式页：<a href="/daily/latest.html?v=' + Date.now() + '" target="_blank">打开 latest.html</a>';
     alert('已保存。现在打开正式学习页就是你刚编辑的版本。');
@@ -5097,7 +5145,7 @@ def write_outputs(article, selected_paragraphs, rejected_log, article_reject_log
         highlight_terms = collect_highlight_terms(raw_text, expressions, keywords)
         marked_txt = mark_text_for_txt(raw_text, highlight_terms)
         marked_html = mark_text_for_html(raw_text, highlight_terms)
-        zh = translate_text(raw_text, cfg.get("translate_to_chinese", True))
+        zh = naturalize_translation(raw_text, translate_text(raw_text, cfg.get("translate_to_chinese", True)))
 
         if "difficulty_profile" in globals():
             prof = difficulty_profile(raw_text)
