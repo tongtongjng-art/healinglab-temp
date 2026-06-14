@@ -2595,6 +2595,12 @@ def auto_upload_outputs(cfg, today):
             upload_file_sftp(sftp, OUTPUT_DIR / "xhs.html", remote_dir + "/xhs.html")
         if (OUTPUT_DIR / "editor.html").exists():
             upload_file_sftp(sftp, OUTPUT_DIR / "editor.html", remote_dir + "/editor.html")
+        assets_dir = OUTPUT_DIR / "assets"
+        if assets_dir.exists():
+            for local_asset in assets_dir.rglob("*"):
+                if local_asset.is_file():
+                    rel = local_asset.relative_to(OUTPUT_DIR).as_posix()
+                    upload_file_sftp(sftp, local_asset, remote_dir + "/" + rel)
         upload_file_sftp(sftp, OUTPUT_DIR / "archive" / f"day-{today}.html", remote_dir + f"/archive/day-{today}.html")
         upload_file_sftp(sftp, OUTPUT_DIR / "archive" / f"day-{today}.txt", remote_dir + f"/archive/day-{today}.txt")
         if (OUTPUT_DIR / "archive" / f"day-{today}-xhs.html").exists():
@@ -2933,6 +2939,123 @@ def save_article_cover_image(article, today):
     except Exception as e:
         print("封面图保存失败：", e)
         return ""
+
+
+def build_commons_image_queries(article, title_zh="", paragraph_texts=None, topic=""):
+    paragraph_texts = paragraph_texts or []
+    base = clean_text(article.get("title", ""))
+    low = (base + " " + clean_text(title_zh) + " " + " ".join(paragraph_texts[:2])).lower()
+    queries = []
+
+    specific_rules = [
+        (["fungi", "fungus", "mycorrhiz"], "mycorrhizal fungi forest"),
+        (["wildflower", "garden"], "wildflower garden"),
+        (["screen time", "children", "teenagers"], "children using tablet"),
+        (["football", "grassroots"], "amateur football"),
+        (["climate", "heat", "carbon"], "climate change"),
+        (["school", "education", "student"], "classroom students"),
+        (["ai", "artificial intelligence"], "artificial intelligence technology"),
+        (["wolf", "wildlife"], "wolf wildlife"),
+        (["fashion", "clothes", "style"], "fashion clothing"),
+        (["space", "planet"], "space science"),
+    ]
+    for keys, q in specific_rules:
+        if any(k in low for k in keys):
+            queries.append(q)
+
+    words = re.findall(r"[A-Za-z][A-Za-z-]{3,}", base)
+    stop = {
+        "from", "with", "that", "this", "these", "those", "their", "there", "have", "will",
+        "more", "than", "after", "before", "about", "into", "over", "under", "study", "finds",
+        "found", "says", "said", "could", "would", "should", "because"
+    }
+    picked = []
+    for w in words:
+        lw = w.lower().strip("-")
+        if lw not in stop and lw not in picked:
+            picked.append(lw)
+        if len(picked) >= 4:
+            break
+    if picked:
+        queries.append(" ".join(picked))
+    if topic:
+        queries.append(clean_text(topic))
+    queries.append("nature science")
+
+    seen = set()
+    out = []
+    for q in queries:
+        q = clean_text(q).strip()
+        if q and q.lower() not in seen:
+            seen.add(q.lower())
+            out.append(q)
+    return out[:5]
+
+
+def _commons_meta_value(extmeta, key):
+    value = ((extmeta or {}).get(key) or {}).get("value") or ""
+    return clean_text(re.sub(r"<[^>]+>", "", value))
+
+
+def fetch_commons_article_image(article, title_zh, paragraph_texts, today, topic="", cfg=None):
+    """Find one reusable Wikimedia Commons image and save it for the learning page."""
+    cfg = cfg or {}
+    if not cfg.get("commons_image_enabled", True):
+        return None
+    out_dir = OUTPUT_DIR / "assets" / "article_images"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    api = "https://commons.wikimedia.org/w/api.php"
+    for query in build_commons_image_queries(article, title_zh, paragraph_texts, topic):
+        try:
+            params = {
+                "action": "query",
+                "generator": "search",
+                "gsrsearch": query,
+                "gsrnamespace": 6,
+                "gsrlimit": 8,
+                "prop": "imageinfo",
+                "iiprop": "url|mime|extmetadata",
+                "iiurlwidth": 1200,
+                "format": "json",
+                "origin": "*",
+            }
+            data = requests.get(api, params=params, headers=HEADERS, timeout=18).json()
+            pages = list((data.get("query", {}) or {}).get("pages", {}).values())
+            for page in pages:
+                info = (page.get("imageinfo") or [{}])[0]
+                mime = (info.get("mime") or "").lower()
+                img_url = info.get("thumburl") or info.get("url") or ""
+                if not img_url or not mime.startswith("image/") or "svg" in mime:
+                    continue
+                ext = ".jpg"
+                if "png" in mime:
+                    ext = ".png"
+                elif "webp" in mime:
+                    ext = ".webp"
+                img = requests.get(img_url, headers=HEADERS, timeout=25)
+                img.raise_for_status()
+                if len(img.content) < 8000:
+                    continue
+                name = f"article_image_{today}{ext}"
+                path = out_dir / name
+                path.write_bytes(img.content)
+                extmeta = info.get("extmetadata") or {}
+                artist = _commons_meta_value(extmeta, "Artist") or "Wikimedia Commons"
+                license_short = _commons_meta_value(extmeta, "LicenseShortName")
+                credit = _commons_meta_value(extmeta, "Credit")
+                page_url = info.get("descriptionurl") or f"https://commons.wikimedia.org/wiki/{page.get('title','').replace(' ', '_')}"
+                return {
+                    "url": f"/daily/assets/article_images/{name}",
+                    "source_url": page_url,
+                    "artist": artist[:120],
+                    "license": license_short[:80],
+                    "credit": credit[:140],
+                    "query": query,
+                }
+        except Exception as e:
+            print("Commons 图片搜索失败：", query, e)
+            continue
+    return None
 
 def short_text(text, max_len=120):
     text = clean_text(text)
@@ -4061,7 +4184,7 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
         page = page.replace(k, v)
     return page
 
-def build_manual_editor_page(article, title_zh, paragraph_rows, all_keywords, today, cfg=None):
+def build_manual_editor_page(article, title_zh, paragraph_rows, all_keywords, today, cfg=None, article_image=None):
     """
     V35：
     人工自由选择编辑页。
@@ -4142,6 +4265,7 @@ def build_manual_editor_page(article, title_zh, paragraph_rows, all_keywords, to
         "link": link,
         "paragraphs": paras,
         "keywords": list(all_keywords or [])[:80],
+        "article_image": article_image or {},
         "save_token": editor_save_token,
         "history": editor_history_entries(),
     }
@@ -4237,6 +4361,7 @@ textarea{{min-height:68px;resize:vertical}}
 .cover{{min-height:250px;padding:22px;background:linear-gradient(135deg,#e9f2ec 0%,#f8f0df 54%,#eef3f8 100%);display:flex;flex-direction:column;justify-content:space-between}}
 .cover h2{{font-family:Georgia,"Times New Roman",serif;font-size:36px;line-height:1.08;margin:30px 0 12px;letter-spacing:-.03em}}
 .cover .cn{{font-size:16px;color:#536171;font-weight:700;line-height:1.55}}
+.article-photo{{margin:14px;border-radius:16px;overflow:hidden;border:1px solid var(--line);background:#fff}}.article-photo img{{display:block;width:100%;aspect-ratio:16/10;object-fit:cover}}.article-photo figcaption{{padding:8px 10px;color:var(--muted);font-size:11px;line-height:1.45}}.article-photo a{{color:var(--blue);font-weight:850}}
 .final-meta{{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:14px}}
 .final-meta div{{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:10px}}
 .final-meta span{{display:block;font-size:12px;color:var(--muted);margin-bottom:5px}}
@@ -4843,6 +4968,14 @@ function renderFinal(){{
     </div>
   `).join('') || `<div class="final-row"><span>还没有选择重点表达。</span></div>`;
 
+  const image = data.article_image || {{}};
+  const imageHtml = image.url ? `
+    <figure class="article-photo">
+      <img src="${{escapeAttr(image.url)}}" alt="${{escapeAttr(data.title_raw || 'Article image')}}" loading="lazy">
+      <figcaption>图片来源：<a href="${{escapeAttr(image.source_url || '#')}}" target="_blank" rel="noopener">Wikimedia Commons</a> · ${{escapeHtml(image.artist || image.credit || 'Wikimedia Commons')}} · ${{escapeHtml(image.license || 'Reusable image')}}</figcaption>
+    </figure>
+  ` : '';
+
   const historyItems = (data.history || []).map(h => `
     <a class="history-item" href="${{escapeAttr(h.href || '#')}}" data-topic="${{escapeAttr(h.topic || '其他')}}" data-level="${{escapeAttr(h.level || 'B2')}}">
       <div class="history-date">${{escapeHtml(h.date || '')}}</div>
@@ -4857,7 +4990,7 @@ function renderFinal(){{
       <nav class="top-nav"><a href="#read">今日精读</a><a href="#study">学习面板</a><a href="#history">历史文章</a></nav>
       <article class="final-card article-info">
         <div class="mode-menu"><button type="button" class="mode-current" onclick="event.stopPropagation();this.closest('.mode-menu').classList.toggle('open')">全英模式</button><div class="mode-options"><button type="button" class="mode-option" data-mode="bilingual" onclick="event.stopPropagation();var box=this.closest('.phone')||document.body;var m=this.dataset.mode==='bilingual'?'bilingual':'full';box.classList.remove('mode-full','mode-bilingual','mode-study');box.classList.add('mode-'+m);var c=this.closest('.mode-menu').querySelector('.mode-current');c.textContent=m==='bilingual'?'中英对照':'全英模式';this.dataset.mode=m==='bilingual'?'full':'bilingual';this.textContent=m==='bilingual'?'全英模式':'中英对照';this.closest('.mode-menu').classList.remove('open')">中英对照</button></div></div>
-        <div class="cover"><div class="tag">今日文章卡片</div><div><h2>${{escapeHtml(data.title_raw)}}</h2><div class="cn">${{escapeHtml(data.title_cn)}}</div></div></div>
+        <div class="cover"><div class="tag">今日文章卡片</div><div><h2>${{escapeHtml(data.title_raw)}}</h2><div class="cn">${{escapeHtml(data.title_cn)}}</div></div></div>${{imageHtml}}
         <div class="final-meta">
           <div><span>来源</span><b>${{escapeHtml(data.source)}}</b></div>
           <div><span>日期</span><b>${{escapeHtml(data.pub_date)}}</b></div>
@@ -5562,6 +5695,17 @@ def write_outputs(article, selected_paragraphs, rejected_log, article_reject_log
 
     mobile_topic = mobile_topic_category(article.get("title", "") + " " + title_zh, article.get("source", ""), full_text_for_mobile)
     mobile_level = mobile_level_label(full_text_for_mobile)
+    article_image = fetch_commons_article_image(article, title_zh, paragraph_texts, today, mobile_topic, cfg)
+    article_image_html = ""
+    if article_image:
+        image_credit = article_image.get("artist") or article_image.get("credit") or "Wikimedia Commons"
+        image_license = article_image.get("license") or "Reusable image"
+        article_image_html = f"""
+        <figure class="article-photo">
+          <img src="{esc(article_image['url'])}" alt="{esc(article.get('title', 'Article image'))}" loading="lazy">
+          <figcaption>图片来源：<a href="{esc(article_image.get('source_url', '#'))}" target="_blank" rel="noopener">Wikimedia Commons</a> · {esc(image_credit)} · {esc(image_license)}</figcaption>
+        </figure>
+        """
     pattern_hits_mobile = build_expressions(full_text_for_mobile, 3)
     long_sentence_items = build_long_sentence_analysis(paragraph_texts, 3)
     long_sentence_html = format_sentence_analysis_html(long_sentence_items)
@@ -5605,6 +5749,7 @@ def write_outputs(article, selected_paragraphs, rejected_log, article_reject_log
 *{{box-sizing:border-box}} html{{scroll-behavior:smooth}} body{{margin:0;background:linear-gradient(180deg,#fbfaf6 0%,var(--bg) 100%);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",Arial,sans-serif;line-height:1.65}} a{{color:inherit;text-decoration:none}}
 .mobile-page{{width:min(100%,520px);margin:0 auto;padding:12px 12px 34px}} .top-nav{{position:sticky;top:0;z-index:30;display:grid;grid-template-columns:repeat(3,1fr);gap:7px;padding:10px 0;background:rgba(247,245,240,.88);backdrop-filter:blur(14px)}} .top-nav a{{display:grid;place-items:center;min-height:38px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.82);color:var(--blue);font-size:13px;font-weight:900}} .top-nav a:first-child{{background:var(--blue);border-color:var(--blue);color:#fff}} body.mode-full .translation,body.mode-full .sentence-analysis-item,body.mode-full .pattern-item,body.mode-full .review-item{{display:none}} body.mode-bilingual .sentence-analysis-item,body.mode-bilingual .pattern-item,body.mode-bilingual .review-item{{display:none}}
 .article-info{{position:relative;overflow:visible;background:linear-gradient(140deg,#fbf1df 0%,#f7f4ea 54%,#edf5f6 100%);border:1px solid #dce4e8;border-radius:22px;box-shadow:0 18px 44px rgba(35,48,56,.12);margin:8px 0 14px}} .article-info::before{{content:"";position:absolute;inset:16px 16px auto 16px;height:28px;border-radius:999px;background:rgba(237,246,240,.78)}} .article-info::after{{content:"";position:absolute;right:-80px;top:150px;width:210px;height:210px;border-radius:50%;border:1px solid rgba(47,111,159,.10)}} .mode-menu{{position:absolute;right:14px;top:14px;z-index:8}} .mode-current{{border:1px solid rgba(47,111,159,.18);background:rgba(255,255,255,.88);color:var(--blue);border-radius:999px;padding:7px 10px;font-size:12px;font-weight:950;box-shadow:0 8px 18px rgba(35,48,56,.08);cursor:pointer}} .mode-options{{display:none;position:absolute;right:0;top:38px;min-width:112px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:6px;box-shadow:0 14px 28px rgba(35,48,56,.16)}} .mode-menu.open .mode-options,.mode-menu:focus-within .mode-options{{display:grid;gap:5px}} .mode-option{{border:0;background:#fff;color:#39505d;border-radius:10px;padding:8px 10px;text-align:left;font-size:12px;font-weight:900;cursor:pointer}} .mode-option.active{{background:var(--blue-soft);color:var(--blue)}} .cover-body{{position:relative;z-index:1;padding:24px 22px 0}} .brand{{display:flex;align-items:center;gap:10px;color:var(--blue);font-weight:950;font-size:13px;margin-bottom:22px;padding-right:96px}} .brand-mark{{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--sage);color:#fff;font-size:13px}} .cover-kicker{{display:inline-flex;min-height:28px;align-items:center;color:var(--sage);font-size:13px;font-weight:950;margin-bottom:24px;padding:0 12px;border-radius:999px;background:rgba(237,246,240,.78)}} .title-en{{font-family:Georgia,"Times New Roman",serif;font-size:36px;line-height:1.06;font-weight:900;letter-spacing:0;margin:0;color:#102331;text-wrap:balance}} .title-zh{{font-size:16px;line-height:1.55;font-weight:850;letter-spacing:0;margin:14px 0 0;color:#334756}} .info-grid{{position:relative;z-index:1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:22px;padding:16px;background:rgba(255,255,255,.72);border-top:1px solid rgba(220,228,232,.86);border-radius:0 0 22px 22px}} .info-cell{{background:rgba(255,255,255,.72);border:1px solid var(--line);border-radius:14px;padding:10px}} .info-cell span{{display:block;color:var(--muted);font-size:11px;font-weight:850;margin-bottom:3px}} .info-cell b{{display:block;font-size:13px;line-height:1.35;color:#111d24}}
+.article-photo{{position:relative;z-index:1;margin:18px 16px 0;border-radius:18px;overflow:hidden;border:1px solid rgba(220,228,232,.9);background:#fff;box-shadow:0 12px 28px rgba(35,48,56,.10)}} .article-photo img{{display:block;width:100%;aspect-ratio:16/10;object-fit:cover;background:#eef3f1}} .article-photo figcaption{{padding:8px 10px;color:var(--muted);font-size:11px;line-height:1.45;background:rgba(255,255,255,.88)}} .article-photo a{{color:var(--blue);font-weight:850}}
 .mobile-section{{background:var(--card);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);padding:16px;margin:14px 0}} .section-title{{display:flex;gap:10px;align-items:flex-start;margin-bottom:14px}} .section-title>span{{width:5px;min-height:36px;border-radius:999px;background:var(--blue);margin-top:2px}} .section-title h2{{font-size:21px;line-height:1.1;margin:0 0 5px;letter-spacing:0}} .section-title p{{margin:0;color:var(--muted);font-size:13px;line-height:1.45}}
 .para-list{{display:grid;gap:12px}} .para-card{{background:var(--ivory);border:1px solid #ece4d8;border-radius:16px;padding:14px}} .para-index{{color:var(--sage);font-size:13px;font-weight:950;margin-bottom:8px}} .english{{font-family:Georgia,"Times New Roman",serif;font-size:18px;line-height:1.78;color:#1f2f38}} .translation{{border-top:1px solid #eadfce;margin-top:12px;padding-top:10px;color:#61707a;font-size:14.5px;line-height:1.75}} .click-word,.click-word.key-word{{display:inline;font:inherit;color:#315c6f;background:rgba(75,128,99,.13);border:0;border-radius:4px;padding:0 2px;cursor:pointer;text-decoration:none}} .click-word:active{{background:rgba(47,111,159,.16)}}
 .study-grid{{display:grid;gap:10px}} .study-item{{border:1px solid var(--line);border-radius:16px;padding:13px;background:#fbfcfc}} .study-item span{{display:inline-flex;border-radius:999px;padding:4px 8px;background:var(--blue-soft);color:var(--blue);font-size:12px;font-weight:950;margin-bottom:8px}} .study-item b{{display:block;font-size:16px;line-height:1.35;margin-bottom:5px;color:var(--ink)}} .study-item p{{margin:0;color:#42515a;line-height:1.62;font-size:14px}} .study-item small{{display:block;color:var(--muted);line-height:1.58;margin-top:6px;font-size:13px}} .vocab-list{{display:grid;gap:8px}} .vocab-chip{{display:block;background:var(--sage-soft);border:1px solid rgba(75,128,99,.18);border-radius:14px;padding:10px 11px;color:#35433d;font-size:13.5px;line-height:1.45}} .vocab-chip strong{{display:block;color:var(--sage);font-size:15px;margin-bottom:2px}} .review-item{{background:var(--clay-soft);border-color:#f2d5ca}} .review-item span{{background:#fff7f3;color:var(--clay)}} .sentence-analysis-card{{border:1px solid #e3edf1;background:#fff;border-radius:16px;padding:13px;margin-top:9px}} .sentence-top{{display:flex;align-items:center;justify-content:space-between;gap:8px}} .sentence-top span,.sentence-category{{color:var(--blue);font-size:12px;font-weight:950}} .save-sentence-btn,.record-btn,#saveWordBtn{{border:1px solid var(--line);background:#fff;color:var(--blue);border-radius:999px;padding:6px 9px;font-size:12px;font-weight:900;cursor:pointer}} .sentence-original{{font-family:Georgia,"Times New Roman",serif;font-size:15.5px;line-height:1.65;color:#20313a;margin:8px 0}} .sentence-parts{{background:var(--blue-soft);border-radius:12px;padding:9px;margin:8px 0}} .sentence-parts p{{margin:4px 0}} .sentence-chunks{{display:grid;gap:6px;list-style:none;padding:0;margin:8px 0}} .sentence-chunks li{{background:var(--ivory);border:1px solid #eee3d5;border-radius:12px;padding:8px}} .sentence-chunks b{{font-size:14px}} .sentence-chunks em{{display:block;color:var(--muted);font-style:normal;font-size:12.5px;margin-top:2px}} .sentence-meaning{{border-top:1px solid var(--line);padding-top:8px;color:#5f6d76}} .record-actions{{display:flex;gap:7px;flex-wrap:wrap;margin:8px 0}} .record-list{{display:grid;gap:7px;margin-top:8px}} .record-row{{border:1px solid var(--line);border-radius:12px;padding:8px;background:#fff}} .record-row b{{font-size:14px}} .record-row small{{color:var(--muted)}}
@@ -5616,7 +5761,7 @@ def write_outputs(article, selected_paragraphs, rejected_log, article_reject_log
 <body>
 <main class="mobile-page">
   <nav class="top-nav" aria-label="页面导航"><a href="#read">今日精读</a><a href="#study">学习面板</a><a href="#history">历史文章</a></nav>
-  <section class="article-info" id="top"><div class="mode-menu"><button type="button" class="mode-current" id="modeCurrent" onclick="event.stopPropagation();this.closest('.mode-menu').classList.toggle('open')">全英模式</button><div class="mode-options"><button type="button" class="mode-option" data-mode="bilingual" onclick="event.stopPropagation();var box=document.body;var m=this.dataset.mode==='bilingual'?'bilingual':'full';box.classList.remove('mode-full','mode-bilingual','mode-study');box.classList.add('mode-'+m);var c=this.closest('.mode-menu').querySelector('.mode-current');c.textContent=m==='bilingual'?'中英对照':'全英模式';this.dataset.mode=m==='bilingual'?'full':'bilingual';this.textContent=m==='bilingual'?'全英模式':'中英对照';this.closest('.mode-menu').classList.remove('open')">中英对照</button></div></div><div class="cover-body"><div class="brand"><span class="brand-mark">HL</span><span>Healing Lab 每日外刊</span></div><div class="cover-kicker">今日文章卡片</div><h1 class="title-en">{esc(article['title'])}</h1><p class="title-zh">{esc(title_zh)}</p></div><div class="info-grid"><div class="info-cell"><span>来源</span><b>{esc(article['source'])}</b></div><div class="info-cell"><span>日期</span><b>{esc(display_publish_date(article) or today)}</b></div><div class="info-cell"><span>主题</span><b>{esc(mobile_topic)}</b></div><div class="info-cell"><span>难度</span><b>{esc(mobile_level)}</b></div></div></section>
+  <section class="article-info" id="top"><div class="mode-menu"><button type="button" class="mode-current" id="modeCurrent" onclick="event.stopPropagation();this.closest('.mode-menu').classList.toggle('open')">全英模式</button><div class="mode-options"><button type="button" class="mode-option" data-mode="bilingual" onclick="event.stopPropagation();var box=document.body;var m=this.dataset.mode==='bilingual'?'bilingual':'full';box.classList.remove('mode-full','mode-bilingual','mode-study');box.classList.add('mode-'+m);var c=this.closest('.mode-menu').querySelector('.mode-current');c.textContent=m==='bilingual'?'中英对照':'全英模式';this.dataset.mode=m==='bilingual'?'full':'bilingual';this.textContent=m==='bilingual'?'全英模式':'中英对照';this.closest('.mode-menu').classList.remove('open')">中英对照</button></div></div><div class="cover-body"><div class="brand"><span class="brand-mark">HL</span><span>Healing Lab 每日外刊</span></div><div class="cover-kicker">今日文章卡片</div><h1 class="title-en">{esc(article['title'])}</h1><p class="title-zh">{esc(title_zh)}</p></div>{article_image_html}<div class="info-grid"><div class="info-cell"><span>来源</span><b>{esc(article['source'])}</b></div><div class="info-cell"><span>日期</span><b>{esc(display_publish_date(article) or today)}</b></div><div class="info-cell"><span>主题</span><b>{esc(mobile_topic)}</b></div><div class="info-cell"><span>难度</span><b>{esc(mobile_level)}</b></div></div></section>
   <section class="mobile-section" id="read"><div class="section-title"><span></span><div><h2>今日精读</h2><p>英文段落 + 中文翻译，浅色标注词可点击查看中文。</p></div></div><div class="para-list">{''.join(english_html)}</div></section>
   <section class="mobile-section" id="study"><div class="section-title"><span></span><div><h2>学习面板</h2><p>重点词语、表达句式、长难句分析和个人记录。</p></div></div><div class="study-grid"><div class="study-item"><span>重点表达</span><div class="vocab-list">{vocab_html}</div></div>{pattern_panel_html}<div class="study-item sentence-analysis-item"><span>长难句分析</span><b>拆句 + 分类</b>{long_sentence_html}</div>{review_html}<div class="study-item record-study-item"><span>个人学习记录</span><b>我的生词本 / 长难句库</b><div class="record-actions"><button type="button" class="record-btn" data-view="today">今日生词</button><button type="button" class="record-btn" data-view="saved">已收藏生词</button><button type="button" class="record-btn" data-view="sentence">长难句库</button><button type="button" class="record-btn" data-view="article">按文章查看</button><button type="button" class="record-btn" data-view="date">按日期查看</button><button type="button" class="record-btn" data-view="status">已掌握 / 未掌握</button></div><div id="recordList" class="record-list"></div></div></div></section>
   <!-- HISTORY_PLACEHOLDER -->
@@ -5751,7 +5896,7 @@ renderRecordList('today');
 
     cover_image = save_article_cover_image(article, today)
     xhs_doc = build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote_raw, quote_translated, today, cover_image)
-    editor_doc = build_manual_editor_page(article, title_zh, paragraph_rows, all_keywords, today, cfg)
+    editor_doc = build_manual_editor_page(article, title_zh, paragraph_rows, all_keywords, today, cfg, article_image)
 
     debug_lines = [
         f"筛选调试记录｜{today}",
