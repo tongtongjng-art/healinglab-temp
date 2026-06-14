@@ -2626,13 +2626,168 @@ def merge_expressions(paragraph_texts, count=8):
 
 
 def build_long_sentence_analysis(paragraph_texts, max_items=3):
-    return []
+    candidates = []
+    for p in paragraph_texts:
+        for sent in split_sentences(p):
+            s = clean_text(sent)
+            wc = word_count(s)
+            low = s.lower()
+            if wc < 18:
+                continue
+            score = wc
+            if "," in s or ";" in s or ":" in s:
+                score += 8
+            for marker in [
+                "although", "while", "when", "if", "because", "as ", "which", "that",
+                "who", "where", "rather than", "instead of", "finding it", "find it",
+                "take for granted", "what", "whether", "to afford", "to do",
+            ]:
+                if marker in low:
+                    score += 10
+            candidates.append((score, s))
+
+    if not candidates:
+        return []
+
+    candidates.sort(key=lambda x: x[0], reverse=True)
+    picked = []
+    seen = set()
+    for _score, sent in candidates:
+        key = sent[:80].lower()
+        if key in seen:
+            continue
+        seen.add(key)
+        picked.append(sent)
+        if len(picked) >= max_items:
+            break
+
+    def find_main(sentence):
+        parts = re.split(r",|;|—|–|-", sentence, maxsplit=1)
+        base = clean_text(parts[0])
+        if re.match(r"^(although|while|when|if|because|as)\b", base, flags=re.I) and len(parts) > 1:
+            rest = clean_text(parts[1])
+            rest_words = rest.split()
+            return " ".join(rest_words[:16]) + ("..." if len(rest_words) > 16 else "")
+        words = sentence.split()
+        return " ".join(words[:16]) + ("..." if len(words) > 16 else "")
+
+    def find_modifier(sentence):
+        low = sentence.lower()
+        m = re.match(r"^((?:although|while|when|if|because|as)\b[^,]+)", sentence, flags=re.I)
+        if m:
+            return clean_text(m.group(1))
+        m = re.search(r"\b(which|that|who|where)\b.+", sentence, flags=re.I)
+        if m:
+            return clean_text(m.group(0))
+        m = re.search(r"\b(to\s+[a-z]+(?:\s+\w+){0,8})", sentence, flags=re.I)
+        if m:
+            return clean_text(m.group(1))
+        if "rather than" in low:
+            return "rather than ..."
+        if "instead of" in low:
+            return "instead of ..."
+        return ""
+
+    def useful_chunks(sentence):
+        patterns = [
+            (r"\bfinding it\s+(?:\w+\s+){0,2}difficult\s+to\s+\w+(?:\s+\w+){0,6}", "形式宾语 / 发现做某事很难"),
+            (r"\bfind(?:s|ing)? it\s+(?:\w+\s+){0,2}(?:hard|difficult)\s+to\s+\w+(?:\s+\w+){0,6}", "形式宾语 / 发现做某事很难"),
+            (r"\bt(?:ake|akes|aking|ook|aken)\s+for\s+granted\b", "认为……理所当然"),
+            (r"\bthe kind of\s+\w+(?:\s+\w+){0,10}", "the kind of 后接名词，表示“那种……”"),
+            (r"\brather than\s+\w+(?:\s+\w+){0,5}", "而不是……"),
+            (r"\binstead of\s+\w+(?:\s+\w+){0,5}", "而不是 / 代替……"),
+            (r"\bmore\s+\w+\s+than\s+\w+", "比较结构"),
+            (r"\bno longer\b", "不再……"),
+            (r"\bbe likely to\s+\w+", "可能会……"),
+            (r"\bbe difficult to\s+\w+", "做某事很难"),
+            (r"\bit is\s+\w+\s+to\s+\w+", "it 作形式主语"),
+        ]
+        found = []
+        for pat, zh in patterns:
+            m = re.search(pat, sentence, flags=re.I)
+            if m:
+                text = clean_text(m.group(0))
+                if not any(x["text"].lower() == text.lower() for x in found):
+                    found.append({"text": text, "zh": zh})
+            if len(found) >= 3:
+                break
+        return found
+
+    def category(sentence):
+        low = sentence.lower()
+        cats = []
+        if re.search(r"\bwhich\b|\bwho\b|\bwhere\b|\bthat\b", low):
+            cats.append("定语从句")
+        if re.search(r"^(although|while|when|if|because|as)\b", low) or re.search(r"\balthough\b|\bwhile\b|\bwhen\b|\bbecause\b", low):
+            cats.append("状语从句")
+        if re.search(r"\bit is\s+\w+\s+to\b|\bfind(?:s|ing)? it\s+(?:\w+\s+){0,2}(?:hard|difficult)\s+to\b", low):
+            cats.append("形式主语 / 形式宾语")
+        if re.search(r"\bto\s+\w+\b|\b\w+ing\b", low):
+            cats.append("非谓语结构")
+        if re.search(r"\bmore\b.+\bthan\b|\bless\b.+\bthan\b", low):
+            cats.append("比较结构")
+        if not cats:
+            cats.append("长主语结构")
+        return " + ".join(cats[:2])
+
+    items = []
+    for sent in picked:
+        chunks = useful_chunks(sent)
+        items.append({
+            "sentence": sent,
+            "main": find_main(sent),
+            "modifier": find_modifier(sent),
+            "chunks": chunks,
+            "category": category(sent),
+            "analysis": "先找主干，再把从句、非谓语或插入信息拆开，最后回到整句意思。",
+            "zh": translate_text(sent, True),
+        })
+    return items
 
 def format_sentence_analysis_txt(items):
-    return []
+    lines = []
+    for idx, item in enumerate(items, 1):
+        lines.extend([
+            f"长难句 {idx}｜{item.get('category', '长难句')}",
+            "原句：",
+            item.get("sentence", ""),
+            "主干：",
+            item.get("main", ""),
+            "修饰/从句：",
+            item.get("modifier", "") or "无明显复杂修饰",
+            "整句意思：",
+            item.get("zh", ""),
+            "",
+        ])
+    return lines
 
 def format_sentence_analysis_html(items):
-    return ""
+    if not items:
+        return '<div class="study-item sentence-analysis-item"><span>长难句分析</span><b>今天暂无明显长难句</b><p>这篇文章的句子结构相对直接，可以重点积累表达和词组。</p></div>'
+    html_rows = []
+    for idx, item in enumerate(items, 1):
+        chunk_html = ""
+        for ch in item.get("chunks", []):
+            chunk_html += f"<li><b>{esc(ch.get('text'))}</b><em>{esc(ch.get('zh'))}</em></li>"
+        if not chunk_html:
+            chunk_html = "<li><b>主干 + 修饰</b><em>先抓主谓宾，再处理补充信息。</em></li>"
+        data_sentence = esc(item.get("sentence", ""))
+        data_category = esc(item.get("category", "长难句"))
+        data_analysis = esc(item.get("analysis", ""))
+        html_rows.append(f"""
+        <div class="sentence-analysis-card" data-sentence="{data_sentence}" data-category="{data_category}" data-analysis="{data_analysis}">
+          <div class="sentence-top"><span>长难句 {idx}</span><button type="button" class="save-sentence-btn">保存句型</button></div>
+          <div class="sentence-category">{esc(item.get('category'))}</div>
+          <p class="sentence-original">{esc(item.get('sentence'))}</p>
+          <div class="sentence-parts">
+            <p><b>主干：</b>{esc(item.get('main'))}</p>
+            <p><b>修饰：</b>{esc(item.get('modifier') or '无明显复杂修饰')}</p>
+          </div>
+          <ul class="sentence-chunks">{chunk_html}</ul>
+          <p class="sentence-meaning">{esc(item.get('zh'))}</p>
+        </div>
+        """)
+    return "".join(html_rows)
 
 
 def pick_today_quote(paragraph_texts):
@@ -3932,6 +4087,10 @@ textarea{{min-height:68px;resize:vertical}}
 .pattern{{border:1px solid #f0d6c9;background:#fff8f2;border-radius:14px;padding:12px}}
 .pattern p{{margin:7px 0;line-height:1.6}}
 .pattern .ori{{border-left:3px solid var(--orange);padding-left:10px;color:#536171}}
+.sentence-card{{border:1px solid #dce6e3;background:#fbfdfb;border-radius:14px;padding:12px}}
+.sentence-card p{{margin:7px 0;line-height:1.65}}
+.sentence-card .ori{{font-family:Georgia,"Times New Roman",serif;border-left:3px solid var(--green);padding-left:10px;color:#25323a}}
+.sentence-card .parts{{background:var(--green2);border-radius:10px;padding:9px;color:#35443d}}
 .vocab-hl{{display:inline!important;width:auto!important;min-width:0!important;max-width:none!important;height:auto!important;line-height:inherit!important;white-space:normal!important;margin:0!important;color:inherit!important;background:rgba(127,163,145,.10)!important;border:0!important;border-radius:2px!important;padding:0 1px!important;cursor:pointer!important;box-decoration-break:clone;-webkit-box-decoration-break:clone}} .hl{{display:inline!important;width:auto!important;background:transparent!important;padding:0!important;margin:0!important}}
 .copybox{{position:fixed;left:16px;right:16px;bottom:16px;background:#1d252c;color:white;border-radius:16px;padding:12px 14px;display:none;z-index:99;box-shadow:0 14px 38px rgba(0,0,0,.22);max-width:480px;margin:auto;white-space:pre-wrap}}
 .tool-note{{font-size:13px;color:var(--muted);line-height:1.6;margin:0 0 10px}}
@@ -3984,6 +4143,7 @@ textarea{{min-height:68px;resize:vertical}}
             <button class="btn-blue" onclick="addFromSelection('vocab')">加入词汇</button>
             <button class="btn-green" onclick="addFromSelection('phrase')">加入词组</button>
             <button class="btn-orange" onclick="addFromSelection('pattern')">加入表达句式</button>
+            <button class="btn-light" onclick="addFromSelection('sentence')">加入长难句</button>
           </div>
         </div>
         <div id="articleBox"></div>
@@ -4013,7 +4173,7 @@ textarea{{min-height:68px;resize:vertical}}
 
           <div class="import-panel">
             <label>一键导入包</label>
-            <textarea id="importBox" placeholder="把我给你的导入包 JSON 粘贴到这里，然后点“一键导入”。表达句式会自动只取前 3 个；正文只标单个词汇，不标词组，不改变段落排版。"></textarea>
+            <textarea id="importBox" placeholder="把我给你的导入包 JSON 粘贴到这里，然后点“一键导入”。支持 vocab / phrases / patterns / long_sentences；表达句式会自动只取前 3 个；正文只标单个词汇，不标词组，不改变段落排版。"></textarea>
             <div class="btns">
               <button class="btn-green" onclick="importFromTextarea()">一键导入</button>
               <button class="btn-light" onclick="importFromClipboard()">从剪贴板导入</button>
@@ -4024,11 +4184,13 @@ textarea{{min-height:68px;resize:vertical}}
             <button class="tab active" data-tab="vocab" onclick="showTab('vocab')">标注词汇</button>
             <button class="tab" data-tab="phrase" onclick="showTab('phrase')">重点表达</button>
             <button class="tab" data-tab="pattern" onclick="showTab('pattern')">表达句式</button>
+            <button class="tab" data-tab="sentence" onclick="showTab('sentence')">长难句分析</button>
           </div>
 
           <div id="edit-vocab"></div>
           <div id="edit-phrase" class="hidden"></div>
           <div id="edit-pattern" class="hidden"></div>
+          <div id="edit-sentence" class="hidden"></div>
 
           <div class="btns">
             <button class="btn-green" onclick="renderFinal()">生成最终页</button>
@@ -4068,7 +4230,8 @@ const data = JSON.parse(document.getElementById('payload').textContent);
 const state = {{
   vocab: [],
   phrase: [],
-  pattern: []
+  pattern: [],
+  sentence: []
 }};
 
 const commonMeanings = {{
@@ -4151,6 +4314,15 @@ function addFromSelection(type){{
       example: exampleFromPattern(text),
       note: "适合迁移到自己的生活、学习或工作场景。"
     }});
+  }} else if(type === 'sentence'){{
+    state.sentence.push({{
+      original: text,
+      category: "长难句结构",
+      main: "",
+      parts: "",
+      analysis: "",
+      meaning: ""
+    }});
   }} else {{
     state[type].push({{
       text,
@@ -4208,6 +4380,7 @@ function renderEditors(){{
   document.getElementById('edit-vocab').innerHTML = renderList('vocab');
   document.getElementById('edit-phrase').innerHTML = renderList('phrase');
   document.getElementById('edit-pattern').innerHTML = renderPatterns();
+  document.getElementById('edit-sentence').innerHTML = renderSentences();
 }}
 
 function renderList(type){{
@@ -4234,6 +4407,20 @@ function renderPatterns(){{
   `).join('') || `<p style="color:#66737d">暂无。请在左侧选中一个完整句子或表达结构后加入。</p>`;
 }}
 
+function renderSentences(){{
+  return state.sentence.map((it, i) => `
+    <div class="item">
+      <div class="item-top"><span class="item-type">长难句分析</span><button class="del" onclick="removeItem('sentence',${{i}})">删除</button></div>
+      <label>原句</label><textarea oninput="state.sentence[${{i}}].original=this.value">${{escapeHtml(it.original)}}</textarea>
+      <label>句型分类</label><input value="${{escapeAttr(it.category||'')}}" placeholder="例如：状语从句 + 形式宾语" oninput="state.sentence[${{i}}].category=this.value">
+      <label>主干</label><input value="${{escapeAttr(it.main||'')}}" placeholder="例如：they are finding it difficult to afford..." oninput="state.sentence[${{i}}].main=this.value">
+      <label>拆句分析</label><textarea placeholder="逐条写：① Although... 是让步状语；② finding it difficult to... 是形式宾语结构。" oninput="state.sentence[${{i}}].parts=this.value">${{escapeHtml(it.parts||'')}}</textarea>
+      <label>整体意思</label><textarea placeholder="写成自然中文，不要只翻译单词。" oninput="state.sentence[${{i}}].meaning=this.value">${{escapeHtml(it.meaning||'')}}</textarea>
+      <label>备注 / 使用价值</label><input value="${{escapeAttr(it.analysis||'')}}" placeholder="例如：适合写社会变化、代际压力、生活成本。" oninput="state.sentence[${{i}}].analysis=this.value">
+    </div>
+  `).join('') || `<p style="color:#66737d">暂无。可以在左侧拖选整句后加入，也可以用 JSON 导入 long_sentences。</p>`;
+}}
+
 function escapeAttr(s){{ return escapeHtml(s).replace(/"/g,'&quot;'); }}
 
 function removeItem(type, i){{
@@ -4242,7 +4429,7 @@ function removeItem(type, i){{
 }}
 
 function showTab(type){{
-  ['vocab','phrase','pattern'].forEach(t => {{
+  ['vocab','phrase','pattern','sentence'].forEach(t => {{
     document.getElementById('edit-'+t).classList.toggle('hidden', t!==type);
     document.querySelector('.tab[data-tab="'+t+'"]').classList.toggle('active', t===type);
   }});
@@ -4328,6 +4515,17 @@ function renderFinal(){{
     </div>
   `).join('') || `<div class="final-row"><span>还没有选择表达句式。</span></div>`;
 
+  const sentenceHtml = state.sentence.map(s => `
+    <div class="sentence-card">
+      <p class="ori">原句：${{escapeHtml(s.original || '')}}</p>
+      <p><b>分类：</b>${{escapeHtml(s.category || '长难句结构')}}</p>
+      <p><b>主干：</b>${{escapeHtml(s.main || '')}}</p>
+      <div class="parts">${{escapeHtml(s.parts || '').replace(/\\n/g,'<br>')}}</div>
+      <p><b>整体意思：</b>${{escapeHtml(s.meaning || '')}}</p>
+      <small>${{escapeHtml(s.analysis || '')}}</small>
+    </div>
+  `).join('') || `<div class="final-row"><span>还没有填写长难句分析。</span></div>`;
+
   const exprs = [
     ...state.phrase.map(x => ({{...x, type:'词组'}}))
   ];
@@ -4354,6 +4552,7 @@ function renderFinal(){{
       <section class="final-card final-section"><div class="final-hd"><h2>今日精读</h2><span class="mini">Original + Meaning</span></div><div class="final-list">${{paraHtml}}</div></section>
       <section class="final-card final-section"><div class="final-hd"><h2>重点表达</h2><span class="mini">Expressions</span></div><div class="final-list">${{exprHtml}}</div></section>
       <section class="final-card final-section"><div class="final-hd"><h2>表达句式</h2><span class="mini">Top 3 Sentence Patterns</span></div><div class="final-list">${{patternHtml}}</div></section>
+      <section class="final-card final-section"><div class="final-hd"><h2>长难句分析</h2><span class="mini">Sentence Analysis</span></div><div class="final-list">${{sentenceHtml}}</div></section>
     </div>
   `;
   document.getElementById('finalPreview').scrollIntoView({{behavior:'smooth', block:'start'}});
@@ -4382,6 +4581,28 @@ function normalizePatterns(list){{
   }}).filter(x => x.original || x.pattern);
 }}
 
+function normalizeSentences(list){{
+  if(!Array.isArray(list)) return [];
+  return list.map(x => {{
+    if(Array.isArray(x)) return {{
+      original:x[0]||'',
+      category:x[1]||'',
+      main:x[2]||'',
+      parts:x[3]||'',
+      meaning:x[4]||'',
+      analysis:x[5]||''
+    }};
+    return {{
+      original:x.original||x.sentence||'',
+      category:x.category||x.type||'',
+      main:x.main||x.core||'',
+      parts:x.parts||x.breakdown||x.structure||'',
+      meaning:x.meaning||x.zh||x.translation||'',
+      analysis:x.analysis||x.note||x.reason||''
+    }};
+  }}).filter(x => x.original || x.parts || x.analysis);
+}}
+
 function applyImportPack(pack){{
   if(pack.topic) document.getElementById('topic').value = pack.topic;
   if(pack.level) document.getElementById('level').value = pack.level;
@@ -4390,6 +4611,7 @@ function applyImportPack(pack){{
   state.vocab = normalizeList(pack.vocab || pack.words || []);
   state.phrase = normalizeList(pack.phrases || pack.phrase || []);
   state.pattern = normalizePatterns(pack.patterns || pack.sentence_patterns || []).slice(0,3);
+  state.sentence = normalizeSentences(pack.long_sentences || pack.sentence_analysis || pack.long_sentence_analysis || pack.longSentences || []);
 
   renderEditors();
   renderFinal();
@@ -4453,7 +4675,8 @@ function getCurrentPack(){{
     paragraphs: data.paragraphs,
     vocab: state.vocab,
     phrases: state.phrase,
-    patterns: state.pattern.slice(0,3)
+    patterns: state.pattern.slice(0,3),
+    long_sentences: state.sentence
   }};
 }}
 
@@ -4781,6 +5004,17 @@ function loadDemo(){{
     const sent = findSentence(t);
     if(sent) state.pattern.push({{original:sent, pattern:patternFrom(sent), zh:meaningFromPattern(sent), example:exampleFromPattern(sent), note:'可迁移表达句式'}});
   }});
+  const longSample = data.paragraphs.map(p=>p.raw).join(' ').split(/(?<=[.!?])\\s+/).find(s => s.split(/\\s+/).length >= 22) || (data.paragraphs[0] ? data.paragraphs[0].raw : '') || '';
+  if(longSample){{
+    state.sentence.push({{
+      original: longSample,
+      category: '手动填写分类，例如：状语从句 + 形式宾语',
+      main: '在这里写主干',
+      parts: '① 在这里拆从句 / 插入语 / 非谓语。\\n② 在这里解释重点结构。\\n③ 在这里说明句子如何合起来理解。',
+      meaning: '在这里写自然中文整体意思。',
+      analysis: '在这里写使用价值，例如适合写社会变化、代际压力或政策影响。'
+    }});
+  }}
   renderEditors();
   renderFinal();
 }}
@@ -4792,7 +5026,7 @@ function findSentence(term){{
 
 function clearAll(){{
   if(!confirm('确定清空你选的词和句式吗？')) return;
-  state.vocab=[]; state.phrase=[]; state.pattern=[];
+  state.vocab=[]; state.phrase=[]; state.pattern=[]; state.sentence=[];
   renderEditors(); renderFinal();
 }}
 
@@ -4960,6 +5194,8 @@ def write_outputs(article, selected_paragraphs, rejected_log, article_reject_log
     mobile_topic = mobile_topic_category(article.get("title", "") + " " + title_zh, article.get("source", ""), full_text_for_mobile)
     mobile_level = mobile_level_label(full_text_for_mobile)
     pattern_hits_mobile = build_expressions(full_text_for_mobile, 3)
+    long_sentence_items = build_long_sentence_analysis(paragraph_texts, 3)
+    long_sentence_html = format_sentence_analysis_html(long_sentence_items)
     pattern_panel_html = ""
     for name, meaning, example, label in pattern_hits_mobile:
         pattern_panel_html += f"""
@@ -4998,11 +5234,11 @@ def write_outputs(article, selected_paragraphs, rejected_log, article_reject_log
 <style>
 :root {{ --bg:#f7f5f0; --card:#fff; --ink:#172026; --muted:#66727d; --line:#dce4e8; --blue:#2f6f9f; --blue-soft:#eaf4f8; --sage:#4b8063; --sage-soft:#edf6f0; --clay:#b76e57; --clay-soft:#fff0ea; --ivory:#fffdf8; --shadow:0 14px 34px rgba(35,48,56,.08); }}
 *{{box-sizing:border-box}} html{{scroll-behavior:smooth}} body{{margin:0;background:linear-gradient(180deg,#fbfaf6 0%,var(--bg) 100%);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",Arial,sans-serif;line-height:1.65}} a{{color:inherit;text-decoration:none}}
-.mobile-page{{width:min(100%,520px);margin:0 auto;padding:12px 12px 34px}} .top-nav{{position:sticky;top:0;z-index:30;display:grid;grid-template-columns:repeat(3,1fr);gap:7px;padding:10px 0;background:rgba(247,245,240,.88);backdrop-filter:blur(14px)}} .top-nav a{{display:grid;place-items:center;min-height:38px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.82);color:var(--blue);font-size:13px;font-weight:900}} .top-nav a:first-child{{background:var(--blue);border-color:var(--blue);color:#fff}}
+.mobile-page{{width:min(100%,520px);margin:0 auto;padding:12px 12px 34px}} .top-nav{{position:sticky;top:0;z-index:30;display:grid;grid-template-columns:repeat(3,1fr);gap:7px;padding:10px 0;background:rgba(247,245,240,.88);backdrop-filter:blur(14px)}} .top-nav a{{display:grid;place-items:center;min-height:38px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.82);color:var(--blue);font-size:13px;font-weight:900}} .top-nav a:first-child{{background:var(--blue);border-color:var(--blue);color:#fff}} .mode-switch{{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:0 0 12px}} .mode-btn{{border:1px solid var(--line);background:#fff;color:#39505d;border-radius:999px;min-height:36px;font-size:13px;font-weight:900;cursor:pointer}} .mode-btn.active{{background:var(--ink);border-color:var(--ink);color:#fff}} body.mode-full .translation,body.mode-full #study,body.mode-full #history{{display:none}} body.mode-bilingual #study,body.mode-bilingual #history{{display:none}} body.mode-xhs #read,body.mode-xhs #history,body.mode-xhs .sentence-analysis-item,body.mode-xhs .record-study-item,body.mode-xhs .review-item{{display:none}} body.mode-xhs .article-info{{margin-bottom:14px}}
 .article-info{{position:relative;overflow:hidden;background:linear-gradient(140deg,#fbf1df 0%,#f7f4ea 54%,#edf5f6 100%);border:1px solid #dce4e8;border-radius:22px;box-shadow:0 18px 44px rgba(35,48,56,.12);margin:8px 0 14px}} .article-info::before{{content:"";position:absolute;inset:16px 16px auto 16px;height:28px;border-radius:999px;background:rgba(237,246,240,.78)}} .article-info::after{{content:"";position:absolute;right:-80px;top:150px;width:210px;height:210px;border-radius:50%;border:1px solid rgba(47,111,159,.10)}} .cover-body{{position:relative;z-index:1;padding:24px 22px 0}} .brand{{display:flex;align-items:center;gap:10px;color:var(--blue);font-weight:950;font-size:13px;margin-bottom:22px}} .brand-mark{{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--sage);color:#fff;font-size:13px}} .cover-kicker{{display:inline-flex;min-height:28px;align-items:center;color:var(--sage);font-size:13px;font-weight:950;margin-bottom:24px;padding:0 12px;border-radius:999px;background:rgba(237,246,240,.78)}} .title-en{{font-family:Georgia,"Times New Roman",serif;font-size:36px;line-height:1.06;font-weight:900;letter-spacing:0;margin:0;color:#102331;text-wrap:balance}} .title-zh{{font-size:16px;line-height:1.55;font-weight:850;letter-spacing:0;margin:14px 0 0;color:#334756}} .info-grid{{position:relative;z-index:1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:22px;padding:16px;background:rgba(255,255,255,.72);border-top:1px solid rgba(220,228,232,.86)}} .info-cell{{background:rgba(255,255,255,.72);border:1px solid var(--line);border-radius:14px;padding:10px}} .info-cell span{{display:block;color:var(--muted);font-size:11px;font-weight:850;margin-bottom:3px}} .info-cell b{{display:block;font-size:13px;line-height:1.35;color:#111d24}}
 .mobile-section{{background:var(--card);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);padding:16px;margin:14px 0}} .section-title{{display:flex;gap:10px;align-items:flex-start;margin-bottom:14px}} .section-title>span{{width:5px;min-height:36px;border-radius:999px;background:var(--blue);margin-top:2px}} .section-title h2{{font-size:21px;line-height:1.1;margin:0 0 5px;letter-spacing:0}} .section-title p{{margin:0;color:var(--muted);font-size:13px;line-height:1.45}}
 .para-list{{display:grid;gap:12px}} .para-card{{background:var(--ivory);border:1px solid #ece4d8;border-radius:16px;padding:14px}} .para-index{{color:var(--sage);font-size:13px;font-weight:950;margin-bottom:8px}} .english{{font-family:Georgia,"Times New Roman",serif;font-size:18px;line-height:1.78;color:#1f2f38}} .translation{{border-top:1px solid #eadfce;margin-top:12px;padding-top:10px;color:#61707a;font-size:14.5px;line-height:1.75}} .click-word,.click-word.key-word{{display:inline;font:inherit;color:#315c6f;background:rgba(75,128,99,.13);border:0;border-radius:4px;padding:0 2px;cursor:pointer;text-decoration:none}} .click-word:active{{background:rgba(47,111,159,.16)}}
-.study-grid{{display:grid;gap:10px}} .study-item{{border:1px solid var(--line);border-radius:16px;padding:13px;background:#fbfcfc}} .study-item span{{display:inline-flex;border-radius:999px;padding:4px 8px;background:var(--blue-soft);color:var(--blue);font-size:12px;font-weight:950;margin-bottom:8px}} .study-item b{{display:block;font-size:16px;line-height:1.35;margin-bottom:5px;color:var(--ink)}} .study-item p{{margin:0;color:#42515a;line-height:1.62;font-size:14px}} .study-item small{{display:block;color:var(--muted);line-height:1.58;margin-top:6px;font-size:13px}} .vocab-list{{display:grid;gap:8px}} .vocab-chip{{display:block;background:var(--sage-soft);border:1px solid rgba(75,128,99,.18);border-radius:14px;padding:10px 11px;color:#35433d;font-size:13.5px;line-height:1.45}} .vocab-chip strong{{display:block;color:var(--sage);font-size:15px;margin-bottom:2px}} .review-item{{background:var(--clay-soft);border-color:#f2d5ca}} .review-item span{{background:#fff7f3;color:var(--clay)}}
+.study-grid{{display:grid;gap:10px}} .study-item{{border:1px solid var(--line);border-radius:16px;padding:13px;background:#fbfcfc}} .study-item span{{display:inline-flex;border-radius:999px;padding:4px 8px;background:var(--blue-soft);color:var(--blue);font-size:12px;font-weight:950;margin-bottom:8px}} .study-item b{{display:block;font-size:16px;line-height:1.35;margin-bottom:5px;color:var(--ink)}} .study-item p{{margin:0;color:#42515a;line-height:1.62;font-size:14px}} .study-item small{{display:block;color:var(--muted);line-height:1.58;margin-top:6px;font-size:13px}} .vocab-list{{display:grid;gap:8px}} .vocab-chip{{display:block;background:var(--sage-soft);border:1px solid rgba(75,128,99,.18);border-radius:14px;padding:10px 11px;color:#35433d;font-size:13.5px;line-height:1.45}} .vocab-chip strong{{display:block;color:var(--sage);font-size:15px;margin-bottom:2px}} .review-item{{background:var(--clay-soft);border-color:#f2d5ca}} .review-item span{{background:#fff7f3;color:var(--clay)}} .sentence-analysis-card{{border:1px solid #e3edf1;background:#fff;border-radius:16px;padding:13px;margin-top:9px}} .sentence-top{{display:flex;align-items:center;justify-content:space-between;gap:8px}} .sentence-top span,.sentence-category{{color:var(--blue);font-size:12px;font-weight:950}} .save-sentence-btn,.record-btn,#saveWordBtn{{border:1px solid var(--line);background:#fff;color:var(--blue);border-radius:999px;padding:6px 9px;font-size:12px;font-weight:900;cursor:pointer}} .sentence-original{{font-family:Georgia,"Times New Roman",serif;font-size:15.5px;line-height:1.65;color:#20313a;margin:8px 0}} .sentence-parts{{background:var(--blue-soft);border-radius:12px;padding:9px;margin:8px 0}} .sentence-parts p{{margin:4px 0}} .sentence-chunks{{display:grid;gap:6px;list-style:none;padding:0;margin:8px 0}} .sentence-chunks li{{background:var(--ivory);border:1px solid #eee3d5;border-radius:12px;padding:8px}} .sentence-chunks b{{font-size:14px}} .sentence-chunks em{{display:block;color:var(--muted);font-style:normal;font-size:12.5px;margin-top:2px}} .sentence-meaning{{border-top:1px solid var(--line);padding-top:8px;color:#5f6d76}} .record-actions{{display:flex;gap:7px;flex-wrap:wrap;margin:8px 0}} .record-list{{display:grid;gap:7px;margin-top:8px}} .record-row{{border:1px solid var(--line);border-radius:12px;padding:8px;background:#fff}} .record-row b{{font-size:14px}} .record-row small{{color:var(--muted)}}
 .history-panel{{padding-bottom:18px}} .history-filter-wrap{{display:grid;gap:10px;background:#f8fbfb;border:1px solid var(--line);border-radius:16px;padding:11px;margin-bottom:12px}} .history-filter-row{{display:flex;gap:7px;align-items:center;flex-wrap:wrap}} .history-filter-row strong{{color:var(--muted);font-size:13px;margin-right:2px}} .history-filter-btn{{border:1px solid var(--line);background:#fff;color:#43525b;border-radius:999px;padding:6px 10px;font-size:12.5px;font-weight:850;cursor:pointer}} .history-filter-btn.active{{background:var(--blue);border-color:var(--blue);color:#fff}} .history-list{{display:grid;grid-template-columns:1fr;gap:10px;padding-left:0}} .history-item{{display:block;background:var(--ivory);border:1px solid #ebe3d8;border-radius:16px;padding:13px;color:var(--ink)}} .history-date{{color:var(--blue);font-size:12px;font-weight:950;margin-bottom:5px}} .history-item b{{display:block;font-size:15.5px;line-height:1.42;margin-bottom:6px}} .history-source{{display:block;color:var(--muted);font-size:12.5px;margin-bottom:9px}} .history-tags{{display:flex;gap:6px;flex-wrap:wrap}} .history-tags span{{border-radius:999px;background:var(--sage-soft);color:var(--sage);padding:4px 8px;font-size:12px;font-weight:900}} .history-tags span:last-child{{background:var(--blue-soft);color:var(--blue)}} .history-empty{{color:var(--muted);font-size:14px;line-height:1.7;padding:8px 2px}}
 .word-popup{{position:fixed;left:12px;right:12px;bottom:12px;z-index:9999;background:#172026;color:#fff;border-radius:18px;padding:14px 15px;box-shadow:0 16px 42px rgba(0,0,0,.28);font-size:15px;max-width:496px;margin:auto}} .word-popup.hidden{{display:none}} .popup-word{{font-weight:900;font-size:18px;margin-bottom:5px}} .popup-meaning{{line-height:1.55;color:#f3f5f6}} .popup-close{{position:absolute;top:7px;right:10px;background:transparent;color:#fff;border:0;font-size:22px;cursor:pointer}}
 @media print{{.top-nav,.word-popup{{display:none!important}}body{{background:#fff!important}}.mobile-section,.article-info{{box-shadow:none!important;border:1px solid #ddd!important}}}}
@@ -5011,16 +5247,118 @@ def write_outputs(article, selected_paragraphs, rejected_log, article_reject_log
 <body>
 <main class="mobile-page">
   <nav class="top-nav" aria-label="页面导航"><a href="#read">今日精读</a><a href="#study">学习面板</a><a href="#history">历史文章</a></nav>
+  <div class="mode-switch" aria-label="显示模式">
+    <button type="button" class="mode-btn active" data-mode="study">学习模式</button>
+    <button type="button" class="mode-btn" data-mode="bilingual">中英对照</button>
+    <button type="button" class="mode-btn" data-mode="full">全英模式</button>
+    <button type="button" class="mode-btn" data-mode="xhs">图文模式</button>
+  </div>
   <section class="article-info" id="top"><div class="cover-body"><div class="brand"><span class="brand-mark">HL</span><span>Healing Lab 每日外刊</span></div><div class="cover-kicker">今日文章卡片</div><h1 class="title-en">{esc(article['title'])}</h1><p class="title-zh">{esc(title_zh)}</p></div><div class="info-grid"><div class="info-cell"><span>来源</span><b>{esc(article['source'])}</b></div><div class="info-cell"><span>日期</span><b>{esc(display_publish_date(article) or today)}</b></div><div class="info-cell"><span>主题</span><b>{esc(mobile_topic)}</b></div><div class="info-cell"><span>难度</span><b>{esc(mobile_level)}</b></div></div></section>
   <section class="mobile-section" id="read"><div class="section-title"><span></span><div><h2>今日精读</h2><p>英文段落 + 中文翻译，浅色标注词可点击查看中文。</p></div></div><div class="para-list">{''.join(english_html)}</div></section>
-  <section class="mobile-section" id="study"><div class="section-title"><span></span><div><h2>学习面板</h2><p>先记重点表达，再挑一个句式仿写。</p></div></div><div class="study-grid"><div class="study-item"><span>重点表达</span><div class="vocab-list">{vocab_html}</div></div>{pattern_panel_html}{review_html}</div></section>
+  <section class="mobile-section" id="study"><div class="section-title"><span></span><div><h2>学习面板</h2><p>重点词语、表达句式、长难句分析和个人记录。</p></div></div><div class="study-grid"><div class="study-item"><span>重点表达</span><div class="vocab-list">{vocab_html}</div></div>{pattern_panel_html}<div class="study-item sentence-analysis-item"><span>长难句分析</span><b>拆句 + 分类</b>{long_sentence_html}</div>{review_html}<div class="study-item record-study-item"><span>个人学习记录</span><b>我的生词本 / 长难句库</b><div class="record-actions"><button type="button" class="record-btn" data-view="today">今日生词</button><button type="button" class="record-btn" data-view="saved">已收藏生词</button><button type="button" class="record-btn" data-view="sentence">长难句库</button><button type="button" class="record-btn" data-view="article">按文章查看</button><button type="button" class="record-btn" data-view="date">按日期查看</button><button type="button" class="record-btn" data-view="status">已掌握 / 未掌握</button></div><div id="recordList" class="record-list"></div></div></div></section>
   <!-- HISTORY_PLACEHOLDER -->
 </main>
-<div id="wordPopup" class="word-popup hidden"><button class="popup-close" onclick="document.getElementById('wordPopup').classList.add('hidden')">×</button><div id="popupWord" class="popup-word"></div><div id="popupMeaning" class="popup-meaning"></div></div>
+<div id="wordPopup" class="word-popup hidden"><button class="popup-close" onclick="document.getElementById('wordPopup').classList.add('hidden')">×</button><div id="popupWord" class="popup-word"></div><div id="popupMeaning" class="popup-meaning"></div><button type="button" id="saveWordBtn">加入生词本</button></div>
 <script>
 function exportPDF() {{ window.print(); }}
 const WORD_MEANINGS = {word_map_json};
-document.addEventListener('click', function(e) {{ const target = e.target.closest('.click-word'); if (!target) return; const key = (target.dataset.word || '').toLowerCase(); const word = target.textContent || key; const meaning = WORD_MEANINGS[key] || '暂无中文解释，可结合上下文理解。'; document.getElementById('popupWord').textContent = word; document.getElementById('popupMeaning').textContent = meaning; document.getElementById('wordPopup').classList.remove('hidden'); }});
+const ARTICLE_META = {{title:{json.dumps(title_zh or article['title'], ensure_ascii=False)}, date:{json.dumps(today, ensure_ascii=False)}, source:{json.dumps(article['source'], ensure_ascii=False)}}};
+let CURRENT_WORD = null;
+function readStore(key) {{ try {{ return JSON.parse(localStorage.getItem(key) || '[]'); }} catch(e) {{ return []; }} }}
+function writeStore(key, value) {{ localStorage.setItem(key, JSON.stringify(value)); }}
+function currentSentenceFrom(node) {{
+  const card = node.closest('.para-card');
+  if(!card) return '';
+  const english = card.querySelector('.english');
+  return english ? (english.innerText || '').slice(0, 260) : '';
+}}
+function saveWord(item) {{
+  if(!item || !item.word) return;
+  const list = readStore('hl_vocab_book');
+  const key = (item.word + '|' + item.date + '|' + item.title).toLowerCase();
+  if(!list.some(x => ((x.word + '|' + x.date + '|' + x.title).toLowerCase()) === key)) {{
+    list.unshift(Object.assign({{}}, item, {{status:'未掌握'}}));
+    writeStore('hl_vocab_book', list.slice(0, 300));
+  }}
+  renderRecordList('saved');
+}}
+function saveSentence(item) {{
+  if(!item || !item.sentence) return;
+  const list = readStore('hl_sentence_bank');
+  const key = (item.sentence + '|' + item.category).toLowerCase();
+  if(!list.some(x => ((x.sentence + '|' + x.category).toLowerCase()) === key)) {{
+    list.unshift(Object.assign({{}}, item, {{title:ARTICLE_META.title, date:ARTICLE_META.date}}));
+    writeStore('hl_sentence_bank', list.slice(0, 200));
+  }}
+  renderRecordList('sentence');
+}}
+function renderRecordList(view) {{
+  const box = document.getElementById('recordList');
+  if(!box) return;
+  const vocab = readStore('hl_vocab_book');
+  const sentences = readStore('hl_sentence_bank');
+  let rows = [];
+  if(view === 'sentence') {{
+    const counts = {{}};
+    sentences.forEach(x => {{ const cat = x.category || '未分类长难句'; counts[cat] = (counts[cat] || 0) + 1; }});
+    const summary = Object.keys(counts).map(k => '<div class="record-row"><b>' + escHtml(k) + '</b><small>已保存 ' + counts[k] + ' 句</small></div>');
+    rows = summary.concat(sentences.map(x => '<div class="record-row"><b>' + escHtml(x.category || '长难句') + '</b><small>' + escHtml(x.date || '') + ' · ' + escHtml(x.title || '') + '</small><p>' + escHtml(x.sentence || '') + '</p></div>'));
+  }} else if(view === 'article') {{
+    const groups = {{}};
+    vocab.forEach(x => {{ const key = x.title || x.source_title || '未命名文章'; groups[key] = (groups[key] || 0) + 1; }});
+    rows = Object.keys(groups).map(k => '<div class="record-row"><b>' + escHtml(k) + '</b><small>收藏生词 ' + groups[k] + ' 个</small></div>');
+  }} else if(view === 'date') {{
+    const groups = {{}};
+    vocab.forEach(x => {{ const key = x.date || '未记录日期'; groups[key] = (groups[key] || 0) + 1; }});
+    rows = Object.keys(groups).sort().reverse().map(k => '<div class="record-row"><b>' + escHtml(k) + '</b><small>收藏生词 ' + groups[k] + ' 个</small></div>');
+  }} else if(view === 'status') {{
+    const groups = {{}};
+    vocab.forEach(x => {{ const key = x.status || '未掌握'; groups[key] = (groups[key] || 0) + 1; }});
+    rows = Object.keys(groups).map(k => '<div class="record-row"><b>' + escHtml(k) + '</b><small>生词 ' + groups[k] + ' 个</small></div>');
+  }} else {{
+    let list = vocab;
+    if(view === 'today') list = vocab.filter(x => x.date === ARTICLE_META.date);
+    rows = list.map(x => '<div class="record-row"><b>' + escHtml(x.word || '') + '</b><small>' + escHtml(x.meaning || '') + '<br>' + escHtml(x.date || '') + ' · ' + escHtml(x.title || '') + ' · ' + escHtml(x.status || '未掌握') + '</small></div>');
+  }}
+  box.innerHTML = rows.slice(0, 20).join('') || '<div class="history-empty">暂无记录。点击单词后加入生词本，或保存长难句。</div>';
+}}
+function escHtml(s) {{ return String(s || '').replace(/[&<>"']/g, c => ({{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}}[c])); }}
+document.querySelectorAll('.mode-btn').forEach(btn => {{
+  btn.addEventListener('click', function() {{
+    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.body.classList.remove('mode-full','mode-bilingual','mode-study','mode-xhs');
+    document.body.classList.add('mode-' + btn.dataset.mode);
+  }});
+}});
+document.addEventListener('click', function(e) {{
+  const saveSentenceBtn = e.target.closest('.save-sentence-btn');
+  if(saveSentenceBtn) {{
+    const card = saveSentenceBtn.closest('.sentence-analysis-card');
+    saveSentence({{sentence:(card && card.dataset.sentence) || '', category:(card && card.dataset.category) || '', analysis:(card && card.dataset.analysis) || ''}});
+    saveSentenceBtn.textContent = '已保存';
+    return;
+  }}
+  const recordBtn = e.target.closest('.record-btn');
+  if(recordBtn) {{ renderRecordList(recordBtn.dataset.view || 'saved'); return; }}
+  const target = e.target.closest('.click-word');
+  if (!target) return;
+  const key = (target.dataset.word || '').toLowerCase();
+  const word = target.textContent || key;
+  const meaning = WORD_MEANINGS[key] || '暂无中文解释，可结合上下文理解。';
+  CURRENT_WORD = {{word, meaning, source_title:ARTICLE_META.title, title:ARTICLE_META.title, date:ARTICLE_META.date, sentence:currentSentenceFrom(target)}};
+  document.getElementById('popupWord').textContent = word;
+  document.getElementById('popupMeaning').textContent = meaning;
+  document.getElementById('wordPopup').classList.remove('hidden');
+}});
+const saveWordBtn = document.getElementById('saveWordBtn');
+if(saveWordBtn) {{
+  saveWordBtn.addEventListener('click', function() {{
+    saveWord(CURRENT_WORD);
+    this.textContent = '已加入生词本';
+  }});
+}}
+renderRecordList('today');
 </script>
 </body>
 </html>
