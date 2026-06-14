@@ -4021,6 +4021,35 @@ def build_manual_editor_page(article, title_zh, paragraph_rows, all_keywords, to
                 "zh": zh
             })
 
+    def editor_history_entries(max_count=30):
+        entries = []
+        archive_dir = OUTPUT_DIR / "archive"
+        if not archive_dir.exists():
+            return entries
+        seen = set()
+        for txt_path in sorted(archive_dir.glob("day-*.txt"), reverse=True):
+            date_part = txt_path.stem.replace("day-", "")
+            try:
+                t = txt_path.read_text(encoding="utf-8-sig", errors="ignore")
+            except Exception:
+                continue
+            def after_label(label):
+                m = re.search(re.escape(label) + r"\s*\n([^\n]+)", t)
+                return clean_text(m.group(1)) if m else ""
+            en_title = after_label("英文标题：") or "历史外刊"
+            source_line = after_label("来源：") or "Daily Reading"
+            key = en_title.lower().strip()
+            if key in seen:
+                continue
+            seen.add(key)
+            topic_h = topic_category(en_title, source_line, t[:1200])
+            level_h = difficulty_label_from_text(t[:2000])
+            href = f"archive/day-{date_part}.html"
+            entries.append({"date": date_part, "title": en_title, "source": source_line, "topic": topic_h, "level": level_h, "href": href})
+            if len(entries) >= max_count:
+                break
+        return entries
+
     payload = {
         "today": today,
         "source": source or "Daily Reading",
@@ -4031,6 +4060,7 @@ def build_manual_editor_page(article, title_zh, paragraph_rows, all_keywords, to
         "paragraphs": paras,
         "keywords": list(all_keywords or [])[:80],
         "save_token": editor_save_token,
+        "history": editor_history_entries(),
     }
 
     payload_json = json.dumps(payload, ensure_ascii=False).replace("</", "<\\/")
@@ -4105,6 +4135,17 @@ textarea{{min-height:68px;resize:vertical}}
 .hidden{{display:none}}
 .preview{{background:linear-gradient(135deg,rgba(255,255,255,.88),rgba(255,255,255,.96)),var(--paper2);padding:18px}}
 .phone{{width:min(100%,480px);margin:0 auto}}
+.phone.mode-full .translation{{display:none!important}}
+.top-nav{{position:sticky;top:0;z-index:20;display:grid;grid-template-columns:repeat(3,1fr);gap:7px;padding:9px 0;background:rgba(245,242,235,.9);backdrop-filter:blur(12px)}}
+.top-nav a{{display:grid;place-items:center;min-height:36px;border:1px solid var(--line);border-radius:999px;background:#fff;color:var(--blue);font-size:13px;font-weight:900;text-decoration:none}}
+.top-nav a:first-child{{background:var(--blue);border-color:var(--blue);color:#fff}}
+.article-info{{position:relative;overflow:visible}}
+.mode-menu{{position:absolute;right:14px;top:14px;z-index:8}}
+.mode-current{{border:1px solid rgba(85,125,168,.2);background:rgba(255,255,255,.9);color:var(--blue);border-radius:999px;padding:7px 10px;font-size:12px;font-weight:950;box-shadow:0 8px 18px rgba(35,48,56,.08);cursor:pointer}}
+.mode-options{{display:none;position:absolute;right:0;top:38px;min-width:112px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:6px;box-shadow:0 14px 28px rgba(35,48,56,.16)}}
+.mode-menu.open .mode-options{{display:grid;gap:5px}}
+.mode-option{{border:0;background:#fff;color:#39505d;border-radius:10px;padding:8px 10px;text-align:left;font-size:12px;font-weight:900;cursor:pointer}}
+.mode-option.active{{background:var(--blue2);color:var(--blue)}}
 .hero{{padding:24px 4px 14px}}
 .hero h1{{font-size:46px;line-height:.98}}
 .final-card{{background:rgba(255,255,255,.92);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);overflow:hidden;margin-bottom:14px}}
@@ -4125,10 +4166,18 @@ textarea{{min-height:68px;resize:vertical}}
 .pattern{{border:1px solid #f0d6c9;background:#fff8f2;border-radius:14px;padding:12px}}
 .pattern p{{margin:7px 0;line-height:1.6}}
 .pattern .ori{{border-left:3px solid var(--orange);padding-left:10px;color:#536171}}
+.study-block{{border:1px solid var(--line);border-radius:14px;background:var(--paper);padding:12px;display:grid;gap:8px}}
+.study-block h3{{font-size:17px;line-height:1.2;margin:0;color:var(--ink)}}
 .sentence-card{{border:1px solid #dce6e3;background:#fbfdfb;border-radius:14px;padding:12px}}
 .sentence-card p{{margin:7px 0;line-height:1.65}}
 .sentence-card .ori{{font-family:Georgia,"Times New Roman",serif;border-left:3px solid var(--green);padding-left:10px;color:#25323a}}
 .sentence-card .parts{{background:var(--green2);border-radius:10px;padding:9px;color:#35443d}}
+.record-actions{{display:flex;gap:7px;flex-wrap:wrap}}
+.record-btn{{border:1px solid var(--line);background:#fff;color:var(--green);border-radius:999px;padding:7px 10px;font-size:12px;font-weight:900}}
+.record-list{{display:grid;gap:7px}}
+.record-row{{border:1px solid var(--line);border-radius:12px;background:#fff;padding:9px}}
+.record-row b{{display:block;color:var(--green)}}
+.record-row small{{display:block;color:var(--muted);line-height:1.55}}
 .vocab-hl{{display:inline!important;width:auto!important;min-width:0!important;max-width:none!important;height:auto!important;line-height:inherit!important;white-space:normal!important;margin:0!important;color:inherit!important;background:rgba(127,163,145,.10)!important;border:0!important;border-radius:2px!important;padding:0 1px!important;cursor:pointer!important;box-decoration-break:clone;-webkit-box-decoration-break:clone}} .hl{{display:inline!important;width:auto!important;background:transparent!important;padding:0!important;margin:0!important}}
 .copybox{{position:fixed;left:16px;right:16px;bottom:16px;background:#1d252c;color:white;border-radius:16px;padding:12px 14px;display:none;z-index:99;box-shadow:0 14px 38px rgba(0,0,0,.22);max-width:480px;margin:auto;white-space:pre-wrap}}
 .tool-note{{font-size:13px;color:var(--muted);line-height:1.6;margin:0 0 10px}}
@@ -4540,6 +4589,100 @@ function highlightText(text){{
   return out;
 }}
 
+function initFinalInteractions(root){{
+  root = root || document;
+  const phone = root.querySelector('.phone') || root;
+  const modeMenu = root.querySelector('.mode-menu');
+  const modeCurrent = root.querySelector('.mode-current');
+  if(modeMenu && modeCurrent && !modeMenu.dataset.ready){{
+    modeMenu.dataset.ready = '1';
+    modeCurrent.addEventListener('click', function(e){{
+      e.stopPropagation();
+      modeMenu.classList.toggle('open');
+    }});
+    modeMenu.querySelectorAll('.mode-option').forEach(function(btn){{
+      btn.addEventListener('click', function(e){{
+        e.stopPropagation();
+        modeMenu.querySelectorAll('.mode-option').forEach(function(b){{b.classList.remove('active');}});
+        btn.classList.add('active');
+        phone.classList.toggle('mode-full', btn.dataset.mode === 'full');
+        modeCurrent.textContent = btn.textContent;
+        modeMenu.classList.remove('open');
+      }});
+    }});
+    document.addEventListener('click', function(){{ modeMenu.classList.remove('open'); }});
+  }}
+
+  let activeTopic = '全部';
+  let activeLevel = '全部';
+  function applyHistoryFilter(){{
+    const items = root.querySelectorAll('.history-item');
+    let shown = 0;
+    items.forEach(function(item){{
+      const okTopic = activeTopic === '全部' || item.dataset.topic === activeTopic;
+      const okLevel = activeLevel === '全部' || item.dataset.level === activeLevel;
+      const ok = okTopic && okLevel;
+      item.style.display = ok ? '' : 'none';
+      if(ok) shown += 1;
+    }});
+    const empty = root.querySelector('#historyEmpty');
+    if(empty) empty.style.display = shown ? 'none' : '';
+  }}
+  root.querySelectorAll('.filter-btn').forEach(function(btn){{
+    if(btn.dataset.ready) return;
+    btn.dataset.ready = '1';
+    btn.addEventListener('click', function(){{
+      const kind = btn.dataset.kind;
+      root.querySelectorAll('.filter-btn[data-kind="'+kind+'"]').forEach(function(b){{b.classList.remove('active');}});
+      btn.classList.add('active');
+      if(kind === 'topic') activeTopic = btn.dataset.value || '全部';
+      if(kind === 'level') activeLevel = btn.dataset.value || '全部';
+      applyHistoryFilter();
+    }});
+  }});
+
+  function readStore(key){{ try{{ return JSON.parse(localStorage.getItem(key) || '[]'); }}catch(e){{ return []; }} }}
+  function writeStore(key, value){{ localStorage.setItem(key, JSON.stringify(value)); }}
+  function renderRecordList(view){{
+    const box = root.querySelector('#recordList');
+    if(!box) return;
+    const vocab = readStore('hl_vocab_book');
+    const sentences = readStore('hl_sentence_bank');
+    let rows = [];
+    if(view === 'sentence'){{
+      rows = sentences.map(function(x){{ return '<div class="record-row"><b>' + escapeHtml(x.category || '长难句') + '</b><small>' + escapeHtml(x.date || '') + ' · ' + escapeHtml(x.sentence || '') + '</small></div>'; }});
+    }}else{{
+      let list = vocab;
+      if(view === 'today') list = vocab.filter(function(x){{ return x.date === data.today; }});
+      rows = list.map(function(x){{ return '<div class="record-row"><b>' + escapeHtml(x.word || '') + '</b><small>' + escapeHtml(x.meaning || '') + '<br>' + escapeHtml(x.date || '') + ' · ' + escapeHtml(x.status || '未掌握') + '</small></div>'; }});
+    }}
+    box.innerHTML = rows.slice(0, 20).join('') || '<div class="history-empty">暂无记录。点击正文里的浅色单词可加入生词本。</div>';
+  }}
+  root.querySelectorAll('.record-btn').forEach(function(btn){{
+    if(btn.dataset.ready) return;
+    btn.dataset.ready = '1';
+    btn.addEventListener('click', function(){{ renderRecordList(btn.dataset.view || 'saved'); }});
+  }});
+  root.querySelectorAll('.vocab-hl').forEach(function(node){{
+    if(node.dataset.ready) return;
+    node.dataset.ready = '1';
+    node.addEventListener('click', function(){{
+      const word = node.getAttribute('data-term') || node.textContent || '';
+      const meaning = node.getAttribute('data-meaning') || '暂无释义';
+      const list = readStore('hl_vocab_book');
+      const key = (word + '|' + data.today + '|' + data.title_raw).toLowerCase();
+      if(!list.some(function(x){{ return ((x.word + '|' + x.date + '|' + x.title).toLowerCase()) === key; }})){{
+        list.unshift({{word:word, meaning:meaning, date:data.today, title:data.title_raw, status:'未掌握'}});
+        writeStore('hl_vocab_book', list.slice(0, 300));
+      }}
+      showMeaningTip(word, meaning + '（已加入生词本）');
+      renderRecordList('today');
+    }});
+  }});
+  renderRecordList('today');
+  applyHistoryFilter();
+}}
+
 function renderFinal(){{
   const topic = document.getElementById('topic').value;
   const level = document.getElementById('level').value;
@@ -4549,7 +4692,7 @@ function renderFinal(){{
     <div class="final-row">
       <b>第 ${{p.idx}} 段</b>
       <p class="en">${{highlightText(p.raw)}}</p>
-      <span>${{escapeHtml(p.zh)}}</span>
+      <span class="translation">${{escapeHtml(p.zh)}}</span>
     </div>
   `).join('');
 
@@ -4585,24 +4728,40 @@ function renderFinal(){{
     </div>
   `).join('') || `<div class="final-row"><span>还没有选择重点表达。</span></div>`;
 
+  const historyItems = (data.history || []).map(h => `
+    <a class="history-item" href="${{escapeAttr(h.href || '#')}}" data-topic="${{escapeAttr(h.topic || '其他')}}" data-level="${{escapeAttr(h.level || 'B2')}}">
+      <div class="history-date">${{escapeHtml(h.date || '')}}</div>
+      <b>${{escapeHtml(h.title || '历史外刊')}}</b>
+      <span class="history-source">${{escapeHtml(h.source || 'Daily Reading')}}</span>
+      <div class="history-tags"><span>${{escapeHtml(h.topic || '其他')}}</span><span>${{escapeHtml(h.level || 'B2')}}</span></div>
+    </a>
+  `).join('') || `<div class="history-empty">暂无历史文章。多生成几天后，这里会自动出现。</div>`;
+
   document.getElementById('finalPreview').innerHTML = `
     <div class="phone">
-      <div class="hero"><div class="mark">HL</div><h1>Healing Lab<br>每日外刊</h1><p class="sub">每天一篇短外刊，练阅读、表达和语感。</p></div>
-      <article class="final-card">
+      <nav class="top-nav"><a href="#read">今日精读</a><a href="#study">学习面板</a><a href="#history">历史文章</a></nav>
+      <article class="final-card article-info">
+        <div class="mode-menu"><button type="button" class="mode-current">中英对照</button><div class="mode-options"><button type="button" class="mode-option active" data-mode="bilingual">中英对照</button><button type="button" class="mode-option" data-mode="full">全英模式</button></div></div>
         <div class="cover"><div class="tag">今日文章卡片</div><div><h2>${{escapeHtml(data.title_raw)}}</h2><div class="cn">${{escapeHtml(data.title_cn)}}</div></div></div>
         <div class="final-meta">
           <div><span>来源</span><b>${{escapeHtml(data.source)}}</b></div>
+          <div><span>日期</span><b>${{escapeHtml(data.pub_date)}}</b></div>
           <div><span>难度</span><b>${{escapeHtml(level)}}</b></div>
           <div><span>主题</span><b>${{escapeHtml(topic)}}</b></div>
         </div>
         <p class="summary">${{escapeHtml(summary)}}</p>
       </article>
-      <section class="final-card final-section"><div class="final-hd"><h2>今日精读</h2><span class="mini">Original + Meaning</span></div><div class="final-list">${{paraHtml}}</div></section>
-      <section class="final-card final-section"><div class="final-hd"><h2>重点表达</h2><span class="mini">Expressions</span></div><div class="final-list">${{exprHtml}}</div></section>
-      <section class="final-card final-section"><div class="final-hd"><h2>表达句式</h2><span class="mini">Top 3 Sentence Patterns</span></div><div class="final-list">${{patternHtml}}</div></section>
-      <section class="final-card final-section"><div class="final-hd"><h2>长难句分析</h2><span class="mini">Sentence Analysis</span></div><div class="final-list">${{sentenceHtml}}</div></section>
+      <section class="final-card final-section" id="read"><div class="final-hd"><h2>今日精读</h2><span class="mini">Original + Meaning</span></div><div class="final-list">${{paraHtml}}</div></section>
+      <section class="final-card final-section" id="study"><div class="final-hd"><h2>学习面板</h2><span class="mini">Study Panel</span></div><div class="final-list">
+        <div class="study-block"><h3>重点表达</h3>${{exprHtml}}</div>
+        <div class="study-block"><h3>表达句式</h3>${{patternHtml}}</div>
+        <div class="study-block"><h3>长难句分析</h3>${{sentenceHtml}}</div>
+        <div class="study-block"><h3>个人学习记录</h3><div class="record-actions"><button type="button" class="record-btn" data-view="today">今日生词</button><button type="button" class="record-btn" data-view="saved">已收藏生词</button><button type="button" class="record-btn" data-view="sentence">长难句库</button></div><div id="recordList" class="record-list"></div></div>
+      </div></section>
+      <section class="final-card final-section history-panel" id="history"><div class="final-hd"><h2>历史文章</h2><span class="mini">Archive</span></div><div class="filter-block"><div class="filter-row"><span>主题</span><button class="filter-btn active" data-kind="topic" data-value="全部">全部</button><button class="filter-btn" data-kind="topic" data-value="教育">教育</button><button class="filter-btn" data-kind="topic" data-value="科技">科技</button><button class="filter-btn" data-kind="topic" data-value="文化历史">文化历史</button><button class="filter-btn" data-kind="topic" data-value="生活">生活</button></div><div class="filter-row"><span>难度</span><button class="filter-btn active" data-kind="level" data-value="全部">全部</button><button class="filter-btn" data-kind="level" data-value="B1">B1</button><button class="filter-btn" data-kind="level" data-value="B1-B2">B1-B2</button><button class="filter-btn" data-kind="level" data-value="B2">B2</button><button class="filter-btn" data-kind="level" data-value="C1">C1</button></div></div><div class="history-list" id="historyList">${{historyItems}}</div><div class="history-empty" id="historyEmpty" style="display:none;">这个筛选下暂时没有文章</div></section>
     </div>
   `;
+  initFinalInteractions(document.getElementById('finalPreview'));
   document.getElementById('finalPreview').scrollIntoView({{behavior:'smooth', block:'start'}});
 }}
 
@@ -4732,7 +4891,8 @@ function buildFinalStandaloneHtml(){{
   ensureFinal();
   const css = document.querySelector('style').innerHTML;
   const content = document.getElementById('finalPreview').innerHTML;
-  return '<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Healing Lab 每日外刊正式版</title><style>' + css + ' body{{background:#f5f2eb}}.standalone{{padding:18px}}</style></head><body><div class="standalone">' + content + '</div></body></html>';
+  const runtime = '<script>const data=' + JSON.stringify(data).replace(/<\\//g,'<\\\\/') + ';' + escapeHtml.toString() + showMeaningTip.toString() + initFinalInteractions.toString() + ';initFinalInteractions(document);<\\/script>';
+  return '<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Healing Lab 每日外刊正式版</title><style>' + css + ' body{{background:#f5f2eb}}.standalone{{padding:18px}}</style></head><body><div class="standalone">' + content + '</div><div class="copybox" id="copybox"></div>' + runtime + '</body></html>';
 }}
 
 function openFinalPage(){{
