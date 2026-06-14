@@ -2490,12 +2490,12 @@ def build_archive_index(today, article_title, title_zh, today_body_html):
         if len(title_show) > 54:
             title_show = title_show[:52] + "..."
         items.append(f"""
-<a class="history-item" href="{esc(item['href'])}" data-topic="{esc(item['topic'])}" data-level="{esc(item['level'])}">
-  <div class="history-date">{esc(item['date'])}</div>
-  <b>{esc(title_show)}</b>
-  <span class="history-source">{esc(item['source'])}</span>
-  <div class="history-tags"><span>{esc(item['topic'])}</span><span>{esc(item['level'])}</span></div>
-</a>
+<article class="history-item" data-topic="{esc(item['topic'])}" data-level="{esc(item['level'])}">
+  <div class="history-date">日期：{esc(item['date'])}</div>
+  <b>标题：{esc(title_show)}</b>
+  <div class="history-tags"><span>主题：{esc(item['topic'])}</span><span>难度：{esc(item['level'])}</span></div>
+  <a class="history-open" href="{esc(item['href'])}" target="_blank" rel="noopener">查看文章</a>
+</article>
 """)
     history_items = "".join(items) if items else '<div class="history-empty">暂无历史文章。多生成几天后，这里会自动出现。</div>'
 
@@ -3049,6 +3049,28 @@ def topic_category(title, source_name="", body=""):
         if topic_any(text, keys):
             return name
     return "其他"
+
+
+def difficulty_label_from_text(text):
+    """Stable fallback used by archive/editor history generation."""
+    try:
+        raw = clean_text(text or "")
+    except Exception:
+        raw = str(text or "")
+    words = re.findall(r"[A-Za-z]+(?:[-'][A-Za-z]+)?", raw)
+    if not words:
+        return "B2"
+    sentences = [s for s in re.split(r"[.!?]+", raw) if s.strip()]
+    avg_len = len(words) / max(1, len(sentences))
+    long_words = sum(1 for w in words if len(w) >= 10)
+    long_ratio = long_words / max(1, len(words))
+    if avg_len >= 29 or long_ratio >= 0.24 or len(words) >= 560:
+        return "C1"
+    if avg_len >= 23 or long_ratio >= 0.18 or len(words) >= 380:
+        return "B2"
+    if avg_len >= 16 or long_ratio >= 0.11:
+        return "B1-B2"
+    return "B1"
 
 
 def detect_cover_theme(article, title_zh, paragraph_texts):
@@ -3846,10 +3868,12 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
         if len(title_show) > 78:
             title_show = title_show[:76] + "..."
         history_items += f"""
-          <a class="history-item" href="{attr_escape(h['href'])}" data-topic="{attr_escape(h['topic'])}" data-level="{attr_escape(h['level'])}">
-            <b>{esc(title_show)}</b>
-            <span>{esc(h['topic'])} · {esc(h['level'])}</span>
-          </a>
+          <article class="history-item" data-topic="{attr_escape(h['topic'])}" data-level="{attr_escape(h['level'])}">
+            <div class="history-date">日期：{esc(h.get('date', ''))}</div>
+            <b>标题：{esc(title_show)}</b>
+            <div class="history-tags"><span>主题：{esc(h['topic'])}</span><span>难度：{esc(h['level'])}</span></div>
+            <a class="history-open" href="{attr_escape(h['href'])}" target="_blank" rel="noopener">查看文章</a>
+          </article>
         """
     if not history_items:
         history_items = '<div class="history-empty">暂无历史文章</div>'
@@ -3913,7 +3937,7 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
     .pattern-card{border:1px solid #f0d6c9;background:#fff8f2;border-radius:13px;padding:12px}.pattern-card b{display:block;font-size:15px;margin-bottom:8px}.pattern-card p{margin:7px 0;line-height:1.6;font-size:14.5px}.pattern-card .original{color:#536171;border-left:3px solid var(--clay);padding-left:10px}.pattern-card .pattern{color:#25323a;font-family:Georgia,"Times New Roman",serif;font-size:16px}.pattern-card .meaning{color:#9b4e35}.pattern-card .example{color:#414b51}.pattern-card small{display:block;color:var(--muted);margin-top:8px;line-height:1.55}
     .review-box{border:1px dashed #b9c7c0;background:#fbfdfb}.review-box b{display:block;margin-bottom:8px;font-size:15px}
     .filter-block{display:grid;gap:8px;margin-bottom:12px}.filter-row{display:flex;gap:7px;align-items:center;flex-wrap:wrap}.filter-row span{font-size:13px;color:var(--muted);font-weight:800}.filter-btn{border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:6px 10px;color:var(--sage-dark);font-size:13px;font-weight:800;cursor:pointer}.filter-btn.active{background:var(--sage-dark);color:#fff;border-color:var(--sage-dark)}
-    .history-list{display:grid;gap:9px}.history-item{display:block;text-decoration:none;color:var(--ink);border:1px solid var(--line);background:var(--paper);border-radius:12px;padding:10px}.history-item b{display:block;font-size:14.5px;line-height:1.35}.history-item span{display:block;margin-top:5px;color:var(--muted);font-size:12px}.history-empty{color:var(--muted);font-size:14px}
+    .history-list{display:grid;gap:10px}.history-item{display:block;text-decoration:none;color:var(--ink);border:1px solid var(--line);background:var(--paper);border-radius:14px;padding:12px}.history-date{color:var(--blue);font-size:12px;font-weight:900;margin-bottom:6px}.history-item b{display:block;font-size:14.5px;line-height:1.38;margin-bottom:8px}.history-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}.history-tags span{display:inline-flex;border-radius:999px;background:var(--green2);color:var(--green);padding:4px 8px;font-size:12px;font-weight:900}.history-open{display:inline-flex;align-items:center;justify-content:center;border-radius:999px;background:var(--green);color:#fff!important;text-decoration:none;padding:7px 12px;font-size:12px;font-weight:900}.history-empty{color:var(--muted);font-size:14px}
     .source-link{display:inline-flex;width:fit-content;margin-top:12px;text-decoration:none;color:var(--sage-dark);background:var(--sage-soft);border:1px solid rgba(66,110,96,.18);border-radius:999px;padding:8px 11px;font-size:13px;font-weight:900}
     .tip{position:fixed;left:14px;right:14px;bottom:16px;z-index:80;background:#1d252c;color:#fff;border-radius:16px;padding:12px 14px;box-shadow:0 14px 38px rgba(0,0,0,.22);line-height:1.6;display:none;max-width:452px;margin:0 auto}.tip b{color:#f1c66d}.bottom-note{color:var(--muted);font-size:12px;line-height:1.7;text-align:center;padding:20px 6px 2px}
     @media (min-width:420px){.meta-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}@media (max-width:360px){.hero h1{font-size:38px}.article-title-en{font-size:29px}.section{padding:16px}.expression{grid-template-columns:1fr}.expr-label{grid-row:auto}}
@@ -4219,7 +4243,7 @@ textarea{{min-height:68px;resize:vertical}}
 .record-row b{{display:block;color:var(--green)}}
 .record-row small{{display:block;color:var(--muted);line-height:1.55}}
 .vocab-hl{{display:inline!important;width:auto!important;min-width:0!important;max-width:none!important;height:auto!important;line-height:inherit!important;white-space:normal!important;margin:0!important;color:inherit!important;background:rgba(127,163,145,.10)!important;border:0!important;border-radius:2px!important;padding:0 1px!important;cursor:pointer!important;box-decoration-break:clone;-webkit-box-decoration-break:clone}} .hl{{display:inline!important;width:auto!important;background:transparent!important;padding:0!important;margin:0!important}}
-.copybox{{position:fixed;left:16px;right:16px;bottom:16px;background:#1d252c;color:white;border-radius:16px;padding:12px 14px;display:none;z-index:99;box-shadow:0 14px 38px rgba(0,0,0,.22);max-width:480px;margin:auto;white-space:pre-wrap}}
+.copybox{{position:fixed;left:16px;right:16px;bottom:16px;background:#1d252c;color:white;border-radius:16px;padding:12px 14px;display:none;z-index:99;box-shadow:0 14px 38px rgba(0,0,0,.22);max-width:480px;margin:auto;white-space:pre-wrap}}.copybox b{{display:block;margin-bottom:6px}}.copybox small{{display:block;color:#d7e4df;margin-top:6px;line-height:1.55}}
 .tool-note{{font-size:13px;color:var(--muted);line-height:1.6;margin:0 0 10px}}
 .xhs-grid{{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;align-items:start}}
 .xhs-card-preview{{position:relative;display:flex;flex-direction:column;justify-content:space-between;gap:12px;background:linear-gradient(145deg,#fffdf8 0%,#f8f0df 58%,#edf5f1 100%);border:1px solid #dce6e3;border-radius:22px;aspect-ratio:3/4;padding:18px;overflow:hidden;box-shadow:0 18px 44px rgba(44,57,64,.14)}}
@@ -4579,12 +4603,25 @@ function isBoundary(ch){{
 function highlightText(text){{
   const raw = String(text || '');
 
-  // V40：正文只标“单个词汇”，不标词组、不标短语、不标整句。
-  // 这样英文仍然是正常一整段阅读，只在需要解释的单词背后有一点很浅的底色。
-  const items = state.vocab
+  // Only mark items the editor/import package explicitly put into vocab/phrases.
+  // Phrases are mixed in and sorted longest-first so "climate breakdown" wins before "climate".
+  const items = [
+    ...state.phrase.map(x => ({{
+      text:String(x.text || x.phrase || '').trim(),
+      zh:x.zh || x.meaning || '',
+      note:x.note || x.reason || '',
+      sentence:x.sentence || '',
+      kind:'phrase'
+    }})),
+    ...state.vocab.map(x => ({{
+      text:String(x.text || x.word || '').trim(),
+      zh:x.zh || x.meaning || '',
+      note:x.note || x.reason || '',
+      sentence:x.sentence || '',
+      kind:'vocab'
+    }}))
+  ]
     .filter(x => x.text)
-    .map(x => ({{...x, text:String(x.text || '').trim()}}))
-    .filter(x => x.text && !/\s/.test(x.text))   // 关键：多词条目不进入正文标注
     .sort((a,b)=>b.text.length-a.text.length);
 
   let out = '';
@@ -4621,8 +4658,8 @@ function highlightText(text){{
 
     out += escapeHtml(raw.slice(i, bestIndex));
     const matched = raw.slice(bestIndex, bestIndex + best.text.length);
-    const meaning = best.zh || guessMeaning(best.text) || '';
-    out += '<span class="vocab-hl" data-term="' + escapeAttr(best.text) + '" data-meaning="' + escapeAttr(meaning) + '">' + escapeHtml(matched) + '</span>';
+    const meaning = best.zh || best.meaning || '';
+    out += '<span class="vocab-hl" data-term="' + escapeAttr(best.text) + '" data-meaning="' + escapeAttr(meaning) + '" data-note="' + escapeAttr(best.note || '') + '" data-sentence="' + escapeAttr(best.sentence || '') + '" data-kind="' + escapeAttr(best.kind || '') + '">' + escapeHtml(matched) + '</span>';
     i = bestIndex + best.text.length;
   }}
 
@@ -4710,13 +4747,15 @@ function initFinalInteractions(root){{
     node.addEventListener('click', function(){{
       const word = node.getAttribute('data-term') || node.textContent || '';
       const meaning = node.getAttribute('data-meaning') || '暂无释义';
+      const note = node.getAttribute('data-note') || '';
+      const sentence = node.getAttribute('data-sentence') || '';
       const list = readStore('hl_vocab_book');
       const key = (word + '|' + data.today + '|' + data.title_raw).toLowerCase();
       if(!list.some(function(x){{ return ((x.word + '|' + x.date + '|' + x.title).toLowerCase()) === key; }})){{
-        list.unshift({{word:word, meaning:meaning, date:data.today, title:data.title_raw, status:'未掌握'}});
+        list.unshift({{word:word, meaning:meaning, note:note, sentence:sentence, date:data.today, title:data.title_raw, status:'未掌握'}});
         writeStore('hl_vocab_book', list.slice(0, 300));
       }}
-      showMeaningTip(word, meaning + '（已加入生词本）');
+      showMeaningTip(word, meaning, note, sentence);
       renderRecordList('today');
     }});
   }});
@@ -4770,12 +4809,12 @@ function renderFinal(){{
   `).join('') || `<div class="final-row"><span>还没有选择重点表达。</span></div>`;
 
   const historyItems = (data.history || []).map(h => `
-    <a class="history-item" href="${{escapeAttr(h.href || '#')}}" data-topic="${{escapeAttr(h.topic || '其他')}}" data-level="${{escapeAttr(h.level || 'B2')}}">
-      <div class="history-date">${{escapeHtml(h.date || '')}}</div>
-      <b>${{escapeHtml(h.title || '历史外刊')}}</b>
-      <span class="history-source">${{escapeHtml(h.source || 'Daily Reading')}}</span>
-      <div class="history-tags"><span>${{escapeHtml(h.topic || '其他')}}</span><span>${{escapeHtml(h.level || 'B2')}}</span></div>
-    </a>
+    <article class="history-item" data-topic="${{escapeAttr(h.topic || '其他')}}" data-level="${{escapeAttr(h.level || 'B2')}}">
+      <div class="history-date">日期：${{escapeHtml(h.date || '')}}</div>
+      <b>标题：${{escapeHtml(h.title || '历史外刊')}}</b>
+      <div class="history-tags"><span>主题：${{escapeHtml(h.topic || '其他')}}</span><span>难度：${{escapeHtml(h.level || 'B2')}}</span></div>
+      <a class="history-open" href="${{escapeAttr(h.href || '#')}}" target="_blank" rel="noopener">查看文章</a>
+    </article>
   `).join('') || `<div class="history-empty">暂无历史文章。多生成几天后，这里会自动出现。</div>`;
 
   document.getElementById('finalPreview').innerHTML = `
@@ -4799,7 +4838,7 @@ function renderFinal(){{
         <div class="study-block analysis-detail"><h3>长难句分析</h3>${{sentenceHtml}}</div>
         <div class="study-block"><h3>个人学习记录</h3><div class="record-actions"><button type="button" class="record-btn" data-view="today">今日生词</button><button type="button" class="record-btn" data-view="saved">已收藏生词</button><button type="button" class="record-btn" data-view="sentence">长难句库</button></div><div id="recordList" class="record-list"></div></div>
       </div></section>
-      <section class="final-card final-section history-panel" id="history"><div class="final-hd"><h2>历史文章</h2><span class="mini">Archive</span></div><div class="filter-block"><div class="filter-row"><span>主题</span><button class="filter-btn active" data-kind="topic" data-value="全部">全部</button><button class="filter-btn" data-kind="topic" data-value="教育">教育</button><button class="filter-btn" data-kind="topic" data-value="科技">科技</button><button class="filter-btn" data-kind="topic" data-value="文化历史">文化历史</button><button class="filter-btn" data-kind="topic" data-value="生活">生活</button></div><div class="filter-row"><span>难度</span><button class="filter-btn active" data-kind="level" data-value="全部">全部</button><button class="filter-btn" data-kind="level" data-value="B1">B1</button><button class="filter-btn" data-kind="level" data-value="B1-B2">B1-B2</button><button class="filter-btn" data-kind="level" data-value="B2">B2</button><button class="filter-btn" data-kind="level" data-value="C1">C1</button></div></div><div class="history-list" id="historyList">${{historyItems}}</div><div class="history-empty" id="historyEmpty" style="display:none;">这个筛选下暂时没有文章</div></section>
+      <section class="final-card final-section history-panel" id="history"><div class="final-hd"><h2>历史文章</h2><span class="mini">Archive</span></div><div class="filter-block"><div class="filter-row"><span>主题</span><button class="filter-btn active" data-kind="topic" data-value="全部">全部</button><button class="filter-btn" data-kind="topic" data-value="社会议题">社会议题</button><button class="filter-btn" data-kind="topic" data-value="生态环境">生态环境</button><button class="filter-btn" data-kind="topic" data-value="游戏文化">游戏文化</button><button class="filter-btn" data-kind="topic" data-value="教育">教育</button><button class="filter-btn" data-kind="topic" data-value="科技">科技</button><button class="filter-btn" data-kind="topic" data-value="文化历史">文化历史</button><button class="filter-btn" data-kind="topic" data-value="生活">生活</button><button class="filter-btn" data-kind="topic" data-value="自然科学">自然科学</button><button class="filter-btn" data-kind="topic" data-value="其他">其他</button></div><div class="filter-row"><span>难度</span><button class="filter-btn active" data-kind="level" data-value="全部">全部</button><button class="filter-btn" data-kind="level" data-value="B1">B1</button><button class="filter-btn" data-kind="level" data-value="B1-B2">B1-B2</button><button class="filter-btn" data-kind="level" data-value="B2">B2</button><button class="filter-btn" data-kind="level" data-value="C1">C1</button></div></div><div class="history-list" id="historyList">${{historyItems}}</div><div class="history-empty" id="historyEmpty" style="display:none;">这个筛选下暂时没有文章</div></section>
     </div>
   `;
   initFinalInteractions(document.getElementById('finalPreview'));
@@ -4810,8 +4849,8 @@ function renderFinal(){{
 function normalizeList(list){{
   if(!Array.isArray(list)) return [];
   return list.map(x => {{
-    if(Array.isArray(x)) return {{text:x[0]||'', zh:x[1]||'', note:x[2]||''}};
-    return {{text:x.text||x.word||x.phrase||'', zh:x.zh||x.meaning||'', note:x.note||x.reason||''}};
+    if(Array.isArray(x)) return {{text:x[0]||'', zh:x[1]||'', note:x[2]||'', sentence:x[3]||''}};
+    return {{text:x.text||x.word||x.phrase||'', zh:x.zh||x.meaning||'', note:x.note||x.reason||'', sentence:x.sentence||x.example||''}};
   }}).filter(x => x.text);
 }}
 
@@ -4889,9 +4928,13 @@ async function importFromClipboard(){{
   }}
 }}
 
-function showMeaningTip(term, meaning){{
+function showMeaningTip(term, meaning, note, sentence){{
   const box = document.getElementById('copybox');
-  box.innerHTML = '<b>' + escapeHtml(term) + '</b><br>' + escapeHtml(meaning || '暂无释义');
+  const lines = ['<b>' + escapeHtml(term) + '</b>'];
+  if(meaning) lines.push('<div>' + escapeHtml(meaning) + '</div>');
+  if(note) lines.push('<small>' + escapeHtml(note) + '</small>');
+  if(sentence) lines.push('<small>' + escapeHtml(sentence) + '</small>');
+  box.innerHTML = lines.join('');
   box.style.display = 'block';
   setTimeout(()=>box.style.display='none', 2600);
 }}
@@ -4899,7 +4942,7 @@ function showMeaningTip(term, meaning){{
 document.addEventListener('click', function(e){{
   const node = e.target.closest('.vocab-hl');
   if(node){{
-    showMeaningTip(node.getAttribute('data-term')||'', node.getAttribute('data-meaning')||'');
+    showMeaningTip(node.getAttribute('data-term')||'', node.getAttribute('data-meaning')||'', node.getAttribute('data-note')||'', node.getAttribute('data-sentence')||'');
   }}
 }});
 
@@ -4961,9 +5004,12 @@ async function saveFinalPage(){{
         html,
         date:data.today,
         title:data.title_cn || data.title_raw,
+        title_en:data.title_raw,
+        title_cn:data.title_cn,
         source:data.source,
         topic:document.getElementById('topic').value,
-        level:document.getElementById('level').value
+        level:document.getElementById('level').value,
+        difficulty:document.getElementById('level').value
       }})
     }});
     const text = await res.text();
@@ -5527,7 +5573,7 @@ def write_outputs(article, selected_paragraphs, rejected_log, article_reject_log
 .mobile-section{{background:var(--card);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);padding:16px;margin:14px 0}} .section-title{{display:flex;gap:10px;align-items:flex-start;margin-bottom:14px}} .section-title>span{{width:5px;min-height:36px;border-radius:999px;background:var(--blue);margin-top:2px}} .section-title h2{{font-size:21px;line-height:1.1;margin:0 0 5px;letter-spacing:0}} .section-title p{{margin:0;color:var(--muted);font-size:13px;line-height:1.45}}
 .para-list{{display:grid;gap:12px}} .para-card{{background:var(--ivory);border:1px solid #ece4d8;border-radius:16px;padding:14px}} .para-index{{color:var(--sage);font-size:13px;font-weight:950;margin-bottom:8px}} .english{{font-family:Georgia,"Times New Roman",serif;font-size:18px;line-height:1.78;color:#1f2f38}} .translation{{border-top:1px solid #eadfce;margin-top:12px;padding-top:10px;color:#61707a;font-size:14.5px;line-height:1.75}} .click-word,.click-word.key-word{{display:inline;font:inherit;color:#315c6f;background:rgba(75,128,99,.13);border:0;border-radius:4px;padding:0 2px;cursor:pointer;text-decoration:none}} .click-word:active{{background:rgba(47,111,159,.16)}}
 .study-grid{{display:grid;gap:10px}} .study-item{{border:1px solid var(--line);border-radius:16px;padding:13px;background:#fbfcfc}} .study-item span{{display:inline-flex;border-radius:999px;padding:4px 8px;background:var(--blue-soft);color:var(--blue);font-size:12px;font-weight:950;margin-bottom:8px}} .study-item b{{display:block;font-size:16px;line-height:1.35;margin-bottom:5px;color:var(--ink)}} .study-item p{{margin:0;color:#42515a;line-height:1.62;font-size:14px}} .study-item small{{display:block;color:var(--muted);line-height:1.58;margin-top:6px;font-size:13px}} .vocab-list{{display:grid;gap:8px}} .vocab-chip{{display:block;background:var(--sage-soft);border:1px solid rgba(75,128,99,.18);border-radius:14px;padding:10px 11px;color:#35433d;font-size:13.5px;line-height:1.45}} .vocab-chip strong{{display:block;color:var(--sage);font-size:15px;margin-bottom:2px}} .review-item{{background:var(--clay-soft);border-color:#f2d5ca}} .review-item span{{background:#fff7f3;color:var(--clay)}} .sentence-analysis-card{{border:1px solid #e3edf1;background:#fff;border-radius:16px;padding:13px;margin-top:9px}} .sentence-top{{display:flex;align-items:center;justify-content:space-between;gap:8px}} .sentence-top span,.sentence-category{{color:var(--blue);font-size:12px;font-weight:950}} .save-sentence-btn,.record-btn,#saveWordBtn{{border:1px solid var(--line);background:#fff;color:var(--blue);border-radius:999px;padding:6px 9px;font-size:12px;font-weight:900;cursor:pointer}} .sentence-original{{font-family:Georgia,"Times New Roman",serif;font-size:15.5px;line-height:1.65;color:#20313a;margin:8px 0}} .sentence-parts{{background:var(--blue-soft);border-radius:12px;padding:9px;margin:8px 0}} .sentence-parts p{{margin:4px 0}} .sentence-chunks{{display:grid;gap:6px;list-style:none;padding:0;margin:8px 0}} .sentence-chunks li{{background:var(--ivory);border:1px solid #eee3d5;border-radius:12px;padding:8px}} .sentence-chunks b{{font-size:14px}} .sentence-chunks em{{display:block;color:var(--muted);font-style:normal;font-size:12.5px;margin-top:2px}} .sentence-meaning{{border-top:1px solid var(--line);padding-top:8px;color:#5f6d76}} .record-actions{{display:flex;gap:7px;flex-wrap:wrap;margin:8px 0}} .record-list{{display:grid;gap:7px;margin-top:8px}} .record-row{{border:1px solid var(--line);border-radius:12px;padding:8px;background:#fff}} .record-row b{{font-size:14px}} .record-row small{{color:var(--muted)}}
-.history-panel{{padding-bottom:18px}} .history-filter-wrap{{display:grid;gap:10px;background:#f8fbfb;border:1px solid var(--line);border-radius:16px;padding:11px;margin-bottom:12px}} .history-filter-row{{display:flex;gap:7px;align-items:center;flex-wrap:wrap}} .history-filter-row strong{{color:var(--muted);font-size:13px;margin-right:2px}} .history-filter-btn{{border:1px solid var(--line);background:#fff;color:#43525b;border-radius:999px;padding:6px 10px;font-size:12.5px;font-weight:850;cursor:pointer}} .history-filter-btn.active{{background:var(--blue);border-color:var(--blue);color:#fff}} .history-list{{display:grid;grid-template-columns:1fr;gap:10px;padding-left:0}} .history-item{{display:block;background:var(--ivory);border:1px solid #ebe3d8;border-radius:16px;padding:13px;color:var(--ink)}} .history-date{{color:var(--blue);font-size:12px;font-weight:950;margin-bottom:5px}} .history-item b{{display:block;font-size:15.5px;line-height:1.42;margin-bottom:6px}} .history-source{{display:block;color:var(--muted);font-size:12.5px;margin-bottom:9px}} .history-tags{{display:flex;gap:6px;flex-wrap:wrap}} .history-tags span{{border-radius:999px;background:var(--sage-soft);color:var(--sage);padding:4px 8px;font-size:12px;font-weight:900}} .history-tags span:last-child{{background:var(--blue-soft);color:var(--blue)}} .history-empty{{color:var(--muted);font-size:14px;line-height:1.7;padding:8px 2px}}
+.history-panel{{padding-bottom:18px}} .history-filter-wrap{{display:grid;gap:10px;background:#f8fbfb;border:1px solid var(--line);border-radius:16px;padding:11px;margin-bottom:12px}} .history-filter-row{{display:flex;gap:7px;align-items:center;flex-wrap:wrap}} .history-filter-row strong{{color:var(--muted);font-size:13px;margin-right:2px}} .history-filter-btn{{border:1px solid var(--line);background:#fff;color:#43525b;border-radius:999px;padding:6px 10px;font-size:12.5px;font-weight:850;cursor:pointer}} .history-filter-btn.active{{background:var(--blue);border-color:var(--blue);color:#fff}} .history-list{{display:grid;grid-template-columns:1fr;gap:10px;padding-left:0}} .history-item{{display:block;background:var(--ivory);border:1px solid #ebe3d8;border-radius:16px;padding:13px;color:var(--ink);text-decoration:none}} .history-date{{color:var(--blue);font-size:12px;font-weight:950;margin-bottom:5px}} .history-item b{{display:block;font-size:15.5px;line-height:1.42;margin-bottom:8px}} .history-tags{{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}} .history-tags span{{border-radius:999px;background:var(--sage-soft);color:var(--sage);padding:4px 8px;font-size:12px;font-weight:900}} .history-tags span:last-child{{background:var(--blue-soft);color:var(--blue)}} .history-open{{display:inline-flex;align-items:center;justify-content:center;border-radius:999px;background:var(--sage);color:#fff!important;text-decoration:none;padding:7px 12px;font-size:12px;font-weight:900}} .history-empty{{color:var(--muted);font-size:14px;line-height:1.7;padding:8px 2px}}
 .word-popup{{position:fixed;left:12px;right:12px;bottom:12px;z-index:9999;background:#172026;color:#fff;border-radius:18px;padding:14px 15px;box-shadow:0 16px 42px rgba(0,0,0,.28);font-size:15px;max-width:496px;margin:auto}} .word-popup.hidden{{display:none}} .popup-word{{font-weight:900;font-size:18px;margin-bottom:5px}} .popup-meaning{{line-height:1.55;color:#f3f5f6}} .popup-close{{position:absolute;top:7px;right:10px;background:transparent;color:#fff;border:0;font-size:22px;cursor:pointer}}
 @media print{{.top-nav,.word-popup{{display:none!important}}body{{background:#fff!important}}.mobile-section,.article-info{{box-shadow:none!important;border:1px solid #ddd!important}}}}
 </style>

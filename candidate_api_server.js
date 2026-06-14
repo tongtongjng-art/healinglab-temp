@@ -154,10 +154,10 @@ function handleSaveFinal(res, cfg, body) {
   fs.writeFileSync(archivePath, html, "utf8");
   updateHistoryJson(dir, {
     date,
-    title: extractTitle(html, body.title),
+    title: extractTitle(html, body.title_cn || body.title_en || body.title),
     source: String(body.source || "Healing Lab").slice(0, 120),
     topic: String(body.topic || "其他").slice(0, 40),
-    level: String(body.level || "B2").slice(0, 20),
+    level: String(body.level || body.difficulty || "B2").slice(0, 20),
     href: `/daily/archive/day-${date}.html`,
     saved_at: new Date().toISOString()
   });
