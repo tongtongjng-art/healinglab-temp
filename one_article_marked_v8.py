@@ -2490,12 +2490,12 @@ def build_archive_index(today, article_title, title_zh, today_body_html):
         if len(title_show) > 54:
             title_show = title_show[:52] + "..."
         items.append(f"""
-<article class="history-item" data-topic="{esc(item['topic'])}" data-level="{esc(item['level'])}">
-  <div class="history-date">日期：{esc(item['date'])}</div>
-  <b>标题：{esc(title_show)}</b>
-  <div class="history-tags"><span>主题：{esc(item['topic'])}</span><span>难度：{esc(item['level'])}</span></div>
-  <a class="history-open" href="{esc(item['href'])}" target="_blank" rel="noopener">查看文章</a>
-</article>
+<a class="history-item" href="{esc(item['href'])}" data-topic="{esc(item['topic'])}" data-level="{esc(item['level'])}">
+  <div class="history-date">{esc(item['date'])}</div>
+  <b>{esc(title_show)}</b>
+  <span class="history-source">{esc(item['source'])}</span>
+  <div class="history-tags"><span>{esc(item['topic'])}</span><span>{esc(item['level'])}</span></div>
+</a>
 """)
     history_items = "".join(items) if items else '<div class="history-empty">暂无历史文章。多生成几天后，这里会自动出现。</div>'
 
@@ -3868,12 +3868,12 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
         if len(title_show) > 78:
             title_show = title_show[:76] + "..."
         history_items += f"""
-          <article class="history-item" data-topic="{attr_escape(h['topic'])}" data-level="{attr_escape(h['level'])}">
-            <div class="history-date">日期：{esc(h.get('date', ''))}</div>
-            <b>标题：{esc(title_show)}</b>
-            <div class="history-tags"><span>主题：{esc(h['topic'])}</span><span>难度：{esc(h['level'])}</span></div>
-            <a class="history-open" href="{attr_escape(h['href'])}" target="_blank" rel="noopener">查看文章</a>
-          </article>
+          <a class="history-item" href="{attr_escape(h['href'])}" data-topic="{attr_escape(h['topic'])}" data-level="{attr_escape(h['level'])}">
+            <div class="history-date">{esc(h.get('date', ''))}</div>
+            <b>{esc(title_show)}</b>
+            <span class="history-source">{esc(h.get('source', 'Daily Reading'))}</span>
+            <div class="history-tags"><span>{esc(h['topic'])}</span><span>{esc(h['level'])}</span></div>
+          </a>
         """
     if not history_items:
         history_items = '<div class="history-empty">暂无历史文章</div>'
@@ -3937,7 +3937,7 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
     .pattern-card{border:1px solid #f0d6c9;background:#fff8f2;border-radius:13px;padding:12px}.pattern-card b{display:block;font-size:15px;margin-bottom:8px}.pattern-card p{margin:7px 0;line-height:1.6;font-size:14.5px}.pattern-card .original{color:#536171;border-left:3px solid var(--clay);padding-left:10px}.pattern-card .pattern{color:#25323a;font-family:Georgia,"Times New Roman",serif;font-size:16px}.pattern-card .meaning{color:#9b4e35}.pattern-card .example{color:#414b51}.pattern-card small{display:block;color:var(--muted);margin-top:8px;line-height:1.55}
     .review-box{border:1px dashed #b9c7c0;background:#fbfdfb}.review-box b{display:block;margin-bottom:8px;font-size:15px}
     .filter-block{display:grid;gap:8px;margin-bottom:12px}.filter-row{display:flex;gap:7px;align-items:center;flex-wrap:wrap}.filter-row span{font-size:13px;color:var(--muted);font-weight:800}.filter-btn{border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:6px 10px;color:var(--sage-dark);font-size:13px;font-weight:800;cursor:pointer}.filter-btn.active{background:var(--sage-dark);color:#fff;border-color:var(--sage-dark)}
-    .history-list{display:grid;gap:10px}.history-item{display:block;text-decoration:none;color:var(--ink);border:1px solid var(--line);background:var(--paper);border-radius:14px;padding:12px}.history-date{color:var(--blue);font-size:12px;font-weight:900;margin-bottom:6px}.history-item b{display:block;font-size:14.5px;line-height:1.38;margin-bottom:8px}.history-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}.history-tags span{display:inline-flex;border-radius:999px;background:var(--green2);color:var(--green);padding:4px 8px;font-size:12px;font-weight:900}.history-open{display:inline-flex;align-items:center;justify-content:center;border-radius:999px;background:var(--green);color:#fff!important;text-decoration:none;padding:7px 12px;font-size:12px;font-weight:900}.history-empty{color:var(--muted);font-size:14px}
+    .history-list{display:grid;gap:10px}.history-item{display:block;text-decoration:none;color:var(--ink);border:1px solid #eadfd2;background:var(--paper);border-radius:14px;padding:12px}.history-date{color:var(--blue);font-size:12px;font-weight:900;margin-bottom:7px}.history-item b{display:block;font-size:15px;line-height:1.42;margin-bottom:7px}.history-source{display:block;color:var(--muted);font-size:12.5px;margin-bottom:10px}.history-tags{display:flex;gap:6px;flex-wrap:wrap}.history-tags span{display:inline-flex;border-radius:999px;background:var(--green2);color:var(--green);padding:4px 8px;font-size:12px;font-weight:900}.history-tags span:last-child{background:var(--blue2);color:var(--blue)}.history-empty{color:var(--muted);font-size:14px}
     .source-link{display:inline-flex;width:fit-content;margin-top:12px;text-decoration:none;color:var(--sage-dark);background:var(--sage-soft);border:1px solid rgba(66,110,96,.18);border-radius:999px;padding:8px 11px;font-size:13px;font-weight:900}
     .tip{position:fixed;left:14px;right:14px;bottom:16px;z-index:80;background:#1d252c;color:#fff;border-radius:16px;padding:12px 14px;box-shadow:0 14px 38px rgba(0,0,0,.22);line-height:1.6;display:none;max-width:452px;margin:0 auto}.tip b{color:#f1c66d}.bottom-note{color:var(--muted);font-size:12px;line-height:1.7;text-align:center;padding:20px 6px 2px}
     @media (min-width:420px){.meta-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}@media (max-width:360px){.hero h1{font-size:38px}.article-title-en{font-size:29px}.section{padding:16px}.expression{grid-template-columns:1fr}.expr-label{grid-row:auto}}
@@ -4673,20 +4673,31 @@ function initFinalInteractions(root){{
   const modeCurrent = root.querySelector('.mode-current');
   if(modeMenu && modeCurrent && !modeMenu.dataset.ready){{
     modeMenu.dataset.ready = '1';
+    let currentMode = 'full';
+    const modeOptions = modeMenu.querySelector('.mode-options');
+    function setMode(mode){{
+      currentMode = mode === 'bilingual' ? 'bilingual' : 'full';
+      phone.classList.remove('mode-full','mode-bilingual','mode-study');
+      phone.classList.add(currentMode === 'bilingual' ? 'mode-bilingual' : 'mode-full');
+      modeCurrent.textContent = currentMode === 'bilingual' ? '中英对照' : '全英模式';
+      if(modeOptions){{
+        const otherMode = currentMode === 'bilingual' ? 'full' : 'bilingual';
+        const otherText = currentMode === 'bilingual' ? '全英模式' : '中英对照';
+        modeOptions.innerHTML = '<button type="button" class="mode-option" data-mode="' + otherMode + '">' + otherText + '</button>';
+      }}
+    }}
+    setMode('full');
     modeCurrent.addEventListener('click', function(e){{
       e.stopPropagation();
       modeMenu.classList.toggle('open');
     }});
-    modeMenu.querySelectorAll('.mode-option').forEach(function(btn){{
-      btn.addEventListener('click', function(e){{
+    modeMenu.addEventListener('click', function(e){{
+      const btn = e.target.closest('.mode-option');
+      if(btn){{
         e.stopPropagation();
-        modeMenu.querySelectorAll('.mode-option').forEach(function(b){{b.classList.remove('active');}});
-        btn.classList.add('active');
-        phone.classList.remove('mode-full','mode-bilingual','mode-study');
-        phone.classList.add('mode-' + (btn.dataset.mode || 'study'));
-        modeCurrent.textContent = btn.textContent;
+        setMode(btn.dataset.mode || 'bilingual');
         modeMenu.classList.remove('open');
-      }});
+      }}
     }});
     document.addEventListener('click', function(){{ modeMenu.classList.remove('open'); }});
   }}
@@ -4809,19 +4820,19 @@ function renderFinal(){{
   `).join('') || `<div class="final-row"><span>还没有选择重点表达。</span></div>`;
 
   const historyItems = (data.history || []).map(h => `
-    <article class="history-item" data-topic="${{escapeAttr(h.topic || '其他')}}" data-level="${{escapeAttr(h.level || 'B2')}}">
-      <div class="history-date">日期：${{escapeHtml(h.date || '')}}</div>
-      <b>标题：${{escapeHtml(h.title || '历史外刊')}}</b>
-      <div class="history-tags"><span>主题：${{escapeHtml(h.topic || '其他')}}</span><span>难度：${{escapeHtml(h.level || 'B2')}}</span></div>
-      <a class="history-open" href="${{escapeAttr(h.href || '#')}}" target="_blank" rel="noopener">查看文章</a>
-    </article>
+    <a class="history-item" href="${{escapeAttr(h.href || '#')}}" data-topic="${{escapeAttr(h.topic || '其他')}}" data-level="${{escapeAttr(h.level || 'B2')}}">
+      <div class="history-date">${{escapeHtml(h.date || '')}}</div>
+      <b>${{escapeHtml(h.title || '历史外刊')}}</b>
+      <span class="history-source">${{escapeHtml(h.source || 'Daily Reading')}}</span>
+      <div class="history-tags"><span>${{escapeHtml(h.topic || '其他')}}</span><span>${{escapeHtml(h.level || 'B2')}}</span></div>
+    </a>
   `).join('') || `<div class="history-empty">暂无历史文章。多生成几天后，这里会自动出现。</div>`;
 
   document.getElementById('finalPreview').innerHTML = `
     <div class="phone">
       <nav class="top-nav"><a href="#read">今日精读</a><a href="#study">学习面板</a><a href="#history">历史文章</a></nav>
       <article class="final-card article-info">
-        <div class="mode-menu"><button type="button" class="mode-current">学习模式</button><div class="mode-options"><button type="button" class="mode-option active" data-mode="study">学习模式</button><button type="button" class="mode-option" data-mode="bilingual">中英对照</button><button type="button" class="mode-option" data-mode="full">全英模式</button></div></div>
+        <div class="mode-menu"><button type="button" class="mode-current">全英模式</button><div class="mode-options"><button type="button" class="mode-option" data-mode="bilingual">中英对照</button></div></div>
         <div class="cover"><div class="tag">今日文章卡片</div><div><h2>${{escapeHtml(data.title_raw)}}</h2><div class="cn">${{escapeHtml(data.title_cn)}}</div></div></div>
         <div class="final-meta">
           <div><span>来源</span><b>${{escapeHtml(data.source)}}</b></div>
@@ -5573,7 +5584,7 @@ def write_outputs(article, selected_paragraphs, rejected_log, article_reject_log
 .mobile-section{{background:var(--card);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);padding:16px;margin:14px 0}} .section-title{{display:flex;gap:10px;align-items:flex-start;margin-bottom:14px}} .section-title>span{{width:5px;min-height:36px;border-radius:999px;background:var(--blue);margin-top:2px}} .section-title h2{{font-size:21px;line-height:1.1;margin:0 0 5px;letter-spacing:0}} .section-title p{{margin:0;color:var(--muted);font-size:13px;line-height:1.45}}
 .para-list{{display:grid;gap:12px}} .para-card{{background:var(--ivory);border:1px solid #ece4d8;border-radius:16px;padding:14px}} .para-index{{color:var(--sage);font-size:13px;font-weight:950;margin-bottom:8px}} .english{{font-family:Georgia,"Times New Roman",serif;font-size:18px;line-height:1.78;color:#1f2f38}} .translation{{border-top:1px solid #eadfce;margin-top:12px;padding-top:10px;color:#61707a;font-size:14.5px;line-height:1.75}} .click-word,.click-word.key-word{{display:inline;font:inherit;color:#315c6f;background:rgba(75,128,99,.13);border:0;border-radius:4px;padding:0 2px;cursor:pointer;text-decoration:none}} .click-word:active{{background:rgba(47,111,159,.16)}}
 .study-grid{{display:grid;gap:10px}} .study-item{{border:1px solid var(--line);border-radius:16px;padding:13px;background:#fbfcfc}} .study-item span{{display:inline-flex;border-radius:999px;padding:4px 8px;background:var(--blue-soft);color:var(--blue);font-size:12px;font-weight:950;margin-bottom:8px}} .study-item b{{display:block;font-size:16px;line-height:1.35;margin-bottom:5px;color:var(--ink)}} .study-item p{{margin:0;color:#42515a;line-height:1.62;font-size:14px}} .study-item small{{display:block;color:var(--muted);line-height:1.58;margin-top:6px;font-size:13px}} .vocab-list{{display:grid;gap:8px}} .vocab-chip{{display:block;background:var(--sage-soft);border:1px solid rgba(75,128,99,.18);border-radius:14px;padding:10px 11px;color:#35433d;font-size:13.5px;line-height:1.45}} .vocab-chip strong{{display:block;color:var(--sage);font-size:15px;margin-bottom:2px}} .review-item{{background:var(--clay-soft);border-color:#f2d5ca}} .review-item span{{background:#fff7f3;color:var(--clay)}} .sentence-analysis-card{{border:1px solid #e3edf1;background:#fff;border-radius:16px;padding:13px;margin-top:9px}} .sentence-top{{display:flex;align-items:center;justify-content:space-between;gap:8px}} .sentence-top span,.sentence-category{{color:var(--blue);font-size:12px;font-weight:950}} .save-sentence-btn,.record-btn,#saveWordBtn{{border:1px solid var(--line);background:#fff;color:var(--blue);border-radius:999px;padding:6px 9px;font-size:12px;font-weight:900;cursor:pointer}} .sentence-original{{font-family:Georgia,"Times New Roman",serif;font-size:15.5px;line-height:1.65;color:#20313a;margin:8px 0}} .sentence-parts{{background:var(--blue-soft);border-radius:12px;padding:9px;margin:8px 0}} .sentence-parts p{{margin:4px 0}} .sentence-chunks{{display:grid;gap:6px;list-style:none;padding:0;margin:8px 0}} .sentence-chunks li{{background:var(--ivory);border:1px solid #eee3d5;border-radius:12px;padding:8px}} .sentence-chunks b{{font-size:14px}} .sentence-chunks em{{display:block;color:var(--muted);font-style:normal;font-size:12.5px;margin-top:2px}} .sentence-meaning{{border-top:1px solid var(--line);padding-top:8px;color:#5f6d76}} .record-actions{{display:flex;gap:7px;flex-wrap:wrap;margin:8px 0}} .record-list{{display:grid;gap:7px;margin-top:8px}} .record-row{{border:1px solid var(--line);border-radius:12px;padding:8px;background:#fff}} .record-row b{{font-size:14px}} .record-row small{{color:var(--muted)}}
-.history-panel{{padding-bottom:18px}} .history-filter-wrap{{display:grid;gap:10px;background:#f8fbfb;border:1px solid var(--line);border-radius:16px;padding:11px;margin-bottom:12px}} .history-filter-row{{display:flex;gap:7px;align-items:center;flex-wrap:wrap}} .history-filter-row strong{{color:var(--muted);font-size:13px;margin-right:2px}} .history-filter-btn{{border:1px solid var(--line);background:#fff;color:#43525b;border-radius:999px;padding:6px 10px;font-size:12.5px;font-weight:850;cursor:pointer}} .history-filter-btn.active{{background:var(--blue);border-color:var(--blue);color:#fff}} .history-list{{display:grid;grid-template-columns:1fr;gap:10px;padding-left:0}} .history-item{{display:block;background:var(--ivory);border:1px solid #ebe3d8;border-radius:16px;padding:13px;color:var(--ink);text-decoration:none}} .history-date{{color:var(--blue);font-size:12px;font-weight:950;margin-bottom:5px}} .history-item b{{display:block;font-size:15.5px;line-height:1.42;margin-bottom:8px}} .history-tags{{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}} .history-tags span{{border-radius:999px;background:var(--sage-soft);color:var(--sage);padding:4px 8px;font-size:12px;font-weight:900}} .history-tags span:last-child{{background:var(--blue-soft);color:var(--blue)}} .history-open{{display:inline-flex;align-items:center;justify-content:center;border-radius:999px;background:var(--sage);color:#fff!important;text-decoration:none;padding:7px 12px;font-size:12px;font-weight:900}} .history-empty{{color:var(--muted);font-size:14px;line-height:1.7;padding:8px 2px}}
+.history-panel{{padding-bottom:18px}} .history-filter-wrap{{display:grid;gap:10px;background:#f8fbfb;border:1px solid var(--line);border-radius:16px;padding:11px;margin-bottom:12px}} .history-filter-row{{display:flex;gap:7px;align-items:center;flex-wrap:wrap}} .history-filter-row strong{{color:var(--muted);font-size:13px;margin-right:2px}} .history-filter-btn{{border:1px solid var(--line);background:#fff;color:#43525b;border-radius:999px;padding:6px 10px;font-size:12.5px;font-weight:850;cursor:pointer}} .history-filter-btn.active{{background:var(--blue);border-color:var(--blue);color:#fff}} .history-list{{display:grid;grid-template-columns:1fr;gap:10px;padding-left:0}} .history-item{{display:block;background:var(--ivory);border:1px solid #ebe3d8;border-radius:16px;padding:13px;color:var(--ink);text-decoration:none}} .history-date{{color:var(--blue);font-size:12px;font-weight:950;margin-bottom:6px}} .history-item b{{display:block;font-size:15.5px;line-height:1.42;margin-bottom:7px}} .history-source{{display:block;color:var(--muted);font-size:12.5px;margin-bottom:10px}} .history-tags{{display:flex;gap:6px;flex-wrap:wrap}} .history-tags span{{border-radius:999px;background:var(--sage-soft);color:var(--sage);padding:4px 8px;font-size:12px;font-weight:900}} .history-tags span:last-child{{background:var(--blue-soft);color:var(--blue)}} .history-empty{{color:var(--muted);font-size:14px;line-height:1.7;padding:8px 2px}}
 .word-popup{{position:fixed;left:12px;right:12px;bottom:12px;z-index:9999;background:#172026;color:#fff;border-radius:18px;padding:14px 15px;box-shadow:0 16px 42px rgba(0,0,0,.28);font-size:15px;max-width:496px;margin:auto}} .word-popup.hidden{{display:none}} .popup-word{{font-weight:900;font-size:18px;margin-bottom:5px}} .popup-meaning{{line-height:1.55;color:#f3f5f6}} .popup-close{{position:absolute;top:7px;right:10px;background:transparent;color:#fff;border:0;font-size:22px;cursor:pointer}}
 @media print{{.top-nav,.word-popup{{display:none!important}}body{{background:#fff!important}}.mobile-section,.article-info{{box-shadow:none!important;border:1px solid #ddd!important}}}}
 </style>
@@ -5581,7 +5592,7 @@ def write_outputs(article, selected_paragraphs, rejected_log, article_reject_log
 <body>
 <main class="mobile-page">
   <nav class="top-nav" aria-label="页面导航"><a href="#read">今日精读</a><a href="#study">学习面板</a><a href="#history">历史文章</a></nav>
-  <section class="article-info" id="top"><div class="mode-menu"><button type="button" class="mode-current" id="modeCurrent">学习模式</button><div class="mode-options"><button type="button" class="mode-option active" data-mode="study">学习模式</button><button type="button" class="mode-option" data-mode="bilingual">中英对照</button><button type="button" class="mode-option" data-mode="full">全英模式</button></div></div><div class="cover-body"><div class="brand"><span class="brand-mark">HL</span><span>Healing Lab 每日外刊</span></div><div class="cover-kicker">今日文章卡片</div><h1 class="title-en">{esc(article['title'])}</h1><p class="title-zh">{esc(title_zh)}</p></div><div class="info-grid"><div class="info-cell"><span>来源</span><b>{esc(article['source'])}</b></div><div class="info-cell"><span>日期</span><b>{esc(display_publish_date(article) or today)}</b></div><div class="info-cell"><span>主题</span><b>{esc(mobile_topic)}</b></div><div class="info-cell"><span>难度</span><b>{esc(mobile_level)}</b></div></div></section>
+  <section class="article-info" id="top"><div class="mode-menu"><button type="button" class="mode-current" id="modeCurrent">全英模式</button><div class="mode-options"><button type="button" class="mode-option" data-mode="bilingual">中英对照</button></div></div><div class="cover-body"><div class="brand"><span class="brand-mark">HL</span><span>Healing Lab 每日外刊</span></div><div class="cover-kicker">今日文章卡片</div><h1 class="title-en">{esc(article['title'])}</h1><p class="title-zh">{esc(title_zh)}</p></div><div class="info-grid"><div class="info-cell"><span>来源</span><b>{esc(article['source'])}</b></div><div class="info-cell"><span>日期</span><b>{esc(display_publish_date(article) or today)}</b></div><div class="info-cell"><span>主题</span><b>{esc(mobile_topic)}</b></div><div class="info-cell"><span>难度</span><b>{esc(mobile_level)}</b></div></div></section>
   <section class="mobile-section" id="read"><div class="section-title"><span></span><div><h2>今日精读</h2><p>英文段落 + 中文翻译，浅色标注词可点击查看中文。</p></div></div><div class="para-list">{''.join(english_html)}</div></section>
   <section class="mobile-section" id="study"><div class="section-title"><span></span><div><h2>学习面板</h2><p>重点词语、表达句式、长难句分析和个人记录。</p></div></div><div class="study-grid"><div class="study-item"><span>重点表达</span><div class="vocab-list">{vocab_html}</div></div>{pattern_panel_html}<div class="study-item sentence-analysis-item"><span>长难句分析</span><b>拆句 + 分类</b>{long_sentence_html}</div>{review_html}<div class="study-item record-study-item"><span>个人学习记录</span><b>我的生词本 / 长难句库</b><div class="record-actions"><button type="button" class="record-btn" data-view="today">今日生词</button><button type="button" class="record-btn" data-view="saved">已收藏生词</button><button type="button" class="record-btn" data-view="sentence">长难句库</button><button type="button" class="record-btn" data-view="article">按文章查看</button><button type="button" class="record-btn" data-view="date">按日期查看</button><button type="button" class="record-btn" data-view="status">已掌握 / 未掌握</button></div><div id="recordList" class="record-list"></div></div></div></section>
   <!-- HISTORY_PLACEHOLDER -->
@@ -5654,20 +5665,30 @@ function escHtml(s) {{ return String(s || '').replace(/[&<>"']/g, c => ({{'&':'&
 const modeMenu = document.querySelector('.mode-menu');
 const modeCurrent = document.getElementById('modeCurrent');
 if(modeMenu && modeCurrent) {{
+  const modeOptions = modeMenu.querySelector('.mode-options');
+  function setReadingMode(mode) {{
+    const currentMode = mode === 'bilingual' ? 'bilingual' : 'full';
+    document.body.classList.remove('mode-full','mode-bilingual','mode-study');
+    document.body.classList.add(currentMode === 'bilingual' ? 'mode-bilingual' : 'mode-full');
+    modeCurrent.textContent = currentMode === 'bilingual' ? '中英对照' : '全英模式';
+    if(modeOptions) {{
+      const otherMode = currentMode === 'bilingual' ? 'full' : 'bilingual';
+      const otherText = currentMode === 'bilingual' ? '全英模式' : '中英对照';
+      modeOptions.innerHTML = '<button type="button" class="mode-option" data-mode="' + otherMode + '">' + otherText + '</button>';
+    }}
+  }}
+  setReadingMode('full');
   modeCurrent.addEventListener('click', function(e) {{
     e.stopPropagation();
     modeMenu.classList.toggle('open');
   }});
-  document.querySelectorAll('.mode-option').forEach(btn => {{
-    btn.addEventListener('click', function(e) {{
+  modeMenu.addEventListener('click', function(e) {{
+    const btn = e.target.closest('.mode-option');
+    if(btn) {{
       e.stopPropagation();
-      document.querySelectorAll('.mode-option').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      document.body.classList.remove('mode-full','mode-bilingual','mode-study');
-      document.body.classList.add('mode-' + (btn.dataset.mode || 'study'));
-      modeCurrent.textContent = btn.textContent;
+      setReadingMode(btn.dataset.mode || 'bilingual');
       modeMenu.classList.remove('open');
-    }});
+    }}
   }});
   document.addEventListener('click', function() {{ modeMenu.classList.remove('open'); }});
 }}
