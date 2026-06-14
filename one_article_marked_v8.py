@@ -2997,29 +2997,107 @@ def _commons_meta_value(extmeta, key):
     return clean_text(re.sub(r"<[^>]+>", "", value))
 
 
+def save_learning_page_image(img_url, today, source_url="", artist="", license_short="", credit=""):
+    """Download one article image into /daily/assets so index/latest/archive can all use it."""
+    img_url = (img_url or "").strip()
+    if not img_url or img_url.lower().endswith(".svg"):
+        return None
+    out_dir = OUTPUT_DIR / "assets" / "article_images"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    try:
+        r = requests.get(img_url, headers=HEADERS, timeout=25)
+        if r.status_code == 429:
+            raise requests.HTTPError("429 Too Many Requests")
+        r.raise_for_status()
+        ctype = (r.headers.get("content-type") or "").lower()
+        if ctype and not ctype.startswith("image/"):
+            return None
+        if "png" in ctype:
+            ext = ".png"
+        elif "webp" in ctype:
+            ext = ".webp"
+        else:
+            ext = ".jpg"
+        if len(r.content) < 8000:
+            return None
+        name = f"article_image_{today}{ext}"
+        path = out_dir / name
+        path.write_bytes(r.content)
+        return {
+            "url": f"/daily/assets/article_images/{name}",
+            "source_url": source_url or img_url,
+            "artist": clean_text(artist or "Image source")[:120],
+            "license": clean_text(license_short or "Reusable image")[:80],
+            "credit": clean_text(credit or "")[:140],
+        }
+    except Exception as e:
+        print("学习页图片下载失败：", e)
+        return None
+
+
+def fetch_openverse_article_image(article, title_zh, paragraph_texts, today, topic="", cfg=None):
+    """Search CC/public-domain images through Openverse before falling back elsewhere."""
+    cfg = cfg or {}
+    if not cfg.get("openverse_image_enabled", True):
+        return None
+    api = "https://api.openverse.engineering/v1/images/"
+    for query in build_commons_image_queries(article, title_zh, paragraph_texts, topic)[:3]:
+        try:
+            params = {
+                "q": query,
+                "license_type": "commercial",
+                "page_size": 8,
+            }
+            resp = requests.get(api, params=params, headers=HEADERS, timeout=18)
+            if resp.status_code == 429:
+                print("Openverse 图片搜索限流，跳过：", query)
+                return None
+            resp.raise_for_status()
+            data = resp.json()
+            for item in data.get("results", []) or []:
+                if item.get("mature"):
+                    continue
+                license_name = clean_text(" ".join([str(item.get("license") or ""), str(item.get("license_version") or "")])).strip()
+                source_url = item.get("foreign_landing_url") or item.get("url") or ""
+                artist = item.get("creator") or item.get("source") or "Openverse"
+                credit = item.get("title") or item.get("source") or ""
+                for img_url in [item.get("url"), item.get("thumbnail")]:
+                    result = save_learning_page_image(img_url, today, source_url, artist, license_name or "CC licensed", credit)
+                    if result:
+                        result["query"] = query
+                        return result
+        except Exception as e:
+            print("Openverse 图片搜索失败：", query, e)
+            continue
+    return None
+
+
 def fetch_commons_article_image(article, title_zh, paragraph_texts, today, topic="", cfg=None):
     """Find one reusable Wikimedia Commons image and save it for the learning page."""
     cfg = cfg or {}
     if not cfg.get("commons_image_enabled", True):
         return None
-    out_dir = OUTPUT_DIR / "assets" / "article_images"
-    out_dir.mkdir(parents=True, exist_ok=True)
     api = "https://commons.wikimedia.org/w/api.php"
-    for query in build_commons_image_queries(article, title_zh, paragraph_texts, topic):
+    for query in build_commons_image_queries(article, title_zh, paragraph_texts, topic)[:3]:
         try:
             params = {
                 "action": "query",
                 "generator": "search",
                 "gsrsearch": query,
                 "gsrnamespace": 6,
-                "gsrlimit": 8,
+                "gsrlimit": 3,
                 "prop": "imageinfo",
                 "iiprop": "url|mime|extmetadata",
-                "iiurlwidth": 1200,
+                "iiurlwidth": 900,
                 "format": "json",
                 "origin": "*",
             }
-            data = requests.get(api, params=params, headers=HEADERS, timeout=18).json()
+            resp = requests.get(api, params=params, headers=HEADERS, timeout=18)
+            if resp.status_code == 429:
+                print("Commons 图片搜索限流，跳过：", query)
+                return None
+            resp.raise_for_status()
+            data = resp.json()
             pages = list((data.get("query", {}) or {}).get("pages", {}).values())
             for page in pages:
                 info = (page.get("imageinfo") or [{}])[0]
@@ -3027,35 +3105,51 @@ def fetch_commons_article_image(article, title_zh, paragraph_texts, today, topic
                 img_url = info.get("thumburl") or info.get("url") or ""
                 if not img_url or not mime.startswith("image/") or "svg" in mime:
                     continue
-                ext = ".jpg"
-                if "png" in mime:
-                    ext = ".png"
-                elif "webp" in mime:
-                    ext = ".webp"
-                img = requests.get(img_url, headers=HEADERS, timeout=25)
-                img.raise_for_status()
-                if len(img.content) < 8000:
-                    continue
-                name = f"article_image_{today}{ext}"
-                path = out_dir / name
-                path.write_bytes(img.content)
                 extmeta = info.get("extmetadata") or {}
                 artist = _commons_meta_value(extmeta, "Artist") or "Wikimedia Commons"
                 license_short = _commons_meta_value(extmeta, "LicenseShortName")
                 credit = _commons_meta_value(extmeta, "Credit")
                 page_url = info.get("descriptionurl") or f"https://commons.wikimedia.org/wiki/{page.get('title','').replace(' ', '_')}"
-                return {
-                    "url": f"/daily/assets/article_images/{name}",
-                    "source_url": page_url,
-                    "artist": artist[:120],
-                    "license": license_short[:80],
-                    "credit": credit[:140],
-                    "query": query,
-                }
+                result = save_learning_page_image(img_url, today, page_url, artist, license_short, credit)
+                if result:
+                    result["query"] = query
+                    return result
+                if "429" in str(sys.exc_info()[1]):
+                    return None
         except Exception as e:
             print("Commons 图片搜索失败：", query, e)
+            if "429" in str(e):
+                return None
             continue
     return None
+
+
+def fetch_source_article_image(article, today, cfg=None):
+    """Last-resort image: use the source page's og:image for private learning display."""
+    cfg = cfg or {}
+    if not cfg.get("source_article_image_enabled", True):
+        return None
+    image_url = fetch_article_image_url(article.get("link", ""))
+    if not image_url:
+        return None
+    source_name = article.get("source") or "Original source"
+    return save_learning_page_image(
+        image_url,
+        today,
+        article.get("link", ""),
+        source_name,
+        "原文配图（学习引用）",
+        source_name,
+    )
+
+
+def fetch_article_learning_image(article, title_zh, paragraph_texts, today, topic="", cfg=None):
+    """Try reusable image sources first; keep a source-page fallback so the layout is not empty."""
+    return (
+        fetch_openverse_article_image(article, title_zh, paragraph_texts, today, topic, cfg)
+        or fetch_commons_article_image(article, title_zh, paragraph_texts, today, topic, cfg)
+        or fetch_source_article_image(article, today, cfg)
+    )
 
 def short_text(text, max_len=120):
     text = clean_text(text)
@@ -4972,7 +5066,7 @@ function renderFinal(){{
   const imageHtml = image.url ? `
     <figure class="article-photo">
       <img src="${{escapeAttr(image.url)}}" alt="${{escapeAttr(data.title_raw || 'Article image')}}" loading="lazy">
-      <figcaption>图片来源：<a href="${{escapeAttr(image.source_url || '#')}}" target="_blank" rel="noopener">Wikimedia Commons</a> · ${{escapeHtml(image.artist || image.credit || 'Wikimedia Commons')}} · ${{escapeHtml(image.license || 'Reusable image')}}</figcaption>
+      <figcaption>图片来源：<a href="${{escapeAttr(image.source_url || '#')}}" target="_blank" rel="noopener">查看来源</a> · ${{escapeHtml(image.artist || image.credit || 'Image source')}} · ${{escapeHtml(image.license || 'Reusable image')}}</figcaption>
     </figure>
   ` : '';
 
@@ -5695,15 +5789,15 @@ def write_outputs(article, selected_paragraphs, rejected_log, article_reject_log
 
     mobile_topic = mobile_topic_category(article.get("title", "") + " " + title_zh, article.get("source", ""), full_text_for_mobile)
     mobile_level = mobile_level_label(full_text_for_mobile)
-    article_image = fetch_commons_article_image(article, title_zh, paragraph_texts, today, mobile_topic, cfg)
+    article_image = fetch_article_learning_image(article, title_zh, paragraph_texts, today, mobile_topic, cfg)
     article_image_html = ""
     if article_image:
-        image_credit = article_image.get("artist") or article_image.get("credit") or "Wikimedia Commons"
+        image_credit = article_image.get("artist") or article_image.get("credit") or "Image source"
         image_license = article_image.get("license") or "Reusable image"
         article_image_html = f"""
         <figure class="article-photo">
           <img src="{esc(article_image['url'])}" alt="{esc(article.get('title', 'Article image'))}" loading="lazy">
-          <figcaption>图片来源：<a href="{esc(article_image.get('source_url', '#'))}" target="_blank" rel="noopener">Wikimedia Commons</a> · {esc(image_credit)} · {esc(image_license)}</figcaption>
+          <figcaption>图片来源：<a href="{esc(article_image.get('source_url', '#'))}" target="_blank" rel="noopener">查看来源</a> · {esc(image_credit)} · {esc(image_license)}</figcaption>
         </figure>
         """
     pattern_hits_mobile = build_expressions(full_text_for_mobile, 3)
