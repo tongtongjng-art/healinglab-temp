@@ -3960,13 +3960,15 @@ def build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote
         page = page.replace(k, v)
     return page
 
-def build_manual_editor_page(article, title_zh, paragraph_rows, all_keywords, today):
+def build_manual_editor_page(article, title_zh, paragraph_rows, all_keywords, today, cfg=None):
     """
     V35：
     人工自由选择编辑页。
     用户在浏览器里选词、选词组、选表达句式；代码只负责排版，不再硬猜。
-    纯前端本地编辑版：不需要 API，不需要后端保存。
+    前端编辑版：可本地预览；如果 candidate-api 已部署，也可以保存为正式页。
     """
+    cfg = cfg or {}
+    editor_save_token = str(cfg.get("candidate_api_token", ""))
     source = clean_text(article.get("source", ""))
     pub_date = display_publish_date(article) or today
     title_raw = clean_text(article.get("title", "")) or clean_text(title_zh or "Daily Reading")
@@ -3993,6 +3995,7 @@ def build_manual_editor_page(article, title_zh, paragraph_rows, all_keywords, to
         "link": link,
         "paragraphs": paras,
         "keywords": list(all_keywords or [])[:80],
+        "save_token": editor_save_token,
     }
 
     payload_json = json.dumps(payload, ensure_ascii=False).replace("</", "<\\/")
@@ -4119,6 +4122,7 @@ textarea{{min-height:68px;resize:vertical}}
       <button class="btn-light" onclick="loadDemo()">填入示例</button>
       <button class="btn-light" onclick="importFromClipboard()">从剪贴板导入</button>
       <button class="btn-light" onclick="openFinalPage()">查看正式版</button>
+      <button class="btn-green" onclick="saveFinalPage()">保存为正式页</button>
       <button class="btn-light" onclick="renderXhsCards()">导出图文版</button>
       <button class="btn-orange" onclick="clearAll()">清空编辑</button>
       <button class="btn-green" onclick="renderFinal()">生成最终页</button>
@@ -4194,9 +4198,11 @@ textarea{{min-height:68px;resize:vertical}}
 
           <div class="btns">
             <button class="btn-green" onclick="renderFinal()">生成最终页</button>
+            <button class="btn-green" onclick="saveFinalPage()">保存为正式页</button>
             <button class="btn-light" onclick="copyXhsText()">复制小红书正文</button>
             <button class="btn-light" onclick="window.print()">打印/另存PDF</button>
           </div>
+          <p id="saveStatus" class="tool-note"></p>
         </div>
       </div>
 
@@ -4227,6 +4233,7 @@ textarea{{min-height:68px;resize:vertical}}
 <script id="payload" type="application/json">{payload_json}</script>
 <script>
 const data = JSON.parse(document.getElementById('payload').textContent);
+const EDITOR_SAVE_TOKEN = data.save_token || '';
 const state = {{
   vocab: [],
   phrase: [],
@@ -4680,11 +4687,15 @@ function getCurrentPack(){{
   }};
 }}
 
-function openFinalPage(){{
+function buildFinalStandaloneHtml(){{
   ensureFinal();
   const css = document.querySelector('style').innerHTML;
   const content = document.getElementById('finalPreview').innerHTML;
-  const html = '<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Healing Lab 每日外刊正式版</title><style>' + css + ' body{{background:#f5f2eb}}.standalone{{padding:18px}}</style></head><body><div class="standalone">' + content + '</div></body></html>';
+  return '<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Healing Lab 每日外刊正式版</title><style>' + css + ' body{{background:#f5f2eb}}.standalone{{padding:18px}}</style></head><body><div class="standalone">' + content + '</div></body></html>';
+}}
+
+function openFinalPage(){{
+  const html = buildFinalStandaloneHtml();
   const win = window.open('', '_blank');
   if(!win){{
     alert('浏览器拦截了新窗口。请允许弹窗，或继续在本页最终预览查看。');
@@ -4693,6 +4704,31 @@ function openFinalPage(){{
   win.document.open();
   win.document.write(html);
   win.document.close();
+}}
+
+async function saveFinalPage(){{
+  const status = document.getElementById('saveStatus');
+  if(status) status.textContent = '正在保存为正式页...';
+  try{{
+    const html = buildFinalStandaloneHtml();
+    const res = await fetch('/candidate-api/save-final', {{
+      method:'POST',
+      headers:{{'Content-Type':'application/json'}},
+      body:JSON.stringify({{
+        token:EDITOR_SAVE_TOKEN,
+        html,
+        date:data.today,
+        title:data.title_cn || data.title_raw
+      }})
+    }});
+    const json = await res.json();
+    if(!json.ok) throw new Error(json.error || '保存失败');
+    if(status) status.innerHTML = '已保存为正式页：<a href="/daily/latest.html?v=' + Date.now() + '" target="_blank">打开 latest.html</a>';
+    alert('已保存。现在打开正式学习页就是你刚编辑的版本。');
+  }}catch(e){{
+    if(status) status.textContent = '保存失败：' + e.message + '。如果提示 not found，说明服务器 candidate-api 还没更新或没启动。';
+    alert('保存失败：' + e.message);
+  }}
 }}
 
 function makeXhsCards(){{
@@ -5371,7 +5407,7 @@ renderRecordList('today');
 
     cover_image = save_article_cover_image(article, today)
     xhs_doc = build_xhs_export_page(article, title_zh, paragraph_rows, all_keywords, quote_raw, quote_translated, today, cover_image)
-    editor_doc = build_manual_editor_page(article, title_zh, paragraph_rows, all_keywords, today)
+    editor_doc = build_manual_editor_page(article, title_zh, paragraph_rows, all_keywords, today, cfg)
 
     debug_lines = [
         f"筛选调试记录｜{today}",
