@@ -59,6 +59,36 @@ function safeDate(value) {
   return /^\d{4}-\d{2}-\d{2}$/.test(raw) ? raw : new Date().toISOString().slice(0, 10);
 }
 
+function textFromHtml(html) {
+  return String(html || "")
+    .replace(/<script[\s\S]*?<\/script>/gi, " ")
+    .replace(/<style[\s\S]*?<\/style>/gi, " ")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function extractTitle(html, fallback) {
+  const h1 = String(html || "").match(/<h1[^>]*>([\s\S]*?)<\/h1>/i);
+  const title = String(html || "").match(/<title[^>]*>([\s\S]*?)<\/title>/i);
+  return textFromHtml((h1 && h1[1]) || (title && title[1]) || fallback || "Daily Reading").slice(0, 180);
+}
+
+function updateHistoryJson(dir, entry) {
+  const historyPath = path.join(dir, "history.json");
+  let list = [];
+  try {
+    list = JSON.parse(fs.readFileSync(historyPath, "utf8"));
+    if (!Array.isArray(list)) list = [];
+  } catch (e) {
+    list = [];
+  }
+  const key = entry.date + "|" + entry.href;
+  list = list.filter(item => String(item.date + "|" + item.href) !== key);
+  list.unshift(entry);
+  fs.writeFileSync(historyPath, JSON.stringify(list.slice(0, 500), null, 2), "utf8");
+}
+
 function handleSelectCandidate(req, res, cfg, body) {
   const id = String(body.id || "").trim();
   const token = String(body.token || "").trim();
@@ -113,7 +143,7 @@ function handleSaveFinal(res, cfg, body) {
 
   const latestPath = path.join(dir, "latest.html");
   const indexPath = path.join(dir, "index.html");
-  const archivePath = path.join(archiveDir, `day-${date}-edited.html`);
+  const archivePath = path.join(archiveDir, `day-${date}.html`);
 
   if (fs.existsSync(latestPath)) {
     fs.copyFileSync(latestPath, path.join(dir, `latest.before_edit_${Date.now()}.html`));
@@ -122,12 +152,22 @@ function handleSaveFinal(res, cfg, body) {
   fs.writeFileSync(latestPath, html, "utf8");
   fs.writeFileSync(indexPath, html, "utf8");
   fs.writeFileSync(archivePath, html, "utf8");
+  updateHistoryJson(dir, {
+    date,
+    title: extractTitle(html, body.title),
+    source: String(body.source || "Healing Lab").slice(0, 120),
+    topic: String(body.topic || "其他").slice(0, 40),
+    level: String(body.level || "B2").slice(0, 20),
+    href: `/daily/archive/day-${date}.html`,
+    saved_at: new Date().toISOString()
+  });
 
   return sendJson(res, 200, {
     ok: true,
     message: "已保存为正式页",
     latest: "/daily/latest.html",
-    archive: `/daily/archive/day-${date}-edited.html`
+    archive: `/daily/archive/day-${date}.html`,
+    history: "/daily/history.json"
   });
 }
 

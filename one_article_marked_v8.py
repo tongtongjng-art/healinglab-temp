@@ -3028,6 +3028,29 @@ def topic_any(text, keywords):
     return any(topic_has(text, k) for k in keywords)
 
 
+def topic_category(title, source_name="", body=""):
+    """
+    Stable global topic classifier used by history/editor pages.
+    Kept intentionally simple so history rendering never crashes if a
+    page-specific classifier is unavailable.
+    """
+    text = (clean_text(title) + " " + clean_text(source_name) + " " + clean_text(body)).lower()
+    rules = [
+        ("社会议题", ["society", "social", "community", "housing", "poverty", "inequality", "worker", "work", "family", "policy", "public"]),
+        ("生态环境", ["climate", "environment", "conservation", "wildlife", "carbon", "forest", "ocean", "species", "nature"]),
+        ("游戏文化", ["game", "gaming", "video game", "nintendo", "playstation", "xbox"]),
+        ("教育", ["school", "student", "university", "education", "teacher", "exam", "pupil", "classroom"]),
+        ("科技", ["ai", "technology", "tech", "app", "platform", "computer", "robot", "software", "data"]),
+        ("文化历史", ["history", "culture", "museum", "heritage", "ancient", "archaeology", "art", "book", "film"]),
+        ("生活", ["life", "dating", "food", "travel", "home", "fashion", "health", "sleep", "sport", "football"]),
+        ("自然科学", ["science", "space", "planet", "biology", "physics", "research", "mathematician"]),
+    ]
+    for name, keys in rules:
+        if topic_any(text, keys):
+            return name
+    return "其他"
+
+
 def detect_cover_theme(article, title_zh, paragraph_texts):
     """
     V33：
@@ -4026,6 +4049,22 @@ def build_manual_editor_page(article, title_zh, paragraph_rows, all_keywords, to
         archive_dir = OUTPUT_DIR / "archive"
         if not archive_dir.exists():
             return entries
+        def simple_history_topic(title, source_name, body):
+            text = (title + " " + source_name + " " + body).lower()
+            rules = [
+                ("社会议题", ["society", "social", "community", "housing", "poverty", "inequality", "worker", "work", "family"]),
+                ("生态环境", ["climate", "environment", "conservation", "wildlife", "carbon", "forest", "ocean", "species"]),
+                ("游戏文化", ["game", "gaming", "video game", "nintendo", "playstation", "xbox"]),
+                ("教育", ["school", "student", "university", "education", "teacher", "exam", "pupil"]),
+                ("科技", ["ai", "technology", "tech", "app", "platform", "computer", "robot", "software"]),
+                ("文化历史", ["history", "culture", "museum", "heritage", "ancient", "archaeology", "art", "book"]),
+                ("生活", ["life", "dating", "food", "travel", "home", "fashion", "health", "sleep"]),
+                ("自然科学", ["science", "space", "planet", "biology", "physics", "research", "mathematician"]),
+            ]
+            for topic_name, keys in rules:
+                if any(k in text for k in keys):
+                    return topic_name
+            return "其他"
         seen = set()
         for txt_path in sorted(archive_dir.glob("day-*.txt"), reverse=True):
             date_part = txt_path.stem.replace("day-", "")
@@ -4042,7 +4081,7 @@ def build_manual_editor_page(article, title_zh, paragraph_rows, all_keywords, to
             if key in seen:
                 continue
             seen.add(key)
-            topic_h = topic_category(en_title, source_line, t[:1200])
+            topic_h = simple_history_topic(en_title, source_line, t[:1200])
             level_h = difficulty_label_from_text(t[:2000])
             href = f"archive/day-{date_part}.html"
             entries.append({"date": date_part, "title": en_title, "source": source_line, "topic": topic_h, "level": level_h, "href": href})
@@ -4135,7 +4174,8 @@ textarea{{min-height:68px;resize:vertical}}
 .hidden{{display:none}}
 .preview{{background:linear-gradient(135deg,rgba(255,255,255,.88),rgba(255,255,255,.96)),var(--paper2);padding:18px}}
 .phone{{width:min(100%,480px);margin:0 auto}}
-.phone.mode-full .translation{{display:none!important}}
+.phone.mode-full .translation,.phone.mode-full .analysis-detail{{display:none!important}}
+.phone.mode-bilingual .analysis-detail{{display:none!important}}
 .top-nav{{position:sticky;top:0;z-index:20;display:grid;grid-template-columns:repeat(3,1fr);gap:7px;padding:9px 0;background:rgba(245,242,235,.9);backdrop-filter:blur(12px)}}
 .top-nav a{{display:grid;place-items:center;min-height:36px;border:1px solid var(--line);border-radius:999px;background:#fff;color:var(--blue);font-size:13px;font-weight:900;text-decoration:none}}
 .top-nav a:first-child{{background:var(--blue);border-color:var(--blue);color:#fff}}
@@ -4605,7 +4645,8 @@ function initFinalInteractions(root){{
         e.stopPropagation();
         modeMenu.querySelectorAll('.mode-option').forEach(function(b){{b.classList.remove('active');}});
         btn.classList.add('active');
-        phone.classList.toggle('mode-full', btn.dataset.mode === 'full');
+        phone.classList.remove('mode-full','mode-bilingual','mode-study');
+        phone.classList.add('mode-' + (btn.dataset.mode || 'study'));
         modeCurrent.textContent = btn.textContent;
         modeMenu.classList.remove('open');
       }});
@@ -4741,7 +4782,7 @@ function renderFinal(){{
     <div class="phone">
       <nav class="top-nav"><a href="#read">今日精读</a><a href="#study">学习面板</a><a href="#history">历史文章</a></nav>
       <article class="final-card article-info">
-        <div class="mode-menu"><button type="button" class="mode-current">中英对照</button><div class="mode-options"><button type="button" class="mode-option active" data-mode="bilingual">中英对照</button><button type="button" class="mode-option" data-mode="full">全英模式</button></div></div>
+        <div class="mode-menu"><button type="button" class="mode-current">学习模式</button><div class="mode-options"><button type="button" class="mode-option active" data-mode="study">学习模式</button><button type="button" class="mode-option" data-mode="bilingual">中英对照</button><button type="button" class="mode-option" data-mode="full">全英模式</button></div></div>
         <div class="cover"><div class="tag">今日文章卡片</div><div><h2>${{escapeHtml(data.title_raw)}}</h2><div class="cn">${{escapeHtml(data.title_cn)}}</div></div></div>
         <div class="final-meta">
           <div><span>来源</span><b>${{escapeHtml(data.source)}}</b></div>
@@ -4754,8 +4795,8 @@ function renderFinal(){{
       <section class="final-card final-section" id="read"><div class="final-hd"><h2>今日精读</h2><span class="mini">Original + Meaning</span></div><div class="final-list">${{paraHtml}}</div></section>
       <section class="final-card final-section" id="study"><div class="final-hd"><h2>学习面板</h2><span class="mini">Study Panel</span></div><div class="final-list">
         <div class="study-block"><h3>重点表达</h3>${{exprHtml}}</div>
-        <div class="study-block"><h3>表达句式</h3>${{patternHtml}}</div>
-        <div class="study-block"><h3>长难句分析</h3>${{sentenceHtml}}</div>
+        <div class="study-block analysis-detail"><h3>表达句式</h3>${{patternHtml}}</div>
+        <div class="study-block analysis-detail"><h3>长难句分析</h3>${{sentenceHtml}}</div>
         <div class="study-block"><h3>个人学习记录</h3><div class="record-actions"><button type="button" class="record-btn" data-view="today">今日生词</button><button type="button" class="record-btn" data-view="saved">已收藏生词</button><button type="button" class="record-btn" data-view="sentence">长难句库</button></div><div id="recordList" class="record-list"></div></div>
       </div></section>
       <section class="final-card final-section history-panel" id="history"><div class="final-hd"><h2>历史文章</h2><span class="mini">Archive</span></div><div class="filter-block"><div class="filter-row"><span>主题</span><button class="filter-btn active" data-kind="topic" data-value="全部">全部</button><button class="filter-btn" data-kind="topic" data-value="教育">教育</button><button class="filter-btn" data-kind="topic" data-value="科技">科技</button><button class="filter-btn" data-kind="topic" data-value="文化历史">文化历史</button><button class="filter-btn" data-kind="topic" data-value="生活">生活</button></div><div class="filter-row"><span>难度</span><button class="filter-btn active" data-kind="level" data-value="全部">全部</button><button class="filter-btn" data-kind="level" data-value="B1">B1</button><button class="filter-btn" data-kind="level" data-value="B1-B2">B1-B2</button><button class="filter-btn" data-kind="level" data-value="B2">B2</button><button class="filter-btn" data-kind="level" data-value="C1">C1</button></div></div><div class="history-list" id="historyList">${{historyItems}}</div><div class="history-empty" id="historyEmpty" style="display:none;">这个筛选下暂时没有文章</div></section>
@@ -4919,7 +4960,10 @@ async function saveFinalPage(){{
         token:EDITOR_SAVE_TOKEN,
         html,
         date:data.today,
-        title:data.title_cn || data.title_raw
+        title:data.title_cn || data.title_raw,
+        source:data.source,
+        topic:document.getElementById('topic').value,
+        level:document.getElementById('level').value
       }})
     }});
     const text = await res.text();
@@ -5478,7 +5522,7 @@ def write_outputs(article, selected_paragraphs, rejected_log, article_reject_log
 <style>
 :root {{ --bg:#f7f5f0; --card:#fff; --ink:#172026; --muted:#66727d; --line:#dce4e8; --blue:#2f6f9f; --blue-soft:#eaf4f8; --sage:#4b8063; --sage-soft:#edf6f0; --clay:#b76e57; --clay-soft:#fff0ea; --ivory:#fffdf8; --shadow:0 14px 34px rgba(35,48,56,.08); }}
 *{{box-sizing:border-box}} html{{scroll-behavior:smooth}} body{{margin:0;background:linear-gradient(180deg,#fbfaf6 0%,var(--bg) 100%);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",Arial,sans-serif;line-height:1.65}} a{{color:inherit;text-decoration:none}}
-.mobile-page{{width:min(100%,520px);margin:0 auto;padding:12px 12px 34px}} .top-nav{{position:sticky;top:0;z-index:30;display:grid;grid-template-columns:repeat(3,1fr);gap:7px;padding:10px 0;background:rgba(247,245,240,.88);backdrop-filter:blur(14px)}} .top-nav a{{display:grid;place-items:center;min-height:38px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.82);color:var(--blue);font-size:13px;font-weight:900}} .top-nav a:first-child{{background:var(--blue);border-color:var(--blue);color:#fff}} body.mode-full .translation{{display:none}}
+.mobile-page{{width:min(100%,520px);margin:0 auto;padding:12px 12px 34px}} .top-nav{{position:sticky;top:0;z-index:30;display:grid;grid-template-columns:repeat(3,1fr);gap:7px;padding:10px 0;background:rgba(247,245,240,.88);backdrop-filter:blur(14px)}} .top-nav a{{display:grid;place-items:center;min-height:38px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.82);color:var(--blue);font-size:13px;font-weight:900}} .top-nav a:first-child{{background:var(--blue);border-color:var(--blue);color:#fff}} body.mode-full .translation,body.mode-full .sentence-analysis-item,body.mode-full .pattern-item,body.mode-full .review-item{{display:none}} body.mode-bilingual .sentence-analysis-item,body.mode-bilingual .pattern-item,body.mode-bilingual .review-item{{display:none}}
 .article-info{{position:relative;overflow:visible;background:linear-gradient(140deg,#fbf1df 0%,#f7f4ea 54%,#edf5f6 100%);border:1px solid #dce4e8;border-radius:22px;box-shadow:0 18px 44px rgba(35,48,56,.12);margin:8px 0 14px}} .article-info::before{{content:"";position:absolute;inset:16px 16px auto 16px;height:28px;border-radius:999px;background:rgba(237,246,240,.78)}} .article-info::after{{content:"";position:absolute;right:-80px;top:150px;width:210px;height:210px;border-radius:50%;border:1px solid rgba(47,111,159,.10)}} .mode-menu{{position:absolute;right:14px;top:14px;z-index:8}} .mode-current{{border:1px solid rgba(47,111,159,.18);background:rgba(255,255,255,.88);color:var(--blue);border-radius:999px;padding:7px 10px;font-size:12px;font-weight:950;box-shadow:0 8px 18px rgba(35,48,56,.08);cursor:pointer}} .mode-options{{display:none;position:absolute;right:0;top:38px;min-width:112px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:6px;box-shadow:0 14px 28px rgba(35,48,56,.16)}} .mode-menu.open .mode-options{{display:grid;gap:5px}} .mode-option{{border:0;background:#fff;color:#39505d;border-radius:10px;padding:8px 10px;text-align:left;font-size:12px;font-weight:900;cursor:pointer}} .mode-option.active{{background:var(--blue-soft);color:var(--blue)}} .cover-body{{position:relative;z-index:1;padding:24px 22px 0}} .brand{{display:flex;align-items:center;gap:10px;color:var(--blue);font-weight:950;font-size:13px;margin-bottom:22px;padding-right:96px}} .brand-mark{{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--sage);color:#fff;font-size:13px}} .cover-kicker{{display:inline-flex;min-height:28px;align-items:center;color:var(--sage);font-size:13px;font-weight:950;margin-bottom:24px;padding:0 12px;border-radius:999px;background:rgba(237,246,240,.78)}} .title-en{{font-family:Georgia,"Times New Roman",serif;font-size:36px;line-height:1.06;font-weight:900;letter-spacing:0;margin:0;color:#102331;text-wrap:balance}} .title-zh{{font-size:16px;line-height:1.55;font-weight:850;letter-spacing:0;margin:14px 0 0;color:#334756}} .info-grid{{position:relative;z-index:1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:22px;padding:16px;background:rgba(255,255,255,.72);border-top:1px solid rgba(220,228,232,.86);border-radius:0 0 22px 22px}} .info-cell{{background:rgba(255,255,255,.72);border:1px solid var(--line);border-radius:14px;padding:10px}} .info-cell span{{display:block;color:var(--muted);font-size:11px;font-weight:850;margin-bottom:3px}} .info-cell b{{display:block;font-size:13px;line-height:1.35;color:#111d24}}
 .mobile-section{{background:var(--card);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);padding:16px;margin:14px 0}} .section-title{{display:flex;gap:10px;align-items:flex-start;margin-bottom:14px}} .section-title>span{{width:5px;min-height:36px;border-radius:999px;background:var(--blue);margin-top:2px}} .section-title h2{{font-size:21px;line-height:1.1;margin:0 0 5px;letter-spacing:0}} .section-title p{{margin:0;color:var(--muted);font-size:13px;line-height:1.45}}
 .para-list{{display:grid;gap:12px}} .para-card{{background:var(--ivory);border:1px solid #ece4d8;border-radius:16px;padding:14px}} .para-index{{color:var(--sage);font-size:13px;font-weight:950;margin-bottom:8px}} .english{{font-family:Georgia,"Times New Roman",serif;font-size:18px;line-height:1.78;color:#1f2f38}} .translation{{border-top:1px solid #eadfce;margin-top:12px;padding-top:10px;color:#61707a;font-size:14.5px;line-height:1.75}} .click-word,.click-word.key-word{{display:inline;font:inherit;color:#315c6f;background:rgba(75,128,99,.13);border:0;border-radius:4px;padding:0 2px;cursor:pointer;text-decoration:none}} .click-word:active{{background:rgba(47,111,159,.16)}}
@@ -5491,7 +5535,7 @@ def write_outputs(article, selected_paragraphs, rejected_log, article_reject_log
 <body>
 <main class="mobile-page">
   <nav class="top-nav" aria-label="页面导航"><a href="#read">今日精读</a><a href="#study">学习面板</a><a href="#history">历史文章</a></nav>
-  <section class="article-info" id="top"><div class="mode-menu"><button type="button" class="mode-current" id="modeCurrent">中英对照</button><div class="mode-options"><button type="button" class="mode-option active" data-mode="bilingual">中英对照</button><button type="button" class="mode-option" data-mode="full">全英模式</button></div></div><div class="cover-body"><div class="brand"><span class="brand-mark">HL</span><span>Healing Lab 每日外刊</span></div><div class="cover-kicker">今日文章卡片</div><h1 class="title-en">{esc(article['title'])}</h1><p class="title-zh">{esc(title_zh)}</p></div><div class="info-grid"><div class="info-cell"><span>来源</span><b>{esc(article['source'])}</b></div><div class="info-cell"><span>日期</span><b>{esc(display_publish_date(article) or today)}</b></div><div class="info-cell"><span>主题</span><b>{esc(mobile_topic)}</b></div><div class="info-cell"><span>难度</span><b>{esc(mobile_level)}</b></div></div></section>
+  <section class="article-info" id="top"><div class="mode-menu"><button type="button" class="mode-current" id="modeCurrent">学习模式</button><div class="mode-options"><button type="button" class="mode-option active" data-mode="study">学习模式</button><button type="button" class="mode-option" data-mode="bilingual">中英对照</button><button type="button" class="mode-option" data-mode="full">全英模式</button></div></div><div class="cover-body"><div class="brand"><span class="brand-mark">HL</span><span>Healing Lab 每日外刊</span></div><div class="cover-kicker">今日文章卡片</div><h1 class="title-en">{esc(article['title'])}</h1><p class="title-zh">{esc(title_zh)}</p></div><div class="info-grid"><div class="info-cell"><span>来源</span><b>{esc(article['source'])}</b></div><div class="info-cell"><span>日期</span><b>{esc(display_publish_date(article) or today)}</b></div><div class="info-cell"><span>主题</span><b>{esc(mobile_topic)}</b></div><div class="info-cell"><span>难度</span><b>{esc(mobile_level)}</b></div></div></section>
   <section class="mobile-section" id="read"><div class="section-title"><span></span><div><h2>今日精读</h2><p>英文段落 + 中文翻译，浅色标注词可点击查看中文。</p></div></div><div class="para-list">{''.join(english_html)}</div></section>
   <section class="mobile-section" id="study"><div class="section-title"><span></span><div><h2>学习面板</h2><p>重点词语、表达句式、长难句分析和个人记录。</p></div></div><div class="study-grid"><div class="study-item"><span>重点表达</span><div class="vocab-list">{vocab_html}</div></div>{pattern_panel_html}<div class="study-item sentence-analysis-item"><span>长难句分析</span><b>拆句 + 分类</b>{long_sentence_html}</div>{review_html}<div class="study-item record-study-item"><span>个人学习记录</span><b>我的生词本 / 长难句库</b><div class="record-actions"><button type="button" class="record-btn" data-view="today">今日生词</button><button type="button" class="record-btn" data-view="saved">已收藏生词</button><button type="button" class="record-btn" data-view="sentence">长难句库</button><button type="button" class="record-btn" data-view="article">按文章查看</button><button type="button" class="record-btn" data-view="date">按日期查看</button><button type="button" class="record-btn" data-view="status">已掌握 / 未掌握</button></div><div id="recordList" class="record-list"></div></div></div></section>
   <!-- HISTORY_PLACEHOLDER -->
@@ -5573,7 +5617,8 @@ if(modeMenu && modeCurrent) {{
       e.stopPropagation();
       document.querySelectorAll('.mode-option').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-      document.body.classList.toggle('mode-full', btn.dataset.mode === 'full');
+      document.body.classList.remove('mode-full','mode-bilingual','mode-study');
+      document.body.classList.add('mode-' + (btn.dataset.mode || 'study'));
       modeCurrent.textContent = btn.textContent;
       modeMenu.classList.remove('open');
     }});
