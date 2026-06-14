@@ -1,3 +1,4 @@
+# V42_MOBILE_MODE_MANUAL_VOCAB_FIX
 # V41_FINAL_AND_XHS_EXPORT
 # V40_INLINE_WORD_HIGHLIGHT_FIX
 # V39_VOCAB_ONLY_HIGHLIGHT_EXPRESSIONS
@@ -4435,16 +4436,22 @@ textarea{{min-height:68px;resize:vertical}}
 .tab.active{{background:var(--green);color:white}}
 .hidden{{display:none}}
 .preview{{background:linear-gradient(135deg,rgba(255,255,255,.88),rgba(255,255,255,.96)),var(--paper2);padding:18px}}
-.phone{{width:min(100%,480px);margin:0 auto}}
+html,body{{width:100%;max-width:100%;overflow-x:hidden;-webkit-text-size-adjust:100%;text-size-adjust:100%;touch-action:pan-y}}
+.preview,.standalone,.phone,.final-card,.final-row,.para,.card{{max-width:100%;box-sizing:border-box}}
+.preview{{overflow-x:hidden}}
+.phone{{width:100%;max-width:480px;min-width:0;margin:0 auto;overflow:visible}}
+.phone img{{max-width:100%;height:auto}}
 .phone.mode-full .translation,.phone.mode-full .analysis-detail{{display:none!important}}
 .phone.mode-bilingual .analysis-detail{{display:none!important}}
+.phone.mode-study .translation{{display:block!important}}
+.phone.mode-study .analysis-detail{{display:block!important}}
 .top-nav{{position:sticky;top:0;z-index:20;display:grid;grid-template-columns:repeat(3,1fr);gap:7px;padding:9px 0;background:rgba(245,242,235,.9);backdrop-filter:blur(12px)}}
 .top-nav a{{display:grid;place-items:center;min-height:36px;border:1px solid var(--line);border-radius:999px;background:#fff;color:var(--blue);font-size:13px;font-weight:900;text-decoration:none}}
 .top-nav a:first-child{{background:var(--blue);border-color:var(--blue);color:#fff}}
 .article-info{{position:relative;overflow:visible}}
 .mode-menu{{position:absolute;right:14px;top:14px;z-index:8}}
 .mode-current{{border:1px solid rgba(85,125,168,.2);background:rgba(255,255,255,.9);color:var(--blue);border-radius:999px;padding:7px 10px;font-size:12px;font-weight:950;box-shadow:0 8px 18px rgba(35,48,56,.08);cursor:pointer}}
-.mode-options{{display:none;position:absolute;right:0;top:38px;min-width:112px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:6px;box-shadow:0 14px 28px rgba(35,48,56,.16)}}
+.mode-options{{display:none;position:absolute;right:0;top:38px;min-width:132px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:6px;box-shadow:0 14px 28px rgba(35,48,56,.16)}}
 .mode-menu.open .mode-options,.mode-menu:focus-within .mode-options{{display:grid;gap:5px}}
 .mode-option{{border:0;background:#fff;color:#39505d;border-radius:10px;padding:8px 10px;text-align:left;font-size:12px;font-weight:900;cursor:pointer}}
 .mode-option.active{{background:var(--blue2);color:var(--blue)}}
@@ -4477,6 +4484,11 @@ textarea{{min-height:68px;resize:vertical}}
 .sentence-card .parts{{background:var(--green2);border-radius:10px;padding:9px;color:#35443d}}
 .record-actions{{display:flex;gap:7px;flex-wrap:wrap}}
 .record-btn{{border:1px solid var(--line);background:#fff;color:var(--green);border-radius:999px;padding:7px 10px;font-size:12px;font-weight:900}}
+.manual-vocab-btn{{background:var(--green)!important;color:#fff!important;border-color:var(--green)!important}}
+.selection-add-bar{{position:fixed;left:14px;right:14px;bottom:76px;z-index:90;max-width:452px;margin:0 auto;display:none;gap:8px;align-items:center;justify-content:space-between;background:rgba(29,37,44,.96);color:#fff;border-radius:16px;padding:10px 12px;box-shadow:0 14px 38px rgba(0,0,0,.22)}}
+.selection-add-bar span{{font-size:13px;line-height:1.35;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}}
+.selection-add-bar button{{background:#fff;color:var(--green);border-radius:999px;padding:7px 10px;font-size:12px;font-weight:900;flex:0 0 auto}}
+@media(max-width:560px){{.shell{{width:100%;padding-left:12px;padding-right:12px}}.preview{{padding:12px}}.top-nav{{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}}.top-nav a{{font-size:12px;min-height:34px;padding:0 4px}}.cover h2{{font-size:clamp(28px,8vw,36px);line-height:1.12}}.en,.english{{font-size:clamp(18px,4.6vw,21px);line-height:1.78}}.mode-menu{{right:10px;top:10px}}.mode-current{{font-size:12px;padding:7px 9px}}.final-meta{{grid-template-columns:1fr 1fr}}}}
 .record-list{{display:grid;gap:7px}}
 .record-row{{border:1px solid var(--line);border-radius:12px;background:#fff;padding:9px}}
 .record-row b{{display:block;color:var(--green)}}
@@ -4916,20 +4928,21 @@ function initFinalInteractions(root){{
   const modeCurrent = root.querySelector('.mode-current');
   if(modeMenu && modeCurrent && !modeMenu.dataset.ready){{
     modeMenu.dataset.ready = '1';
-    let currentMode = 'full';
+    let currentMode = 'bilingual';
     const modeOptions = modeMenu.querySelector('.mode-options');
+    const modeLabels = {{full:'全英模式', bilingual:'中英对照', study:'学习模式'}};
     function setMode(mode){{
-      currentMode = mode === 'bilingual' ? 'bilingual' : 'full';
+      currentMode = modeLabels[mode] ? mode : 'bilingual';
       phone.classList.remove('mode-full','mode-bilingual','mode-study');
-      phone.classList.add(currentMode === 'bilingual' ? 'mode-bilingual' : 'mode-full');
-      modeCurrent.textContent = currentMode === 'bilingual' ? '中英对照' : '全英模式';
+      phone.classList.add('mode-' + currentMode);
+      modeCurrent.textContent = modeLabels[currentMode];
       if(modeOptions){{
-        const otherMode = currentMode === 'bilingual' ? 'full' : 'bilingual';
-        const otherText = currentMode === 'bilingual' ? '全英模式' : '中英对照';
-        modeOptions.innerHTML = '<button type="button" class="mode-option" data-mode="' + otherMode + '">' + otherText + '</button>';
+        modeOptions.innerHTML = ['full','bilingual','study'].filter(function(m){{ return m !== currentMode; }}).map(function(m){{
+          return '<button type="button" class="mode-option" data-mode="' + m + '">' + modeLabels[m] + '</button>';
+        }}).join('');
       }}
     }}
-    setMode('full');
+    setMode('bilingual');
     modeCurrent.addEventListener('click', function(e){{
       e.stopPropagation();
       modeMenu.classList.toggle('open');
@@ -4975,6 +4988,78 @@ function initFinalInteractions(root){{
 
   function readStore(key){{ try{{ return JSON.parse(localStorage.getItem(key) || '[]'); }}catch(e){{ return []; }} }}
   function writeStore(key, value){{ localStorage.setItem(key, JSON.stringify(value)); }}
+  function getSelectedEnglishText(){{
+    const sel = window.getSelection ? window.getSelection() : null;
+    if(!sel || sel.rangeCount === 0) return '';
+    const txt = sel.toString().trim().replace(/\s+/g,' ');
+    if(!txt) return '';
+    const node = sel.anchorNode && (sel.anchorNode.nodeType === 1 ? sel.anchorNode : sel.anchorNode.parentElement);
+    const holder = node && node.closest ? node.closest('.en,.english,.final-row,.para-card') : null;
+    if(!holder) return '';
+    if(txt.length > 80) return txt.slice(0,80).trim();
+    return txt;
+  }}
+  function findSentenceForTerm(term){{
+    term = String(term || '').trim();
+    if(!term) return '';
+    const rows = root.querySelectorAll('.en,.english');
+    for(const row of rows){{
+      const text = (row.textContent || '').replace(/\s+/g,' ').trim();
+      if(text.toLowerCase().includes(term.toLowerCase())){{
+        const parts = text.split(/(?<=[.!?])\s+/);
+        for(const p of parts){{ if(p.toLowerCase().includes(term.toLowerCase())) return p.trim(); }}
+        return text.slice(0,220);
+      }}
+    }}
+    return '';
+  }}
+  function saveManualVocab(term, meaning, note){{
+    term = String(term || '').trim().replace(/\s+/g,' ');
+    if(!term) return false;
+    meaning = String(meaning || '').trim();
+    note = String(note || '').trim();
+    const list = readStore('hl_vocab_book');
+    const key = (term + '|' + data.today + '|' + data.title_raw).toLowerCase();
+    const sentence = findSentenceForTerm(term);
+    const item = {{term:term, word:term, meaning:meaning || '未填写释义', note:note, sentence:sentence, source_title:data.title_raw, date:data.today, status:'new'}};
+    const idx = list.findIndex(function(x){{ return (((x.term || x.word || '') + '|' + x.date + '|' + (x.source_title || x.title || '')).toLowerCase()) === key; }});
+    if(idx >= 0) list[idx] = Object.assign(list[idx], item);
+    else list.unshift(item);
+    writeStore('hl_vocab_book', list.slice(0,300));
+    renderRecordList('today');
+    showMeaningTip(term, item.meaning, note || '已手动加入生词本', sentence);
+    return true;
+  }}
+  function addManualVocabFromSelection(){{
+    let term = getSelectedEnglishText();
+    if(!term) term = prompt('输入要加入生词本的英文单词或词组：') || '';
+    term = term.trim().replace(/\s+/g,' ');
+    if(!term) return;
+    const meaning = prompt('中文释义：', '') || '';
+    const note = prompt('备注/用法，可不填：', '') || '';
+    saveManualVocab(term, meaning, note);
+  }}
+  function setupSelectionAddBar(){{
+    if(root.querySelector('#selectionAddVocab')) return;
+    const bar = document.createElement('div');
+    bar.className = 'selection-add-bar';
+    bar.id = 'selectionAddVocab';
+    bar.innerHTML = '<span>已选中英文</span><button type="button">加入生词</button>';
+    document.body.appendChild(bar);
+    bar.querySelector('button').addEventListener('click', function(e){{ e.preventDefault(); addManualVocabFromSelection(); bar.style.display='none'; }});
+    function updateBar(){{
+      const txt = getSelectedEnglishText();
+      if(txt){{
+        bar.querySelector('span').textContent = txt;
+        bar.style.display = 'flex';
+      }}else{{
+        bar.style.display = 'none';
+      }}
+    }}
+    document.addEventListener('selectionchange', function(){{ setTimeout(updateBar, 60); }});
+    document.addEventListener('touchend', function(){{ setTimeout(updateBar, 180); }}, {{passive:true}});
+    document.addEventListener('mouseup', function(){{ setTimeout(updateBar, 60); }});
+  }}
   function renderRecordList(view){{
     const box = root.querySelector('#recordList');
     if(!box) return;
@@ -4986,14 +5071,21 @@ function initFinalInteractions(root){{
     }}else{{
       let list = vocab;
       if(view === 'today') list = vocab.filter(function(x){{ return x.date === data.today; }});
-      rows = list.map(function(x){{ return '<div class="record-row"><b>' + escapeHtml(x.word || '') + '</b><small>' + escapeHtml(x.meaning || '') + '<br>' + escapeHtml(x.date || '') + ' · ' + escapeHtml(x.status || '未掌握') + '</small></div>'; }});
+      rows = list.map(function(x){{ 
+        const term = x.term || x.word || '';
+        const src = x.source_title || x.title || '';
+        return '<div class="record-row"><b>' + escapeHtml(term) + '</b><small>' + escapeHtml(x.meaning || '') + '<br>' + escapeHtml(x.date || '') + (src ? ' · ' + escapeHtml(src) : '') + ' · ' + escapeHtml(x.status || 'new') + '</small></div>'; 
+      }});
     }}
-    box.innerHTML = rows.slice(0, 20).join('') || '<div class="history-empty">暂无记录。点击正文里的浅色单词可加入生词本。</div>';
+    box.innerHTML = rows.slice(0, 20).join('') || '<div class="history-empty">暂无记录。点击高亮词，或选中任意英文后点“手动添加生词”。</div>';
   }}
   root.querySelectorAll('.record-btn').forEach(function(btn){{
     if(btn.dataset.ready) return;
     btn.dataset.ready = '1';
-    btn.addEventListener('click', function(){{ renderRecordList(btn.dataset.view || 'saved'); }});
+    btn.addEventListener('click', function(){{
+      if(btn.dataset.manual === 'vocab'){{ addManualVocabFromSelection(); return; }}
+      renderRecordList(btn.dataset.view || 'saved');
+    }});
   }});
   root.querySelectorAll('.vocab-hl').forEach(function(node){{
     if(node.dataset.ready) return;
@@ -5006,7 +5098,7 @@ function initFinalInteractions(root){{
       const list = readStore('hl_vocab_book');
       const key = (word + '|' + data.today + '|' + data.title_raw).toLowerCase();
       if(!list.some(function(x){{ return ((x.word + '|' + x.date + '|' + x.title).toLowerCase()) === key; }})){{
-        list.unshift({{word:word, meaning:meaning, note:note, sentence:sentence, date:data.today, title:data.title_raw, status:'未掌握'}});
+        list.unshift({{term:word, word:word, meaning:meaning, note:note, sentence:sentence, source_title:data.title_raw, date:data.today, title:data.title_raw, status:'new'}});
         writeStore('hl_vocab_book', list.slice(0, 300));
       }}
       showMeaningTip(word, meaning, note, sentence);
@@ -5014,6 +5106,7 @@ function initFinalInteractions(root){{
     }});
   }});
   renderRecordList('today');
+  setupSelectionAddBar();
   applyHistoryFilter();
 }}
 
@@ -5080,10 +5173,10 @@ function renderFinal(){{
   `).join('') || `<div class="history-empty">暂无历史文章。多生成几天后，这里会自动出现。</div>`;
 
   document.getElementById('finalPreview').innerHTML = `
-    <div class="phone">
+    <div class="phone mode-bilingual">
       <nav class="top-nav"><a href="#read">今日精读</a><a href="#study">学习面板</a><a href="#history">历史文章</a></nav>
       <article class="final-card article-info">
-        <div class="mode-menu"><button type="button" class="mode-current" onclick="event.stopPropagation();this.closest('.mode-menu').classList.toggle('open')">全英模式</button><div class="mode-options"><button type="button" class="mode-option" data-mode="bilingual" onclick="event.stopPropagation();var box=this.closest('.phone')||document.body;var m=this.dataset.mode==='bilingual'?'bilingual':'full';box.classList.remove('mode-full','mode-bilingual','mode-study');box.classList.add('mode-'+m);var c=this.closest('.mode-menu').querySelector('.mode-current');c.textContent=m==='bilingual'?'中英对照':'全英模式';this.dataset.mode=m==='bilingual'?'full':'bilingual';this.textContent=m==='bilingual'?'全英模式':'中英对照';this.closest('.mode-menu').classList.remove('open')">中英对照</button></div></div>
+        <div class="mode-menu"><button type="button" class="mode-current" onclick="event.stopPropagation();this.closest('.mode-menu').classList.toggle('open')">中英对照</button><div class="mode-options"><button type="button" class="mode-option" data-mode="full">全英模式</button><button type="button" class="mode-option" data-mode="study">学习模式</button></div></div>
         <div class="cover"><div class="tag">今日文章卡片</div><div><h2>${{escapeHtml(data.title_raw)}}</h2><div class="cn">${{escapeHtml(data.title_cn)}}</div></div></div>${{imageHtml}}
         <div class="final-meta">
           <div><span>来源</span><b>${{escapeHtml(data.source)}}</b></div>
@@ -5098,7 +5191,7 @@ function renderFinal(){{
         <div class="study-block"><h3>重点表达</h3>${{exprHtml}}</div>
         <div class="study-block analysis-detail"><h3>表达句式</h3>${{patternHtml}}</div>
         <div class="study-block analysis-detail"><h3>长难句分析</h3>${{sentenceHtml}}</div>
-        <div class="study-block"><h3>个人学习记录</h3><div class="record-actions"><button type="button" class="record-btn" data-view="today">今日生词</button><button type="button" class="record-btn" data-view="saved">已收藏生词</button><button type="button" class="record-btn" data-view="sentence">长难句库</button></div><div id="recordList" class="record-list"></div></div>
+        <div class="study-block"><h3>个人学习记录</h3><div class="record-actions"><button type="button" class="record-btn" data-view="today">今日生词</button><button type="button" class="record-btn" data-view="saved">已收藏生词</button><button type="button" class="record-btn" data-view="sentence">长难句库</button><button type="button" class="record-btn manual-vocab-btn" data-manual="vocab">手动添加生词</button></div><div id="recordList" class="record-list"></div></div>
       </div></section>
       <section class="final-card final-section history-panel" id="history"><div class="final-hd"><h2>历史文章</h2><span class="mini">Archive</span></div><div class="filter-block"><div class="filter-row"><span>主题</span><button class="filter-btn active" data-kind="topic" data-value="全部">全部</button><button class="filter-btn" data-kind="topic" data-value="社会议题">社会议题</button><button class="filter-btn" data-kind="topic" data-value="生态环境">生态环境</button><button class="filter-btn" data-kind="topic" data-value="游戏文化">游戏文化</button><button class="filter-btn" data-kind="topic" data-value="教育">教育</button><button class="filter-btn" data-kind="topic" data-value="科技">科技</button><button class="filter-btn" data-kind="topic" data-value="文化历史">文化历史</button><button class="filter-btn" data-kind="topic" data-value="生活">生活</button><button class="filter-btn" data-kind="topic" data-value="自然科学">自然科学</button><button class="filter-btn" data-kind="topic" data-value="其他">其他</button></div><div class="filter-row"><span>难度</span><button class="filter-btn active" data-kind="level" data-value="全部">全部</button><button class="filter-btn" data-kind="level" data-value="B1">B1</button><button class="filter-btn" data-kind="level" data-value="B1-B2">B1-B2</button><button class="filter-btn" data-kind="level" data-value="B2">B2</button><button class="filter-btn" data-kind="level" data-value="C1">C1</button></div></div><div class="history-list" id="historyList">${{historyItems}}</div><div class="history-empty" id="historyEmpty" style="display:none;">这个筛选下暂时没有文章</div></section>
     </div>
@@ -5238,7 +5331,7 @@ function buildFinalStandaloneHtml(){{
   const css = document.querySelector('style').innerHTML;
   const content = document.getElementById('finalPreview').innerHTML;
   const runtime = '<script>const data=' + JSON.stringify(data).replace(/<\\//g,'<\\\\/') + ';' + escapeHtml.toString() + cleanHistoryDisplayText.toString() + showMeaningTip.toString() + initFinalInteractions.toString() + ';initFinalInteractions(document);<\\/script>';
-  return '<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Healing Lab 每日外刊正式版</title><style>' + css + ' body{{background:#f5f2eb}}.standalone{{padding:18px}}</style></head><body><div class="standalone">' + content + '</div><div class="copybox" id="copybox"></div>' + runtime + '</body></html>';
+  return '<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>Healing Lab 每日外刊正式版</title><style>' + css + ' body{{background:#f5f2eb;overflow-x:hidden}}.standalone{{width:min(100% - 24px,520px);max-width:520px;margin:0 auto;padding:12px 0 28px;box-sizing:border-box}}</style></head><body><div class="standalone">' + content + '</div><div class="copybox" id="copybox"></div>' + runtime + '</body></html>';
 }}
 
 function openFinalPage(){{
@@ -5842,7 +5935,7 @@ def write_outputs(article, selected_paragraphs, rejected_log, article_reject_log
 :root {{ --bg:#f7f5f0; --card:#fff; --ink:#172026; --muted:#66727d; --line:#dce4e8; --blue:#2f6f9f; --blue-soft:#eaf4f8; --sage:#4b8063; --sage-soft:#edf6f0; --clay:#b76e57; --clay-soft:#fff0ea; --ivory:#fffdf8; --shadow:0 14px 34px rgba(35,48,56,.08); }}
 *{{box-sizing:border-box}} html{{scroll-behavior:smooth}} body{{margin:0;background:linear-gradient(180deg,#fbfaf6 0%,var(--bg) 100%);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",Arial,sans-serif;line-height:1.65}} a{{color:inherit;text-decoration:none}}
 .mobile-page{{width:min(100%,520px);margin:0 auto;padding:12px 12px 34px}} .top-nav{{position:sticky;top:0;z-index:30;display:grid;grid-template-columns:repeat(3,1fr);gap:7px;padding:10px 0;background:rgba(247,245,240,.88);backdrop-filter:blur(14px)}} .top-nav a{{display:grid;place-items:center;min-height:38px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.82);color:var(--blue);font-size:13px;font-weight:900}} .top-nav a:first-child{{background:var(--blue);border-color:var(--blue);color:#fff}} body.mode-full .translation,body.mode-full .sentence-analysis-item,body.mode-full .pattern-item,body.mode-full .review-item{{display:none}} body.mode-bilingual .sentence-analysis-item,body.mode-bilingual .pattern-item,body.mode-bilingual .review-item{{display:none}}
-.article-info{{position:relative;overflow:visible;background:linear-gradient(140deg,#fbf1df 0%,#f7f4ea 54%,#edf5f6 100%);border:1px solid #dce4e8;border-radius:22px;box-shadow:0 18px 44px rgba(35,48,56,.12);margin:8px 0 14px}} .article-info::before{{content:"";position:absolute;inset:16px 16px auto 16px;height:28px;border-radius:999px;background:rgba(237,246,240,.78)}} .article-info::after{{content:"";position:absolute;right:-80px;top:150px;width:210px;height:210px;border-radius:50%;border:1px solid rgba(47,111,159,.10)}} .mode-menu{{position:absolute;right:14px;top:14px;z-index:8}} .mode-current{{border:1px solid rgba(47,111,159,.18);background:rgba(255,255,255,.88);color:var(--blue);border-radius:999px;padding:7px 10px;font-size:12px;font-weight:950;box-shadow:0 8px 18px rgba(35,48,56,.08);cursor:pointer}} .mode-options{{display:none;position:absolute;right:0;top:38px;min-width:112px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:6px;box-shadow:0 14px 28px rgba(35,48,56,.16)}} .mode-menu.open .mode-options,.mode-menu:focus-within .mode-options{{display:grid;gap:5px}} .mode-option{{border:0;background:#fff;color:#39505d;border-radius:10px;padding:8px 10px;text-align:left;font-size:12px;font-weight:900;cursor:pointer}} .mode-option.active{{background:var(--blue-soft);color:var(--blue)}} .cover-body{{position:relative;z-index:1;padding:24px 22px 0}} .brand{{display:flex;align-items:center;gap:10px;color:var(--blue);font-weight:950;font-size:13px;margin-bottom:22px;padding-right:96px}} .brand-mark{{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--sage);color:#fff;font-size:13px}} .cover-kicker{{display:inline-flex;min-height:28px;align-items:center;color:var(--sage);font-size:13px;font-weight:950;margin-bottom:24px;padding:0 12px;border-radius:999px;background:rgba(237,246,240,.78)}} .title-en{{font-family:Georgia,"Times New Roman",serif;font-size:36px;line-height:1.06;font-weight:900;letter-spacing:0;margin:0;color:#102331;text-wrap:balance}} .title-zh{{font-size:16px;line-height:1.55;font-weight:850;letter-spacing:0;margin:14px 0 0;color:#334756}} .info-grid{{position:relative;z-index:1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:22px;padding:16px;background:rgba(255,255,255,.72);border-top:1px solid rgba(220,228,232,.86);border-radius:0 0 22px 22px}} .info-cell{{background:rgba(255,255,255,.72);border:1px solid var(--line);border-radius:14px;padding:10px}} .info-cell span{{display:block;color:var(--muted);font-size:11px;font-weight:850;margin-bottom:3px}} .info-cell b{{display:block;font-size:13px;line-height:1.35;color:#111d24}}
+.article-info{{position:relative;overflow:visible;background:linear-gradient(140deg,#fbf1df 0%,#f7f4ea 54%,#edf5f6 100%);border:1px solid #dce4e8;border-radius:22px;box-shadow:0 18px 44px rgba(35,48,56,.12);margin:8px 0 14px}} .article-info::before{{content:"";position:absolute;inset:16px 16px auto 16px;height:28px;border-radius:999px;background:rgba(237,246,240,.78)}} .article-info::after{{content:"";position:absolute;right:-80px;top:150px;width:210px;height:210px;border-radius:50%;border:1px solid rgba(47,111,159,.10)}} .mode-menu{{position:absolute;right:14px;top:14px;z-index:8}} .mode-current{{border:1px solid rgba(47,111,159,.18);background:rgba(255,255,255,.88);color:var(--blue);border-radius:999px;padding:7px 10px;font-size:12px;font-weight:950;box-shadow:0 8px 18px rgba(35,48,56,.08);cursor:pointer}} .mode-options{{display:none;position:absolute;right:0;top:38px;min-width:132px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:6px;box-shadow:0 14px 28px rgba(35,48,56,.16)}} .mode-menu.open .mode-options,.mode-menu:focus-within .mode-options{{display:grid;gap:5px}} .mode-option{{border:0;background:#fff;color:#39505d;border-radius:10px;padding:8px 10px;text-align:left;font-size:12px;font-weight:900;cursor:pointer}} .mode-option.active{{background:var(--blue-soft);color:var(--blue)}} .cover-body{{position:relative;z-index:1;padding:24px 22px 0}} .brand{{display:flex;align-items:center;gap:10px;color:var(--blue);font-weight:950;font-size:13px;margin-bottom:22px;padding-right:96px}} .brand-mark{{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--sage);color:#fff;font-size:13px}} .cover-kicker{{display:inline-flex;min-height:28px;align-items:center;color:var(--sage);font-size:13px;font-weight:950;margin-bottom:24px;padding:0 12px;border-radius:999px;background:rgba(237,246,240,.78)}} .title-en{{font-family:Georgia,"Times New Roman",serif;font-size:36px;line-height:1.06;font-weight:900;letter-spacing:0;margin:0;color:#102331;text-wrap:balance}} .title-zh{{font-size:16px;line-height:1.55;font-weight:850;letter-spacing:0;margin:14px 0 0;color:#334756}} .info-grid{{position:relative;z-index:1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:22px;padding:16px;background:rgba(255,255,255,.72);border-top:1px solid rgba(220,228,232,.86);border-radius:0 0 22px 22px}} .info-cell{{background:rgba(255,255,255,.72);border:1px solid var(--line);border-radius:14px;padding:10px}} .info-cell span{{display:block;color:var(--muted);font-size:11px;font-weight:850;margin-bottom:3px}} .info-cell b{{display:block;font-size:13px;line-height:1.35;color:#111d24}}
 .article-photo{{position:relative;z-index:1;margin:18px 16px 0;border-radius:18px;overflow:hidden;border:1px solid rgba(220,228,232,.9);background:#fff;box-shadow:0 12px 28px rgba(35,48,56,.10)}} .article-photo img{{display:block;width:100%;aspect-ratio:16/10;object-fit:cover;background:#eef3f1}} .article-photo figcaption{{padding:8px 10px;color:var(--muted);font-size:11px;line-height:1.45;background:rgba(255,255,255,.88)}} .article-photo a{{color:var(--blue);font-weight:850}}
 .mobile-section{{background:var(--card);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);padding:16px;margin:14px 0}} .section-title{{display:flex;gap:10px;align-items:flex-start;margin-bottom:14px}} .section-title>span{{width:5px;min-height:36px;border-radius:999px;background:var(--blue);margin-top:2px}} .section-title h2{{font-size:21px;line-height:1.1;margin:0 0 5px;letter-spacing:0}} .section-title p{{margin:0;color:var(--muted);font-size:13px;line-height:1.45}}
 .para-list{{display:grid;gap:12px}} .para-card{{background:var(--ivory);border:1px solid #ece4d8;border-radius:16px;padding:14px}} .para-index{{color:var(--sage);font-size:13px;font-weight:950;margin-bottom:8px}} .english{{font-family:Georgia,"Times New Roman",serif;font-size:18px;line-height:1.78;color:#1f2f38}} .translation{{border-top:1px solid #eadfce;margin-top:12px;padding-top:10px;color:#61707a;font-size:14.5px;line-height:1.75}} .click-word,.click-word.key-word{{display:inline;font:inherit;color:#315c6f;background:rgba(75,128,99,.13);border:0;border-radius:4px;padding:0 2px;cursor:pointer;text-decoration:none}} .click-word:active{{background:rgba(47,111,159,.16)}}
