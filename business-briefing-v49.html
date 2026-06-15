@@ -1395,6 +1395,30 @@
       text-transform: uppercase;
     }
 
+    body.detail-open .side-section:not(.detail-toc) {
+      display: none;
+    }
+
+    .compact-brief {
+      padding: 16px 22px;
+      border-top-width: 2px;
+    }
+
+    .compact-brief h2 {
+      margin-bottom: 6px;
+      font-size: 24px;
+    }
+
+    .compact-brief .section-note {
+      margin-bottom: 10px;
+    }
+
+    .compact-brief .field {
+      padding: 12px 14px;
+      font-size: 15px;
+      line-height: 1.55;
+    }
+
     .detail-hero { position: relative; padding-right: 230px; }
 
     .detail-reading-mode {
@@ -1546,6 +1570,402 @@
       .today-pick-button { justify-self: start; margin: 0 22px 22px; }
     }
 
+    /* Redesign: make Today's Pick the only first-screen focus */
+    .summary-band {
+      padding: 0;
+      border-top-width: 0;
+      background: transparent;
+      box-shadow: none;
+    }
+
+    .daily-focus {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 320px;
+      min-height: 560px;
+      border: 3px solid var(--line-strong);
+      background: var(--paper);
+      box-shadow: 16px 16px 0 rgba(28,25,21,.08);
+    }
+
+    .daily-focus-main {
+      padding: 36px 38px 34px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border-right: 1px solid var(--line-strong);
+    }
+
+    .daily-focus h1 {
+      margin: 4px 0 10px;
+      font-family: Georgia, "Times New Roman", "Songti SC", serif;
+      font-size: 78px;
+      line-height: .96;
+      letter-spacing: 0;
+    }
+
+    .daily-focus-subtitle {
+      max-width: 720px;
+      margin: 0 0 24px;
+      color: var(--muted);
+      font-size: 18px;
+      line-height: 1.7;
+    }
+
+    .daily-focus .today-pick {
+      margin-top: auto;
+      min-height: 310px;
+      grid-template-columns: minmax(0, 1fr) 190px;
+      border-width: 2px;
+      box-shadow: none;
+    }
+
+    .daily-focus .today-pick::before {
+      display: none;
+    }
+
+    .daily-focus .today-pick-copy {
+      padding: 30px 34px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      background:
+        linear-gradient(90deg, rgba(255,248,238,.98), rgba(255,248,238,.84) 62%, rgba(245,227,204,.52)),
+        var(--paper);
+    }
+
+    .daily-focus .today-pick-eyebrow {
+      width: fit-content;
+      margin-bottom: 14px;
+    }
+
+    .daily-focus .today-pick h2 {
+      max-width: 760px;
+      font-size: 52px;
+      line-height: 1.04;
+      overflow-wrap: anywhere;
+    }
+
+    .today-pick-cn {
+      margin: 10px 0 8px;
+      color: var(--teal-2);
+      font-size: 18px;
+      line-height: 1.55;
+      font-weight: 800;
+    }
+
+    .today-pick-cn::before {
+      content: "中文提示";
+      display: inline-flex;
+      margin-right: 8px;
+      padding: 2px 6px;
+      color: #fff8ee;
+      background: var(--teal-2);
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: .06em;
+      vertical-align: 2px;
+    }
+
+    .daily-focus .today-pick p {
+      max-width: 760px;
+      font-size: 16px;
+      line-height: 1.7;
+    }
+
+    .daily-focus .today-pick-button {
+      align-self: stretch;
+      justify-self: stretch;
+      margin: 0;
+      min-width: 0;
+      height: auto;
+      border-radius: 0;
+      font-size: 17px;
+    }
+
+    .daily-focus-rail {
+      padding: 22px;
+      display: grid;
+      grid-template-rows: 240px auto auto;
+      gap: 16px;
+      background:
+        linear-gradient(180deg, rgba(42,38,33,.06), transparent 34%),
+        rgba(245,227,204,.35);
+    }
+
+    .cover-visual {
+      position: relative;
+      padding: 22px;
+      overflow: hidden;
+      color: #fff8ee;
+      background:
+        linear-gradient(135deg, rgba(42,38,33,.96), rgba(11,51,46,.92)),
+        var(--line-strong);
+    }
+
+    .cover-visual::before,
+    .cover-visual::after {
+      content: "";
+      position: absolute;
+      inset: auto 20px 20px auto;
+      width: 120px;
+      height: 120px;
+      border: 1px solid rgba(255,248,238,.35);
+      transform: rotate(18deg);
+    }
+
+    .cover-visual::after {
+      inset: 22px auto auto 28px;
+      width: 86px;
+      height: 86px;
+      transform: rotate(-12deg);
+      border-color: rgba(179,41,46,.7);
+    }
+
+    .cover-visual span {
+      position: relative;
+      z-index: 1;
+      display: block;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 30px;
+      line-height: 1.02;
+      font-weight: 900;
+    }
+
+    .cover-visual i {
+      position: relative;
+      z-index: 1;
+      display: block;
+      height: 7px;
+      margin-top: 18px;
+      background: #fff8ee;
+    }
+
+    .cover-visual i:nth-of-type(2) {
+      width: 70%;
+      background: var(--red);
+    }
+
+    .cover-visual i:nth-of-type(3) {
+      width: 46%;
+      background: var(--soft-amber);
+    }
+
+    .rail-card,
+    .method-drawer {
+      padding: 16px;
+      border: 1px solid var(--line);
+      background: rgba(255,248,238,.72);
+    }
+
+    .rail-card strong,
+    .method-drawer summary {
+      color: var(--teal-2);
+      font-weight: 900;
+    }
+
+    .rail-card p {
+      margin: 8px 0 0;
+      color: var(--muted);
+    }
+
+    .method-drawer summary {
+      cursor: pointer;
+    }
+
+    .method-drawer .briefing-lead {
+      margin-top: 14px;
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+
+    .method-drawer .briefing-lead div {
+      padding: 10px 0 0;
+      border-left: 0;
+      border-top: 1px solid var(--line);
+      background: transparent;
+    }
+
+    .summary-band .toolbar {
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid var(--line-strong);
+    }
+
+    @media (max-width: 1120px) {
+      .daily-focus {
+        grid-template-columns: 1fr;
+      }
+
+      .daily-focus-main {
+        border-right: 0;
+        border-bottom: 1px solid var(--line-strong);
+      }
+
+      .daily-focus h1 {
+        font-size: 52px;
+      }
+
+      .daily-focus .today-pick {
+        grid-template-columns: 1fr;
+      }
+
+      .daily-focus .today-pick-button {
+        min-height: 52px;
+      }
+    }
+
+    /* V50 homepage focus: remove empty right cover rail and make the article the hero */
+    .daily-focus {
+      display: block;
+      min-height: 0;
+      border: 3px solid var(--line-strong);
+      background: var(--paper);
+      box-shadow: 16px 16px 0 rgba(28,25,21,.08);
+    }
+
+    .daily-focus-main {
+      min-height: 0;
+      padding: 34px 38px 36px;
+      border-right: 0;
+    }
+
+    .daily-focus-rail {
+      display: none;
+    }
+
+    .daily-focus h1 {
+      margin: 0 0 8px;
+      font-family: "Segoe UI", "Microsoft YaHei", Arial, sans-serif;
+      font-size: 22px;
+      line-height: 1.2;
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--red);
+    }
+
+    .daily-focus-subtitle {
+      max-width: 960px;
+      margin-bottom: 22px;
+      font-size: 16px;
+    }
+
+    .daily-focus .today-pick {
+      position: relative;
+      min-height: 380px;
+      margin-top: 0;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 300px;
+      border: 2px solid var(--line-strong);
+      overflow: hidden;
+      box-shadow: none;
+      background:
+        linear-gradient(90deg, rgba(255,248,238,.98), rgba(255,248,238,.9) 64%, rgba(11,61,53,.08));
+    }
+
+    .daily-focus .today-pick::before {
+      content: "";
+      display: block;
+      position: absolute;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      width: 300px;
+      background:
+        linear-gradient(135deg, rgba(11,61,53,.96), rgba(28,25,21,.94)),
+        var(--teal-2);
+      pointer-events: none;
+    }
+
+    .daily-focus .today-pick::after {
+      content: "READ";
+      white-space: pre-line;
+      position: absolute;
+      right: 46px;
+      top: 44px;
+      width: 210px;
+      color: #fff8ee;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 42px;
+      line-height: 1.02;
+      font-weight: 900;
+      letter-spacing: .02em;
+      pointer-events: none;
+    }
+
+    .daily-focus .today-pick-copy {
+      position: relative;
+      z-index: 1;
+      padding: 34px 38px;
+      justify-content: center;
+      background: transparent;
+    }
+
+    .daily-focus .today-pick-eyebrow {
+      margin-bottom: 18px;
+    }
+
+    .daily-focus .today-pick h2 {
+      max-width: 820px;
+      font-size: 58px;
+      line-height: 1.02;
+    }
+
+    .today-pick-cn {
+      max-width: 820px;
+      margin: 12px 0 10px;
+      font-size: 18px;
+    }
+
+    .today-pick-original {
+      max-width: 820px;
+      margin: 8px 0 10px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .today-pick-original strong {
+      color: var(--line-strong);
+    }
+
+    .daily-focus .today-pick p {
+      max-width: 820px;
+      font-size: 16px;
+    }
+
+    .daily-focus .today-pick-button {
+      position: relative;
+      z-index: 1;
+      align-self: end;
+      justify-self: center;
+      width: 190px;
+      height: 54px;
+      margin: 0 42px 38px 0;
+      border: 1px solid rgba(255,248,238,.52);
+      border-radius: 2px;
+      background: #fff8ee;
+      color: var(--teal-2);
+      font-size: 17px;
+      font-weight: 900;
+    }
+
+    @media (max-width: 1120px) {
+      .daily-focus .today-pick {
+        grid-template-columns: 1fr;
+      }
+      .daily-focus .today-pick::before,
+      .daily-focus .today-pick::after {
+        display: none;
+      }
+      .daily-focus .today-pick-button {
+        justify-self: start;
+        margin: 0 0 28px 38px;
+        color: #fff8ee;
+        background: var(--teal-2);
+      }
+    }
+
     /* V49: visible Chinese translation and work connection under each excerpt */
     .translation-card {
       margin-top: 14px;
@@ -1607,8 +2027,8 @@
       <div class="side-section detail-toc" id="detailToc">
         <h2>本篇导航</h2>
         <div class="filter-list">
-          <button class="filter jump-button" data-jump="section-brief">今日议题</button>
           <button class="filter jump-button" data-jump="section-source">外刊原文</button>
+          <button class="filter jump-button" data-jump="section-brief">本篇读法</button>
           <button class="filter jump-button" data-jump="section-lens">商业视角</button>
           <button class="filter jump-button" data-jump="section-phrases">商务表达</button>
           <button class="filter jump-button" data-jump="section-email">邮件模板</button>
@@ -1632,57 +2052,42 @@
     <main>
       <section class="feed active" id="feedView">
         <div class="summary-band">
-          <div class="status-row">
-            <span class="chip">商业外刊主线</span>
-            <span class="chip blue" id="fetchStatus">正在检查最新外刊</span>
-            <span class="chip amber">工作表达落地</span>
-          </div>
-          <div class="briefing-kicker">Daily Business Briefing</div>
-          <h1>每天读一篇商业外刊，顺手带走能用于客户沟通的英文表达。</h1>
-          <p>不是纯外刊精读，也不是邮件模板库。先看懂商业变化，再判断它如何影响报价、交期、付款、投诉和客户跟进。</p>
-          <section class="today-pick" aria-label="今日抓取推荐文章">
-            <div class="today-pick-copy">
-              <div class="today-pick-eyebrow">TODAY'S PICK · 今日抓取推荐</div>
-              <h2 id="todayPickTitle">客户嫌价格贵，该怎么回复？</h2>
-              <p id="todayPickMeta">来源加载中 · 优先展示今天自动抓取到的商业外刊</p>
-              <p id="todayPickWhy">首页先突出今日主文：先读真实商业文章，再看它如何转成报价、交期、付款、投诉或客户跟进里的英文表达。</p>
+          <section class="daily-focus" aria-label="今日推荐主文">
+            <div class="daily-focus-main">
+              <div class="briefing-kicker">Today’s article</div>
+              <h1>今日推荐</h1>
+              <p class="daily-focus-subtitle">打开先读今天这篇。2–3 段真实商业原文，中文只翻译段落含义，工作启发单独折叠。</p>
+              <section class="today-pick" aria-label="今日抓取推荐文章">
+                <div class="today-pick-copy">
+                  <div class="today-pick-eyebrow">TODAY'S ARTICLE · 今日外刊</div>
+                  <h2 id="todayPickTitle">Margins, buyer pressure and value defence in B2B pricing</h2>
+                  <p class="today-pick-cn" id="todayPickCn">客户嫌价格贵，该怎么回复？</p>
+                  <p class="today-pick-original" id="todayPickOriginal"><strong>Reading help:</strong> 这篇文章对应报价、成本和客户压价场景。</p>
+                  <p id="todayPickMeta">来源加载中 · 优先展示今天自动抓取到的商业外刊</p>
+                  <p id="todayPickWhy">先看真实商业文章，再判断它如何影响报价、交期、付款、投诉或客户跟进里的英文表达。</p>
+                </div>
+                <button class="primary today-pick-button" id="todayPickOpen" type="button">Start reading</button>
+              </section>
             </div>
-            <button class="primary today-pick-button" id="todayPickOpen" type="button">进入今日主文</button>
+            <aside class="daily-focus-rail" aria-label="今日读本信息">
+              <div class="cover-visual" aria-hidden="true">
+                <span>BUSINESS<br>BRIEFING</span>
+                <i></i><i></i><i></i>
+              </div>
+              <div class="rail-card">
+                <strong>今天怎么读</strong>
+                <p>原文先行，翻译只讲段落含义；商业判断放在展开项和正文模块里。</p>
+              </div>
+              <details class="method-drawer">
+                <summary>方法说明</summary>
+                <div class="briefing-lead">
+                  <div><strong>读什么</strong>成本、供应链、物流、汇率、AI、消费趋势。</div>
+                  <div><strong>看什么</strong>市场信号、客户心理、谈判边界。</div>
+                  <div><strong>带走什么</strong>表达、邮件和回复策略。</div>
+                </div>
+              </details>
+            </aside>
           </section>
-          <div class="editorial-board" aria-label="产品定位说明">
-            <div class="lead-brief">
-              <div class="issue-mark">
-                <span>Daily Briefing</span>
-                <strong>Work<br>Desk</strong>
-                <span>2026.06.15</span>
-              </div>
-              <div>
-                <h2>今日主线：商业外刊 → 商业视角 → 外贸工作应用。</h2>
-                <p>每篇保留 2–3 段真实可访问的英文原文，提炼商业信号，再转成外贸沟通判断和可直接改写的邮件表达。</p>
-                <div class="briefing-lead"><div><strong>读什么</strong>成本、供应链、物流、汇率、AI、消费趋势。</div><div><strong>看什么</strong>市场信号、客户心理、谈判边界。</div><div><strong>带走什么</strong>表达、邮件和回复策略。</div></div>
-              </div>
-            </div>
-            <div class="signal-board" aria-label="内容信号">
-              <div class="signal">
-                <small>Freshness</small>
-                <strong>14/30/90</strong>
-                <span>先 14 天，再 30 天，最后 90 天兜底。</span>
-                <div class="signal-bars"><i></i><i></i><i></i></div>
-              </div>
-              <div class="signal">
-                <small>Output</small>
-                <strong>3x</strong>
-                <span>标准、柔和、边界清楚三版邮件。</span>
-                <div class="signal-bars"><i></i><i></i><i></i></div>
-              </div>
-              <div class="signal">
-                <small>Lens</small>
-                <strong>3pt</strong>
-                <span>市场信号、客户心理、外贸判断。</span>
-                <div class="signal-bars"><i></i><i></i><i></i></div>
-              </div>
-            </div>
-          </div>
           <div class="toolbar">
             <div class="status-row" id="resultStatus"></div>
             <select class="mode-select" id="sortSelect" aria-label="排序">
@@ -2767,20 +3172,10 @@
 
         <div class="detail-layout">
           <div>
-            <section class="content-section" id="section-brief">
-              <h2>1 今日商业议题</h2>
-              <p class="section-note">先明确这篇商业内容为什么值得读，以及它能落到哪个外贸工作场景。</p>
-              <div class="field-grid">
-                <div class="field"><strong>商业问题</strong>${item.coreProblem}</div>
-                <div class="field bad"><strong>不能只这样理解</strong>${item.scenario.wrong}</div>
-                <div class="field good"><strong>今天的工作读法</strong>${item.scenario.strategy}</div>
-              </div>
-            </section>
-
             <section class="content-section" id="section-source">
               <div class="source-bar">
                 <div>
-                  <h2>2 外刊 / 商业原文摘录</h2>
+                  <h2>1 外刊 / 商业原文摘录</h2>
                   <p class="section-note">
                     来源：${item.source.name} | 原文标题：${item.source.title}
                     ${item.source.url && item.source.url !== "#" ? ` | <a href="${item.source.url}" target="_blank" rel="noreferrer">打开原文来源</a>` : ""}
@@ -2795,6 +3190,16 @@
               </div>
               ${modeParagraphs(item)}
               ${renderSourceBridge(item)}
+            </section>
+
+            <section class="content-section compact-brief" id="section-brief">
+              <h2>2 本篇读法</h2>
+              <p class="section-note">只做进入正文前的提醒，不抢外刊原文的位置。</p>
+              <div class="field-grid">
+                <div class="field"><strong>商业问题</strong>${item.coreProblem}</div>
+                <div class="field bad"><strong>容易误读</strong>${item.scenario.wrong}</div>
+                <div class="field good"><strong>阅读重点</strong>${item.scenario.strategy}</div>
+              </div>
             </section>
 
             <section class="content-section" id="section-lens">
@@ -2939,11 +3344,16 @@
     function updateTodayPick() {
       const liveFirst = scenarios.find((item) => String(item.freshness || "").includes("自动抓取")) || scenarios[0];
       const title = document.getElementById("todayPickTitle");
+      const cnTitle = document.getElementById("todayPickCn");
+      const original = document.getElementById("todayPickOriginal");
       const meta = document.getElementById("todayPickMeta");
       const why = document.getElementById("todayPickWhy");
       const btn = document.getElementById("todayPickOpen");
-      if (!liveFirst || !title || !meta || !why || !btn) return;
-      title.textContent = liveFirst.source && liveFirst.source.title && liveFirst.source.title !== "#" ? liveFirst.source.title : liveFirst.title;
+      if (!liveFirst || !title || !cnTitle || !original || !meta || !why || !btn) return;
+      const originalTitle = liveFirst.source && liveFirst.source.title && liveFirst.source.title !== "#" ? liveFirst.source.title : liveFirst.title;
+      title.textContent = originalTitle;
+      cnTitle.textContent = liveFirst.title;
+      original.innerHTML = `<strong>Reading help:</strong> 这篇文章对应「${liveFirst.businessView}」和「${liveFirst.category}」，中文只是帮你快速判断应用场景。`;
       meta.textContent = `来源：${liveFirst.source.name || "内置种子"} · 原文日期：${liveFirst.sourceDate} · 应用场景：${liveFirst.category}`;
       why.textContent = `今天推荐先读这篇，因为它能落到「${liveFirst.businessView}」和「${liveFirst.category}」：读商业变化，再转成客户沟通里的英文表达。`;
       btn.onclick = () => openDetail(liveFirst.id);
