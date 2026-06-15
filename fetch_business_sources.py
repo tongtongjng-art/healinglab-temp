@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-V47_BUSINESS_BRIEFING_AUTO_FETCH
+V48_BUSINESS_BRIEFING_AUTO_FETCH
 
 Fetch public business-news paragraphs for the Business Briefing page.
 
@@ -43,7 +43,7 @@ MAX_PARAGRAPHS = 3
 MIN_PARAGRAPH_CHARS = 180
 MAX_PARAGRAPH_CHARS = 1500
 MAX_ARTICLE_SECONDS = 18
-USER_AGENT = "BusinessBriefingWorkDesk/1.1 (+public RSS personal learning tool)"
+USER_AGENT = "BusinessBriefingWorkDesk/1.2 (+public RSS personal learning tool)"
 
 FEEDS = [
     {"name": "The Guardian Business", "url": "https://www.theguardian.com/business/rss", "quality": 8},
@@ -218,7 +218,42 @@ def extract_article_paragraphs(article: Article, keywords: list[str]) -> list[st
         picked = [para for para in ranked if has_business_context(para)][:MAX_PARAGRAPHS]
     return picked if len(picked) >= MIN_PARAGRAPHS else []
 
+def fallback_cn_for_scenario(scenario_id: str, paragraph: str) -> str:
+    """Non-AI Chinese reading note. This is not a full translation; it prevents blank Chinese panels."""
+    names = {
+        "price-too-high": "价格、成本和客户预算压力",
+        "discount-request": "需求变化和买方谈判压力",
+        "material-cost-rise": "原材料或投入成本变化",
+        "delivery-delay": "供应链、生产或交付不确定性",
+        "shipping-cost-rise": "物流、运费或运输时效变化",
+        "deposit-reminder": "付款节奏和现金流安排",
+        "balance-payment": "付款节点和发货安排",
+        "no-reply-follow-up": "客户决策延迟或需求优先级变化",
+        "sample-follow-up": "样品评估和订单推进",
+        "quality-complaint": "质量风险、客户信任和售后处理",
+    }
+    topic = names.get(scenario_id, "商业背景")
+    return f"中文解读：这段原文提供了关于{topic}的商业背景。阅读时重点不是逐字背诵，而是看它如何帮助你解释客户反应、判断沟通边界，并转成更稳妥的商务英文回复。"
+
+
+def fallback_insight_for_scenario(scenario_id: str) -> str:
+    mapping = {
+        "price-too-high": "和本主题的关系：客户嫌贵时，可以把外部成本、价值范围和可调整选项讲清楚，而不是马上降价。",
+        "discount-request": "和本主题的关系：折扣要绑定数量、付款、长期订单或规格变化，避免无条件让步。",
+        "material-cost-rise": "和本主题的关系：调价邮件要说明成本依据、报价有效期和缓冲方案。",
+        "delivery-delay": "和本主题的关系：交期变化要提前说清原因、新时间和补救动作。",
+        "shipping-cost-rise": "和本主题的关系：运费变化要解释路线、舱位和时效，并给客户可选方案。",
+        "deposit-reminder": "和本主题的关系：催定金要和排产、备料、交期锁定绑定。",
+        "balance-payment": "和本主题的关系：催尾款要和发货节点绑定，语气礼貌但边界清楚。",
+        "no-reply-follow-up": "和本主题的关系：跟进要降低客户回复成本，给选择题而不是只问 Any update。",
+        "sample-follow-up": "和本主题的关系：样品跟进要问测试结果、调整点和下一步订单计划。",
+        "quality-complaint": "和本主题的关系：投诉回复先承接情绪，再收集证据并给处理时间。",
+    }
+    return mapping.get(scenario_id, "和本主题的关系：把商业背景转成客户沟通中的理由、边界和下一步动作。")
+
+
 def build_live_item(scenario: dict[str, object], article: Article, paragraphs: list[str], window: int) -> dict[str, object]:
+    scenario_id = str(scenario["id"])
     return {
         "scenarioId": scenario["id"],
         "sourceDate": article.published.date().isoformat(),
@@ -228,7 +263,11 @@ def build_live_item(scenario: dict[str, object], article: Article, paragraphs: l
             "title": article.title,
             "url": article.url,
             "paragraphs": [
-                {"en": paragraph, "cn": "", "insight": ""}
+                {
+                    "en": paragraph,
+                    "cn": fallback_cn_for_scenario(scenario_id, paragraph),
+                    "insight": fallback_insight_for_scenario(scenario_id),
+                }
                 for paragraph in paragraphs[:MAX_PARAGRAPHS]
             ],
         },
