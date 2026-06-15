@@ -1,23 +1,21 @@
 #!/usr/bin/env python3
-# V49_BUSINESS_BRIEFING_AUTO_FETCH
 """
-V49_BUSINESS_BRIEFING_AUTO_FETCH
-
-Fetch public business-news paragraphs for the Business Briefing page.
+Fetch public business-news candidates for the Business English page.
 
 What this script does:
 - Reads public RSS feeds.
-- Uses a real 14 / 30 / 90 day priority window.
-- Scores articles against business briefing topics and real-work scenarios.
-- Rejects obviously irrelevant topics such as housing prices, entertainment, politics-only items.
+- Keeps articles published within the last 90 days.
+- Scores articles against real-work scenarios.
 - Fetches public article pages when available.
-- Extracts 2-3 complete public paragraphs.
-- Writes business-english-live.json next to this script.
+- Extracts 2-3 relevant public paragraphs without inventing content.
+- Writes business-english-live.json next to the HTML page.
 
 What this script does not do:
 - It does not bypass paywalls.
-- It does not fabricate article paragraphs.
-- It writes a natural Chinese reading note for each paragraph; this is a practical translation/reading aid, not a paywalled AI translation stage.
+- It does not use the overseas server IP.
+- It does not fabricate article paragraphs when the article body is unavailable.
+- It does not translate with AI by default. Fill `cn` in your existing GPT step,
+  or add your own translation stage before publishing.
 """
 
 from __future__ import annotations
@@ -37,50 +35,99 @@ from html.parser import HTMLParser
 from pathlib import Path
 from typing import Iterable
 
+
 OUTPUT = Path(__file__).with_name("business-english-live.json")
-LOOKBACK_WINDOWS = [14, 30, 90]
-MIN_PARAGRAPHS = 2
-MAX_PARAGRAPHS = 3
-MIN_PARAGRAPH_CHARS = 180
-MAX_PARAGRAPH_CHARS = 1500
+LOOKBACK_DAYS = 90
 MAX_ARTICLE_SECONDS = 18
-USER_AGENT = "BusinessBriefingWorkDesk/1.2 (+public RSS personal learning tool)"
+USER_AGENT = "BusinessEnglishWorkDesk/1.0 (+personal learning tool)"
 
 FEEDS = [
-    {"name": "The Guardian Business", "url": "https://www.theguardian.com/business/rss", "quality": 8},
-    {"name": "BBC Business", "url": "https://feeds.bbci.co.uk/news/business/rss.xml", "quality": 7},
-    {"name": "Financial Times", "url": "https://www.ft.com/?format=rss", "quality": 9},
-    {"name": "Wall Street Journal", "url": "https://feeds.a.dj.com/rss/WSJcomUSBusiness.xml", "quality": 9},
-    {"name": "Harvard Business Review", "url": "https://feeds.harvardbusiness.org/harvardbusiness", "quality": 8},
-]
-
-BUSINESS_CONTEXT = [
-    "business", "company", "companies", "supplier", "suppliers", "buyer", "buyers",
-    "manufacturer", "manufacturers", "trade", "exports", "imports", "orders",
-    "supply chain", "logistics", "shipping", "freight", "tariff", "tariffs",
-    "currency", "exchange rate", "cost", "costs", "pricing", "demand", "consumer",
-    "inventory", "cash flow", "payment", "invoice", "quality", "production",
-]
-
-EXCLUDE_TOPICS = [
-    "home price", "home prices", "house price", "house prices", "housing market", "mortgage",
-    "real estate", "rent", "rents", "landlord", "ipo wealth", "stock market debut",
-    "celebrity", "film", "music", "sports", "election", "politician", "war crime",
-    "murder", "crime", "lawsuit claims"  # lawsuits can be business, but this tool only keeps work-usable items.
+    {
+        "name": "The Guardian Business",
+        "url": "https://www.theguardian.com/business/rss",
+        "quality": 7,
+    },
+    {
+        "name": "BBC Business",
+        "url": "https://feeds.bbci.co.uk/news/business/rss.xml",
+        "quality": 6,
+    },
+    {
+        "name": "Financial Times",
+        "url": "https://www.ft.com/?format=rss",
+        "quality": 9,
+    },
+    {
+        "name": "Wall Street Journal",
+        "url": "https://feeds.a.dj.com/rss/WSJcomUSBusiness.xml",
+        "quality": 9,
+    },
+    {
+        "name": "Harvard Business Review",
+        "url": "https://feeds.harvardbusiness.org/harvardbusiness",
+        "quality": 8,
+    },
 ]
 
 SCENARIOS = [
-    {"id": "price-too-high", "keywords": ["price", "prices", "pricing", "margin", "margins", "cost", "costs", "inflation", "buyer", "buyers", "value", "supplier", "suppliers"]},
-    {"id": "discount-request", "keywords": ["discount", "demand", "buyer", "buyers", "sales", "pricing", "budget", "consumer demand"]},
-    {"id": "material-cost-rise", "keywords": ["raw material", "materials", "commodity", "commodities", "input costs", "costs", "prices", "manufacturer"]},
-    {"id": "delivery-delay", "keywords": ["delay", "delivery", "supply chain", "production", "shipment", "shipping", "factory"]},
-    {"id": "shipping-cost-rise", "keywords": ["freight", "shipping", "logistics", "port", "container", "route", "delivery", "shipping capacity"]},
-    {"id": "deposit-reminder", "keywords": ["payment", "cash flow", "working capital", "deposit", "invoice", "liquidity"]},
-    {"id": "balance-payment", "keywords": ["payment", "invoice", "cash flow", "shipment", "credit", "balance", "receivables"]},
-    {"id": "no-reply-follow-up", "keywords": ["sales", "customer", "demand", "buyer", "buyers", "confidence", "orders", "pipeline"]},
-    {"id": "sample-follow-up", "keywords": ["sample", "product", "quality", "consumer", "design", "testing", "prototype"]},
-    {"id": "quality-complaint", "keywords": ["quality", "recall", "complaint", "defect", "safety", "customer service", "after-sales"]},
+    {
+        "id": "price-too-high",
+        "keywords": [
+            "price",
+            "prices",
+            "pricing",
+            "margin",
+            "margins",
+            "cost",
+            "costs",
+            "inflation",
+            "customer",
+            "customers",
+            "buyer",
+            "buyers",
+            "value",
+            "supplier",
+            "suppliers",
+        ],
+    },
+    {
+        "id": "discount-request",
+        "keywords": ["discount", "demand", "buyer", "buyers", "sales", "pricing", "budget"],
+    },
+    {
+        "id": "material-cost-rise",
+        "keywords": ["raw material", "materials", "commodity", "commodities", "input costs", "costs", "prices"],
+    },
+    {
+        "id": "delivery-delay",
+        "keywords": ["delay", "delivery", "supply chain", "production", "shipment", "shipping"],
+    },
+    {
+        "id": "shipping-cost-rise",
+        "keywords": ["freight", "shipping", "logistics", "port", "container", "route", "delivery"],
+    },
+    {
+        "id": "deposit-reminder",
+        "keywords": ["payment", "cash flow", "working capital", "deposit", "invoice"],
+    },
+    {
+        "id": "balance-payment",
+        "keywords": ["payment", "invoice", "cash flow", "shipment", "credit", "balance"],
+    },
+    {
+        "id": "no-reply-follow-up",
+        "keywords": ["sales", "customer", "demand", "buyer", "buyers", "confidence", "orders"],
+    },
+    {
+        "id": "sample-follow-up",
+        "keywords": ["sample", "product", "quality", "consumer", "design", "testing"],
+    },
+    {
+        "id": "quality-complaint",
+        "keywords": ["quality", "recall", "complaint", "defect", "safety", "customer service"],
+    },
 ]
+
 
 @dataclass
 class Article:
@@ -90,6 +137,7 @@ class Article:
     url: str
     published: dt.datetime
     summary: str
+
 
 class ParagraphParser(HTMLParser):
     def __init__(self) -> None:
@@ -115,40 +163,27 @@ class ParagraphParser(HTMLParser):
         if self._in_p:
             self._buf.append(data)
 
+
 def clean_text(value: str) -> str:
     value = html.unescape(re.sub(r"<[^>]+>", " ", value or ""))
     return re.sub(r"\s+", " ", value).strip()
 
-def keyword_score(text: str, keywords: Iterable[str]) -> int:
-    lowered = text.lower()
-    score = 0
-    for keyword in keywords:
-        k = keyword.lower()
-        if k in lowered:
-            score += 4 if " " in k else 1
-    return score
-
-def excluded(text: str) -> bool:
-    lowered = text.lower()
-    return any(bit in lowered for bit in EXCLUDE_TOPICS)
-
-def has_business_context(text: str) -> bool:
-    return keyword_score(text, BUSINESS_CONTEXT) >= 2
 
 def is_good_paragraph(text: str) -> bool:
-    if len(text) < MIN_PARAGRAPH_CHARS or len(text) > MAX_PARAGRAPH_CHARS:
+    if len(text) < 80 or len(text) > 900:
         return False
     lowered = text.lower()
     bad_bits = [
-        "sign up", "newsletter", "cookies", "all rights reserved", "advertisement",
-        "skip to", "share this", "follow us", "download the app", "privacy policy",
+        "sign up",
+        "newsletter",
+        "cookies",
+        "all rights reserved",
+        "advertisement",
+        "skip to",
+        "share this",
     ]
-    if any(bit in lowered for bit in bad_bits):
-        return False
-    if excluded(text):
-        return False
-    # Keep complete sentence-like English paragraphs.
-    return text.count(".") + text.count("?") + text.count("!") >= 1
+    return not any(bit in lowered for bit in bad_bits)
+
 
 def fetch_text(url: str, timeout: int = MAX_ARTICLE_SECONDS) -> str:
     request = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
@@ -156,6 +191,7 @@ def fetch_text(url: str, timeout: int = MAX_ARTICLE_SECONDS) -> str:
         data = response.read()
         charset = response.headers.get_content_charset() or "utf-8"
         return data.decode(charset, errors="replace")
+
 
 def parse_date(value: str) -> dt.datetime | None:
     if not value:
@@ -168,12 +204,14 @@ def parse_date(value: str) -> dt.datetime | None:
     except (TypeError, ValueError):
         return None
 
+
 def parse_feed(feed: dict[str, object]) -> list[Article]:
     try:
         xml = fetch_text(str(feed["url"]), timeout=20)
     except (urllib.error.URLError, TimeoutError, OSError) as exc:
         print(f"[warn] feed failed: {feed['name']} {exc}", file=sys.stderr)
         return []
+
     try:
         root = ET.fromstring(xml)
     except ET.ParseError as exc:
@@ -188,11 +226,27 @@ def parse_feed(feed: dict[str, object]) -> list[Article]:
         published = parse_date(item.findtext("pubDate", ""))
         if not title or not link or not published:
             continue
-        joined = f"{title} {summary}"
-        if excluded(joined) or not has_business_context(joined):
-            continue
-        items.append(Article(str(feed["name"]), int(feed["quality"]), title, link, published, summary))
+        items.append(
+            Article(
+                source=str(feed["name"]),
+                quality=int(feed["quality"]),
+                title=title,
+                url=link,
+                published=published,
+                summary=summary,
+            )
+        )
     return items
+
+
+def keyword_score(text: str, keywords: Iterable[str]) -> int:
+    lowered = text.lower()
+    score = 0
+    for keyword in keywords:
+        if keyword in lowered:
+            score += 3 if " " in keyword else 1
+    return score
+
 
 def extract_article_paragraphs(article: Article, keywords: list[str]) -> list[str]:
     try:
@@ -203,80 +257,31 @@ def extract_article_paragraphs(article: Article, keywords: list[str]) -> list[st
 
     parser = ParagraphParser()
     parser.feed(page)
-    paragraphs = list(dict.fromkeys(parser.paragraphs))
-    if len(paragraphs) < MIN_PARAGRAPHS:
+    paragraphs = parser.paragraphs
+    if not paragraphs:
         return []
 
     ranked = sorted(
         paragraphs,
-        key=lambda para: (keyword_score(para, keywords), keyword_score(para, BUSINESS_CONTEXT), len(para)),
+        key=lambda para: keyword_score(para, keywords),
         reverse=True,
     )
-    useful = [para for para in ranked if keyword_score(para, keywords) > 0 and has_business_context(para)]
-    picked = useful[:MAX_PARAGRAPHS]
-    if len(picked) < MIN_PARAGRAPHS:
-        # Use first coherent business paragraphs only if the article itself matched strongly.
-        picked = [para for para in ranked if has_business_context(para)][:MAX_PARAGRAPHS]
-    return picked if len(picked) >= MIN_PARAGRAPHS else []
-
-def fallback_cn_for_scenario(scenario_id: str, paragraph: str) -> str:
-    """Natural Chinese reading note for public paragraphs.
-    It is written as a readable Chinese translation / gist for the page, without inventing facts beyond the paragraph.
-    """
-    text = paragraph.lower()
-    if "tariff" in text and "china" in text and "india" in text:
-        return "这段大意是：关税上调确实影响了一些小企业，尤其是那些依赖从中国、印度采购原材料的公司。不过很多企业并没有被动承受成本，而是把关税带来的压力转进售价里，甚至有人借这个机会多涨了一点价格。还有一些企业选择等待法律结果，希望之后能拿到退款。"
-    if "packaging industry" in text or ("higher costs" in text and "workers" in text):
-        return "这段大意是：作者提到，接下来他要和一批包装行业公司讨论今年影响企业经营的几个问题：经济环境、成本上升、税务变化、AI，以及在不稳定的就业市场里如何招人和留人。这里的重点不是某个单词，而是企业今年面对的压力已经从单一成本，变成了成本、技术和用工一起变化。"
-    if "should i increase prices" in text or "how will tariffs affect my business" in text:
-        return "这段大意是：一年前，大家最关心的是关税会不会伤到自己的生意、要不要涨价、关税是否合法、什么时候结束。到了现在，很多问题已经有了答案。这说明商业环境会不断变化，客户今天的压价、犹豫或预算收紧，背后往往不是单一情绪，而是他们也在重新判断成本和风险。"
-    if "freight" in text or "shipping" in text or "logistics" in text:
-        return "这段大意是：文章在讲物流、运力或运输成本的变化。对外贸沟通来说，这类内容可以用来解释为什么总价、交期或运输方案会发生变化，而不是简单一句“运费涨了”。"
-    if "payment" in text or "cash flow" in text or "invoice" in text:
-        return "这段大意是：文章提到付款节奏、现金流或账期压力。放到外贸订单里，它提醒我们：催定金、催尾款不能只像催钱，而要说明付款和排产、备货、发货节点之间的关系。"
-    if "quality" in text or "defect" in text or "complaint" in text or "recall" in text:
-        return "这段大意是：文章涉及质量、风险或客户信任问题。处理投诉时，第一步不是急着辩解，而是先承接问题、收集证据，并告诉客户你会在什么时间给出调查结果。"
-    if "demand" in text or "consumer" in text or "buyers" in text:
-        return "这段大意是：市场需求和买方行为正在变化。客户要求折扣、拖延回复或反复比较价格时，背后可能是预算更谨慎、内部审批更慢，或者他们在测试供应商能给出多少空间。"
-
-    names = {
-        "price-too-high": "客户对价格更敏感，背后可能是成本、预算和内部审批压力",
-        "discount-request": "买方正在争取更有利条件，折扣不能变成无条件让步",
-        "material-cost-rise": "成本变化会影响报价有效期和调价沟通",
-        "delivery-delay": "供应链或生产变化会影响交付承诺",
-        "shipping-cost-rise": "物流和运输成本变化会影响总价与时效",
-        "deposit-reminder": "付款时间会影响排产、备料和交付安排",
-        "balance-payment": "尾款节点和发货安排必须说清楚",
-        "no-reply-follow-up": "客户不回复可能是预算、优先级或内部审批还没定",
-        "sample-follow-up": "样品反馈决定下一步是否进入报价、修改或下单",
-        "quality-complaint": "质量问题会影响信任，第一封回复要先稳住客户",
-    }
-    topic = names.get(scenario_id, "这段原文提供了一个可以转化为客户沟通理由的商业背景")
-    return f"这段大意是：{topic}。读这段时，不要只看新闻本身，而要看它能怎样帮你解释客户反应、判断沟通边界，并转成更稳妥的英文回复。"
+    useful = [para for para in ranked if keyword_score(para, keywords) > 0]
+    picked = useful[:3] if useful else paragraphs[:3]
+    return picked[:3]
 
 
-def fallback_insight_for_scenario(scenario_id: str) -> str:
-    mapping = {
-        "price-too-high": "和本主题的关系：客户嫌贵时，可以把外部成本、价值范围和可调整选项讲清楚，而不是马上降价。",
-        "discount-request": "和本主题的关系：折扣要绑定数量、付款、长期订单或规格变化，避免无条件让步。",
-        "material-cost-rise": "和本主题的关系：调价邮件要说明成本依据、报价有效期和缓冲方案。",
-        "delivery-delay": "和本主题的关系：交期变化要提前说清原因、新时间和补救动作。",
-        "shipping-cost-rise": "和本主题的关系：运费变化要解释路线、舱位和时效，并给客户可选方案。",
-        "deposit-reminder": "和本主题的关系：催定金要和排产、备料、交期锁定绑定。",
-        "balance-payment": "和本主题的关系：催尾款要和发货节点绑定，语气礼貌但边界清楚。",
-        "no-reply-follow-up": "和本主题的关系：跟进要降低客户回复成本，给选择题而不是只问 Any update。",
-        "sample-follow-up": "和本主题的关系：样品跟进要问测试结果、调整点和下一步订单计划。",
-        "quality-complaint": "和本主题的关系：投诉回复先承接情绪，再收集证据并给处理时间。",
-    }
-    return mapping.get(scenario_id, "和本主题的关系：把商业背景转成客户沟通中的理由、边界和下一步动作。")
+def fallback_summary_paragraphs(article: Article) -> list[str]:
+    if is_good_paragraph(article.summary):
+        return [article.summary]
+    return []
 
 
-def build_live_item(scenario: dict[str, object], article: Article, paragraphs: list[str], window: int) -> dict[str, object]:
-    scenario_id = str(scenario["id"])
+def build_live_item(scenario: dict[str, object], article: Article, paragraphs: list[str]) -> dict[str, object]:
     return {
         "scenarioId": scenario["id"],
         "sourceDate": article.published.date().isoformat(),
-        "freshness": f"自动抓取｜最近{window}天",
+        "freshness": "自动抓取",
         "source": {
             "name": article.source,
             "title": article.title,
@@ -284,65 +289,54 @@ def build_live_item(scenario: dict[str, object], article: Article, paragraphs: l
             "paragraphs": [
                 {
                     "en": paragraph,
-                    "cn": fallback_cn_for_scenario(scenario_id, paragraph),
-                    "insight": fallback_insight_for_scenario(scenario_id),
+                    "cn": "",
+                    "insight": "",
                 }
-                for paragraph in paragraphs[:MAX_PARAGRAPHS]
+                for paragraph in paragraphs[:3]
             ],
         },
     }
 
-def pick_for_scenario(scenario: dict[str, object], articles: list[Article], now: dt.datetime) -> tuple[dict[str, object] | None, int | None]:
-    keywords = list(scenario["keywords"])
-    for window in LOOKBACK_WINDOWS:
-        cutoff = now - dt.timedelta(days=window)
-        scored: list[tuple[int, Article]] = []
-        for article in articles:
-            if article.published < cutoff:
-                continue
-            text = f"{article.title} {article.summary}"
-            score = keyword_score(text, keywords) + keyword_score(text, BUSINESS_CONTEXT) + article.quality
-            if keyword_score(text, keywords) >= 2 and not excluded(text):
-                scored.append((score, article))
-        scored.sort(key=lambda pair: (pair[0], pair[1].published), reverse=True)
-        for _, article in scored[:8]:
-            paragraphs = extract_article_paragraphs(article, keywords)
-            if paragraphs:
-                return build_live_item(scenario, article, paragraphs, window), window
-    return None, None
 
 def main() -> int:
     now = dt.datetime.now(dt.timezone.utc)
+    cutoff = now - dt.timedelta(days=LOOKBACK_DAYS)
     articles: list[Article] = []
     for feed in FEEDS:
         articles.extend(parse_feed(feed))
-        time.sleep(0.5)
+        time.sleep(0.7)
 
+    fresh_articles = [article for article in articles if article.published >= cutoff]
     live_items: list[dict[str, object]] = []
-    windows_used: list[int] = []
-    seen_urls: set[str] = set()
+
     for scenario in SCENARIOS:
-        item, window = pick_for_scenario(scenario, articles, now)
-        if item and window:
-            url = str(item["source"].get("url", ""))
-            # Allow the same high-quality article to support multiple scenes only once in the first pass.
-            if url in seen_urls:
-                continue
-            seen_urls.add(url)
-            live_items.append(item)
-            windows_used.append(window)
+        keywords = list(scenario["keywords"])
+        scored: list[tuple[int, Article]] = []
+        for article in fresh_articles:
+            text = f"{article.title} {article.summary}"
+            score = keyword_score(text, keywords) + article.quality
+            if score > article.quality:
+                scored.append((score, article))
+        scored.sort(key=lambda pair: (pair[0], pair[1].published), reverse=True)
+
+        for _, article in scored[:6]:
+            paragraphs = extract_article_paragraphs(article, keywords)
+            if not paragraphs:
+                paragraphs = fallback_summary_paragraphs(article)
+            if paragraphs:
+                live_items.append(build_live_item(scenario, article, paragraphs))
+                break
 
     payload = {
         "generatedAt": now.isoformat(),
-        "lookbackWindows": LOOKBACK_WINDOWS,
-        "lookbackWindowUsed": max(windows_used) if windows_used else None,
-        "minParagraphs": MIN_PARAGRAPHS,
-        "note": "cn is a natural Chinese reading note generated by local rules; no paywalls are bypassed and no article paragraphs are fabricated.",
+        "lookbackDays": LOOKBACK_DAYS,
+        "note": "cn and insight are intentionally blank unless your translation/GPT step fills them. The page will show English only for blank translations.",
         "scenarios": live_items,
     }
     OUTPUT.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"wrote {OUTPUT} with {len(live_items)} scenario matches")
     return 0
+
 
 if __name__ == "__main__":
     raise SystemExit(main())
