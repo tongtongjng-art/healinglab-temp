@@ -3421,6 +3421,15 @@
         item.sourceDate = liveItem.sourceDate || item.sourceDate;
         item.date = payload.generatedAt ? payload.generatedAt.slice(0, 10) : item.date;
         item.freshness = liveItem.freshness || `自动抓取｜${payload.lookbackWindowUsed || payload.lookbackDays || ""}天内`;
+        ["title", "category", "businessView", "level", "targetUser", "coreProblem"].forEach((key) => {
+          if (liveItem[key]) item[key] = liveItem[key];
+        });
+        if (liveItem.scenario) item.scenario = liveItem.scenario;
+        if (Array.isArray(liveItem.judgement) && liveItem.judgement.length) item.judgement = liveItem.judgement;
+        if (Array.isArray(liveItem.phrases) && liveItem.phrases.length) item.phrases = liveItem.phrases;
+        if (Array.isArray(liveItem.expressions) && liveItem.expressions.length) item.expressions = liveItem.expressions;
+        if (Array.isArray(liveItem.templates) && liveItem.templates.length) item.templates = liveItem.templates;
+        if (liveItem.practice) item.practice = liveItem.practice;
         count += 1;
       });
       state.fetchLoaded = count > 0;

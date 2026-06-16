@@ -516,6 +516,112 @@ def translate_to_chinese(paragraph: str) -> str:
         time.sleep(0.2)
     return "".join(translated_parts)
 
+def make_templates(subject: str, context: str, option: str, boundary: str) -> list[dict[str, str]]:
+    return [
+        {
+            "name": "标准版",
+            "note": "说明背景、影响和下一步。",
+            "subject": subject,
+            "body": f"Dear [Name],\n\nI would like to share a quick update with you.\n\n{context}\n\n{option}\n\n{boundary}\n\nBest regards,\n[Your Name]"
+        },
+        {
+            "name": "更柔和版",
+            "note": "适合老客户或关系较好的客户。",
+            "subject": subject,
+            "body": f"Dear [Name],\n\nThank you for your continued support.\n\n{context}\n\nWe will try to reduce the impact where possible and keep you updated before the next order is confirmed.\n\n{option}\n\nBest regards,\n[Your Name]"
+        },
+        {
+            "name": "边界清楚版",
+            "note": "适合客户要求你直接承诺价格、交期或运费时。",
+            "subject": subject,
+            "body": f"Dear [Name],\n\nThank you for your message.\n\n{context}\n\n{boundary}\n\nPlease confirm your preferred option, and I will prepare the revised proposal accordingly.\n\nBest regards,\n[Your Name]"
+        },
+    ]
+
+def teaching_pack_for_scenario(scenario_id: str, article: Article, paragraphs: list[str]) -> dict[str, object]:
+    if scenario_id == "material-cost-rise":
+        return {
+            "title": "原材料与供应链变化，如何向客户解释价格和交付风险？",
+            "category": "报价与议价",
+            "businessView": "原材料与供应链",
+            "level": "Level2",
+            "coreProblem": "客户不只关心价格，还会关心材料供应是否稳定、报价能保持多久、交期有没有风险。",
+            "scenario": {
+                "problem": "文章提到关键材料、加工能力或供应链缺口，这会影响成本、报价有效期和交付确定性。",
+                "wrong": "只说 raw material cost increased，客户听完只会觉得你在找涨价理由。",
+                "strategy": "把沟通拆成三层：材料供应变化、对报价/交期的影响、客户现在可以选择的下单窗口或替代方案。",
+            },
+            "judgement": [
+                {"type": "商业信号：材料供应不只是价格问题", "reading": "critical minerals、processing capacity、materials supply chain 说明企业担心的是供应稳定性，而不只是短期成本。", "response": "回复客户时要同时说明 price validity、material availability 和 delivery planning。"},
+                {"type": "客户心理：怕你借机涨价", "reading": "客户会怀疑供应商是否把外部新闻当成涨价理由，所以不能只说市场涨了。", "response": "用具体边界降低抵触：当前报价保留到某日期，之后按材料确认情况更新。"},
+                {"type": "工作动作：给可选方案", "reading": "供应链不确定时，客户需要能向内部解释的选择，而不是一句 take it or leave it。", "response": "给两个方向：提前锁料保持当前价，或接受较长交期等待下一轮材料确认。"},
+            ],
+            "phrases": [
+                ["material availability", "材料可得性", "解释为什么报价和交期需要确认。", "We need to confirm material availability before keeping the same delivery schedule."],
+                ["secure the material", "锁定材料", "让客户理解尽快确认订单的意义。", "If the order is confirmed this week, we can secure the material for your production plan."],
+                ["price validity", "报价有效期", "控制价格承诺边界。", "The current price validity can be kept until [date]."],
+                ["supply chain stability", "供应链稳定性", "把新闻转成客户能理解的风险。", "We are monitoring supply chain stability before confirming the next production batch."],
+            ],
+            "expressions": [
+                "Material availability is becoming more important for production planning.",
+                "We can keep the current price valid for orders confirmed before [date].",
+                "If you confirm the order earlier, we can secure the material and reduce the delivery risk.",
+                "The updated offer may depend on the next material confirmation from our supplier.",
+            ],
+            "templates": make_templates(
+                "Material Availability and Price Validity",
+                "Recent changes in the materials supply chain may affect both price validity and production planning. We are checking material availability before confirming the next batch.",
+                "If your order can be confirmed before [date], we can try to secure the material under the current offer. If the confirmation is later, we may need to update the price or delivery schedule.",
+                "We do not want to make an uncertain commitment before the material is secured, so the current offer should be treated as valid only within the stated window."
+            ),
+            "practice": {
+                "level1": "填空：We need to confirm material ______ before keeping the same delivery schedule.",
+                "level2": "把这句话改得更专业：The material is hard to buy now, so the price may change.",
+                "level3": "客户问为什么报价有效期变短。请写一封 80 词以内英文回复，说明材料供应、报价有效期和下单窗口。"
+            },
+        }
+    if scenario_id == "shipping-cost-rise":
+        return {
+            "title": "物流方案变化，如何向客户解释运费和交付选择？",
+            "category": "订单与交付",
+            "businessView": "物流与交付",
+            "level": "Level2",
+            "coreProblem": "客户关心的不只是运费贵不贵，而是货能不能稳定送达、时效和成本如何取舍。",
+            "scenario": {
+                "problem": "文章提到 LTL、shipping network 或面向企业客户的配送服务，说明物流服务正在变成商业竞争的一部分。",
+                "wrong": "只说 shipping cost increased，客户听不到解决方案。",
+                "strategy": "把运费沟通变成方案选择：更快、更稳、更省，分别对应不同路线、承运方式和交付时间。",
+            },
+            "judgement": [
+                {"type": "商业信号：物流服务正在产品化", "reading": "less-than-truckload、shipping network、all businesses 说明运输能力本身正在成为服务卖点。", "response": "给客户报价时不要只报运费，要说明运输方案、时效、风险和适用订单量。"},
+                {"type": "客户心理：怕总成本失控", "reading": "客户可能不是反感运费，而是不知道不同运输方式会怎样影响总成本。", "response": "用 option A / option B 讲清：标准方案省钱，加急方案更快，合并出货更稳。"},
+                {"type": "工作动作：把选择权交给客户", "reading": "物流变化时，最好的回复不是替客户决定，而是给可比较方案。", "response": "列出 delivery time、cost、risk 三个维度，让客户选。"},
+            ],
+            "phrases": [
+                ["shipping option", "运输方案", "给客户不同物流选择。", "We can review two shipping options for this order."],
+                ["delivery window", "交付时间窗口", "说明预计到货范围。", "The delivery window for the standard option is around [x] days."],
+                ["consolidated shipment", "合并出货", "降低运费或提高稳定性。", "A consolidated shipment may help reduce the total logistics cost."],
+                ["total landed cost", "到岸总成本", "让客户不要只看单项运费。", "We suggest comparing the total landed cost, not only the freight charge."],
+            ],
+            "expressions": [
+                "We can review two shipping options for this order.",
+                "The standard option has a lower cost, while the faster option has a shorter delivery window.",
+                "A consolidated shipment may help reduce the total logistics cost.",
+                "Please let us know whether cost or delivery speed is the priority for this shipment.",
+            ],
+            "templates": make_templates(
+                "Shipping Options for Your Order",
+                "The logistics market is offering more service choices, but each option has a different cost and delivery window. For your order, we can compare the standard option, the faster option, and a consolidated shipment.",
+                "Please let us know whether cost, speed, or stability is the priority. Based on your choice, I will prepare the most suitable shipping proposal.",
+                "Before we confirm the final freight cost, we need to align on the shipping method and delivery requirement."
+            ),
+            "practice": {
+                "level1": "填空：Please let us know whether cost or delivery ______ is the priority.",
+                "level2": "把这句话改得更专业：Shipping is expensive now, you choose.",
+                "level3": "客户嫌运费高。请写一封 80 词以内英文回复，给两个物流方案并让客户选择优先级。"
+            },
+        }
+    return {}
 
 def selection_reason(article: Article, scenario_id: str, text: str) -> dict[str, object]:
     return {
@@ -544,7 +650,7 @@ def total_selection_score(article: Article, text: str, scenario_keywords: list[s
 def build_live_item(scenario: dict[str, object], article: Article, paragraphs: list[str], window: int, score: int) -> dict[str, object]:
     scenario_id = str(scenario["id"])
     selection_text = f"{article.title} {article.summary} {' '.join(paragraphs)}"
-    return {
+    item = {
         "scenarioId": scenario["id"],
         "sourceDate": article.published.date().isoformat(),
         "freshness": f"自动抓取｜最近{window}天",
@@ -563,6 +669,8 @@ def build_live_item(scenario: dict[str, object], article: Article, paragraphs: l
             ],
         },
     }
+    item.update(teaching_pack_for_scenario(scenario_id, article, paragraphs))
+    return item
 
 def pick_for_scenario(scenario: dict[str, object], articles: list[Article], now: dt.datetime) -> tuple[dict[str, object] | None, int | None]:
     keywords = list(scenario["keywords"])
