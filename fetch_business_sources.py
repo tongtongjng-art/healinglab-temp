@@ -69,6 +69,17 @@ EXCLUDE_TOPICS = [
     "murder", "crime", "lawsuit claims"  # lawsuits can be business, but this tool only keeps work-usable items.
 ]
 
+EXCLUDE_URL_PARTS = [
+    "/politics/", "/world/", "/sport/", "/culture/", "/lifeandstyle/",
+    "/commentisfree/", "/us-news/", "/uk-news/", "/australia-news/",
+    "/society/", "/education/", "/football/", "/music/", "/film/",
+]
+
+PREFER_URL_PARTS = [
+    "/business/", "/money/", "/worklife/", "/news/business", "/markets/",
+    "/companies/", "/economy/", "/management/",
+]
+
 SCENARIOS = [
     {"id": "price-too-high", "keywords": ["price", "prices", "pricing", "margin", "margins", "cost", "costs", "inflation", "buyer", "buyers", "value", "supplier", "suppliers"]},
     {"id": "discount-request", "keywords": ["discount", "demand", "buyer", "buyers", "sales", "pricing", "budget", "consumer demand"]},
@@ -132,6 +143,14 @@ def excluded(text: str) -> bool:
     lowered = text.lower()
     return any(bit in lowered for bit in EXCLUDE_TOPICS)
 
+def excluded_url(url: str) -> bool:
+    lowered = url.lower()
+    return any(bit in lowered for bit in EXCLUDE_URL_PARTS)
+
+def preferred_url_score(url: str) -> int:
+    lowered = url.lower()
+    return sum(3 for bit in PREFER_URL_PARTS if bit in lowered)
+
 def has_business_context(text: str) -> bool:
     return keyword_score(text, BUSINESS_CONTEXT) >= 2
 
@@ -189,10 +208,28 @@ def parse_feed(feed: dict[str, object]) -> list[Article]:
         if not title or not link or not published:
             continue
         joined = f"{title} {summary}"
-        if excluded(joined) or not has_business_context(joined):
+        if excluded_url(link) or excluded(joined) or not has_business_context(joined):
             continue
         items.append(Article(str(feed["name"]), int(feed["quality"]), title, link, published, summary))
     return items
+
+def best_paragraph_window(paragraphs: list[str], keywords: list[str]) -> list[str]:
+    """Pick a coherent 2-3 paragraph excerpt from the article order."""
+    candidates: list[tuple[int, int, int, list[str]]] = []
+    for size in range(MAX_PARAGRAPHS, MIN_PARAGRAPHS - 1, -1):
+        for start in range(0, len(paragraphs) - size + 1):
+            window = paragraphs[start:start + size]
+            joined = " ".join(window)
+            kw = keyword_score(joined, keywords)
+            business = keyword_score(joined, BUSINESS_CONTEXT)
+            if kw <= 0 or business < 2:
+                continue
+            score = kw * 4 + business + size * 3
+            candidates.append((score, size, -start, window))
+    if not candidates:
+        return []
+    candidates.sort(reverse=True)
+    return candidates[0][3]
 
 def extract_article_paragraphs(article: Article, keywords: list[str]) -> list[str]:
     try:
@@ -207,16 +244,7 @@ def extract_article_paragraphs(article: Article, keywords: list[str]) -> list[st
     if len(paragraphs) < MIN_PARAGRAPHS:
         return []
 
-    ranked = sorted(
-        paragraphs,
-        key=lambda para: (keyword_score(para, keywords), keyword_score(para, BUSINESS_CONTEXT), len(para)),
-        reverse=True,
-    )
-    useful = [para for para in ranked if keyword_score(para, keywords) > 0 and has_business_context(para)]
-    picked = useful[:MAX_PARAGRAPHS]
-    if len(picked) < MIN_PARAGRAPHS:
-        # Use first coherent business paragraphs only if the article itself matched strongly.
-        picked = [para for para in ranked if has_business_context(para)][:MAX_PARAGRAPHS]
+    picked = best_paragraph_window(paragraphs, keywords)
     return picked if len(picked) >= MIN_PARAGRAPHS else []
 
 def fallback_cn_for_scenario(scenario_id: str, paragraph: str) -> str:
@@ -284,7 +312,7 @@ def pick_for_scenario(scenario: dict[str, object], articles: list[Article], now:
             if article.published < cutoff:
                 continue
             text = f"{article.title} {article.summary}"
-            score = keyword_score(text, keywords) + keyword_score(text, BUSINESS_CONTEXT) + article.quality
+            score = keyword_score(text, keywords) + keyword_score(text, BUSINESS_CONTEXT) + article.quality + preferred_url_score(article.url)
             if keyword_score(text, keywords) >= 2 and not excluded(text):
                 scored.append((score, article))
         scored.sort(key=lambda pair: (pair[0], pair[1].published), reverse=True)
