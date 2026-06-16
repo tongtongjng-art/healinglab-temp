@@ -50,10 +50,15 @@ USER_AGENT = "BusinessBriefingWorkDesk/1.2 (+public RSS personal learning tool)"
 TRANSLATE_TIMEOUT = 12
 
 FEEDS = [
-    {"name": "The Guardian Business", "url": "https://www.theguardian.com/business/rss", "quality": 8},
-    {"name": "BBC Business", "url": "https://feeds.bbci.co.uk/news/business/rss.xml", "quality": 5},
+    {"name": "Supply Chain Dive", "url": "https://www.supplychaindive.com/feeds/news/", "quality": 12},
+    {"name": "Manufacturing Dive", "url": "https://www.manufacturingdive.com/feeds/news/", "quality": 12},
+    {"name": "Packaging Dive", "url": "https://www.packagingdive.com/feeds/news/", "quality": 11},
+    {"name": "Payments Dive", "url": "https://www.paymentsdive.com/feeds/news/", "quality": 10},
+    {"name": "Retail Dive", "url": "https://www.retaildive.com/feeds/news/", "quality": 8},
     {"name": "Financial Times", "url": "https://www.ft.com/?format=rss", "quality": 9},
     {"name": "Wall Street Journal", "url": "https://feeds.a.dj.com/rss/WSJcomUSBusiness.xml", "quality": 9},
+    {"name": "The Guardian Business", "url": "https://www.theguardian.com/business/rss", "quality": 4},
+    {"name": "BBC Business", "url": "https://feeds.bbci.co.uk/news/business/rss.xml", "quality": 2},
     {"name": "Harvard Business Review", "url": "https://feeds.harvardbusiness.org/harvardbusiness", "quality": 8},
 ]
 
@@ -77,11 +82,25 @@ WORK_CONTEXT = [
     "delivery", "quality", "recall", "after-sales",
 ]
 
+B2B_CORE_CONTEXT = [
+    "supplier", "suppliers", "buyer", "buyers", "customer", "customers",
+    "client", "clients", "manufacturer", "manufacturers", "procurement",
+    "purchasing", "vendor", "vendors", "distributor", "distributors",
+    "exports", "exporters", "imports", "importers", "orders", "order",
+    "supply chain", "logistics", "shipping", "freight", "shipment",
+    "shipments", "factory", "factories", "production", "inventory",
+    "raw material", "raw materials", "input costs", "payment", "invoice",
+    "cash flow", "margin", "margins", "pricing", "lead time", "lead times",
+    "delivery", "contract", "contracts", "quality",
+]
+
 CONSUMER_ONLY_CONTEXT = [
     "driver", "drivers", "motorist", "motorists", "commuter", "commuters",
     "household", "households", "family car", "petrol", "diesel", "pump",
     "pumps", "gasoline", "renters", "homeowners", "mortgage", "grocery",
     "groceries", "supermarket shoppers", "holidaymakers", "tourists",
+    "fuel", "gas prices", "oil changes", "cost of living", "retail market",
+    "shoppers", "families", "pensioners", "bills", "energy bills",
 ]
 
 EXCLUDE_TOPICS = [
@@ -95,6 +114,7 @@ EXCLUDE_URL_PARTS = [
     "/politics/", "/world/", "/sport/", "/culture/", "/lifeandstyle/",
     "/commentisfree/", "/us-news/", "/uk-news/", "/australia-news/",
     "/society/", "/education/", "/football/", "/music/", "/film/",
+    "/environment/", "/travel/", "/technology/games/",
 ]
 
 PREFER_URL_PARTS = [
@@ -179,15 +199,21 @@ def has_business_context(text: str) -> bool:
 def work_context_score(text: str) -> int:
     return keyword_score(text, WORK_CONTEXT)
 
+def b2b_core_score(text: str) -> int:
+    return keyword_score(text, B2B_CORE_CONTEXT)
+
 def consumer_only_score(text: str) -> int:
     return keyword_score(text, CONSUMER_ONLY_CONTEXT)
 
 def is_work_relevant(text: str) -> bool:
     work = work_context_score(text)
+    core = b2b_core_score(text)
     consumer = consumer_only_score(text)
-    if work < 3:
+    if core < 4:
         return False
-    if consumer >= work and work < 8:
+    if work < 6:
+        return False
+    if consumer > 0 and core < 9:
         return False
     return True
 
@@ -260,19 +286,20 @@ def best_paragraph_window(paragraphs: list[str], keywords: list[str]) -> list[st
             kw = keyword_score(joined, keywords)
             business = keyword_score(joined, BUSINESS_CONTEXT)
             work = work_context_score(joined)
+            core = b2b_core_score(joined)
             consumer = consumer_only_score(joined)
-            if kw <= 0 or business < 2 or work < 3:
+            if kw <= 0 or business < 2 or work < 6 or core < 4:
                 continue
-            if consumer >= work and work < 8:
+            if consumer > 0 and core < 9:
                 continue
-            score = kw * 4 + business + work * 5 + size * 3 - consumer * 5
+            score = kw * 4 + business + work * 4 + core * 6 + size * 3 - consumer * 8
             candidates.append((score, size, -start, window))
     if not candidates:
         return []
     candidates.sort(reverse=True)
     return candidates[0][3]
 
-def extract_article_paragraphs(article: Article, keywords: list[str]) -> list[str]:
+def extract_article_paragraphs(article: Article, keywords: list[str], require_work: bool = True) -> list[str]:
     try:
         page = fetch_text(article.url)
     except (urllib.error.URLError, TimeoutError, OSError) as exc:
@@ -286,7 +313,31 @@ def extract_article_paragraphs(article: Article, keywords: list[str]) -> list[st
         return []
 
     picked = best_paragraph_window(paragraphs, keywords)
+    if not picked and not require_work:
+        picked = best_general_business_window(paragraphs, keywords)
     return picked if len(picked) >= MIN_PARAGRAPHS else []
+
+def best_general_business_window(paragraphs: list[str], keywords: list[str]) -> list[str]:
+    """Fallback window for good business articles whose RSS summary is too thin."""
+    candidates: list[tuple[int, int, int, list[str]]] = []
+    for size in range(MAX_PARAGRAPHS, MIN_PARAGRAPHS - 1, -1):
+        for start in range(0, len(paragraphs) - size + 1):
+            window = paragraphs[start:start + size]
+            joined = " ".join(window)
+            business = keyword_score(joined, BUSINESS_CONTEXT)
+            work = work_context_score(joined)
+            core = b2b_core_score(joined)
+            consumer = consumer_only_score(joined)
+            if business < 4 or work < 6 or core < 5:
+                continue
+            if consumer > 0 and core < 10:
+                continue
+            score = keyword_score(joined, keywords) * 3 + business * 3 + work * 3 + core * 5 + size * 3 - consumer * 8
+            candidates.append((score, size, -start, window))
+    if not candidates:
+        return []
+    candidates.sort(reverse=True)
+    return candidates[0][3]
 
 def split_for_translation(text: str, limit: int = 460) -> list[str]:
     sentences = re.split(r"(?<=[.!?])\s+", text.strip())
@@ -368,20 +419,42 @@ def pick_for_scenario(scenario: dict[str, object], articles: list[Article], now:
                 continue
             text = f"{article.title} {article.summary}"
             work = work_context_score(text)
+            core = b2b_core_score(text)
             consumer = consumer_only_score(text)
             score = (
                 keyword_score(text, keywords)
                 + keyword_score(text, BUSINESS_CONTEXT)
-                + work * 4
+                + work * 3
+                + core * 6
                 + article.quality
                 + preferred_url_score(article.url)
-                - consumer * 4
+                - consumer * 8
             )
             if keyword_score(text, keywords) >= 2 and not excluded(text) and is_work_relevant(text):
                 scored.append((score, article))
         scored.sort(key=lambda pair: (pair[0], pair[1].published), reverse=True)
         for _, article in scored[:8]:
             paragraphs = extract_article_paragraphs(article, keywords)
+            if paragraphs:
+                return build_live_item(scenario, article, paragraphs, window), window
+        # Second pass: some feeds have short summaries, so inspect likely business URLs before falling back to seeds.
+        relaxed: list[tuple[int, Article]] = []
+        for article in articles:
+            if article.published < cutoff or excluded_url(article.url) or excluded(f"{article.title} {article.summary}"):
+                continue
+            url_bonus = preferred_url_score(article.url)
+            if url_bonus <= 0:
+                continue
+            text = f"{article.title} {article.summary}"
+            core = b2b_core_score(text)
+            consumer = consumer_only_score(text)
+            score = article.quality + url_bonus + keyword_score(text, BUSINESS_CONTEXT) + core * 4 - consumer * 8
+            if consumer > 0 and core < 8:
+                continue
+            relaxed.append((score, article))
+        relaxed.sort(key=lambda pair: (pair[0], pair[1].published), reverse=True)
+        for _, article in relaxed[:10]:
+            paragraphs = extract_article_paragraphs(article, keywords, require_work=False)
             if paragraphs:
                 return build_live_item(scenario, article, paragraphs, window), window
     return None, None
