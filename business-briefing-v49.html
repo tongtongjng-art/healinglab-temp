@@ -1203,12 +1203,6 @@
       flex-wrap: wrap;
     }
 
-    .source-status {
-      margin-top: 10px;
-      font-size: 13px;
-      color: var(--muted);
-    }
-
     body.detail-open .summary-band { display: none; }
 
     @media (max-width: 1120px) {
@@ -1952,7 +1946,7 @@
       }
     }
 
-    /* V49: visible Chinese translation and work connection under each excerpt */
+    /* V51: translation means translation; work explanation is folded */
     .translation-card {
       margin-top: 14px;
       padding: 14px 16px;
@@ -1960,8 +1954,7 @@
       border-left: 5px solid var(--teal);
       background: #fff8ee;
     }
-    .translation-card strong,
-    .work-connection strong {
+    .translation-card strong {
       display: block;
       margin-bottom: 6px;
       color: var(--teal-2);
@@ -1977,14 +1970,53 @@
     }
     .work-connection {
       margin-top: 10px;
-      padding: 13px 16px;
-      border: 1px dashed var(--line-strong);
-      background: rgba(222,235,228,.52);
+      padding: 0;
+      border: 1px solid var(--line);
+      background: rgba(222,235,228,.32);
     }
-    .source-insight[open] {
-      border-top: 0;
-      margin-top: 0;
-      padding-top: 0;
+    .work-connection summary {
+      cursor: pointer;
+      padding: 11px 14px;
+      color: var(--teal-2);
+      font-size: 14px;
+      font-weight: 900;
+      letter-spacing: .04em;
+    }
+    .work-connection p {
+      padding: 0 14px 14px;
+      color: var(--muted);
+      font-size: 15px;
+    }
+    .term {
+      position: relative;
+      display: inline;
+      border-bottom: 2px solid rgba(179,41,46,.55);
+      color: var(--ink);
+      font-weight: 700;
+      cursor: help;
+    }
+    .term::after {
+      content: attr(data-cn);
+      position: absolute;
+      left: 0;
+      bottom: calc(100% + 8px);
+      z-index: 10;
+      display: none;
+      min-width: 120px;
+      max-width: 260px;
+      padding: 8px 10px;
+      color: #fff8ee;
+      background: var(--line-strong);
+      border-radius: 2px;
+      font-family: "Segoe UI", "Microsoft YaHei", Arial, sans-serif;
+      font-size: 13px;
+      line-height: 1.45;
+      white-space: normal;
+      box-shadow: 0 10px 24px rgba(28,25,21,.18);
+    }
+    .term:hover::after,
+    .term:focus::after {
+      display: block;
     }
 
   </style>
@@ -2107,7 +2139,7 @@
       </div>
       <div class="aside-card">
         <h3>原文阅读模式</h3>
-        <p>详情页提供“中英对照 / 只看英文 / 中文解释”三种模式，默认中英对照。</p>
+        <p>正文支持“中英对照 / 全英 / 只看中文”。工作解释默认折叠。</p>
       </div>
     </aside>
   </div>
@@ -2990,26 +3022,32 @@
       const raw = (para && (para.en || para.text) ? (para.en || para.text) : String(para || ""));
       const text = raw.toLowerCase();
 
+      if (text.includes("wholesale prices filter into the retail market") && text.includes("cost of living")) {
+        return "随着批发价格逐步传导到零售市场，通勤者可能会开始推迟更换机油，因为他们正承受一系列生活成本压力。";
+      }
+      if (text.includes("australia is facing a shortage of critical lubricants")) {
+        return "澳大利亚正面临关键润滑油短缺问题。随着供应压力影响到市场，相关行业可能会感受到成本、交付和服务安排上的连锁影响。";
+      }
       if (text.includes("tariff") && text.includes("china") && text.includes("india")) {
-        return "这段大意是：关税上调确实影响了一些小企业，尤其是那些依赖从中国、印度采购原材料的公司。不过很多企业并没有被动承受成本，而是把关税带来的压力转进售价里，甚至有人借这个机会多涨了一点价格。还有一些企业选择等待法律结果，希望之后能拿到退款。";
+        return "关税上调确实影响了一些小企业，尤其是那些依赖从中国、印度采购原材料的公司。不过，很多企业并没有被动承担成本，而是把关税带来的压力转嫁到售价里，甚至有人借这个机会进一步涨价。也有一些企业选择等待法律结果，希望之后能够获得退款。";
       }
       if (text.includes("packaging industry") || (text.includes("higher costs") && text.includes("workers"))) {
-        return "这段大意是：作者提到，接下来他要和一批包装行业公司讨论今年影响企业经营的几个问题：经济环境、成本上升、税务变化、AI，以及在不稳定的就业市场里如何招人和留人。这里的重点不是某个单词，而是企业今年面对的压力已经从单一成本，变成了成本、技术和用工一起变化。";
+        return "作者提到，接下来他要和一批包装行业公司讨论今年影响企业经营的几个问题：经济环境、成本上升、税务变化、AI，以及在不稳定的就业市场中如何招聘和留住员工。";
       }
       if (text.includes("should i increase prices") || text.includes("how will tariffs affect my business")) {
-        return "这段大意是：一年前，大家最关心的是关税会不会伤到自己的生意、要不要涨价、关税是否合法、什么时候结束。到了现在，很多问题已经有了答案。这说明商业环境会不断变化，客户今天的压价、犹豫或预算收紧，背后往往不是单一情绪，而是他们也在重新判断成本和风险。";
+        return "一年前，人们最关心的问题是：关税会如何影响我的生意？我是否应该涨价？这些关税是否合法？它们什么时候会结束？到了现在，其中很多问题已经有了答案。";
       }
       if (text.includes("freight") || text.includes("shipping") || text.includes("logistics")) {
-        return "这段大意是：文章在讲物流、运力或运输成本的变化。对外贸沟通来说，这类内容可以用来解释为什么总价、交期或运输方案会发生变化，而不是简单一句“运费涨了”。";
+        return "这段主要讲物流、运力或运输成本的变化，以及这些变化如何影响企业的交付安排和成本结构。";
       }
       if (text.includes("payment") || text.includes("cash flow") || text.includes("invoice")) {
-        return "这段大意是：文章提到付款节奏、现金流或账期压力。放到外贸订单里，它提醒我们：催定金、催尾款不能只像催钱，而要说明付款和排产、备货、发货节点之间的关系。";
+        return "这段提到付款节奏、现金流或账期压力，以及这些因素如何影响企业安排订单、库存和交付。";
       }
       if (text.includes("quality") || text.includes("defect") || text.includes("complaint") || text.includes("recall")) {
-        return "这段大意是：文章涉及质量、风险或客户信任问题。处理投诉时，第一步不是急着辩解，而是先承接问题、收集证据，并告诉客户你会在什么时间给出调查结果。";
+        return "这段涉及质量、风险或客户信任问题，说明企业在面对产品问题时，需要快速回应并清楚说明调查和处理方式。";
       }
       if (text.includes("demand") || text.includes("consumer") || text.includes("buyers")) {
-        return "这段大意是：市场需求和买方行为正在变化。客户要求折扣、拖延回复或反复比较价格时，背后可能是预算更谨慎、内部审批更慢，或者他们在测试供应商能给出多少空间。";
+        return "这段说明市场需求和买方行为正在变化，客户在采购时可能更加谨慎，也更容易比较价格、推迟决定或要求更灵活的条件。";
       }
 
       const themes = {
@@ -3022,51 +3060,77 @@
         "AI": "新技术正在改变效率、成本和客户预期，也会影响客户对价格和服务的判断。"
       };
       const theme = themes[item.businessView] || `这段原文提供了和「${item.businessView}」相关的商业背景。`;
-      return `这段大意是：${theme} 放到「${item.category}」这个场景里，重点不是复述新闻，而是把外部变化转成客户听得懂的理由：为什么价格、交期、付款或售后不能只按一个简单条件来谈。`;
+      return `${theme} 这类变化会影响企业和客户对价格、交期、付款或售后安排的判断。`;
     }
 
     function paragraphInsightFallback(item, para, index) {
       return `和本篇主题的关系：这段材料可以帮助你解释「${item.title}」背后的商业原因。实际回复客户时，不要只给情绪化解释，而要把原因、边界和可选方案讲清楚。`;
     }
 
+    const TERM_GLOSSARY = [
+      ["wholesale prices", "批发价格"],
+      ["retail market", "零售市场"],
+      ["cost of living pressures", "生活成本压力"],
+      ["cost of living", "生活成本"],
+      ["buyer pressure", "买方压力"],
+      ["value defence", "价值说明/价值防守"],
+      ["B2B pricing", "B2B 定价"],
+      ["margins", "利润率"],
+      ["tariffs", "关税"],
+      ["supply chain", "供应链"],
+      ["shipping costs", "运输成本"],
+      ["freight rates", "运费费率"],
+      ["raw material", "原材料"],
+      ["payment timing", "付款时间"],
+      ["cash flow", "现金流"],
+      ["delivery schedule", "交付安排"],
+      ["quality standard", "质量标准"],
+      ["price discussions", "价格讨论"],
+      ["cost drivers", "成本驱动因素"],
+      ["competitive rate", "有竞争力的价格"],
+      ["target budget", "目标预算"],
+      ["order quantity", "订单数量"],
+      ["after-sales costs", "售后成本"]
+    ];
+
+    function escapeHtml(value) {
+      return String(value || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function highlightTerms(text) {
+      let output = escapeHtml(text);
+      TERM_GLOSSARY.forEach(([term, cn]) => {
+        const escapedTerm = term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        const re = new RegExp(`\\b(${escapedTerm})\\b`, "gi");
+        output = output.replace(re, (match) => `<span class="term" tabindex="0" data-cn="${escapeHtml(cn)}">${match}</span>`);
+      });
+      return output;
+    }
+
     function modeParagraphs(item) {
       return item.source.paragraphs.map((para, index) => {
         const cnText = para.cn || paragraphCnFallback(item, para, index);
-        const en = state.sourceMode !== "cn" ? `<p class="excerpt-en">${para.en}</p>` : "";
+        const en = state.sourceMode !== "cn" ? `<p class="excerpt-en">${highlightTerms(para.en)}</p>` : "";
         const cn = state.sourceMode !== "english" && cnText ? `
           <div class="translation-card">
-            <strong>自然中文翻译 / 大意</strong>
+            <strong>中文翻译</strong>
             <p>${cnText}</p>
           </div>
         ` : "";
         const insightText = para.insight || paragraphInsightFallback(item, para, index);
-        const insight = state.sourceMode !== "english" && insightText ? `
-          <div class="work-connection">
-            <strong>这段和本主题有什么关系</strong>
+        const insight = insightText ? `
+          <details class="work-connection">
+            <summary>展开：这段和工作场景有什么关系</summary>
             <p>${insightText}</p>
-          </div>
+          </details>
         ` : "";
         return `<div class="excerpt">${en}${cn}${insight}</div>`;
       }).join("");
-    }
-
-    function renderSourceBridge(item) {
-      return `
-        <div class="source-bridge">
-          <div>
-            <strong>这篇外刊为什么放在这里？</strong>
-            <p>它提供的是「${item.businessView}」这个商业背景，不是为了单纯背单词。读完后要能回答：客户为什么会这样反应、我方边界在哪里、下一封邮件该怎么说。</p>
-          </div>
-          <div>
-            <strong>和外贸工作的关系</strong>
-            <p>对应到「${item.category}」场景，重点不是复述新闻，而是把市场变化转成报价解释、交期说明、付款推进或售后沟通中的可用理由。</p>
-          </div>
-          <div>
-            <strong>今天带走什么</strong>
-            <p>带走 1 个商业判断、几组可迁移表达，以及一封可以复制改写的商务邮件。</p>
-          </div>
-        </div>
-      `;
     }
 
     function renderJudgement(item) {
@@ -3148,8 +3212,8 @@
             <span>阅读模式</span>
             <select class="mode-select" data-source-mode aria-label="阅读模式">
               <option value="both"${state.sourceMode === "both" ? " selected" : ""}>中英对照</option>
-              <option value="english"${state.sourceMode === "english" ? " selected" : ""}>只看英文</option>
-              <option value="cn"${state.sourceMode === "cn" ? " selected" : ""}>中文解释</option>
+              <option value="english"${state.sourceMode === "english" ? " selected" : ""}>全英</option>
+              <option value="cn"${state.sourceMode === "cn" ? " selected" : ""}>只看中文</option>
             </select>
           </div>
         </div>
@@ -3160,20 +3224,14 @@
               <div class="source-bar">
                 <div>
                   <h2>1 外刊 / 商业原文摘录</h2>
-                  <p class="section-note">
-                    来源：${item.source.name} | 原文标题：${item.source.title}
-                    ${item.source.url && item.source.url !== "#" ? ` | <a href="${item.source.url}" target="_blank" rel="noreferrer">打开原文来源</a>` : ""}
-                  </p>
-                  <div class="source-status">规则：优先抓取最近 14 天公开文章；每篇尽量保留 2–3 个完整英文段落，不足 2 段不强行伪造。</div>
                 </div>
                 <select class="mode-select" data-source-mode aria-label="外刊阅读模式">
                   <option value="both"${state.sourceMode === "both" ? " selected" : ""}>中英对照</option>
-                  <option value="english"${state.sourceMode === "english" ? " selected" : ""}>只看英文</option>
-                  <option value="cn"${state.sourceMode === "cn" ? " selected" : ""}>中文解释</option>
+                  <option value="english"${state.sourceMode === "english" ? " selected" : ""}>全英</option>
+                  <option value="cn"${state.sourceMode === "cn" ? " selected" : ""}>只看中文</option>
                 </select>
               </div>
               ${modeParagraphs(item)}
-              ${renderSourceBridge(item)}
             </section>
 
             <section class="content-section compact-brief" id="section-brief">
