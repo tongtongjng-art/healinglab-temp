@@ -1,0 +1,3033 @@
+<!-- V49_BUSINESS_BRIEFING_DESKTOP_WIDTH_TRANSLATION_PICK -->
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>商业外刊工作读本 | Business Briefing for Real Work</title>
+  <style>
+    /* V47_BUSINESS_BRIEFING_AUTO_FETCH_LAYOUT */
+    /* V48_DESKTOP_BRIEFING_REFINEMENT */
+    :root {
+      --bg: #f6f4ee;
+      --paper: #fffdf8;
+      --paper-2: #f9fbf7;
+      --ink: #14201c;
+      --muted: #60706a;
+      --line: #d9e1dc;
+      --teal: #176d5a;
+      --teal-2: #0f5245;
+      --blue: #335f8d;
+      --amber: #b56a28;
+      --soft-teal: #e4f2ed;
+      --soft-blue: #e8f0f8;
+      --soft-amber: #fbefe1;
+      --danger-soft: #f8e8e2;
+      --shadow: 0 18px 40px rgba(30, 54, 45, .08);
+      --radius: 8px;
+      font-family: "Inter", "Segoe UI", "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        linear-gradient(90deg, rgba(23, 109, 90, .07), transparent 22%, transparent 78%, rgba(51, 95, 141, .06)),
+        var(--bg);
+      line-height: 1.6;
+    }
+
+    button, select, input {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 253, 248, .94);
+      backdrop-filter: blur(14px);
+    }
+
+    .topbar-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      height: 72px;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 28px;
+    }
+
+    .brand {
+      min-width: 268px;
+    }
+
+    .brand strong {
+      display: block;
+      font-size: 20px;
+      color: var(--teal-2);
+      letter-spacing: 0;
+    }
+
+    .brand span {
+      display: block;
+      margin-top: 2px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .nav {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      justify-content: center;
+      flex: 1;
+    }
+
+    .nav button,
+    .pill-button {
+      min-height: 38px;
+      padding: 0 16px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--teal-2);
+      background: #fffefa;
+      font-weight: 700;
+    }
+
+    .nav button.active,
+    .pill-button.active {
+      color: #fff;
+      background: var(--teal);
+      border-color: var(--teal);
+    }
+
+    .top-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      min-width: 260px;
+      justify-content: flex-end;
+    }
+
+    .search {
+      width: 230px;
+      height: 38px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 0 14px;
+      outline: none;
+      color: var(--ink);
+      background: #fffefa;
+    }
+
+    .app-shell {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 30px 24px 48px;
+      display: grid;
+      grid-template-columns: 220px minmax(0, 1fr) 286px;
+      gap: 22px;
+      align-items: start;
+    }
+
+    body.detail-open .app-shell {
+      max-width: 1280px;
+      grid-template-columns: 214px minmax(0, 1fr);
+    }
+
+    body.detail-open .aside {
+      display: none;
+    }
+
+    body.detail-open .side {
+      display: block;
+    }
+
+    .side,
+    .aside {
+      position: sticky;
+      top: 96px;
+    }
+
+    .side-section,
+    .aside-section {
+      margin-bottom: 18px;
+    }
+
+    .side h2,
+    .aside h2 {
+      margin: 0 0 10px;
+      font-size: 14px;
+      color: var(--muted);
+      font-weight: 800;
+    }
+
+    .filter-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .filter {
+      width: 100%;
+      min-height: 38px;
+      padding: 8px 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      color: var(--ink);
+      background: rgba(255, 253, 248, .74);
+      text-align: left;
+      font-weight: 700;
+    }
+
+    .filter.active {
+      border-color: var(--teal);
+      background: var(--soft-teal);
+      color: var(--teal-2);
+    }
+
+    .detail-toc { display: none; }
+
+    body.detail-open .detail-toc { display: block; }
+
+    .jump-button {
+      position: relative;
+      padding-left: 14px;
+      font-size: 13px;
+    }
+
+    .jump-button::before {
+      content: "";
+      position: absolute;
+      left: 7px;
+      top: 50%;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--teal);
+      transform: translateY(-50%);
+    }
+
+    .summary-band {
+      margin-bottom: 20px;
+      padding: 22px 24px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--paper);
+      box-shadow: var(--shadow);
+    }
+
+    .summary-band h1 {
+      margin: 0 0 8px;
+      font-size: 34px;
+      line-height: 1.16;
+      letter-spacing: 0;
+    }
+
+    .summary-band p {
+      max-width: 780px;
+      margin: 0;
+      color: var(--muted);
+      font-size: 16px;
+    }
+
+    .toolbar {
+      margin-top: 16px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .status-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      color: var(--teal-2);
+      background: var(--soft-teal);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .chip.blue {
+      color: var(--blue);
+      background: var(--soft-blue);
+    }
+
+    .chip.amber {
+      color: var(--amber);
+      background: var(--soft-amber);
+    }
+
+    .chip.gray {
+      color: var(--muted);
+      background: #eef0ed;
+    }
+
+    .feed-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .scenario-card {
+      min-height: 260px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 253, 248, .92);
+      box-shadow: 0 10px 24px rgba(31, 49, 43, .04);
+    }
+
+    .scenario-card h3 {
+      margin: 10px 0 8px;
+      font-size: 22px;
+      line-height: 1.28;
+      letter-spacing: 0;
+    }
+
+    .scenario-card p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .card-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .card-point {
+      margin-top: 12px;
+      padding-left: 12px;
+      border-left: 3px solid var(--amber);
+      color: var(--ink);
+      font-weight: 700;
+    }
+
+    .card-actions {
+      margin-top: 18px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .primary,
+    .secondary,
+    .ghost {
+      min-height: 40px;
+      padding: 0 15px;
+      border-radius: 999px;
+      font-weight: 800;
+    }
+
+    .primary {
+      color: #fff;
+      background: var(--teal);
+    }
+
+    .secondary {
+      border: 1px solid var(--line);
+      color: var(--teal-2);
+      background: #fffefa;
+    }
+
+    .ghost {
+      color: var(--blue);
+      background: transparent;
+    }
+
+    .aside-card {
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 253, 248, .86);
+      box-shadow: 0 10px 24px rgba(31, 49, 43, .04);
+    }
+
+    .aside-card + .aside-card {
+      margin-top: 12px;
+    }
+
+    .aside-card h3 {
+      margin: 0 0 8px;
+      font-size: 16px;
+    }
+
+    .aside-card p,
+    .aside-card li {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .aside-card ul {
+      margin: 8px 0 0;
+      padding-left: 18px;
+    }
+
+    .detail {
+      display: none;
+    }
+
+    .detail.active,
+    .feed.active {
+      display: block;
+    }
+
+    .feed.hidden {
+      display: none;
+    }
+
+    .back-row {
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .detail-hero {
+      padding: 24px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--paper);
+      box-shadow: var(--shadow);
+    }
+
+    .detail-hero h1 {
+      max-width: 860px;
+      margin: 12px 0 8px;
+      font-size: 42px;
+      line-height: 1.14;
+      letter-spacing: 0;
+    }
+
+    .detail-hero p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 17px;
+    }
+
+    .detail-layout {
+      margin-top: 16px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 280px;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .content-section {
+      margin-bottom: 16px;
+      padding: 22px 24px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 253, 248, .95);
+    }
+
+    .content-section h2 {
+      margin: 0 0 14px;
+      font-size: 26px;
+      letter-spacing: 0;
+    }
+
+    .section-note {
+      margin: -6px 0 14px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .field-grid,
+    .phrase-grid,
+    .template-grid,
+    .practice-grid,
+    .related-grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    .field-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .field,
+    .phrase,
+    .template-box,
+    .practice,
+    .related {
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--paper-2);
+    }
+
+    .field strong,
+    .phrase strong,
+    .practice strong,
+    .related strong {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--teal-2);
+    }
+
+    .bad {
+      background: var(--danger-soft);
+      border-color: #ecc9bf;
+    }
+
+    .good {
+      background: var(--soft-teal);
+      border-color: #bddbd1;
+    }
+
+    .source-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .mode-select {
+      height: 38px;
+      min-width: 150px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 0 12px;
+      color: var(--ink);
+      background: #fffefa;
+      font-weight: 700;
+    }
+
+    .excerpt {
+      padding: 16px;
+      border-left: 4px solid var(--teal);
+      background: #fbfcf9;
+      margin-bottom: 10px;
+    }
+
+    .excerpt-en {
+      margin: 0;
+      color: #1b2925;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 18px;
+      line-height: 1.75;
+    }
+
+    .excerpt-cn {
+      margin: 10px 0 0;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .source-insight {
+      margin-top: 12px;
+      padding: 12px 14px;
+      border-top: 1px solid var(--line);
+      color: var(--ink);
+      background: rgba(14, 75, 66, .07);
+      font-weight: 700;
+    }
+
+    .source-insight summary {
+      cursor: pointer;
+      color: var(--teal-2);
+      font-weight: 900;
+    }
+
+    .source-insight p {
+      margin: 8px 0 0;
+    }
+
+    .judgement-list {
+      display: grid;
+      gap: 10px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .judgement-list li {
+      padding: 12px 14px;
+      border-left: 4px solid var(--amber);
+      background: #fffaf2;
+    }
+
+    .judgement-grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    .judgement-card {
+      display: grid;
+      grid-template-columns: 190px minmax(0, 1fr) minmax(0, 1fr);
+      gap: 14px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-left: 5px solid var(--red);
+      background: #fffaf2;
+    }
+
+    .judgement-card strong {
+      color: var(--teal-2);
+      font-size: 16px;
+    }
+
+    .judgement-card span {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--red);
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .judgement-card p {
+      margin: 0;
+      color: var(--ink);
+    }
+
+    .phrase-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .phrase em {
+      display: block;
+      margin-top: 7px;
+      color: var(--blue);
+      font-style: normal;
+    }
+
+    .expression-list {
+      display: grid;
+      gap: 8px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .expression-list li {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--paper-2);
+    }
+
+    .expression-list span {
+      flex: 0 0 auto;
+      color: var(--teal);
+      font-weight: 900;
+    }
+
+    .template-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .template-box h3 {
+      margin: 0 0 4px;
+      color: var(--teal-2);
+      font-size: 18px;
+    }
+
+    .template-box p {
+      margin: 0 0 10px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .email-subject {
+      margin: 10px 0;
+      font-weight: 900;
+    }
+
+    .email-body {
+      min-height: 310px;
+      white-space: pre-wrap;
+      padding: 14px;
+      border: 1px solid #e8cfc0;
+      border-radius: var(--radius);
+      background: #fff8f3;
+      font-family: "Cascadia Mono", Consolas, monospace;
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .practice-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .sticky-panel {
+      position: sticky;
+      top: 96px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .mini-panel {
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 253, 248, .92);
+    }
+
+    .mini-panel h3 {
+      margin: 0 0 8px;
+      font-size: 16px;
+    }
+
+    .mini-panel p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .mini-actions {
+      display: grid;
+      gap: 8px;
+    }
+
+    .mini-actions button {
+      width: 100%;
+    }
+
+    .related-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .toast {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      transform: translateY(20px);
+      opacity: 0;
+      pointer-events: none;
+      transition: .2s ease;
+      padding: 12px 16px;
+      border-radius: var(--radius);
+      color: #fff;
+      background: var(--teal-2);
+      box-shadow: var(--shadow);
+      z-index: 30;
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    /* Premium editorial skin */
+    :root {
+      --bg: #efe6d8;
+      --paper: #fff8ee;
+      --paper-2: #fbf1e3;
+      --ink: #1c1915;
+      --muted: #6f665d;
+      --line: #d5c6b2;
+      --line-strong: #2a2621;
+      --teal: #0e4b42;
+      --teal-2: #0b332e;
+      --blue: #243f63;
+      --amber: #a44d2b;
+      --red: #b3292e;
+      --soft-teal: #deebe4;
+      --soft-blue: #e4eaf1;
+      --soft-amber: #f5e3cc;
+      --danger-soft: #f4ded5;
+      --shadow: 0 24px 50px rgba(36, 28, 20, .11);
+      --radius: 2px;
+    }
+
+    body {
+      background:
+        linear-gradient(90deg, rgba(14, 75, 66, .08), transparent 20%, transparent 78%, rgba(164, 77, 43, .08)),
+        radial-gradient(circle at 50% 0, rgba(255, 248, 238, .92), transparent 36%),
+        var(--bg);
+    }
+
+    .topbar {
+      border-bottom: 2px solid var(--line-strong);
+      background: rgba(255, 248, 238, .96);
+      backdrop-filter: blur(16px);
+    }
+
+    .topbar-inner {
+      min-height: 88px;
+      height: auto;
+      padding: 12px 24px 10px;
+    }
+
+    .brand {
+      min-width: 298px;
+    }
+
+    .brand strong,
+    .summary-band h1,
+    .lead-brief h2,
+    .scenario-card h3,
+    .detail-hero h1,
+    .content-section h2 {
+      font-family: Georgia, "Times New Roman", "Songti SC", serif;
+    }
+
+    .brand strong {
+      font-size: 30px;
+      line-height: 1;
+    }
+
+    .brand span {
+      margin-top: 8px;
+      padding-top: 6px;
+      border-top: 1px solid var(--line-strong);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+
+    .nav button,
+    .pill-button {
+      border-color: transparent;
+      border-radius: 2px;
+      color: var(--ink);
+      background: transparent;
+    }
+
+    .nav button.active,
+    .pill-button.active {
+      color: #fff;
+      background: var(--line-strong);
+      border-color: var(--line-strong);
+    }
+
+    .search,
+    .mode-select,
+    .secondary {
+      border-radius: 2px;
+      background: var(--paper);
+    }
+
+    .app-shell {
+      grid-template-columns: 214px minmax(0, 1fr);
+      gap: 24px;
+    }
+
+    .aside {
+      display: none;
+    }
+
+    .filter {
+      border-radius: 2px;
+      background: rgba(255, 248, 238, .72);
+    }
+
+    .filter.active {
+      background: var(--paper);
+      box-shadow: inset 4px 0 0 var(--teal);
+    }
+
+    .summary-band {
+      border: 1px solid var(--line-strong);
+      border-top: 6px solid var(--line-strong);
+      border-radius: 2px;
+    }
+
+    .summary-band h1 {
+      max-width: 840px;
+      font-size: 48px;
+      line-height: 1.08;
+    }
+
+    .editorial-board {
+      margin-top: 22px;
+      display: grid;
+      grid-template-columns: 1.15fr .85fr;
+      gap: 16px;
+      border-top: 1px solid var(--line-strong);
+      border-bottom: 1px solid var(--line-strong);
+      padding: 14px 0;
+    }
+
+    .lead-brief {
+      display: grid;
+      grid-template-columns: 140px minmax(0, 1fr);
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    .issue-mark {
+      min-height: 132px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      color: #fff;
+      background: var(--line-strong);
+    }
+
+    .issue-mark span {
+      font-size: 11px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: #e7d9c4;
+    }
+
+    .issue-mark strong {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 34px;
+      line-height: 1;
+    }
+
+    .lead-brief h2 {
+      margin: 0 0 8px;
+      font-size: 27px;
+      line-height: 1.16;
+    }
+
+    .lead-brief p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .signal-board {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .signal {
+      min-height: 132px;
+      padding: 12px;
+      border-left: 1px solid var(--line);
+      background: rgba(255, 255, 255, .25);
+    }
+
+    .signal small {
+      display: block;
+      color: var(--muted);
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+
+    .signal strong {
+      display: block;
+      margin: 8px 0 10px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 29px;
+      line-height: 1;
+      color: var(--red);
+    }
+
+    .signal span {
+      display: block;
+      min-height: 42px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .signal-bars {
+      display: grid;
+      gap: 5px;
+      margin-top: 10px;
+    }
+
+    .signal-bars i {
+      display: block;
+      width: 100%;
+      height: 6px;
+      background: var(--line-strong);
+    }
+
+    .signal-bars i:nth-child(2) {
+      width: 72%;
+      background: var(--teal);
+    }
+
+    .signal-bars i:nth-child(3) {
+      width: 48%;
+      background: var(--amber);
+    }
+
+    .chip {
+      border: 1px solid var(--line);
+      border-radius: 2px;
+      background: rgba(222, 235, 228, .72);
+    }
+
+    .feed-grid {
+      gap: 0;
+      border-top: 2px solid var(--line-strong);
+      border-left: 1px solid var(--line);
+    }
+
+    .scenario-card {
+      position: relative;
+      min-height: 252px;
+      padding: 20px;
+      border-left: 0;
+      border-top: 0;
+      border-radius: 0;
+      background: rgba(255, 248, 238, .86);
+      box-shadow: none;
+    }
+
+    .scenario-card:first-child {
+      grid-column: span 2;
+      min-height: 318px;
+      background: linear-gradient(90deg, rgba(255, 248, 238, .96) 0 68%, rgba(14, 75, 66, .08) 68%);
+    }
+
+    .scenario-card:first-child::after {
+      content: "Lead scenario";
+      position: absolute;
+      right: 20px;
+      top: 20px;
+      color: var(--red);
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .scenario-card h3 {
+      max-width: 620px;
+      font-size: 26px;
+      line-height: 1.22;
+    }
+
+    .scenario-card:first-child h3 {
+      font-size: 42px;
+      line-height: 1.08;
+    }
+
+    .card-point {
+      max-width: 650px;
+      padding: 12px 14px;
+      border-left: 4px solid var(--red);
+      background: rgba(255, 255, 255, .36);
+    }
+
+    .primary,
+    .secondary,
+    .ghost {
+      border-radius: 2px;
+    }
+
+    .aside-card,
+    .detail-hero,
+    .content-section,
+    .field,
+    .phrase,
+    .template-box,
+    .practice,
+    .related,
+    .mini-panel,
+    .expression-list li {
+      border-radius: 2px;
+    }
+
+    .aside-card {
+      box-shadow: none;
+      background: rgba(255, 248, 238, .86);
+    }
+
+    .detail-hero {
+      border: 1px solid var(--line-strong);
+      border-top: 6px solid var(--line-strong);
+    }
+
+    .detail-hero h1 {
+      max-width: 920px;
+      font-size: 56px;
+      line-height: 1.08;
+    }
+
+    .content-section {
+      border-top: 3px solid var(--line-strong);
+      background: rgba(255, 248, 238, .94);
+    }
+
+    .content-section h2 {
+      font-size: 30px;
+    }
+
+    .excerpt {
+      border-left: 4px solid var(--line-strong);
+      background: #fffaf2;
+    }
+
+    .excerpt-en {
+      font-size: 19px;
+    }
+
+    .judgement-list li {
+      border-left-color: var(--red);
+    }
+
+    .email-body {
+      border-color: #d9bda7;
+      border-radius: 2px;
+      background: #fff6ed;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 14px;
+    }
+
+
+    /* V47: clearer work-reading hierarchy */
+    .card-point {
+      font-size: 17px;
+      line-height: 1.55;
+      color: var(--ink);
+      background: rgba(255,255,255,.56);
+    }
+
+    .scenario-card:first-child .card-point {
+      font-size: 20px;
+      line-height: 1.5;
+      max-width: 720px;
+    }
+
+    .briefing-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+      color: var(--red);
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    .briefing-kicker::before {
+      content: "";
+      width: 28px;
+      height: 2px;
+      background: var(--red);
+    }
+
+    .briefing-lead {
+      margin-top: 12px;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+    }
+
+    .briefing-lead div {
+      padding: 12px 14px;
+      border-left: 3px solid var(--line-strong);
+      background: rgba(255,255,255,.36);
+    }
+
+    .briefing-lead strong {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--teal-2);
+    }
+
+    .template-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 14px;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 10px;
+    }
+
+    .template-tab {
+      min-height: 38px;
+      padding: 0 14px;
+      border: 1px solid var(--line);
+      border-radius: 2px;
+      background: var(--paper);
+      color: var(--ink);
+      font-weight: 900;
+    }
+
+    .template-tab.active {
+      color: #fff;
+      background: var(--line-strong);
+      border-color: var(--line-strong);
+    }
+
+    .template-reader {
+      max-width: 920px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      background: var(--paper-2);
+    }
+
+    .template-reader h3 {
+      margin: 0 0 6px;
+      font-family: Georgia, "Times New Roman", "Songti SC", serif;
+      font-size: 24px;
+      color: var(--teal-2);
+    }
+
+    .template-reader .email-body {
+      min-height: 360px;
+      font-size: 15px;
+    }
+
+    .section-actions {
+      margin-top: 12px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .source-status {
+      margin-top: 10px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    body.detail-open .summary-band { display: none; }
+
+    @media (max-width: 1120px) {
+      .app-shell {
+        grid-template-columns: 190px minmax(0, 1fr);
+      }
+
+      .aside {
+        display: none;
+      }
+
+      .detail-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .sticky-panel {
+        position: static;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 860px) {
+      .topbar-inner {
+        height: auto;
+        padding: 14px 16px;
+        flex-wrap: wrap;
+      }
+
+      .brand,
+      .top-actions {
+        min-width: 0;
+      }
+
+      .nav {
+        order: 3;
+        width: 100%;
+        justify-content: flex-start;
+        overflow-x: auto;
+        padding-bottom: 2px;
+      }
+
+      .search {
+        width: 180px;
+      }
+
+      .app-shell {
+        display: block;
+        padding: 18px 16px 40px;
+      }
+
+      .side {
+        position: static;
+        margin-bottom: 16px;
+      }
+
+      .filter-list {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .feed-grid,
+      .field-grid,
+      .judgement-card,
+      .phrase-grid,
+      .template-grid,
+      .practice-grid,
+      .related-grid,
+      .sticky-panel {
+        grid-template-columns: 1fr;
+      }
+
+      .summary-band h1,
+      .detail-hero h1 {
+        font-size: 30px;
+      }
+
+      .briefing-lead,
+      .editorial-board,
+      .lead-brief,
+      .signal-board {
+        grid-template-columns: 1fr;
+      }
+
+      body.detail-open .app-shell {
+        display: block;
+      }
+
+      body.detail-open .side {
+        display: block;
+        position: static;
+      }
+
+      .template-reader .email-body {
+        min-height: auto;
+      }
+    }
+  
+
+    /* V49 desktop refinement: full-width detail sections, stronger daily pick, visible Chinese translation */
+    @media (min-width: 1121px) {
+      body { min-width: 1180px; }
+      .topbar-inner { max-width: 1600px; }
+      .app-shell {
+        max-width: 1600px;
+        grid-template-columns: 250px minmax(0, 1fr);
+        gap: 34px;
+        padding: 34px 36px 64px;
+      }
+      body.detail-open .app-shell {
+        max-width: 1600px;
+        grid-template-columns: 250px minmax(0, 1fr);
+      }
+      .detail-layout {
+        grid-template-columns: minmax(820px, 1fr) 320px;
+        gap: 28px;
+      }
+      .detail-hero, .content-section { max-width: none; }
+      .template-reader { max-width: none; }
+      .excerpt-en { max-width: 980px; }
+    }
+
+    .today-pick {
+      margin-top: 22px;
+      padding: 18px 20px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 18px;
+      align-items: end;
+      border: 2px solid var(--line-strong);
+      background: rgba(255, 248, 238, .96);
+      box-shadow: 10px 10px 0 rgba(28,25,21,.08);
+    }
+
+    .today-pick-eyebrow {
+      margin-bottom: 6px;
+      color: var(--red);
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+    }
+
+    .today-pick h2 {
+      margin: 0 0 6px;
+      font-family: Georgia, "Times New Roman", "Songti SC", serif;
+      font-size: 31px;
+      line-height: 1.14;
+      color: var(--ink);
+    }
+
+    .today-pick p { margin: 0 0 5px; color: var(--muted); }
+    .today-pick-button { min-width: 132px; }
+
+    .side-section.detail-toc {
+      padding: 14px;
+      border: 2px solid var(--line-strong);
+      background: rgba(255, 248, 238, .94);
+    }
+
+    .side-section.detail-toc h2 {
+      color: var(--line-strong);
+      font-size: 13px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .detail-toc .filter {
+      min-height: 34px;
+      border-color: var(--line-strong);
+      background: rgba(255,255,255,.32);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    body.detail-open .side-section:not(.detail-toc) {
+      margin-top: 22px;
+      padding-top: 16px;
+      border-top: 1px solid var(--line-strong);
+    }
+
+    body.detail-open .side-section:not(.detail-toc) h2 {
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+
+    .detail-hero { position: relative; padding-right: 230px; }
+
+    .detail-reading-mode {
+      position: absolute;
+      top: 22px;
+      right: 22px;
+      display: grid;
+      gap: 6px;
+      justify-items: end;
+    }
+
+    .detail-reading-mode span {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .source-bridge {
+      margin-top: 18px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      border-top: 1px solid var(--line-strong);
+      padding-top: 14px;
+    }
+
+    .source-bridge > div {
+      padding: 14px;
+      border-left: 3px solid var(--red);
+      background: rgba(255,255,255,.38);
+    }
+
+    .source-bridge strong { display: block; margin-bottom: 6px; color: var(--teal-2); }
+    .source-bridge p { margin: 0; color: var(--muted); }
+
+    .excerpt-cn {
+      margin: 12px 0 0;
+      padding-top: 10px;
+      border-top: 1px dashed var(--line);
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .source-insight[open] { border-top: 1px solid var(--line); margin-top: 12px; padding-top: 10px; }
+    .source-insight summary { color: var(--teal-2); }
+
+    @media (max-width: 1120px) {
+      .detail-hero { padding-right: 24px; }
+      .detail-reading-mode { position: static; margin-top: 16px; justify-items: start; }
+      .source-bridge { grid-template-columns: 1fr; }
+      .today-pick { grid-template-columns: 1fr; }
+    }
+
+
+    /* V49 desktop focus: detail sections align with title card; no narrow right column */
+    @media (min-width: 1121px) {
+      .app-shell {
+        grid-template-columns: 280px minmax(0, 1fr);
+        max-width: 1660px;
+        gap: 36px;
+      }
+      body.detail-open .app-shell {
+        grid-template-columns: 280px minmax(0, 1fr);
+        max-width: 1660px;
+      }
+      .detail-layout {
+        display: block;
+        margin-top: 16px;
+      }
+      .detail-layout > div:first-child {
+        width: 100%;
+      }
+      .detail-hero,
+      .content-section {
+        width: 100%;
+        max-width: none;
+      }
+      .sticky-panel {
+        display: none;
+      }
+      .field-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+      .excerpt-en {
+        max-width: none;
+      }
+    }
+
+    /* V49: make today pick visually stronger and clearly separate from the overview board */
+    .today-pick {
+      margin-top: 26px;
+      padding: 0;
+      grid-template-columns: 180px minmax(0, 1fr) 170px;
+      align-items: stretch;
+      border: 3px solid var(--line-strong);
+      background: var(--paper);
+      box-shadow: 14px 14px 0 rgba(28,25,21,.10);
+      overflow: hidden;
+    }
+    .today-pick::before {
+      content: "TODAY'S PICK\A 今日抓取推荐";
+      white-space: pre-line;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 22px;
+      color: #fff8ee;
+      background: var(--line-strong);
+      font-size: 13px;
+      font-weight: 900;
+      line-height: 1.7;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+    .today-pick-copy {
+      padding: 24px 26px;
+      background: linear-gradient(90deg, rgba(255,248,238,.98), rgba(245,227,204,.52));
+    }
+    .today-pick-eyebrow {
+      display: inline-flex;
+      margin-bottom: 10px;
+      padding: 3px 8px;
+      color: #fff;
+      background: var(--red);
+      letter-spacing: .1em;
+    }
+    .today-pick h2 {
+      max-width: 900px;
+      font-size: 37px;
+      line-height: 1.08;
+    }
+    .today-pick p {
+      max-width: 900px;
+      font-size: 16px;
+    }
+    .today-pick-button {
+      align-self: end;
+      justify-self: center;
+      margin: 24px 22px;
+      min-width: 140px;
+      height: 48px;
+      background: var(--teal-2);
+    }
+    @media (max-width: 1120px) {
+      .today-pick { grid-template-columns: 1fr; }
+      .today-pick::before { justify-content: flex-start; }
+      .today-pick-button { justify-self: start; margin: 0 22px 22px; }
+    }
+
+    /* V49: visible Chinese translation and work connection under each excerpt */
+    .translation-card {
+      margin-top: 14px;
+      padding: 14px 16px;
+      border: 1px solid #d8c4aa;
+      border-left: 5px solid var(--teal);
+      background: #fff8ee;
+    }
+    .translation-card strong,
+    .work-connection strong {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--teal-2);
+      font-size: 14px;
+      letter-spacing: .04em;
+    }
+    .translation-card p,
+    .work-connection p {
+      margin: 0;
+      color: var(--ink);
+      font-size: 16px;
+      line-height: 1.8;
+    }
+    .work-connection {
+      margin-top: 10px;
+      padding: 13px 16px;
+      border: 1px dashed var(--line-strong);
+      background: rgba(222,235,228,.52);
+    }
+    .source-insight[open] {
+      border-top: 0;
+      margin-top: 0;
+      padding-top: 0;
+    }
+
+
+    /* GPT_PATCH_REMOVE_BACKSTAGE_LABELS_V53: keep Codex V49 layout, only remove backend-looking labels */
+    .today-pick-cn::before {
+      display: none !important;
+      content: none !important;
+    }
+
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <strong>商业外刊工作读本</strong>
+        <span>Business Briefing for Real Work</span>
+      </div>
+      <nav class="nav" aria-label="主导航">
+        <button class="active" data-nav="feed">首页 Briefing</button>
+        <button data-nav="scenes">实战场景</button>
+        <button data-nav="views">商业视野</button>
+        <button data-nav="history">历史文章</button>
+      </nav>
+      <div class="top-actions">
+        <input class="search" id="searchInput" placeholder="搜索场景、表达、客户问题" />
+      </div>
+    </div>
+  </header>
+
+  <div class="app-shell">
+    <aside class="side">
+      <div class="side-section detail-toc" id="detailToc">
+        <h2>本篇导航</h2>
+        <div class="filter-list">
+          <button class="filter jump-button" data-jump="section-brief">今日议题</button>
+          <button class="filter jump-button" data-jump="section-source">外刊原文</button>
+          <button class="filter jump-button" data-jump="section-lens">商业视角</button>
+          <button class="filter jump-button" data-jump="section-phrases">商务表达</button>
+          <button class="filter jump-button" data-jump="section-email">邮件模板</button>
+          <button class="filter jump-button" data-jump="section-related">相关场景</button>
+        </div>
+      </div>
+      <div class="side-section">
+        <h2>实战场景</h2>
+        <div class="filter-list" id="categoryFilters"></div>
+      </div>
+      <div class="side-section">
+        <h2>商业视野</h2>
+        <div class="filter-list" id="viewFilters"></div>
+      </div>
+      <div class="side-section">
+        <h2>难度</h2>
+        <div class="filter-list" id="levelFilters"></div>
+      </div>
+    </aside>
+
+    <main>
+      <section class="feed active" id="feedView">
+        <div class="summary-band">
+          <div class="status-row">
+            <span class="chip">商业外刊主线</span>
+            <span class="chip blue" id="fetchStatus">正在检查最新外刊</span>
+            <span class="chip amber">工作表达落地</span>
+          </div>
+          <div class="briefing-kicker">Daily Business Briefing</div>
+          <h1>每天读一篇商业外刊，顺手带走能用于客户沟通的英文表达。</h1>
+          <p>不是纯外刊精读，也不是邮件模板库。先看懂商业变化，再判断它如何影响报价、交期、付款、投诉和客户跟进。</p>
+          <section class="today-pick" aria-label="今日抓取推荐文章">
+            <div class="today-pick-copy">
+              <div class="today-pick-eyebrow">TODAY'S PICK · 今日抓取推荐</div>
+              <h2 id="todayPickTitle">客户嫌价格贵，该怎么回复？</h2>
+              <p id="todayPickMeta">来源加载中 · 优先展示今天自动抓取到的商业外刊</p>
+              <p id="todayPickWhy">首页先突出今日主文：先读真实商业文章，再看它如何转成报价、交期、付款、投诉或客户跟进里的英文表达。</p>
+            </div>
+            <button class="primary today-pick-button" id="todayPickOpen" type="button">进入今日主文</button>
+          </section>
+          <div class="editorial-board" aria-label="产品定位说明">
+            <div class="lead-brief">
+              <div class="issue-mark">
+                <span>Daily Briefing</span>
+                <strong>Work<br>Desk</strong>
+                <span>2026.06.15</span>
+              </div>
+              <div>
+                <h2>今日主线：商业外刊 → 商业视角 → 外贸工作应用。</h2>
+                <p>每篇保留 2–3 段真实可访问的英文原文，提炼商业信号，再转成外贸沟通判断和可直接改写的邮件表达。</p>
+                <div class="briefing-lead"><div><strong>读什么</strong>成本、供应链、物流、汇率、AI、消费趋势。</div><div><strong>看什么</strong>市场信号、客户心理、谈判边界。</div><div><strong>带走什么</strong>表达、邮件和回复策略。</div></div>
+              </div>
+            </div>
+            <div class="signal-board" aria-label="内容信号">
+              <div class="signal">
+                <small>Freshness</small>
+                <strong>14/30/90</strong>
+                <span>先 14 天，再 30 天，最后 90 天兜底。</span>
+                <div class="signal-bars"><i></i><i></i><i></i></div>
+              </div>
+              <div class="signal">
+                <small>Output</small>
+                <strong>3x</strong>
+                <span>标准、柔和、边界清楚三版邮件。</span>
+                <div class="signal-bars"><i></i><i></i><i></i></div>
+              </div>
+              <div class="signal">
+                <small>Lens</small>
+                <strong>3pt</strong>
+                <span>市场信号、客户心理、外贸判断。</span>
+                <div class="signal-bars"><i></i><i></i><i></i></div>
+              </div>
+            </div>
+          </div>
+          <div class="toolbar">
+            <div class="status-row" id="resultStatus"></div>
+            <select class="mode-select" id="sortSelect" aria-label="排序">
+              <option value="latest">按来源日期优先</option>
+              <option value="level">按难度排序</option>
+              <option value="category">按场景排序</option>
+            </select>
+          </div>
+        </div>
+        <div class="feed-grid" id="cardGrid"></div>
+      </section>
+
+      <section class="detail" id="detailView"></section>
+    </main>
+
+    <aside class="aside">
+      <div class="aside-card">
+        <h3>今日生成规则</h3>
+        <ul>
+          <li>先抓最新商业文章，按日期倒序。</li>
+          <li>没有当天内容时，最多回看 90 天。</li>
+          <li>只选能落到工作回复的材料。</li>
+        </ul>
+      </div>
+      <div class="aside-card">
+        <h3>内容验收</h3>
+        <ul>
+          <li>有真实客户问题。</li>
+          <li>有不能说的话。</li>
+          <li>有可复制邮件。</li>
+          <li>有 Level1 到 Level3 练习。</li>
+        </ul>
+      </div>
+      <div class="aside-card">
+        <h3>原文阅读模式</h3>
+        <p>详情页提供“中英对照 / 只看英文 / 中文解释”三种模式，默认中英对照。</p>
+      </div>
+    </aside>
+  </div>
+
+  <div class="toast" id="toast">已复制</div>
+
+  <script>
+    // V47_BUSINESS_BRIEFING_AUTO_FETCH_LAYOUT
+    const scenarios = [
+      {
+        id: "price-too-high",
+        title: "客户嫌价格贵，该怎么回复？",
+        category: "报价与议价",
+        businessView: "成本上涨",
+        level: "Level1",
+        targetUser: "外贸业务员 / 销售 / 客服",
+        date: "2026-06-15",
+        sourceDate: "2026-06-12",
+        freshness: "最新优先",
+        coreProblem: "客户说 your price is too high，不能只道歉，也不能立刻降价。",
+        scenario: {
+          problem: "客户说价格高，但你还不知道他是在真预算不足、试探底价，还是内部决策没过。",
+          wrong: "把所有 too high 都当成同一种问题：要么马上降价，要么机械解释成本。",
+          strategy: "先读信号：客户是否给目标价、是否已多轮压价、是否提到竞争对手。不同信号对应不同回复路径。"
+        },
+        source: {
+          name: "FT-style business context",
+          title: "Margins, buyer pressure and value defence in B2B pricing",
+          url: "#",
+          paragraphs: [
+            {
+              en: "Many companies are trying to protect margins while customers continue to ask for better value and faster service.",
+              cn: "许多公司一边努力保护利润率，一边面对客户要求更高价值和更快服务的压力。",
+              insight: "这段只能支持一个判断：买方也有利润压力，所以你不能把压价理解成单纯否定供应商。回复时要给客户可转述给老板或采购团队的理由：交付稳定、售后成本低、返工风险小、报价包含哪些责任。"
+            },
+            {
+              en: "Suppliers that explain cost drivers clearly are more likely to keep trust during price discussions.",
+              cn: "在价格讨论中，能够清楚解释成本驱动因素的供应商，更有可能保持客户信任。",
+              insight: "这段支持的工作动作是：不要泛泛说我们质量好，而是说明价格由哪些责任构成。然后把谈判从“能不能便宜”转成“如果要低预算，我们调哪一项”：规格、包装、数量、交期、付款方式。"
+            }
+          ]
+        },
+        judgement: [
+          {
+            type: "信号一：只说 too high，没有给目标价",
+            reading: "这通常不是价格结论，而是让你先解释报价。客户可能还在比较供应商，也可能需要你给他内部转述的话术。",
+            response: "不要马上问 How much can you accept? 先用一段价值解释稳住：报价包含质量标准、交期保障、包装/售后责任。最后再问预算范围。"
+          },
+          {
+            type: "信号二：他说 can you do better?",
+            reading: "这和 your price is too high 不一样。前者是在索取改进空间，后者可能只是表达顾虑。can you do better 已经进入谈判。",
+            response: "回复要把让步绑定条件：如果确认数量、付款时间或长期订单，我们可以 review a small adjustment。不要裸降价。"
+          },
+          {
+            type: "信号三：连续三次压价但迟迟不下单",
+            reading: "这时大概率不是价格问题，而是决策权、真实需求或采购优先级不在他手上。继续解释成本只是在消耗时间。",
+            response: "把话题切到决策：May I know what is holding the decision at this stage? 或给两个选项：保持当前规格，或按目标预算重做低配方案。"
+          },
+          {
+            type: "信号四：客户拿竞争对手低价比较",
+            reading: "这不是让你证明自己便宜，而是让你说明为什么不该只按单价比较。",
+            response: "承认对方可能有更低报价，但要求对齐规格、材料、质检、包装、交期和售后范围。用 same specification / same quality standard 把比较拉回同一口径。"
+          }
+        ],
+        phrases: [
+          ["same specification", "同一规格口径", "客户拿低价供应商比较时使用。", "To compare the prices fairly, we need to make sure both offers are based on the same specification."],
+          ["total cost of ownership", "综合使用成本", "说明便宜不一定省钱。", "A lower unit price may not always mean a lower total cost of ownership if quality issues increase after-sales costs."],
+          ["review a small adjustment", "评估小幅调整", "客户进入真实谈判时使用。", "If the order quantity can be confirmed this week, we can review a small adjustment."],
+          ["make the offer easier to approve internally", "让报价更容易通过内部审批", "帮客户向老板解释时使用。", "I can also prepare a short comparison to make the offer easier to approve internally."]
+        ],
+        expressions: [
+          "To compare the prices fairly, may I check whether the other offer is based on the same specification?",
+          "The current price includes the agreed quality standard, packaging requirement, and delivery responsibility.",
+          "If your team has a target budget, we can rebuild the option around that budget instead of simply reducing the unit price.",
+          "If the order quantity and payment schedule can be confirmed, I can review whether a small adjustment is workable."
+        ],
+        templates: [
+          {
+            name: "新客户第一次压价",
+            note: "客户只说价格高，还没给目标价。重点是解释报价口径，帮他建立信任。",
+            subject: "Clarification on Our Quotation",
+            body: "Dear [Name],\n\nThank you for your feedback.\n\nI understand your concern about the price. Before we review any adjustment, I would like to clarify what is included in this quotation. The current offer is based on the agreed specification, quality standard, packaging requirement, and delivery responsibility.\n\nIf you are comparing it with another offer, may I check whether both prices are based on the same specification and service scope? This will help us make a fair comparison.\n\nIf your team has a target budget, please share it with me. I can then review whether we should adjust the quantity, packaging, or specification to make the option easier to approve internally.\n\nBest regards,\n[Your Name]"
+          },
+          {
+            name: "老客户预算压力",
+            note: "关系不错，但客户确实有预算压力。重点是给支持，同时不破坏价格体系。",
+            subject: "Reviewing a Workable Option for Your Budget",
+            body: "Dear [Name],\n\nThank you for being open with me about the budget pressure.\n\nI understand this needs to work for your side as well. Since we have worked together before, I will try to support you where possible. At the same time, I do not want to reduce the quality standard just to make the unit price look lower.\n\nA better approach may be to review the option around your target budget. We can check the order quantity, packaging, delivery schedule, or non-essential specifications and see where a reasonable adjustment can be made.\n\nPlease send me your target range and the points that are most important for your team. I will review a practical option for you.\n\nBest regards,\n[Your Name]"
+          },
+          {
+            name: "二次大幅压价",
+            note: "客户已经再次要求降价，且幅度超过 15%。重点是守边界，把谈判转到规格或数量。",
+            subject: "Reviewing the Price Gap",
+            body: "Dear [Name],\n\nThank you for your message.\n\nI understand you would like a further reduction. However, based on the current specification and quality requirement, a reduction of [15%] is not workable without changing the offer scope.\n\nTo move this forward, I suggest we choose one of two directions:\n\nOption 1: Keep the current specification and quality standard, and review only a small adjustment based on confirmed quantity and payment schedule.\n\nOption 2: Rebuild a lower-budget option by adjusting the specification, packaging, or delivery requirement.\n\nPlease let me know which direction is closer to your plan, and I will prepare the revised proposal accordingly.\n\nBest regards,\n[Your Name]"
+          }
+        ],
+        practice: {
+          level1: "填空：I understand your concern about the ______.",
+          level2: "把这句话改得更专业：Our price is already very cheap.",
+          level3: "客户说：Your price is too high. Can you reduce 15%? 请写一封 80 词以内的回复，既不直接拒绝，也不马上降价。"
+        }
+      },
+      {
+        id: "discount-request",
+        title: "客户要求折扣，怎么不卑不亢回复？",
+        category: "报价与议价",
+        businessView: "需求疲软",
+        level: "Level1",
+        targetUser: "销售 / 外贸业务员",
+        date: "2026-06-15",
+        sourceDate: "2026-06-10",
+        freshness: "近 7 天",
+        coreProblem: "客户直接问 any discount，不能只说 yes 或 no。",
+        scenario: {
+          problem: "客户在下单前要求折扣，但没有说明数量、付款或长期合作条件。",
+          wrong: "Sure, we can give you 10% off. 或 No discount.",
+          strategy: "把折扣和条件绑定：数量、付款速度、长期订单、可调整规格。"
+        },
+        source: {
+          name: "Market demand context",
+          title: "Buyers push for better terms as demand slows in some categories",
+          url: "#",
+          paragraphs: [
+            {
+              en: "When demand slows, buyers often ask suppliers for more flexible terms before confirming orders.",
+              cn: "需求变弱时，客户会更常测试供应商底线。回复折扣时，要把让利变成交换条件，而不是单方面退让。"
+            }
+          ]
+        },
+        judgement: [
+          "折扣不是不能给，但必须有交换条件。",
+          "先问订单数量和目标预算，比直接报折扣更专业。",
+          "如果客户没有明确采购计划，可以先给阶梯价或有效期。",
+          "让客户知道：价格可以讨论，但不是随意下降。"
+        ],
+        phrases: [
+          ["based on the order quantity", "根据订单数量", "给阶梯折扣时使用。", "The final discount can be reviewed based on the order quantity."],
+          ["a small adjustment", "小幅调整", "避免承诺大幅降价。", "We may be able to offer a small adjustment for a confirmed order."],
+          ["confirm the target quantity", "确认目标数量", "把折扣谈判拉回订单条件。", "Could you confirm the target quantity first?"],
+          ["keep the offer valid", "保持报价有效", "限制客户无限拖延。", "We can keep this offer valid until Friday."]
+        ],
+        expressions: [
+          "The final discount can be reviewed based on the order quantity.",
+          "Could you share your target quantity and budget range?",
+          "For a confirmed order this week, we may be able to offer a small adjustment.",
+          "This price is valid until [date]."
+        ],
+        templates: [
+          {
+            name: "标准版",
+            note: "先问条件，再谈折扣。",
+            subject: "Discount Review for Your Order",
+            body: "Dear [Name],\n\nThank you for your message.\n\nWe can review the discount based on the order quantity and final specification. Could you please share your target quantity and budget range?\n\nFor a confirmed order, we will try to provide the best workable price while keeping the same quality standard.\n\nOnce I receive the details, I will check with our team and send you an updated offer.\n\nBest regards,\n[Your Name]"
+          },
+          {
+            name: "更柔和版",
+            note: "适合关系较好的客户。",
+            subject: "Let Me Check the Best Price",
+            body: "Dear [Name],\n\nThank you for your feedback.\n\nI understand you would like a better price. Please send me your expected quantity and target range, and I will check what we can do for you.\n\nIf the order can be confirmed soon, we may have more room to support you with a small adjustment.\n\nBest regards,\n[Your Name]"
+          },
+          {
+            name: "边界清楚版",
+            note: "客户只要折扣但不确认订单时使用。",
+            subject: "Price Adjustment Conditions",
+            body: "Dear [Name],\n\nThank you for your message.\n\nAt the current quantity, the price is already our competitive offer. A further discount would need to be reviewed together with the confirmed order quantity, payment terms, or specification changes.\n\nPlease confirm these details, and I will prepare the best possible option for you.\n\nBest regards,\n[Your Name]"
+          }
+        ],
+        practice: {
+          level1: "填空：The discount can be reviewed based on the order ______.",
+          level2: "把这句话改得更专业：If you buy more, we can make it cheaper.",
+          level3: "客户只说 Can you give me discount? 请回复并索要关键条件。"
+        }
+      },
+      {
+        id: "material-cost-rise",
+        title: "原材料涨价，如何向客户解释调价？",
+        category: "报价与议价",
+        businessView: "成本上涨",
+        level: "Level2",
+        targetUser: "外贸业务员 / 采购沟通 / 运营",
+        date: "2026-06-15",
+        sourceDate: "2026-06-08",
+        freshness: "近 14 天",
+        coreProblem: "调价不能只说 cost increased，要说明原因、影响和缓冲方案。",
+        scenario: {
+          problem: "原材料成本上升，原报价无法继续维持，需要通知客户新价格或报价有效期。",
+          wrong: "Material price increased, so we must raise the price.",
+          strategy: "说明外部成本变化、强调不是随意涨价、给客户下单窗口或替代方案。"
+        },
+        source: {
+          name: "Commodity market context",
+          title: "Input costs remain volatile for manufacturers",
+          url: "#",
+          paragraphs: [
+            {
+              en: "Manufacturers continue to monitor raw material prices closely as cost changes affect production planning.",
+              cn: "这段背景提醒我们：涨价通知要和生产计划、报价有效期联系起来，而不是只说供应商也涨价了。"
+            }
+          ]
+        },
+        judgement: [
+          "客户最担心的是你借机涨价，所以要强调成本依据和时间窗口。",
+          "不要把压力全部甩给客户，要给缓冲方案。",
+          "如果客户能快速确认订单，可以保留旧价格或部分旧价格。",
+          "调价邮件要清楚写明生效日期。"
+        ],
+        phrases: [
+          ["raw material cost", "原材料成本", "解释价格变化。", "The raw material cost has increased since our last quotation."],
+          ["price validity", "报价有效期", "控制报价时间。", "The current price validity is until June 20."],
+          ["absorb part of the cost", "承担部分成本", "表达我方也在分担压力。", "We have tried to absorb part of the cost to reduce the impact."],
+          ["take effect from", "从某日期生效", "通知调价时间。", "The updated price will take effect from July 1."]
+        ],
+        expressions: [
+          "The raw material cost has increased since our last quotation.",
+          "We have tried to absorb part of the cost to reduce the impact.",
+          "The current price can be kept for orders confirmed before [date].",
+          "The updated price will take effect from [date]."
+        ],
+        templates: [
+          {
+            name: "标准版",
+            note: "正式说明调价原因。",
+            subject: "Update on Price Validity",
+            body: "Dear [Name],\n\nI hope you are doing well.\n\nWe would like to inform you that the raw material cost has increased since our last quotation. We have tried to absorb part of the cost, but the current price cannot be maintained for a long period.\n\nTo support your planning, we can keep the current offer valid for orders confirmed before [date]. After that, the updated price will take effect.\n\nPlease let us know your order plan, and we will do our best to support you.\n\nBest regards,\n[Your Name]"
+          },
+          {
+            name: "更柔和版",
+            note: "适合已有客户。",
+            subject: "Price Update and Order Planning",
+            body: "Dear [Name],\n\nThank you for your continued support.\n\nDue to the recent increase in raw material cost, we may need to adjust the price for new orders. We understand price stability is important for your planning, so we would like to give you advance notice.\n\nIf you can confirm the order before [date], we can still keep the current offer for you.\n\nPlease let me know your plan, and I will help reserve the best option.\n\nBest regards,\n[Your Name]"
+          },
+          {
+            name: "边界清楚版",
+            note: "报价无法继续维持时使用。",
+            subject: "Revised Quotation Notice",
+            body: "Dear [Name],\n\nThank you for your understanding.\n\nBecause of the continued increase in raw material cost, the previous quotation will no longer be valid after [date]. New orders confirmed after this date will follow the updated price.\n\nIf budget is a concern, we can review alternative specifications or quantity options together.\n\nBest regards,\n[Your Name]"
+          }
+        ],
+        practice: {
+          level1: "填空：The current price can be kept for orders confirmed before ______.",
+          level2: "把这句话改得更专业：The material is more expensive now, so the price is higher.",
+          level3: "写一封邮件通知客户 7 月 1 日起涨价，并给客户旧价确认窗口。"
+        }
+      },
+      {
+        id: "delivery-delay",
+        title: "交期延迟，怎么提前告知客户？",
+        category: "订单与交付",
+        businessView: "供应链",
+        level: "Level1",
+        targetUser: "跟单 / 外贸业务员 / 客服",
+        date: "2026-06-15",
+        sourceDate: "2026-06-09",
+        freshness: "近 14 天",
+        coreProblem: "交期延迟不能等客户来问，要主动说明原因、影响和新时间。",
+        scenario: {
+          problem: "生产或供应链原因导致交期推迟，需要提前通知客户并降低不满。",
+          wrong: "The goods will be late. Sorry.",
+          strategy: "先道歉和承担沟通责任，再说明具体原因、给新时间、提供补救动作。"
+        },
+        source: {
+          name: "Supply chain context",
+          title: "Companies adjust delivery plans as supply chains remain uneven",
+          url: "#",
+          paragraphs: [
+            {
+              en: "Delays are easier to manage when companies communicate early and provide revised timelines.",
+              cn: "延迟不可怕，客户最怕的是不确定。邮件里必须给出新节点，而不是只说会尽快。"
+            }
+          ]
+        },
+        judgement: [
+          "先通知比被客户追问后再解释更稳。",
+          "原因要具体，但不要写成借口。",
+          "必须给新交付时间或下一次更新时间。",
+          "能提供的补救动作要写清楚，例如加急生产、分批发货、优先订舱。"
+        ],
+        phrases: [
+          ["revised delivery schedule", "更新后的交期安排", "通知交期变化。", "Please find the revised delivery schedule below."],
+          ["unexpected production delay", "意外生产延迟", "解释原因。", "We are facing an unexpected production delay due to [reason]."],
+          ["minimize the impact", "尽量降低影响", "表达补救态度。", "We are working to minimize the impact on your plan."],
+          ["keep you updated", "持续同步进展", "承诺后续沟通。", "We will keep you updated every two days."]
+        ],
+        expressions: [
+          "We are sorry to inform you that there will be a slight delay in the delivery schedule.",
+          "The revised delivery date is [date].",
+          "We are working closely with production to minimize the impact.",
+          "We will keep you updated on the progress."
+        ],
+        templates: [
+          {
+            name: "标准版",
+            note: "提前通知交期变化。",
+            subject: "Update on Delivery Schedule",
+            body: "Dear [Name],\n\nI am sorry to inform you that there will be a slight delay in the delivery schedule due to [reason].\n\nThe revised delivery date is [date]. We understand this may affect your plan, and our team is working closely with production to minimize the impact.\n\nI will keep you updated on the progress and inform you immediately if there is any further change.\n\nThank you for your understanding.\n\nBest regards,\n[Your Name]"
+          },
+          {
+            name: "更柔和版",
+            note: "适合关系较好的客户。",
+            subject: "Delivery Progress Update",
+            body: "Dear [Name],\n\nI wanted to update you as early as possible regarding the delivery schedule.\n\nDue to [reason], production needs a little more time than expected. The new estimated delivery date is [date].\n\nWe are following this order closely and will do our best to reduce the delay.\n\nThank you for your patience and understanding.\n\nBest regards,\n[Your Name]"
+          },
+          {
+            name: "边界清楚版",
+            note: "客户计划会受影响时使用。",
+            subject: "Revised Delivery Plan",
+            body: "Dear [Name],\n\nWe are sorry for the schedule change.\n\nDue to [reason], the original delivery date cannot be met. The revised delivery date is [date]. To reduce the impact, we can also check whether partial shipment is possible.\n\nPlease confirm whether this revised plan works for you, and we will arrange the next step accordingly.\n\nBest regards,\n[Your Name]"
+          }
+        ],
+        practice: {
+          level1: "填空：The revised delivery date is ______.",
+          level2: "把这句话改得更专业：The goods are late because the factory is slow.",
+          level3: "客户的货要延迟 5 天，请写一封主动告知邮件。"
+        }
+      },
+      {
+        id: "shipping-cost-rise",
+        title: "运费上涨，如何让客户理解？",
+        category: "订单与交付",
+        businessView: "物流",
+        level: "Level2",
+        targetUser: "外贸业务员 / 物流协调 / 客服",
+        date: "2026-06-15",
+        sourceDate: "2026-06-07",
+        freshness: "近 14 天",
+        coreProblem: "运费变化要讲市场原因，也要给客户选择。",
+        scenario: {
+          problem: "物流费用上涨，客户质疑总价变高。",
+          wrong: "Shipping is expensive now. You need to pay more.",
+          strategy: "说明运费由航线、季节和舱位影响，给不同运输方式或时间选择。"
+        },
+        source: {
+          name: "Logistics context",
+          title: "Freight rates shift as routes and capacity change",
+          url: "#",
+          paragraphs: [
+            {
+              en: "Freight rates can change quickly when shipping capacity tightens or routes become less predictable.",
+              cn: "物流费用不是供应商单方面决定。解释时要把运费和舱位、航线、时效联系起来，并提供备选方案。"
+            }
+          ]
+        },
+        judgement: [
+          "客户不一定了解运费浮动，所以需要解释价格来源。",
+          "不要只说贵，要说不同方案的差别。",
+          "快、稳、便宜通常不能同时满足，要让客户选择优先级。",
+          "报价中要写明运费有效期。"
+        ],
+        phrases: [
+          ["freight rate", "运费费率", "说明物流报价。", "The freight rate has increased compared with last week."],
+          ["shipping capacity", "运输舱位", "解释涨价原因。", "Shipping capacity is limited on this route."],
+          ["transit time", "运输时效", "比较运输方案。", "This option has a longer transit time but a lower cost."],
+          ["valid for three days", "三天内有效", "限制运费报价。", "The freight quote is valid for three days."]
+        ],
+        expressions: [
+          "The freight rate has increased compared with our previous quote.",
+          "This is mainly due to limited shipping capacity on this route.",
+          "We can check both faster and more cost-effective options for you.",
+          "The freight quote is valid for [number] days."
+        ],
+        templates: [
+          {
+            name: "标准版",
+            note: "解释运费上涨并给选择。",
+            subject: "Updated Freight Cost",
+            body: "Dear [Name],\n\nThank you for your message.\n\nThe freight rate has increased compared with our previous quote, mainly due to limited shipping capacity and route changes. The current freight quote is valid for [number] days.\n\nTo help you compare, we can check two options: a faster service with a higher cost, or a more cost-effective service with a longer transit time.\n\nPlease let me know which option you prefer, and I will confirm the latest rate for you.\n\nBest regards,\n[Your Name]"
+          },
+          {
+            name: "更柔和版",
+            note: "适合客户觉得突然变贵。",
+            subject: "Freight Option Review",
+            body: "Dear [Name],\n\nI understand your concern about the shipping cost.\n\nFreight rates have changed recently, and the latest quote is higher than before. I will help you check whether there is a more suitable shipping option.\n\nIf delivery time is flexible, we may be able to find a lower-cost route.\n\nBest regards,\n[Your Name]"
+          },
+          {
+            name: "边界清楚版",
+            note: "客户要求固定旧运费时使用。",
+            subject: "Freight Quote Validity",
+            body: "Dear [Name],\n\nThank you for your understanding.\n\nThe previous freight quote is no longer valid because the carrier has updated the rate. We are unable to keep the old freight cost for new shipments.\n\nWe can still compare alternative shipping methods and help you choose the most suitable option based on cost and transit time.\n\nBest regards,\n[Your Name]"
+          }
+        ],
+        practice: {
+          level1: "填空：The freight quote is valid for ______ days.",
+          level2: "把这句话改得更专业：Shipping is more expensive now.",
+          level3: "客户质疑运费突然上涨，请写一封解释并给两个运输选择的邮件。"
+        }
+      },
+      {
+        id: "deposit-reminder",
+        title: "催定金，怎么礼貌推进订单？",
+        category: "付款与催款",
+        businessView: "付款风险",
+        level: "Level1",
+        targetUser: "外贸业务员 / 财务协同 / 跟单",
+        date: "2026-06-15",
+        sourceDate: "2026-06-05",
+        freshness: "近 14 天",
+        coreProblem: "催款不能像催债，要把付款和排产绑定。",
+        scenario: {
+          problem: "客户确认订单后迟迟没有付定金，生产排期无法锁定。",
+          wrong: "Please pay the deposit immediately.",
+          strategy: "提醒付款状态，说明定金用于锁定生产计划，并给付款后下一步。"
+        },
+        source: {
+          name: "Cash flow context",
+          title: "Businesses watch payment timing as working capital pressure rises",
+          url: "#",
+          paragraphs: [
+            {
+              en: "Payment timing affects production planning, inventory decisions, and supplier cash flow.",
+              cn: "定金不是单纯收钱，而是关系到排产、备料和交付。邮件要把催款说成推进订单。"
+            }
+          ]
+        },
+        judgement: [
+          "不要让客户觉得你只是在催钱。",
+          "说明付款后会发生什么：排产、备料、确认交期。",
+          "语气要礼貌，但时间节点要清楚。",
+          "如果客户说财务流程慢，要让他给预计付款时间。"
+        ],
+        phrases: [
+          ["arrange production", "安排生产", "说明付款后动作。", "We will arrange production once the deposit is received."],
+          ["secure the production schedule", "锁定生产排期", "解释定金作用。", "The deposit will help us secure the production schedule."],
+          ["payment slip", "付款凭证", "请求客户提供。", "Please send us the payment slip after the transfer."],
+          ["estimated payment date", "预计付款日期", "客户暂时付不了时询问。", "Could you let us know the estimated payment date?"]
+        ],
+        expressions: [
+          "We will arrange production once the deposit is received.",
+          "The deposit will help us secure the production schedule.",
+          "Could you please send us the payment slip after the transfer?",
+          "If the payment is still under process, could you let us know the estimated payment date?"
+        ],
+        templates: [
+          {
+            name: "标准版",
+            note: "礼貌提醒定金。",
+            subject: "Deposit Payment for Order [Number]",
+            body: "Dear [Name],\n\nI hope you are doing well.\n\nThis is a kind reminder regarding the deposit payment for order [number]. Once the deposit is received, we will arrange production and secure the delivery schedule for you.\n\nIf the payment has already been made, please kindly send us the payment slip for checking.\n\nThank you, and I look forward to your update.\n\nBest regards,\n[Your Name]"
+          },
+          {
+            name: "更柔和版",
+            note: "适合第一次提醒。",
+            subject: "Order Arrangement Reminder",
+            body: "Dear [Name],\n\nHope everything is going well.\n\nI just wanted to follow up on the deposit payment for order [number]. After receiving the deposit, we can move forward with production arrangement.\n\nPlease let me know if you need any document from our side.\n\nBest regards,\n[Your Name]"
+          },
+          {
+            name: "边界清楚版",
+            note: "排产受影响时使用。",
+            subject: "Deposit Needed to Secure Production Schedule",
+            body: "Dear [Name],\n\nThank you for your order confirmation.\n\nTo secure the production schedule, we need to receive the deposit by [date]. If the payment is delayed, the delivery date may also need to be adjusted.\n\nPlease confirm the estimated payment date, and we will plan the next step accordingly.\n\nBest regards,\n[Your Name]"
+          }
+        ],
+        practice: {
+          level1: "填空：Once the deposit is received, we will arrange ______.",
+          level2: "把这句话改得更专业：You need to pay first, then we produce.",
+          level3: "客户确认订单后 3 天没付定金，请写一封礼貌提醒邮件。"
+        }
+      },
+      {
+        id: "balance-payment",
+        title: "催尾款，如何不伤客户关系？",
+        category: "付款与催款",
+        businessView: "付款风险",
+        level: "Level1",
+        targetUser: "外贸业务员 / 跟单 / 财务",
+        date: "2026-06-15",
+        sourceDate: "2026-06-04",
+        freshness: "近 14 天",
+        coreProblem: "尾款要和发货节点绑定，避免语气生硬。",
+        scenario: {
+          problem: "货物已完成或准备出货，客户未付尾款。",
+          wrong: "Pay the balance now, or we cannot ship.",
+          strategy: "说明货物状态、尾款金额、付款后可立即安排发货。"
+        },
+        source: {
+          name: "Trade payment context",
+          title: "Payment timing remains important for shipment planning",
+          url: "#",
+          paragraphs: [
+            {
+              en: "Clear payment communication helps both sides avoid shipment delays and planning mistakes.",
+              cn: "尾款邮件的核心是让客户看到：付款不是压力，而是发货前必须完成的步骤。"
+            }
+          ]
+        },
+        judgement: [
+          "先给好消息：货已经准备好。",
+          "再提醒尾款金额和付款条件。",
+          "最后说付款后会马上发货。",
+          "如果客户拖延，要问清付款日期并说明发货会受影响。"
+        ],
+        phrases: [
+          ["balance payment", "尾款", "催尾款核心词。", "This is a reminder for the balance payment."],
+          ["ready for shipment", "准备发货", "说明订单状态。", "The goods are ready for shipment."],
+          ["arrange shipment", "安排发货", "付款后动作。", "We will arrange shipment once the balance is received."],
+          ["payment confirmation", "付款确认", "核对财务。", "Please send the payment confirmation after transfer."]
+        ],
+        expressions: [
+          "The goods are ready for shipment.",
+          "This is a kind reminder for the balance payment.",
+          "We will arrange shipment once the balance is received.",
+          "Please send us the payment confirmation after the transfer."
+        ],
+        templates: [
+          {
+            name: "标准版",
+            note: "货好后催尾款。",
+            subject: "Balance Payment Reminder for Order [Number]",
+            body: "Dear [Name],\n\nGood news. The goods for order [number] are ready for shipment.\n\nThis is a kind reminder for the balance payment of [amount]. Once the balance is received, we will arrange shipment as soon as possible.\n\nIf the payment has already been made, please send us the payment confirmation for checking.\n\nThank you for your support.\n\nBest regards,\n[Your Name]"
+          },
+          {
+            name: "更柔和版",
+            note: "适合老客户。",
+            subject: "Shipment Arrangement for Your Order",
+            body: "Dear [Name],\n\nI hope you are doing well.\n\nYour goods are ready, and we are preparing the shipment arrangement. Could you please help confirm the balance payment status?\n\nOnce the payment is received, we can proceed with shipment immediately.\n\nBest regards,\n[Your Name]"
+          },
+          {
+            name: "边界清楚版",
+            note: "发货会被拖延时使用。",
+            subject: "Balance Payment Needed Before Shipment",
+            body: "Dear [Name],\n\nThe goods are ready for shipment.\n\nAccording to our payment terms, the balance payment needs to be completed before shipment. If the payment is delayed, the shipment schedule may also be affected.\n\nPlease confirm the expected payment date so that we can plan the shipment accordingly.\n\nBest regards,\n[Your Name]"
+          }
+        ],
+        practice: {
+          level1: "填空：The goods are ready for ______.",
+          level2: "把这句话改得更专业：Pay the rest money and we ship.",
+          level3: "货已完成但客户未付尾款，请写一封提醒邮件。"
+        }
+      },
+      {
+        id: "no-reply-follow-up",
+        title: "客户不回复，怎么跟进不尴尬？",
+        category: "客户跟进",
+        businessView: "需求疲软",
+        level: "Level1",
+        targetUser: "销售 / 外贸业务员 / 客户成功",
+        date: "2026-06-15",
+        sourceDate: "2026-06-03",
+        freshness: "近 14 天",
+        coreProblem: "跟进不能只问 Any update，要给客户一个容易回复的选择。",
+        scenario: {
+          problem: "报价或方案发出后客户没有回复，你需要推进下一步。",
+          wrong: "Any news? Please reply me.",
+          strategy: "帮客户降低回复成本：给两个选项、一个截止点、一个可回答的问题。"
+        },
+        source: {
+          name: "Sales follow-up context",
+          title: "Teams improve conversion by making next steps easier for buyers",
+          url: "#",
+          paragraphs: [
+            {
+              en: "Follow-up messages work better when they make the buyer's next decision simple and specific.",
+              cn: "客户不回复时，不要让对方重新思考整个问题。邮件应该给一个小决策，比如确认预算、时间或是否继续。"
+            }
+          ]
+        },
+        judgement: [
+          "客户不回复可能是忙、预算未定、内部没批，不能默认他拒绝。",
+          "不要连续追问 Any update。",
+          "每次跟进要带一个新的有用信息或明确问题。",
+          "给客户选择题比开放题更容易得到回复。"
+        ],
+        phrases: [
+          ["just following up", "简单跟进一下", "轻量跟进开头。", "I’m just following up on the quotation sent last week."],
+          ["any questions or concerns", "是否有问题或顾虑", "邀请客户反馈。", "Please let me know if you have any questions or concerns."],
+          ["would it be helpful if", "如果我...是否有帮助", "主动提供支持。", "Would it be helpful if I prepare a comparison for you?"],
+          ["next step", "下一步", "推进选择。", "Please let me know your preferred next step."]
+        ],
+        expressions: [
+          "I’m just following up on the quotation sent last week.",
+          "Please let me know if you have any questions or concerns.",
+          "Would it be helpful if I prepare a revised option for you?",
+          "If this is not a priority now, I can follow up again next month."
+        ],
+        templates: [
+          {
+            name: "标准版",
+            note: "不尴尬跟进。",
+            subject: "Follow-up on Our Quotation",
+            body: "Dear [Name],\n\nI hope you are doing well.\n\nI’m just following up on the quotation we sent last week. Please let me know if you have any questions or concerns about the price, specification, or delivery time.\n\nIf helpful, I can also prepare a revised option based on your target budget.\n\nPlease let me know your preferred next step.\n\nBest regards,\n[Your Name]"
+          },
+          {
+            name: "更柔和版",
+            note: "适合关系初期。",
+            subject: "Checking In",
+            body: "Dear [Name],\n\nHope all is well.\n\nI just wanted to check whether you had a chance to review our quotation. No rush from my side. I just want to make sure you have all the information you need.\n\nIf anything needs to be adjusted, please feel free to let me know.\n\nBest regards,\n[Your Name]"
+          },
+          {
+            name: "边界清楚版",
+            note: "多次未回复后使用。",
+            subject: "Should I Keep This on Hold?",
+            body: "Dear [Name],\n\nI wanted to follow up one more time regarding the quotation.\n\nIf this project is still under review, I will be happy to support the next step. If it is not a priority at the moment, I can keep it on hold and follow up later.\n\nPlease let me know which option works better for you.\n\nBest regards,\n[Your Name]"
+          }
+        ],
+        practice: {
+          level1: "填空：I’m just following up on the quotation sent ______.",
+          level2: "把这句话改得更专业：Why don’t you reply to me?",
+          level3: "客户 7 天未回复报价，请写一封给选择题的跟进邮件。"
+        }
+      },
+      {
+        id: "sample-follow-up",
+        title: "样品寄出后，如何跟进反馈？",
+        category: "客户跟进",
+        businessView: "消费趋势",
+        level: "Level1",
+        targetUser: "销售 / 外贸业务员 / 产品经理",
+        date: "2026-06-15",
+        sourceDate: "2026-06-01",
+        freshness: "近 30 天",
+        coreProblem: "样品跟进要问具体反馈，不要只问 Do you like it。",
+        scenario: {
+          problem: "样品已送达，需要推动客户反馈并进入下一步。",
+          wrong: "Do you like our sample?",
+          strategy: "围绕测试结果、规格、包装、目标订单时间提出具体问题。"
+        },
+        source: {
+          name: "Product testing context",
+          title: "Buyers rely on samples to reduce product risk before orders",
+          url: "#",
+          paragraphs: [
+            {
+              en: "Samples help buyers check quality, design, packaging, and fit before moving to larger orders.",
+              cn: "样品不是结束，而是推动订单的验证环节。跟进时要问客户测试卡在哪一步。"
+            }
+          ]
+        },
+        judgement: [
+          "样品跟进最好在客户收到后 2 到 3 天发送。",
+          "问题越具体，客户越容易回复。",
+          "可以请客户反馈质量、尺寸、包装或使用体验。",
+          "如果客户满意，要马上推进数量、报价和交期。"
+        ],
+        phrases: [
+          ["sample evaluation", "样品评估", "询问测试进度。", "May I know how the sample evaluation is going?"],
+          ["meet your requirements", "符合您的要求", "确认样品是否达标。", "Does the sample meet your requirements?"],
+          ["any adjustment needed", "是否需要调整", "引导客户反馈。", "Please let me know if there is any adjustment needed."],
+          ["move forward with", "推进", "进入下一步。", "If everything is fine, we can move forward with the order details."]
+        ],
+        expressions: [
+          "May I know how the sample evaluation is going?",
+          "Does the sample meet your requirements in terms of quality and packaging?",
+          "Please let me know if there is any adjustment needed.",
+          "If everything is fine, we can move forward with the order details."
+        ],
+        templates: [
+          {
+            name: "标准版",
+            note: "样品到达后跟进。",
+            subject: "Follow-up on Sample Evaluation",
+            body: "Dear [Name],\n\nI hope the samples have arrived safely.\n\nMay I know how the sample evaluation is going? Does the sample meet your requirements in terms of quality, size, and packaging?\n\nIf there is any adjustment needed, please feel free to share your comments. If everything is fine, we can move forward with the order details.\n\nBest regards,\n[Your Name]"
+          },
+          {
+            name: "更柔和版",
+            note: "适合轻量提醒。",
+            subject: "Sample Feedback",
+            body: "Dear [Name],\n\nHope you are doing well.\n\nI just wanted to check whether you had a chance to review the samples. Your feedback would help us confirm the next step and make any necessary adjustments.\n\nPlease feel free to share your comments when convenient.\n\nBest regards,\n[Your Name]"
+          },
+          {
+            name: "边界清楚版",
+            note: "客户需要给内部反馈时使用。",
+            subject: "Next Step After Sample Review",
+            body: "Dear [Name],\n\nMay I check whether your team has completed the sample review?\n\nIf the sample is approved, we can prepare the updated quotation and production schedule. If any adjustment is needed, please send us the details so that we can revise it quickly.\n\nLooking forward to your feedback.\n\nBest regards,\n[Your Name]"
+          }
+        ],
+        practice: {
+          level1: "填空：Does the sample meet your ______?",
+          level2: "把这句话改得更专业：Do you like the sample?",
+          level3: "样品签收 3 天后客户没反馈，请写一封具体跟进邮件。"
+        }
+      },
+      {
+        id: "quality-complaint",
+        title: "质量投诉，如何先稳住客户？",
+        category: "投诉与售后",
+        businessView: "供应链",
+        level: "Level2",
+        targetUser: "客服 / 外贸业务员 / 售后",
+        date: "2026-06-15",
+        sourceDate: "2026-05-28",
+        freshness: "近 30 天",
+        coreProblem: "投诉回复不能先辩解，要先承接情绪、收集证据、给处理节点。",
+        scenario: {
+          problem: "客户反馈产品质量问题，情绪不满，要求解决。",
+          wrong: "This is not our problem. 或 Please calm down.",
+          strategy: "先表达重视和歉意，再索要照片、批次、数量，承诺调查时间和下一步方案。"
+        },
+        source: {
+          name: "Customer service context",
+          title: "Service recovery depends on fast response and clear investigation",
+          url: "#",
+          paragraphs: [
+            {
+              en: "Customers are more likely to stay cooperative when companies respond quickly and explain how the issue will be investigated.",
+              cn: "质量投诉的第一封邮件不一定要立刻给赔偿方案，但必须让客户知道你正在处理、什么时候会回复。"
+            }
+          ]
+        },
+        judgement: [
+          "先不要争责任，先承认客户体验受影响。",
+          "收集证据要具体：照片、视频、数量、批次、使用环境。",
+          "给内部调查时间，避免客户一直追问。",
+          "解决方案可以分阶段：先确认问题，再给补发、返修、折扣或预防措施。"
+        ],
+        phrases: [
+          ["look into this issue", "调查这个问题", "承诺处理。", "We will look into this issue immediately."],
+          ["affected quantity", "受影响数量", "收集投诉信息。", "Could you confirm the affected quantity?"],
+          ["batch number", "批次号", "定位问题。", "Please share the batch number if available."],
+          ["corrective action", "纠正措施", "给后续方案。", "We will share the corrective action after the investigation."]
+        ],
+        expressions: [
+          "We are sorry to hear about this issue.",
+          "We take your feedback seriously and will look into it immediately.",
+          "Could you please send us photos, videos, and the affected quantity?",
+          "We will update you with our findings by [date]."
+        ],
+        templates: [
+          {
+            name: "标准版",
+            note: "第一时间承接投诉。",
+            subject: "Regarding the Quality Issue",
+            body: "Dear [Name],\n\nWe are sorry to hear about this issue and understand your concern.\n\nWe take your feedback seriously and will look into it immediately. To help us investigate, could you please send us photos or videos, the affected quantity, and the batch number if available?\n\nOnce we receive the details, we will check with our quality team and update you with our findings by [date].\n\nThank you for your cooperation.\n\nBest regards,\n[Your Name]"
+          },
+          {
+            name: "更柔和版",
+            note: "适合安抚情绪。",
+            subject: "We Will Check This Immediately",
+            body: "Dear [Name],\n\nThank you for letting us know.\n\nI’m sorry for the inconvenience this has caused. We understand this is important for you, and we will check it carefully with our quality team.\n\nCould you please share photos, videos, and the affected quantity? This will help us identify the cause and provide a proper solution.\n\nI will keep you updated.\n\nBest regards,\n[Your Name]"
+          },
+          {
+            name: "边界清楚版",
+            note: "需要证据后才能处理时使用。",
+            subject: "Information Needed for Quality Review",
+            body: "Dear [Name],\n\nWe understand your concern regarding the quality issue.\n\nBefore confirming the solution, we need to review the details with our quality team. Please provide photos, videos, affected quantity, and batch information if available.\n\nAfter checking the information, we will confirm the cause and propose the next step, such as replacement, repair, or other suitable support.\n\nBest regards,\n[Your Name]"
+          }
+        ],
+        practice: {
+          level1: "填空：We take your feedback ______.",
+          level2: "把这句话改得更专业：This is not our fault.",
+          level3: "客户投诉 50 件产品有瑕疵，请写第一封安抚和收集证据的邮件。"
+        }
+      }
+    ];
+
+    const categories = ["全部", "报价与议价", "订单与交付", "付款与催款", "客户跟进", "投诉与售后", "合作与开发"];
+    const views = ["全部", "成本上涨", "需求疲软", "供应链", "物流", "付款风险", "消费趋势", "AI"];
+    const levels = ["全部", "Level1", "Level2", "Level3"];
+    const state = {
+      category: "全部",
+      view: "全部",
+      level: "全部",
+      nav: "feed",
+      query: "",
+      sort: "latest",
+      currentId: scenarios[0].id,
+      sourceMode: "both",
+      templateIndex: 0,
+      fetchLoaded: false
+    };
+
+    const $ = (selector) => document.querySelector(selector);
+
+    function createButton(text, active, onClick) {
+      const button = document.createElement("button");
+      button.className = `filter${active ? " active" : ""}`;
+      button.textContent = text;
+      button.addEventListener("click", onClick);
+      return button;
+    }
+
+    function renderFilters() {
+      const categoryBox = $("#categoryFilters");
+      const viewBox = $("#viewFilters");
+      const levelBox = $("#levelFilters");
+      categoryBox.innerHTML = "";
+      viewBox.innerHTML = "";
+      levelBox.innerHTML = "";
+
+      categories.forEach((item) => {
+        categoryBox.appendChild(createButton(item, state.category === item, () => {
+          state.category = item;
+          renderAll();
+        }));
+      });
+
+      views.forEach((item) => {
+        viewBox.appendChild(createButton(item, state.view === item, () => {
+          state.view = item;
+          renderAll();
+        }));
+      });
+
+      levels.forEach((item) => {
+        levelBox.appendChild(createButton(item, state.level === item, () => {
+          state.level = item;
+          renderAll();
+        }));
+      });
+    }
+
+    function getFilteredScenarios() {
+      const query = state.query.trim().toLowerCase();
+      let list = scenarios.filter((item) => {
+        const categoryMatch = state.category === "全部" || item.category === state.category;
+        const viewMatch = state.view === "全部" || item.businessView === state.view;
+        const levelMatch = state.level === "全部" || item.level === state.level;
+        const text = [
+          item.title,
+          item.category,
+          item.businessView,
+          item.level,
+          item.coreProblem,
+          ...item.expressions,
+          ...item.phrases.flat()
+        ].join(" ").toLowerCase();
+        const queryMatch = !query || text.includes(query);
+        return categoryMatch && viewMatch && levelMatch && queryMatch;
+      });
+
+      if (state.sort === "latest") {
+        list = list.sort((a, b) => b.sourceDate.localeCompare(a.sourceDate));
+      }
+      if (state.sort === "level") {
+        const rank = { Level1: 1, Level2: 2, Level3: 3 };
+        list = list.sort((a, b) => rank[a.level] - rank[b.level]);
+      }
+      if (state.sort === "category") {
+        list = list.sort((a, b) => a.category.localeCompare(b.category, "zh-CN"));
+      }
+      return list;
+    }
+
+    function renderCards() {
+      const grid = $("#cardGrid");
+      const list = getFilteredScenarios();
+      grid.innerHTML = "";
+      $("#resultStatus").innerHTML = `
+        <span class="chip gray">${list.length} 个场景</span>
+        <span class="chip blue">最新来源：${scenarios[0].sourceDate}</span>
+        <span class="chip amber">当前筛选：${state.category} / ${state.view} / ${state.level}</span>
+      `;
+
+      list.forEach((item) => {
+        const card = document.createElement("article");
+        card.className = "scenario-card";
+        card.innerHTML = `
+          <div>
+            <div class="card-meta">
+              <span class="chip">${item.category}</span>
+              <span class="chip blue">${item.businessView}</span>
+              <span class="chip amber">${item.level}</span>
+            </div>
+            <h3>${item.title}</h3>
+            <p>${item.targetUser}</p>
+            <div class="card-point">${item.coreProblem}</div>
+          </div>
+          <div class="card-actions">
+            <button class="primary" data-open="${item.id}">阅读全文</button>
+            <button class="secondary" data-copy="${item.id}">复制邮件</button>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+
+      grid.querySelectorAll("[data-open]").forEach((button) => {
+        button.addEventListener("click", () => openDetail(button.dataset.open));
+      });
+      grid.querySelectorAll("[data-copy]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const item = scenarios.find((s) => s.id === button.dataset.copy);
+          copyText(formatTemplate(item.templates[0]));
+        });
+      });
+    }
+
+    function formatTemplate(template) {
+      return `Subject: ${template.subject}\n\n${template.body}`;
+    }
+
+    function paragraphCnFallback(item, para, index) {
+      const raw = (para && (para.en || para.text) ? (para.en || para.text) : String(para || ""));
+      const text = raw.toLowerCase();
+
+      if (text.includes("tariff") && text.includes("china") && text.includes("india")) {
+        return "这段大意是：关税上调确实影响了一些小企业，尤其是那些依赖从中国、印度采购原材料的公司。不过很多企业并没有被动承受成本，而是把关税带来的压力转进售价里，甚至有人借这个机会多涨了一点价格。还有一些企业选择等待法律结果，希望之后能拿到退款。";
+      }
+      if (text.includes("packaging industry") || (text.includes("higher costs") && text.includes("workers"))) {
+        return "这段大意是：作者提到，接下来他要和一批包装行业公司讨论今年影响企业经营的几个问题：经济环境、成本上升、税务变化、AI，以及在不稳定的就业市场里如何招人和留人。这里的重点不是某个单词，而是企业今年面对的压力已经从单一成本，变成了成本、技术和用工一起变化。";
+      }
+      if (text.includes("should i increase prices") || text.includes("how will tariffs affect my business")) {
+        return "这段大意是：一年前，大家最关心的是关税会不会伤到自己的生意、要不要涨价、关税是否合法、什么时候结束。到了现在，很多问题已经有了答案。这说明商业环境会不断变化，客户今天的压价、犹豫或预算收紧，背后往往不是单一情绪，而是他们也在重新判断成本和风险。";
+      }
+      if (text.includes("freight") || text.includes("shipping") || text.includes("logistics")) {
+        return "这段大意是：文章在讲物流、运力或运输成本的变化。对外贸沟通来说，这类内容可以用来解释为什么总价、交期或运输方案会发生变化，而不是简单一句“运费涨了”。";
+      }
+      if (text.includes("payment") || text.includes("cash flow") || text.includes("invoice")) {
+        return "这段大意是：文章提到付款节奏、现金流或账期压力。放到外贸订单里，它提醒我们：催定金、催尾款不能只像催钱，而要说明付款和排产、备货、发货节点之间的关系。";
+      }
+      if (text.includes("quality") || text.includes("defect") || text.includes("complaint") || text.includes("recall")) {
+        return "这段大意是：文章涉及质量、风险或客户信任问题。处理投诉时，第一步不是急着辩解，而是先承接问题、收集证据，并告诉客户你会在什么时间给出调查结果。";
+      }
+      if (text.includes("demand") || text.includes("consumer") || text.includes("buyers")) {
+        return "这段大意是：市场需求和买方行为正在变化。客户要求折扣、拖延回复或反复比较价格时，背后可能是预算更谨慎、内部审批更慢，或者他们在测试供应商能给出多少空间。";
+      }
+
+      const themes = {
+        "成本上涨": "企业成本上升会改变报价逻辑，也会让客户更敏感地比较价格。",
+        "需求疲软": "买方更谨慎，客户更容易拖延决策，也更常要求折扣或更灵活的条件。",
+        "供应链": "交付、排产和风险预期会影响客户沟通，不能只承诺“尽快”。",
+        "物流": "运费、路线和时效会改变总成本，回复客户时要给不同方案。",
+        "付款风险": "现金流和付款节点会影响订单推进，催款要和排产、发货绑定。",
+        "消费趋势": "终端需求变化会影响采购判断，也会影响客户是否愿意继续下单。",
+        "AI": "新技术正在改变效率、成本和客户预期，也会影响客户对价格和服务的判断。"
+      };
+      const theme = themes[item.businessView] || `这段原文提供了和「${item.businessView}」相关的商业背景。`;
+      return `这段大意是：${theme} 放到「${item.category}」这个场景里，重点不是复述新闻，而是把外部变化转成客户听得懂的理由：为什么价格、交期、付款或售后不能只按一个简单条件来谈。`;
+    }
+
+    function paragraphInsightFallback(item, para, index) {
+      return `和本篇主题的关系：这段材料可以帮助你解释「${item.title}」背后的商业原因。实际回复客户时，不要只给情绪化解释，而要把原因、边界和可选方案讲清楚。`;
+    }
+
+    function modeParagraphs(item) {
+      return item.source.paragraphs.map((para, index) => {
+        const cnText = para.cn || paragraphCnFallback(item, para, index);
+        const en = state.sourceMode !== "cn" ? `<p class="excerpt-en">${para.en}</p>` : "";
+        const cn = state.sourceMode !== "english" && cnText ? `
+          <div class="translation-card">
+            <strong>自然中文翻译 / 大意</strong>
+            <p>${cnText}</p>
+          </div>
+        ` : "";
+        const insightText = para.insight || paragraphInsightFallback(item, para, index);
+        const insight = state.sourceMode !== "english" && insightText ? `
+          <div class="work-connection">
+            <strong>这段和本主题有什么关系</strong>
+            <p>${insightText}</p>
+          </div>
+        ` : "";
+        return `<div class="excerpt">${en}${cn}${insight}</div>`;
+      }).join("");
+    }
+
+    function renderSourceBridge(item) {
+      return `
+        <div class="source-bridge">
+          <div>
+            <strong>这篇外刊为什么放在这里？</strong>
+            <p>它提供的是「${item.businessView}」这个商业背景，不是为了单纯背单词。读完后要能回答：客户为什么会这样反应、我方边界在哪里、下一封邮件该怎么说。</p>
+          </div>
+          <div>
+            <strong>和外贸工作的关系</strong>
+            <p>对应到「${item.category}」场景，重点不是复述新闻，而是把市场变化转成报价解释、交期说明、付款推进或售后沟通中的可用理由。</p>
+          </div>
+          <div>
+            <strong>今天带走什么</strong>
+            <p>带走 1 个商业判断、几组可迁移表达，以及一封可以复制改写的商务邮件。</p>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderJudgement(item) {
+      const structured = item.judgement.every((line) => typeof line === "object");
+      if (!structured) {
+        return `
+          <ul class="judgement-list">
+            ${item.judgement.map((line) => `<li>${line}</li>`).join("")}
+          </ul>
+        `;
+      }
+      return `
+        <div class="judgement-grid">
+          ${item.judgement.map((line) => `
+            <article class="judgement-card">
+              <strong>${line.type}</strong>
+              <div>
+                <span>Reading</span>
+                <p>${line.reading}</p>
+              </div>
+              <div>
+                <span>Response</span>
+                <p>${line.response}</p>
+              </div>
+            </article>
+          `).join("")}
+        </div>
+      `;
+    }
+
+    function renderTemplateTabs(item) {
+      const safeIndex = Math.min(Math.max(state.templateIndex || 0, 0), item.templates.length - 1);
+      const active = item.templates[safeIndex] || item.templates[0];
+      return `
+        <div class="template-tabs" role="tablist" aria-label="邮件模板切换">
+          ${item.templates.map((template, index) => `
+            <button class="template-tab${index === safeIndex ? " active" : ""}" data-template-tab="${index}" type="button">
+              ${template.name}
+            </button>
+          `).join("")}
+        </div>
+        <div class="template-reader">
+          <h3>${active.name}</h3>
+          <p>${active.note}</p>
+          <div class="email-subject">Subject: ${active.subject}</div>
+          <div class="email-body">${active.body}</div>
+          <div class="section-actions">
+            <button class="primary" data-template-copy="${safeIndex}">复制这一版</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderDetail() {
+      const item = scenarios.find((s) => s.id === state.currentId) || scenarios[0];
+      const related = scenarios
+        .filter((s) => s.id !== item.id && (s.category === item.category || s.businessView === item.businessView))
+        .slice(0, 3);
+
+      $("#detailView").innerHTML = `
+        <div class="back-row">
+          <button class="ghost" id="backToFeed">返回首页 Feed</button>
+          <div class="status-row">
+            <span class="chip">${item.category}</span>
+            <span class="chip blue">${item.businessView}</span>
+            <span class="chip amber">${item.level}</span>
+          </div>
+        </div>
+
+        <div class="detail-hero">
+          <div class="status-row">
+            <span class="chip">更新：${item.date}</span>
+            <span class="chip blue">来源日期：${item.sourceDate}</span>
+            <span class="chip amber">${item.freshness}</span>
+          </div>
+          <h1>${item.title}</h1>
+          <p>${item.coreProblem}</p>
+          <div class="detail-reading-mode">
+            <span>阅读模式</span>
+            <select class="mode-select" data-source-mode aria-label="阅读模式">
+              <option value="both"${state.sourceMode === "both" ? " selected" : ""}>中英对照</option>
+              <option value="english"${state.sourceMode === "english" ? " selected" : ""}>只看英文</option>
+              <option value="cn"${state.sourceMode === "cn" ? " selected" : ""}>中文解释</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="detail-layout">
+          <div>
+            <section class="content-section" id="section-brief">
+              <h2>1 今日商业议题</h2>
+              <p class="section-note">先明确这篇商业内容为什么值得读，以及它能落到哪个外贸工作场景。</p>
+              <div class="field-grid">
+                <div class="field"><strong>商业问题</strong>${item.coreProblem}</div>
+                <div class="field bad"><strong>不能只这样理解</strong>${item.scenario.wrong}</div>
+                <div class="field good"><strong>今天的工作读法</strong>${item.scenario.strategy}</div>
+              </div>
+            </section>
+
+            <section class="content-section" id="section-source">
+              <div class="source-bar">
+                <div>
+                  <h2>2 外刊 / 商业原文摘录</h2>
+                  <p class="section-note">
+                    来源：${item.source.name} | 原文标题：${item.source.title}
+                    ${item.source.url && item.source.url !== "#" ? ` | <a href="${item.source.url}" target="_blank" rel="noreferrer">打开原文来源</a>` : ""}
+                  </p>
+                  <div class="source-status">规则：优先抓取最近 14 天公开文章；每篇尽量保留 2–3 个完整英文段落，不足 2 段不强行伪造。</div>
+                </div>
+                <select class="mode-select" data-source-mode aria-label="外刊阅读模式">
+                  <option value="both"${state.sourceMode === "both" ? " selected" : ""}>中英对照</option>
+                  <option value="english"${state.sourceMode === "english" ? " selected" : ""}>只看英文</option>
+                  <option value="cn"${state.sourceMode === "cn" ? " selected" : ""}>中文解释</option>
+                </select>
+              </div>
+              ${modeParagraphs(item)}
+              ${renderSourceBridge(item)}
+            </section>
+
+            <section class="content-section" id="section-lens">
+              <h2>3 商业视角 + 外贸工作判断</h2>
+              <p class="section-note">不是把外刊翻成中文，而是判断商业变化会怎样影响客户、采购和沟通边界。</p>
+              ${renderJudgement(item)}
+            </section>
+
+            <section class="content-section" id="section-phrases">
+              <h2>4 可迁移商务表达</h2>
+              <p class="section-note">保留能从外刊语境迁移到客户沟通里的表达，不做普通生词表。</p>
+              <div class="phrase-grid">
+                ${item.phrases.map(([phrase, meaning, useCase, example]) => `
+                  <div class="phrase">
+                    <strong>${phrase}</strong>
+                    <div>${meaning}</div>
+                    <div>工作用法：${useCase}</div>
+                    <em>${example}</em>
+                  </div>
+                `).join("")}
+              </div>
+              <ul class="expression-list" style="margin-top:14px">
+                ${item.expressions.map((line, index) => `<li><span>${index + 1}</span>${line}</li>`).join("")}
+              </ul>
+            </section>
+
+            <section class="content-section" id="section-email">
+              <h2>5 完整邮件模板</h2>
+              <p class="section-note">改成 Tab 切换，一次只看一封完整邮件，避免三列排版太挤。</p>
+              ${renderTemplateTabs(item)}
+            </section>
+
+            <section class="content-section" id="section-related">
+              <h2>相关场景</h2>
+              <p class="section-note">继续解决相邻工作问题。</p>
+              <div class="related-grid">
+                ${related.map((r) => `
+                  <button class="related" data-related="${r.id}">
+                    <strong>${r.category}</strong>
+                    ${r.title}
+                  </button>
+                `).join("")}
+              </div>
+            </section>
+          <aside class="sticky-panel">
+            <div class="mini-panel">
+              <h3>这篇的核心判断</h3>
+              <p>${item.scenario.problem}</p>
+            </div>
+            <div class="mini-panel">
+              <h3>页内快速跳转</h3>
+              <div class="mini-actions">
+                <button class="secondary" data-jump="section-source">看外刊原文</button>
+                <button class="secondary" data-jump="section-lens">看商业视角</button>
+                <button class="secondary" data-jump="section-email">看邮件模板</button>
+              </div>
+            </div>
+            <div class="mini-panel">
+              <h3>可直接复制</h3>
+              <div class="mini-actions">
+                <button class="primary" id="copyDefault">复制默认邮件</button>
+                <button class="secondary" id="saveScene">收藏这个场景</button>
+                <button class="secondary" id="copyExpressions">复制商务表达</button>
+              </div>
+            </div>
+          </aside>
+        </div>
+      `;
+
+      $("#backToFeed").addEventListener("click", showFeed);
+      $("#detailView").querySelectorAll("[data-source-mode]").forEach((select) => {
+        select.addEventListener("change", (event) => {
+          state.sourceMode = event.target.value;
+          renderDetail();
+        });
+      });
+      $("#copyDefault").addEventListener("click", () => copyText(formatTemplate(item.templates[0])));
+      $("#copyExpressions").addEventListener("click", () => copyText(item.expressions.join("\n")));
+      $("#saveScene").addEventListener("click", () => {
+        const saved = JSON.parse(localStorage.getItem("businessEnglishSaved") || "[]");
+        if (!saved.includes(item.id)) saved.push(item.id);
+        localStorage.setItem("businessEnglishSaved", JSON.stringify(saved));
+        showToast("已收藏这个场景");
+      });
+      $("#detailView").querySelectorAll("[data-template-tab]").forEach((button) => {
+        button.addEventListener("click", () => {
+          state.templateIndex = Number(button.dataset.templateTab) || 0;
+          renderDetail();
+        });
+      });
+      $("#detailView").querySelectorAll("[data-template-copy]").forEach((button) => {
+        button.addEventListener("click", () => copyText(formatTemplate(item.templates[Number(button.dataset.templateCopy)])));
+      });
+      $("#detailView").querySelectorAll("[data-related]").forEach((button) => {
+        button.addEventListener("click", () => openDetail(button.dataset.related));
+      });
+      $("#detailView").querySelectorAll("[data-jump]").forEach((button) => {
+        button.addEventListener("click", () => scrollToSection(button.dataset.jump));
+      });
+    }
+
+    function scrollToSection(id) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function openDetail(id) {
+      state.currentId = id;
+      state.templateIndex = 0;
+      document.body.classList.add("detail-open");
+      $("#feedView").classList.add("hidden");
+      $("#detailView").classList.add("active");
+      renderDetail();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function showFeed() {
+      document.body.classList.remove("detail-open");
+      $("#detailView").classList.remove("active");
+      $("#feedView").classList.remove("hidden");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    async function copyText(text) {
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast("已复制，可直接粘贴修改");
+      } catch (error) {
+        showToast("复制受浏览器限制，请手动选择文本");
+      }
+    }
+
+    function showToast(message) {
+      const toast = $("#toast");
+      toast.textContent = message;
+      toast.classList.add("show");
+      window.clearTimeout(showToast.timer);
+      showToast.timer = window.setTimeout(() => toast.classList.remove("show"), 1800);
+    }
+
+    function updateTodayPick() {
+      const liveFirst = scenarios.find((item) => String(item.freshness || "").includes("自动抓取")) || scenarios[0];
+      const title = document.getElementById("todayPickTitle");
+      const meta = document.getElementById("todayPickMeta");
+      const why = document.getElementById("todayPickWhy");
+      const btn = document.getElementById("todayPickOpen");
+      if (!liveFirst || !title || !meta || !why || !btn) return;
+      title.textContent = liveFirst.source && liveFirst.source.title && liveFirst.source.title !== "#" ? liveFirst.source.title : liveFirst.title;
+      meta.textContent = `来源：${liveFirst.source.name || "内置种子"} · 原文日期：${liveFirst.sourceDate} · 应用场景：${liveFirst.category}`;
+      why.textContent = `今天推荐先读这篇，因为它能落到「${liveFirst.businessView}」和「${liveFirst.category}」：读商业变化，再转成客户沟通里的英文表达。`;
+      btn.onclick = () => openDetail(liveFirst.id);
+    }
+
+    function renderAll() {
+      renderFilters();
+      renderCards();
+      renderDetail();
+      updateTodayPick();
+    }
+
+    function applyLiveSources(payload) {
+      if (!payload || !Array.isArray(payload.scenarios)) return;
+      let count = 0;
+      payload.scenarios.forEach((liveItem) => {
+        const item = scenarios.find((scenario) => scenario.id === liveItem.scenarioId);
+        if (!item || !liveItem.source || !Array.isArray(liveItem.source.paragraphs)) return;
+        if (liveItem.source.paragraphs.length < 2) return;
+        item.source = liveItem.source;
+        item.sourceDate = liveItem.sourceDate || item.sourceDate;
+        item.date = payload.generatedAt ? payload.generatedAt.slice(0, 10) : item.date;
+        item.freshness = liveItem.freshness || `自动抓取｜${payload.lookbackWindowUsed || payload.lookbackDays || ""}天内`;
+        count += 1;
+      });
+      state.fetchLoaded = count > 0;
+      const status = document.getElementById("fetchStatus");
+      if (status) {
+        status.textContent = count > 0 ? `已接入 ${count} 条最新外刊` : "使用内置种子内容";
+      }
+      updateTodayPick();
+    }
+
+    async function loadLiveSources() {
+      try {
+        const response = await fetch("business-english-live.json?ts=" + Date.now(), { cache: "no-store" });
+        if (!response.ok) return;
+        const payload = await response.json();
+        applyLiveSources(payload);
+        renderAll();
+        if (state.fetchLoaded) showToast("已加载最新外刊数据");
+      } catch (error) {
+        // 静态文件打开或没有生成 JSON 时，保留内置种子数据。
+      }
+    }
+
+    $("#searchInput").addEventListener("input", (event) => {
+      state.query = event.target.value;
+      renderCards();
+    });
+
+    $("#sortSelect").addEventListener("change", (event) => {
+      state.sort = event.target.value;
+      renderCards();
+    });
+
+    document.querySelectorAll(".nav button").forEach((button) => {
+      button.addEventListener("click", () => {
+        document.querySelectorAll(".nav button").forEach((item) => item.classList.remove("active"));
+        button.classList.add("active");
+        if (button.dataset.nav === "scenes") {
+          state.view = "全部";
+        }
+        if (button.dataset.nav === "views") {
+          state.category = "全部";
+        }
+        showFeed();
+        renderAll();
+      });
+    });
+
+    document.querySelectorAll(".side [data-jump]").forEach((button) => {
+      button.addEventListener("click", () => scrollToSection(button.dataset.jump));
+    });
+
+    renderAll();
+    loadLiveSources();
+  </script>
+</body>
+</html>
