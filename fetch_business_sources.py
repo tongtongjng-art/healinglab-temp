@@ -294,10 +294,16 @@ def is_good_paragraph(text: str) -> bool:
     bad_bits = [
         "sign up", "newsletter", "cookies", "all rights reserved", "advertisement",
         "skip to", "share this", "follow us", "download the app", "privacy policy",
+        "googletag", "enable services", "define slot", "window.googletag",
+        "adservice", "gptsize", "collapseemptydivs", "responsive-main_content",
     ]
     if any(bit in lowered for bit in bad_bits):
         return False
     if excluded(text):
+        return False
+    if text.count("{") + text.count("}") + text.count("[") + text.count("]") > 4:
+        return False
+    if len(re.findall(r"\b[a-zA-Z_]+\(", text)) >= 2:
         return False
     # Keep complete sentence-like English paragraphs.
     return text.count(".") + text.count("?") + text.count("!") >= 1
@@ -375,12 +381,29 @@ def parse_feed(feed: dict[str, object]) -> list[Article]:
         items.append(Article(str(feed["name"]), int(feed["quality"]), title, link, published, summary))
     return items
 
-def best_paragraph_window(paragraphs: list[str], keywords: list[str]) -> list[str]:
+def paragraph_is_on_topic(paragraph: str, title_context: str, keywords: list[str]) -> bool:
+    paragraph_score = (
+        keyword_score(paragraph, keywords)
+        + keyword_score(paragraph, HIGH_VALUE_CONTEXT)
+        + keyword_score(paragraph, COMMERCIAL_LENS_CONTEXT)
+        + keyword_score(paragraph, B2B_CORE_CONTEXT)
+    )
+    title_words = {
+        word
+        for word in re.findall(r"[a-zA-Z][a-zA-Z-]{4,}", title_context.lower())
+        if word not in {"about", "after", "their", "there", "which", "would", "could", "should", "these", "those"}
+    }
+    overlap = sum(1 for word in title_words if word in paragraph.lower())
+    return paragraph_score >= 3 or overlap >= 2
+
+def best_paragraph_window(paragraphs: list[str], keywords: list[str], title_context: str = "") -> list[str]:
     """Pick a coherent 2-3 paragraph excerpt from the article order."""
     candidates: list[tuple[int, int, int, list[str]]] = []
     for size in range(MAX_PARAGRAPHS, MIN_PARAGRAPHS - 1, -1):
         for start in range(0, len(paragraphs) - size + 1):
             window = paragraphs[start:start + size]
+            if title_context and any(not paragraph_is_on_topic(para, title_context, keywords) for para in window):
+                continue
             joined = " ".join(window)
             kw = keyword_score(joined, keywords)
             business = keyword_score(joined, BUSINESS_CONTEXT)
@@ -413,17 +436,20 @@ def extract_article_paragraphs(article: Article, keywords: list[str], require_wo
     if len(paragraphs) < MIN_PARAGRAPHS:
         return []
 
-    picked = best_paragraph_window(paragraphs, keywords)
+    title_context = f"{article.title} {article.summary}"
+    picked = best_paragraph_window(paragraphs, keywords, title_context)
     if not picked and not require_work:
-        picked = best_general_business_window(paragraphs, keywords)
+        picked = best_general_business_window(paragraphs, keywords, title_context)
     return picked if len(picked) >= MIN_PARAGRAPHS else []
 
-def best_general_business_window(paragraphs: list[str], keywords: list[str]) -> list[str]:
+def best_general_business_window(paragraphs: list[str], keywords: list[str], title_context: str = "") -> list[str]:
     """Fallback window for good business articles whose RSS summary is too thin."""
     candidates: list[tuple[int, int, int, list[str]]] = []
     for size in range(MAX_PARAGRAPHS, MIN_PARAGRAPHS - 1, -1):
         for start in range(0, len(paragraphs) - size + 1):
             window = paragraphs[start:start + size]
+            if title_context and any(not paragraph_is_on_topic(para, title_context, keywords) for para in window):
+                continue
             joined = " ".join(window)
             business = keyword_score(joined, BUSINESS_CONTEXT)
             work = work_context_score(joined)
