@@ -157,13 +157,13 @@ PREFER_URL_PARTS = [
 ]
 
 SCENARIOS = [
-    {"id": "price-too-high", "keywords": ["price", "prices", "pricing", "margin", "margins", "cost", "costs", "input costs", "inflation", "buyer", "buyers", "value", "supplier", "suppliers", "cost pressure"]},
-    {"id": "discount-request", "keywords": ["discount", "demand", "buyer", "buyers", "sales", "pricing", "budget", "order volume", "purchase order"]},
     {"id": "material-cost-rise", "keywords": ["raw material", "raw materials", "materials", "commodity", "commodities", "critical minerals", "rare earth", "input costs", "costs", "prices", "manufacturer", "manufacturing"]},
     {"id": "delivery-delay", "keywords": ["delay", "delivery", "lead time", "lead times", "supply chain", "production", "shipment", "shipping", "factory", "capacity"]},
     {"id": "shipping-cost-rise", "keywords": ["freight", "shipping", "logistics", "port", "container", "containers", "route", "delivery", "shipping capacity", "freight rates"]},
     {"id": "deposit-reminder", "keywords": ["payment", "cash flow", "working capital", "deposit", "invoice", "liquidity", "payment terms"]},
     {"id": "balance-payment", "keywords": ["payment", "invoice", "cash flow", "shipment", "credit", "balance", "receivables", "payment terms"]},
+    {"id": "price-too-high", "keywords": ["price", "prices", "pricing", "margin", "margins", "input costs", "inflation", "buyer", "buyers", "value", "supplier", "suppliers", "cost pressure"]},
+    {"id": "discount-request", "keywords": ["discount", "demand", "buyer", "buyers", "sales", "pricing", "budget", "order volume", "purchase order"]},
     {"id": "no-reply-follow-up", "keywords": ["sales", "customer", "customers", "client", "clients", "demand", "buyer", "buyers", "confidence", "orders", "pipeline"]},
     {"id": "sample-follow-up", "keywords": ["sample", "product", "quality", "design", "testing", "prototype", "supplier", "manufacturer"]},
     {"id": "quality-complaint", "keywords": ["quality", "recall", "complaint", "defect", "safety", "customer service", "after-sales", "supplier"]},
@@ -185,9 +185,29 @@ class ParagraphParser(HTMLParser):
         super().__init__()
         self._in_p = False
         self._buf: list[str] = []
+        self._capture_depth = 0
+        self._capture_stack: list[bool] = []
         self.paragraphs: list[str] = []
+        self.article_paragraphs: list[str] = []
+
+    def _is_article_container(self, tag: str, attrs: list[tuple[str, str | None]]) -> bool:
+        if tag.lower() in {"article", "main"}:
+            return True
+        attr_text = " ".join(str(value or "") for _, value in attrs).lower()
+        markers = [
+            "article-body", "article_body", "article-content", "article_content",
+            "story-body", "story_body", "story-content", "post-content",
+            "entry-content", "content-body", "body-content", "news-content",
+        ]
+        return any(marker in attr_text for marker in markers)
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        enters_article = self._is_article_container(tag, attrs)
+        if enters_article or self._capture_depth > 0:
+            self._capture_depth += 1
+            self._capture_stack.append(enters_article)
+        else:
+            self._capture_stack.append(False)
         if tag.lower() == "p":
             self._in_p = True
             self._buf = []
@@ -197,8 +217,15 @@ class ParagraphParser(HTMLParser):
             text = clean_text("".join(self._buf))
             if is_good_paragraph(text):
                 self.paragraphs.append(text)
+                if self._capture_depth > 0:
+                    self.article_paragraphs.append(text)
             self._in_p = False
             self._buf = []
+        if self._capture_stack:
+            was_inside = self._capture_depth > 0
+            self._capture_stack.pop()
+            if was_inside:
+                self._capture_depth = max(0, self._capture_depth - 1)
 
     def handle_data(self, data: str) -> None:
         if self._in_p:
@@ -381,7 +408,8 @@ def extract_article_paragraphs(article: Article, keywords: list[str], require_wo
 
     parser = ParagraphParser()
     parser.feed(page)
-    paragraphs = list(dict.fromkeys(parser.paragraphs))
+    body_paragraphs = parser.article_paragraphs if len(parser.article_paragraphs) >= MIN_PARAGRAPHS else parser.paragraphs
+    paragraphs = list(dict.fromkeys(body_paragraphs))
     if len(paragraphs) < MIN_PARAGRAPHS:
         return []
 
