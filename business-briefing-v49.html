@@ -1394,23 +1394,35 @@
     }
 
     .compact-brief {
-      padding: 16px 22px;
-      border-top-width: 2px;
+      margin-bottom: 12px;
+      padding: 10px 14px;
+      border-top-width: 1px;
+      background: #fffaf2;
     }
 
-    .compact-brief h2 {
-      margin-bottom: 6px;
-      font-size: 24px;
+    .brief-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 14px;
+      align-items: center;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
     }
 
-    .compact-brief .section-note {
-      margin-bottom: 10px;
+    .brief-strip strong {
+      color: var(--red);
+      letter-spacing: .08em;
+      text-transform: uppercase;
     }
 
-    .compact-brief .field {
-      padding: 12px 14px;
-      font-size: 15px;
-      line-height: 1.55;
+    .brief-strip span {
+      padding-left: 12px;
+      border-left: 1px solid var(--line);
+    }
+
+    .brief-strip b {
+      color: var(--ink);
     }
 
     .detail-hero { position: relative; padding-right: 230px; }
@@ -2045,8 +2057,8 @@
       <div class="side-section detail-toc" id="detailToc">
         <h2>本篇导航</h2>
         <div class="filter-list">
-          <button class="filter jump-button" data-jump="section-source">外刊原文</button>
           <button class="filter jump-button" data-jump="section-brief">本篇读法</button>
+          <button class="filter jump-button" data-jump="section-source">外刊原文</button>
           <button class="filter jump-button" data-jump="section-lens">商业视角</button>
           <button class="filter jump-button" data-jump="section-phrases">商务表达</button>
           <button class="filter jump-button" data-jump="section-email">邮件模板</button>
@@ -3063,10 +3075,6 @@
       return `${theme} 这类变化会影响企业和客户对价格、交期、付款或售后安排的判断。`;
     }
 
-    function paragraphInsightFallback(item, para, index) {
-      return `和本篇主题的关系：这段材料可以帮助你解释「${item.title}」背后的商业原因。实际回复客户时，不要只给情绪化解释，而要把原因、边界和可选方案讲清楚。`;
-    }
-
     const TERM_GLOSSARY = [
       ["wholesale prices", "批发价格"],
       ["retail market", "零售市场"],
@@ -3122,7 +3130,7 @@
             <p>${cnText}</p>
           </div>
         ` : "";
-        const insightText = para.insight || paragraphInsightFallback(item, para, index);
+        const insightText = para.insight || "";
         const insight = insightText ? `
           <details class="work-connection">
             <summary>展开：这段和工作场景有什么关系</summary>
@@ -3220,6 +3228,15 @@
 
         <div class="detail-layout">
           <div>
+            <section class="content-section compact-brief" id="section-brief">
+              <div class="brief-strip">
+                <strong>本篇读法</strong>
+                <span><b>问题</b> ${item.coreProblem}</span>
+                <span><b>别误读</b> ${item.scenario.wrong}</span>
+                <span><b>读重点</b> ${item.scenario.strategy}</span>
+              </div>
+            </section>
+
             <section class="content-section" id="section-source">
               <div class="source-bar">
                 <div>
@@ -3234,24 +3251,14 @@
               ${modeParagraphs(item)}
             </section>
 
-            <section class="content-section compact-brief" id="section-brief">
-              <h2>2 本篇读法</h2>
-              <p class="section-note">只做进入正文前的提醒，不抢外刊原文的位置。</p>
-              <div class="field-grid">
-                <div class="field"><strong>商业问题</strong>${item.coreProblem}</div>
-                <div class="field bad"><strong>容易误读</strong>${item.scenario.wrong}</div>
-                <div class="field good"><strong>阅读重点</strong>${item.scenario.strategy}</div>
-              </div>
-            </section>
-
             <section class="content-section" id="section-lens">
-              <h2>3 商业视角 + 外贸工作判断</h2>
+              <h2>2 商业视角 + 外贸工作判断</h2>
               <p class="section-note">不是把外刊翻成中文，而是判断商业变化会怎样影响客户、采购和沟通边界。</p>
               ${renderJudgement(item)}
             </section>
 
             <section class="content-section" id="section-phrases">
-              <h2>4 可迁移商务表达</h2>
+              <h2>3 可迁移商务表达</h2>
               <p class="section-note">保留能从外刊语境迁移到客户沟通里的表达，不做普通生词表。</p>
               <div class="phrase-grid">
                 ${item.phrases.map(([phrase, meaning, useCase, example]) => `
@@ -3269,7 +3276,7 @@
             </section>
 
             <section class="content-section" id="section-email">
-              <h2>5 完整邮件模板</h2>
+              <h2>4 完整邮件模板</h2>
               <p class="section-note">改成 Tab 切换，一次只看一封完整邮件，避免三列排版太挤。</p>
               ${renderTemplateTabs(item)}
             </section>
