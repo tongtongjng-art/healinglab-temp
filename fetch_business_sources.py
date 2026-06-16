@@ -51,7 +51,7 @@ TRANSLATE_TIMEOUT = 12
 
 FEEDS = [
     {"name": "The Guardian Business", "url": "https://www.theguardian.com/business/rss", "quality": 8},
-    {"name": "BBC Business", "url": "https://feeds.bbci.co.uk/news/business/rss.xml", "quality": 7},
+    {"name": "BBC Business", "url": "https://feeds.bbci.co.uk/news/business/rss.xml", "quality": 5},
     {"name": "Financial Times", "url": "https://www.ft.com/?format=rss", "quality": 9},
     {"name": "Wall Street Journal", "url": "https://feeds.a.dj.com/rss/WSJcomUSBusiness.xml", "quality": 9},
     {"name": "Harvard Business Review", "url": "https://feeds.harvardbusiness.org/harvardbusiness", "quality": 8},
@@ -63,6 +63,25 @@ BUSINESS_CONTEXT = [
     "supply chain", "logistics", "shipping", "freight", "tariff", "tariffs",
     "currency", "exchange rate", "cost", "costs", "pricing", "demand", "consumer",
     "inventory", "cash flow", "payment", "invoice", "quality", "production",
+]
+
+WORK_CONTEXT = [
+    "supplier", "suppliers", "buyer", "buyers", "manufacturer", "manufacturers",
+    "procurement", "purchasing", "vendor", "vendors", "wholesale", "distributor",
+    "distributors", "retailer", "retailers", "exports", "exporters", "imports",
+    "importers", "orders", "order book", "supply chain", "logistics", "shipping",
+    "freight", "container", "containers", "shipment", "shipments", "factory",
+    "factories", "production", "inventory", "stock levels", "raw material",
+    "raw materials", "input costs", "payment", "invoice", "cash flow", "margin",
+    "margins", "pricing", "cost pressures", "working capital", "lead times",
+    "delivery", "quality", "recall", "after-sales",
+]
+
+CONSUMER_ONLY_CONTEXT = [
+    "driver", "drivers", "motorist", "motorists", "commuter", "commuters",
+    "household", "households", "family car", "petrol", "diesel", "pump",
+    "pumps", "gasoline", "renters", "homeowners", "mortgage", "grocery",
+    "groceries", "supermarket shoppers", "holidaymakers", "tourists",
 ]
 
 EXCLUDE_TOPICS = [
@@ -157,6 +176,21 @@ def preferred_url_score(url: str) -> int:
 def has_business_context(text: str) -> bool:
     return keyword_score(text, BUSINESS_CONTEXT) >= 2
 
+def work_context_score(text: str) -> int:
+    return keyword_score(text, WORK_CONTEXT)
+
+def consumer_only_score(text: str) -> int:
+    return keyword_score(text, CONSUMER_ONLY_CONTEXT)
+
+def is_work_relevant(text: str) -> bool:
+    work = work_context_score(text)
+    consumer = consumer_only_score(text)
+    if work < 3:
+        return False
+    if consumer >= work and work < 8:
+        return False
+    return True
+
 def is_good_paragraph(text: str) -> bool:
     if len(text) < MIN_PARAGRAPH_CHARS or len(text) > MAX_PARAGRAPH_CHARS:
         return False
@@ -211,7 +245,7 @@ def parse_feed(feed: dict[str, object]) -> list[Article]:
         if not title or not link or not published:
             continue
         joined = f"{title} {summary}"
-        if excluded_url(link) or excluded(joined) or not has_business_context(joined):
+        if excluded_url(link) or excluded(joined) or not has_business_context(joined) or not is_work_relevant(joined):
             continue
         items.append(Article(str(feed["name"]), int(feed["quality"]), title, link, published, summary))
     return items
@@ -225,9 +259,13 @@ def best_paragraph_window(paragraphs: list[str], keywords: list[str]) -> list[st
             joined = " ".join(window)
             kw = keyword_score(joined, keywords)
             business = keyword_score(joined, BUSINESS_CONTEXT)
-            if kw <= 0 or business < 2:
+            work = work_context_score(joined)
+            consumer = consumer_only_score(joined)
+            if kw <= 0 or business < 2 or work < 3:
                 continue
-            score = kw * 4 + business + size * 3
+            if consumer >= work and work < 8:
+                continue
+            score = kw * 4 + business + work * 5 + size * 3 - consumer * 5
             candidates.append((score, size, -start, window))
     if not candidates:
         return []
@@ -329,8 +367,17 @@ def pick_for_scenario(scenario: dict[str, object], articles: list[Article], now:
             if article.published < cutoff:
                 continue
             text = f"{article.title} {article.summary}"
-            score = keyword_score(text, keywords) + keyword_score(text, BUSINESS_CONTEXT) + article.quality + preferred_url_score(article.url)
-            if keyword_score(text, keywords) >= 2 and not excluded(text):
+            work = work_context_score(text)
+            consumer = consumer_only_score(text)
+            score = (
+                keyword_score(text, keywords)
+                + keyword_score(text, BUSINESS_CONTEXT)
+                + work * 4
+                + article.quality
+                + preferred_url_score(article.url)
+                - consumer * 4
+            )
+            if keyword_score(text, keywords) >= 2 and not excluded(text) and is_work_relevant(text):
                 scored.append((score, article))
         scored.sort(key=lambda pair: (pair[0], pair[1].published), reverse=True)
         for _, article in scored[:8]:
@@ -365,7 +412,7 @@ def main() -> int:
         "lookbackWindows": LOOKBACK_WINDOWS,
         "lookbackWindowUsed": max(windows_used) if windows_used else None,
         "minParagraphs": MIN_PARAGRAPHS,
-        "note": "cn is a natural Chinese reading note generated by local rules; no paywalls are bypassed and no article paragraphs are fabricated.",
+        "note": "Articles are filtered for supplier/buyer/manufacturing/orders/logistics/payment work contexts. cn is a paragraph translation when available; no paywalls are bypassed and no article paragraphs are fabricated.",
         "scenarios": live_items,
     }
     OUTPUT.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
