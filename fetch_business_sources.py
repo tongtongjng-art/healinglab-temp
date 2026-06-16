@@ -588,57 +588,58 @@ def teaching_pack_for_scenario(scenario_id: str, article: Article, paragraphs: l
     if scenario_id == "material-cost-rise":
         material_templates = [
             {
-                "name": "客户要求保留旧价",
-                "note": "先解释风险边界，再给可执行确认窗口。",
-                "subject": "Material Availability and Price Validity",
-                "body": "Dear [Name],\n\nThank you for your message.\n\nWe understand that you would like to keep the previous price. At the moment, the main issue is not only the material cost itself, but also whether the current material batch can still be secured for your order.\n\nIf you can confirm the order and deposit before [date], we can try to keep the current offer and reserve the material for your production plan. After this window, the price and delivery schedule may need to be updated based on the next material confirmation from our supplier.\n\nThis is to avoid making an uncertain commitment before the material is secured. Please let us know whether you would like us to hold the current batch for you.\n\nBest regards,\n[Your Name]"
+                "name": "开发信：供应链机会",
+                "note": "看到行业在补关键材料短板时，用行业观察切入，不硬推销。",
+                "subject": "Support for Critical Materials and Chemical Processing",
+                "body": "Dear [Name],\n\nI noticed that critical materials and chemical processing capacity are becoming a bigger priority for manufacturers in your market.\n\nFor companies expanding or stabilizing their materials supply chain, material availability, pilot-scale validation and reliable delivery are often key concerns before moving to larger production.\n\nWe support customers with [material/product/service], sample preparation and technical documentation for evaluation. If your team is reviewing alternative sourcing or additional supply options, I would be glad to share our capability sheet and discuss whether there is a fit.\n\nWould it be convenient for me to send a short introduction and sample specification for your review?\n\nBest regards,\n[Your Name]"
             },
             {
-                "name": "客户说竞争对手没涨",
-                "note": "不否定对方报价，要求对齐报价有效期和材料锁定条件。",
-                "subject": "Clarification on Price Validity",
-                "body": "Dear [Name],\n\nThank you for sharing this with us.\n\nDifferent suppliers may quote under different material positions, validity periods and delivery assumptions. To compare the offers fairly, we suggest checking whether the other offer has the same material availability, price validity and delivery commitment.\n\nFor our side, the current offer is based on the material we can confirm now. If your order is confirmed before [date], we can try to secure this batch and keep the current price. If confirmation is delayed, the next offer may need to reflect the updated material situation.\n\nPlease let us know your expected order quantity and confirmation timing, and we will support the most workable option.\n\nBest regards,\n[Your Name]"
+                "name": "跟进信：样品验证",
+                "note": "适合客户对材料/化工产品感兴趣，但还没进入正式采购。",
+                "subject": "Sample Validation for Your Material Requirement",
+                "body": "Dear [Name],\n\nThank you for your interest.\n\nBefore moving to a formal order, many customers prefer to validate the material through samples, specification review and small-batch testing. This helps confirm whether the material can meet the required performance, processing conditions and delivery plan.\n\nWe can prepare [sample/specification/technical document] for your evaluation. If needed, we can also discuss the expected application, target specification and estimated monthly usage, so that we can recommend the most suitable grade or processing option.\n\nPlease let us know the key parameters you would like to test, and we will prepare the next step accordingly.\n\nBest regards,\n[Your Name]"
             },
             {
-                "name": "客户拖延但要锁价",
-                "note": "把锁价和客户动作绑定，避免无限期承诺。",
-                "subject": "Price Holding Window for Your Order",
-                "body": "Dear [Name],\n\nThank you for the update.\n\nWe can help hold the current price, but only within a clear confirmation window because the material has not been secured yet. The price can be kept for orders confirmed before [date], together with the agreed deposit or formal purchase order.\n\nIf the order is confirmed later, we may need to re-check material availability, price validity and delivery planning before issuing the final offer.\n\nThis keeps the arrangement fair for both sides and helps us avoid any delivery risk after confirmation. Please confirm whether this timeline works for you.\n\nBest regards,\n[Your Name]"
+                "name": "替代供应：能力介绍",
+                "note": "适合客户在找第二供应商、替代材料或更稳定交付。",
+                "subject": "Alternative Sourcing Option for Your Materials Supply Chain",
+                "body": "Dear [Name],\n\nI understand that supply chain stability is important when selecting a material partner.\n\nIf your team is reviewing alternative sourcing options, we can support you with [material/product/service], stable production planning and export documentation. Our goal is not only to provide a quotation, but also to help you reduce supply uncertainty during evaluation and future orders.\n\nWe can start with a small sample or specification review, then confirm whether our material can match your application, quality requirement and delivery schedule.\n\nPlease let me know if you are open to reviewing an additional supply option.\n\nBest regards,\n[Your Name]"
             },
         ]
         return {
-            "title": "原材料与供应链变化，如何向客户解释价格和交付风险？",
-            "category": "报价与议价",
-            "businessView": "原材料与供应链",
+            "title": "关键材料与化学加工：外贸人如何从产业新闻里发现客户开发机会？",
+            "category": "客户开发",
+            "businessView": "供应链重构",
             "level": "Level2",
-            "coreProblem": "客户不只关心价格，还会关心材料供应是否稳定、报价能保持多久、交期有没有风险。",
+            "targetUser": "化工材料 / 工业品 / 设备 / 检测与供应链服务外贸人",
+            "coreProblem": "这篇不是直接教你解释涨价，而是提醒你：关键材料、加工能力和供应链缺口，可能变成新的客户开发入口。",
             "scenario": {
-                "problem": "文章提到关键材料、加工能力或供应链缺口，这会影响成本、报价有效期和交付确定性。",
-                "wrong": "只说 raw material cost increased，客户听完只会觉得你在找涨价理由。",
-                "strategy": "把沟通拆成三层：材料供应变化、价格有效期边界、客户要不要用确认/定金锁住当前批次。",
+                "problem": "文章提到 critical materials、chemical processing、pilot-scale manufacturing 和 supply chain gaps，说明相关企业可能正在找材料、加工、验证和替代供应能力。",
+                "wrong": "不要把它只读成“原材料涨价”，那会把一篇产业机会文章读窄。",
+                "strategy": "把原文线索转成客户开发逻辑：谁可能缺材料/加工能力，谁需要样品验证，谁可能需要第二供应商或更稳定交付。",
             },
             "judgement": [
-                {"type": "商业信号：供应风险会进入报价条款", "reading": "critical minerals、processing capacity、materials supply chain 说明企业担心的是供应稳定性，而不只是短期成本。", "response": "报价邮件里要同步写清 price validity、material availability、delivery planning，别只解释价格。"},
-                {"type": "客户心理：怕你借新闻涨价", "reading": "客户会怀疑供应商把外部新闻当成涨价理由，尤其当竞争对手还没涨价时。", "response": "不要争论谁对谁错，而是要求对齐比较条件：材料是否已锁定、报价有效期多久、交付是否承诺。"},
-                {"type": "谈判动作：锁价必须绑定动作", "reading": "供应链不确定时，客户需要能向内部解释的选择，而不是一句 take it or leave it。", "response": "把锁价和 PO/定金/确认日期绑定：确认早就锁当前批次，确认晚就按下一轮材料情况更新。"},
+                {"type": "外刊线索：关键材料被重新重视", "reading": "critical materials、chemical processing、economic security 说明这不是普通材料新闻，而是产业链补短板。", "response": "化工、材料、设备外贸人可以找正在扩产、验证新材料或寻找稳定供应的客户。"},
+                {"type": "商业观察：机会不只在卖材料", "reading": "pilot-scale manufacturing、test and scale new production processes 说明客户可能需要样品、试产、检测、加工服务或技术文件。", "response": "开发信不要只说 we are a supplier，要说 sample validation、technical documentation、alternative sourcing。"},
+                {"type": "外贸动作：用行业观察切入客户", "reading": "supply chain gaps 说明客户痛点可能是供应稳定性和替代来源。", "response": "邮件先提行业趋势，再说明你的材料/加工/交付能力，最后邀请对方看规格或样品。"},
             ],
             "phrases": [
-                ["material availability", "材料可得性", "解释为什么报价和交期需要确认。", "We need to confirm material availability before keeping the same delivery schedule."],
-                ["secure the material", "锁定材料", "让客户理解尽快确认订单的意义。", "If the order is confirmed this week, we can secure the material for your production plan."],
-                ["price validity window", "报价有效窗口", "控制价格承诺边界。", "The current price validity window is until [date]."],
-                ["subject to material confirmation", "以材料确认为准", "避免无条件承诺价格和交期。", "The final offer is subject to material confirmation from our supplier."],
+                ["critical materials", "关键材料", "用于开发化工、材料、能源、制造类客户。", "We noticed that critical materials are becoming a bigger priority in your market."],
+                ["processing capacity", "加工能力", "说明你能支持客户量产、加工或试产。", "We can support customers that need additional processing capacity."],
+                ["pilot-scale validation", "试点/小批量验证", "适合样品、打样、测试、试产沟通。", "We can start with pilot-scale validation before moving to larger orders."],
+                ["alternative sourcing", "替代供应/第二供应来源", "适合客户在找新供应商时切入。", "We can be considered as an alternative sourcing option for your materials supply chain."],
             ],
             "expressions": [
-                "The current offer is subject to material confirmation.",
-                "We can keep this price only for orders confirmed within the validity window.",
-                "To secure the current batch, we would need your confirmation and deposit by [date].",
-                "If confirmation is delayed, the next offer may need to reflect the updated material situation.",
+                "We noticed that critical materials are becoming a bigger priority in your market.",
+                "We can support sample validation before moving to larger production.",
+                "Our material can be reviewed as an alternative sourcing option.",
+                "We can provide specifications, samples and export documents for evaluation.",
             ],
             "templates": material_templates,
             "practice": {
-                "level1": "填空：We need to confirm material ______ before keeping the same delivery schedule.",
-                "level2": "改写：The material is hard to buy now, so the price may change. 要改成不刺激客户、但边界清楚的商务英文。",
-                "level3": "客户说：Your competitor can keep the old price. 请写 80 词以内英文回复，要求对齐材料锁定、报价有效期和交付承诺。"
+                "level1": "填空：We can support sample ______ before moving to larger production.",
+                "level2": "改写：We sell chemical materials. 要改成行业观察式开发信开头。",
+                "level3": "你是化工/材料外贸人，看到客户可能在找关键材料替代供应。请写 80 词以内英文开发信，提到 critical materials、sample validation 和 alternative sourcing。"
             },
         }
     if scenario_id == "shipping-cost-rise":
