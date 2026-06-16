@@ -654,11 +654,11 @@ def teaching_pack_for_scenario(scenario_id: str, article: Article, paragraphs: l
             "methodologySources": methodology_for_scenario(scenario_id),
             "level": "Level2",
             "targetUser": "化工材料 / 工业品 / 设备 / 检测与供应链服务外贸人",
-            "coreProblem": "这篇不是直接教你解释涨价，而是提醒你：关键材料、加工能力和供应链缺口，可能变成新的客户开发入口。",
+            "coreProblem": "美国在关键材料、化学加工和试点制造上加大投入，说明相关客户可能在找稳定供应、样品验证和替代来源。",
             "scenario": {
                 "problem": "文章提到 critical materials、chemical processing、pilot-scale manufacturing 和 supply chain gaps，说明相关企业可能正在找材料、加工、验证和替代供应能力。",
-                "wrong": "不要把它只读成“原材料涨价”，那会把一篇产业机会文章读窄。",
-                "strategy": "把原文线索转成客户开发逻辑：谁可能缺材料/加工能力，谁需要样品验证，谁可能需要第二供应商或更稳定交付。",
+                "wrong": "不要停在“美国投钱了”这个新闻表面，要看谁因此可能产生采购、验证或替代供应需求。",
+                "strategy": "抓 4 个信号：critical materials、chemical processing、pilot-scale facilities、supply chain gaps；对应开发信、样品验证、能力介绍。",
             },
             "judgement": [
                 {"type": "外刊线索：关键材料被重新重视", "reading": "critical materials、chemical processing、economic security 说明这不是普通材料新闻，而是产业链补短板。", "response": "化工、材料、设备外贸人可以找正在扩产、验证新材料或寻找稳定供应的客户。"},
