@@ -60,10 +60,6 @@ FEEDS = [
     {"name": "Transport Dive", "url": "https://www.transportdive.com/feeds/news/", "quality": 9},
     {"name": "FreightWaves", "url": "https://www.freightwaves.com/news/feed", "quality": 10},
     {"name": "The Loadstar", "url": "https://theloadstar.com/feed/", "quality": 10},
-    {"name": "Food Logistics", "url": "https://www.foodlogistics.com/rss", "quality": 9},
-    {"name": "Logistics Management", "url": "https://www.logisticsmgmt.com/rss", "quality": 9},
-    {"name": "Modern Materials Handling", "url": "https://www.mmh.com/rss", "quality": 9},
-    {"name": "IndustryWeek", "url": "https://www.industryweek.com/rss.xml", "quality": 9},
     {"name": "Financial Times", "url": "https://www.ft.com/?format=rss", "quality": 9},
     {"name": "Wall Street Journal", "url": "https://feeds.a.dj.com/rss/WSJcomUSBusiness.xml", "quality": 9},
     {"name": "The Guardian Business", "url": "https://www.theguardian.com/business/rss", "quality": 4},
@@ -124,6 +120,10 @@ COMMERCIAL_LENS_CONTEXT = [
     "delayed orders", "supplier negotiations", "procurement strategy",
     "commercial terms", "contract terms", "payment terms", "risk management",
     "working capital", "cash conversion", "inventory management",
+    "investment", "investments", "partnership", "partnerships", "competitiveness",
+    "economic security", "capacity", "manufacturing capacity", "service offering",
+    "shipping network", "less-than-truckload", "ltl", "open to all businesses",
+    "business customers", "enterprise customers",
 ]
 
 CONSUMER_ONLY_CONTEXT = [
@@ -140,7 +140,8 @@ EXCLUDE_TOPICS = [
     "home price", "home prices", "house price", "house prices", "housing market", "mortgage",
     "real estate", "rent", "rents", "landlord", "ipo wealth", "stock market debut",
     "celebrity", "film", "music", "sports", "election", "politician", "war crime",
-    "murder", "crime", "lawsuit claims"  # lawsuits can be business, but this tool only keeps work-usable items.
+    "murder", "crime", "lawsuit claims", "cartel case", "cartel", "allegations",
+    "court case", "criminal probe", "fraud case", "delete this string of emails"
 ]
 
 EXCLUDE_URL_PARTS = [
