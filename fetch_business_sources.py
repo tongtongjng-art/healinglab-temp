@@ -58,6 +58,12 @@ FEEDS = [
     {"name": "Payments Dive", "url": "https://www.paymentsdive.com/feeds/news/", "quality": 10},
     {"name": "CFO Dive", "url": "https://www.cfodive.com/feeds/news/", "quality": 9},
     {"name": "Transport Dive", "url": "https://www.transportdive.com/feeds/news/", "quality": 9},
+    {"name": "FreightWaves", "url": "https://www.freightwaves.com/news/feed", "quality": 10},
+    {"name": "The Loadstar", "url": "https://theloadstar.com/feed/", "quality": 10},
+    {"name": "Food Logistics", "url": "https://www.foodlogistics.com/rss", "quality": 9},
+    {"name": "Logistics Management", "url": "https://www.logisticsmgmt.com/rss", "quality": 9},
+    {"name": "Modern Materials Handling", "url": "https://www.mmh.com/rss", "quality": 9},
+    {"name": "IndustryWeek", "url": "https://www.industryweek.com/rss.xml", "quality": 9},
     {"name": "Financial Times", "url": "https://www.ft.com/?format=rss", "quality": 9},
     {"name": "Wall Street Journal", "url": "https://feeds.a.dj.com/rss/WSJcomUSBusiness.xml", "quality": 9},
     {"name": "The Guardian Business", "url": "https://www.theguardian.com/business/rss", "quality": 4},
@@ -106,6 +112,18 @@ HIGH_VALUE_CONTEXT = [
     "purchase order", "purchase orders", "order volume", "order volumes",
     "manufacturing capacity", "factory output", "inventory levels",
     "quality issue", "product recall", "after-sales",
+]
+
+COMMERCIAL_LENS_CONTEXT = [
+    "pricing power", "price pressure", "margin pressure", "protect margins",
+    "customer demand", "buyer demand", "weaker demand", "soft demand",
+    "strong demand", "competitive pressure", "market share", "sales growth",
+    "revenue growth", "profit warning", "profitability", "cost cutting",
+    "cost control", "budget pressure", "capital spending", "investment plans",
+    "business confidence", "customer confidence", "order cancellations",
+    "delayed orders", "supplier negotiations", "procurement strategy",
+    "commercial terms", "contract terms", "payment terms", "risk management",
+    "working capital", "cash conversion", "inventory management",
 ]
 
 CONSUMER_ONLY_CONTEXT = [
@@ -222,18 +240,22 @@ def b2b_core_score(text: str) -> int:
 def high_value_score(text: str) -> int:
     return keyword_score(text, HIGH_VALUE_CONTEXT)
 
+def commercial_lens_score(text: str) -> int:
+    return keyword_score(text, COMMERCIAL_LENS_CONTEXT)
+
 def consumer_only_score(text: str) -> int:
     return keyword_score(text, CONSUMER_ONLY_CONTEXT)
 
 def is_work_relevant(text: str) -> bool:
     work = work_context_score(text)
     core = b2b_core_score(text)
+    lens = commercial_lens_score(text)
     consumer = consumer_only_score(text)
-    if core < 4:
+    if core < 4 and lens < 4:
         return False
-    if work < 6:
+    if work < 6 and lens < 6:
         return False
-    if consumer > 0 and core < 9:
+    if consumer > 0 and (core + lens) < 12:
         return False
     return True
 
@@ -270,6 +292,35 @@ def parse_date(value: str) -> dt.datetime | None:
     except (TypeError, ValueError):
         return None
 
+def local_name(tag: str) -> str:
+    return tag.rsplit("}", 1)[-1].lower()
+
+def child_text(node: ET.Element, *names: str) -> str:
+    wanted = {name.lower() for name in names}
+    for child in list(node):
+        if local_name(child.tag) in wanted and child.text:
+            return clean_text(child.text)
+    return ""
+
+def entry_link(node: ET.Element) -> str:
+    for child in list(node):
+        if local_name(child.tag) != "link":
+            continue
+        href = child.attrib.get("href")
+        if href:
+            return clean_text(href)
+        if child.text:
+            return clean_text(child.text)
+    return ""
+
+def feed_entries(root: ET.Element) -> list[ET.Element]:
+    entries: list[ET.Element] = []
+    for node in root.iter():
+        name = local_name(node.tag)
+        if name in {"item", "entry"}:
+            entries.append(node)
+    return entries
+
 def parse_feed(feed: dict[str, object]) -> list[Article]:
     try:
         xml = fetch_text(str(feed["url"]), timeout=20)
@@ -283,11 +334,11 @@ def parse_feed(feed: dict[str, object]) -> list[Article]:
         return []
 
     items: list[Article] = []
-    for item in root.findall(".//item"):
-        title = clean_text(item.findtext("title", ""))
-        link = clean_text(item.findtext("link", ""))
-        summary = clean_text(item.findtext("description", ""))
-        published = parse_date(item.findtext("pubDate", ""))
+    for item in feed_entries(root):
+        title = child_text(item, "title")
+        link = entry_link(item)
+        summary = child_text(item, "description", "summary", "content")
+        published = parse_date(child_text(item, "pubDate", "published", "updated"))
         if not title or not link or not published:
             continue
         joined = f"{title} {summary}"
@@ -307,12 +358,13 @@ def best_paragraph_window(paragraphs: list[str], keywords: list[str]) -> list[st
             business = keyword_score(joined, BUSINESS_CONTEXT)
             work = work_context_score(joined)
             core = b2b_core_score(joined)
+            lens = commercial_lens_score(joined)
             consumer = consumer_only_score(joined)
-            if kw <= 0 or business < 2 or work < 6 or core < 4:
+            if kw <= 0 or business < 2 or (work + lens) < 6 or (core + lens) < 5:
                 continue
-            if consumer > 0 and core < 9:
+            if consumer > 0 and (core + lens) < 12:
                 continue
-            score = kw * 4 + business + work * 4 + core * 6 + size * 3 - consumer * 8
+            score = kw * 4 + business + work * 3 + core * 5 + lens * 6 + size * 3 - consumer * 8
             candidates.append((score, size, -start, window))
     if not candidates:
         return []
@@ -347,12 +399,13 @@ def best_general_business_window(paragraphs: list[str], keywords: list[str]) -> 
             business = keyword_score(joined, BUSINESS_CONTEXT)
             work = work_context_score(joined)
             core = b2b_core_score(joined)
+            lens = commercial_lens_score(joined)
             consumer = consumer_only_score(joined)
-            if business < 4 or work < 6 or core < 5:
+            if business < 4 or (work + lens) < 7 or (core + lens) < 6:
                 continue
-            if consumer > 0 and core < 10:
+            if consumer > 0 and (core + lens) < 12:
                 continue
-            score = keyword_score(joined, keywords) * 3 + business * 3 + work * 3 + core * 5 + size * 3 - consumer * 8
+            score = keyword_score(joined, keywords) * 3 + business * 3 + work * 3 + core * 5 + lens * 6 + size * 3 - consumer * 8
             candidates.append((score, size, -start, window))
     if not candidates:
         return []
@@ -416,6 +469,7 @@ def selection_reason(article: Article, scenario_id: str, text: str) -> dict[str,
         "workScore": work_context_score(text),
         "b2bScore": b2b_core_score(text),
         "highValueScore": high_value_score(text),
+        "commercialLensScore": commercial_lens_score(text),
         "consumerPenalty": consumer_only_score(text),
     }
 
@@ -426,6 +480,7 @@ def total_selection_score(article: Article, text: str, scenario_keywords: list[s
         + work_context_score(text) * 3
         + b2b_core_score(text) * 6
         + high_value_score(text) * 8
+        + commercial_lens_score(text) * 7
         + SOURCE_QUALITY.get(article.source, article.quality)
         + preferred_url_score(article.url)
         - consumer_only_score(text) * 10
