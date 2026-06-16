@@ -516,6 +516,52 @@ def translate_to_chinese(paragraph: str) -> str:
         time.sleep(0.2)
     return "".join(translated_parts)
 
+def local_translation_for_paragraph(scenario_id: str, paragraph: str) -> str:
+    text = " ".join(paragraph.lower().split())
+    if scenario_id == "material-cost-rise":
+        if "american manufacturing has an opportunity" in text and "critical materials" in text:
+            return "阿贡国家实验室主任 Paul Kearns 在声明中表示，美国制造业有机会在关键材料和化学加工领域引领下一代创新。这个国家级协作项目将把发现、工程和部署连接起来，从而增强美国竞争力并提升经济安全。"
+        if "last month" in text and "$45.7 million" in text and "critical minerals" in text:
+            return "上个月，美国能源部宣布投入 4570 万美元支持 19 个项目，旨在弥补美国国内关键矿产和材料供应链的缺口。这笔资金将用于建设试点规模设施，以加工镁和稀土元素。"
+        if "under the initiative" in text and "artificial intelligence" in text:
+            return "根据该计划，研究人员将使用先进计算建模、人工智能、快速合成工具和试点规模制造系统，帮助企业测试并扩大新的生产流程。阿贡将与能源部相关办公室合作推进这项工作。"
+        if "processing capacity" in text or "materials supply chain" in text or "critical minerals" in text:
+            return "这段的重点不是单纯涨价，而是材料供应、加工能力和交付稳定性正在变成商业风险。给客户沟通时，要把报价有效期、材料锁定和交付安排放在一起说明。"
+    if scenario_id == "shipping-cost-rise":
+        if "externalizing amazon" in text and "supply chain services" in text:
+            return "亚马逊将其零担/部分载货运输服务对外开放，意味着原本服务亚马逊及其平台卖家的库存、货运、配送和包裹运输能力，现在被整合进新的 Amazon Supply Chain Services，面向非亚马逊卖家提供。"
+        if "launched an ltl offering" in text:
+            return "亚马逊在 2025 年 4 月推出 LTL 零担运输服务，面向不需要整车运输的托运人；最初该服务只用于运往亚马逊仓储设施的入库配送。"
+        if "traditional hub-and-spoke" in text or "palletized" in text:
+            return "这家零售巨头表示，现在它提供的是更传统的轴辐式 LTL 网络：托盘货物会被提取、转运到附近枢纽站，再送往最终目的地，仍然以托盘形式交付，成本低于传统 LTL 承运商。"
+        if "less-than-truckload" in text or "shipping network" in text or "freight" in text:
+            return "这段讲的是运输方式和配送网络的变化。对外贸沟通来说，重点不是简单说运费上涨，而是给客户比较成本、时效和稳定性的不同方案。"
+    return ""
+
+def refine_paragraphs_for_teaching(scenario_id: str, paragraphs: list[str]) -> list[str]:
+    if scenario_id == "material-cost-rise":
+        terms = [
+            "critical mineral", "critical material", "materials supply chain", "material supply",
+            "processing", "magnesium", "rare earth", "doe", "argonne", "chemical processing",
+            "manufacturing", "production"
+        ]
+    elif scenario_id == "shipping-cost-rise":
+        terms = [
+            "shipping", "freight", "logistics", "ltl", "less-than-truckload", "carrier",
+            "delivery", "network", "shipment", "supply chain services", "amazon"
+        ]
+    else:
+        return paragraphs[:MAX_PARAGRAPHS]
+
+    selected: list[str] = []
+    for paragraph in paragraphs:
+        lower = paragraph.lower()
+        if any(term in lower for term in terms):
+            selected.append(paragraph)
+    if len(selected) >= 2:
+        return selected[:MAX_PARAGRAPHS]
+    return paragraphs[:2]
+
 def make_templates(subject: str, context: str, option: str, boundary: str) -> list[dict[str, str]]:
     return [
         {
@@ -540,6 +586,26 @@ def make_templates(subject: str, context: str, option: str, boundary: str) -> li
 
 def teaching_pack_for_scenario(scenario_id: str, article: Article, paragraphs: list[str]) -> dict[str, object]:
     if scenario_id == "material-cost-rise":
+        material_templates = [
+            {
+                "name": "客户要求保留旧价",
+                "note": "先解释风险边界，再给可执行确认窗口。",
+                "subject": "Material Availability and Price Validity",
+                "body": "Dear [Name],\n\nThank you for your message.\n\nWe understand that you would like to keep the previous price. At the moment, the main issue is not only the material cost itself, but also whether the current material batch can still be secured for your order.\n\nIf you can confirm the order and deposit before [date], we can try to keep the current offer and reserve the material for your production plan. After this window, the price and delivery schedule may need to be updated based on the next material confirmation from our supplier.\n\nThis is to avoid making an uncertain commitment before the material is secured. Please let us know whether you would like us to hold the current batch for you.\n\nBest regards,\n[Your Name]"
+            },
+            {
+                "name": "客户说竞争对手没涨",
+                "note": "不否定对方报价，要求对齐报价有效期和材料锁定条件。",
+                "subject": "Clarification on Price Validity",
+                "body": "Dear [Name],\n\nThank you for sharing this with us.\n\nDifferent suppliers may quote under different material positions, validity periods and delivery assumptions. To compare the offers fairly, we suggest checking whether the other offer has the same material availability, price validity and delivery commitment.\n\nFor our side, the current offer is based on the material we can confirm now. If your order is confirmed before [date], we can try to secure this batch and keep the current price. If confirmation is delayed, the next offer may need to reflect the updated material situation.\n\nPlease let us know your expected order quantity and confirmation timing, and we will support the most workable option.\n\nBest regards,\n[Your Name]"
+            },
+            {
+                "name": "客户拖延但要锁价",
+                "note": "把锁价和客户动作绑定，避免无限期承诺。",
+                "subject": "Price Holding Window for Your Order",
+                "body": "Dear [Name],\n\nThank you for the update.\n\nWe can help hold the current price, but only within a clear confirmation window because the material has not been secured yet. The price can be kept for orders confirmed before [date], together with the agreed deposit or formal purchase order.\n\nIf the order is confirmed later, we may need to re-check material availability, price validity and delivery planning before issuing the final offer.\n\nThis keeps the arrangement fair for both sides and helps us avoid any delivery risk after confirmation. Please confirm whether this timeline works for you.\n\nBest regards,\n[Your Name]"
+            },
+        ]
         return {
             "title": "原材料与供应链变化，如何向客户解释价格和交付风险？",
             "category": "报价与议价",
@@ -549,38 +615,53 @@ def teaching_pack_for_scenario(scenario_id: str, article: Article, paragraphs: l
             "scenario": {
                 "problem": "文章提到关键材料、加工能力或供应链缺口，这会影响成本、报价有效期和交付确定性。",
                 "wrong": "只说 raw material cost increased，客户听完只会觉得你在找涨价理由。",
-                "strategy": "把沟通拆成三层：材料供应变化、对报价/交期的影响、客户现在可以选择的下单窗口或替代方案。",
+                "strategy": "把沟通拆成三层：材料供应变化、价格有效期边界、客户要不要用确认/定金锁住当前批次。",
             },
             "judgement": [
-                {"type": "商业信号：材料供应不只是价格问题", "reading": "critical minerals、processing capacity、materials supply chain 说明企业担心的是供应稳定性，而不只是短期成本。", "response": "回复客户时要同时说明 price validity、material availability 和 delivery planning。"},
-                {"type": "客户心理：怕你借机涨价", "reading": "客户会怀疑供应商是否把外部新闻当成涨价理由，所以不能只说市场涨了。", "response": "用具体边界降低抵触：当前报价保留到某日期，之后按材料确认情况更新。"},
-                {"type": "工作动作：给可选方案", "reading": "供应链不确定时，客户需要能向内部解释的选择，而不是一句 take it or leave it。", "response": "给两个方向：提前锁料保持当前价，或接受较长交期等待下一轮材料确认。"},
+                {"type": "商业信号：供应风险会进入报价条款", "reading": "critical minerals、processing capacity、materials supply chain 说明企业担心的是供应稳定性，而不只是短期成本。", "response": "报价邮件里要同步写清 price validity、material availability、delivery planning，别只解释价格。"},
+                {"type": "客户心理：怕你借新闻涨价", "reading": "客户会怀疑供应商把外部新闻当成涨价理由，尤其当竞争对手还没涨价时。", "response": "不要争论谁对谁错，而是要求对齐比较条件：材料是否已锁定、报价有效期多久、交付是否承诺。"},
+                {"type": "谈判动作：锁价必须绑定动作", "reading": "供应链不确定时，客户需要能向内部解释的选择，而不是一句 take it or leave it。", "response": "把锁价和 PO/定金/确认日期绑定：确认早就锁当前批次，确认晚就按下一轮材料情况更新。"},
             ],
             "phrases": [
                 ["material availability", "材料可得性", "解释为什么报价和交期需要确认。", "We need to confirm material availability before keeping the same delivery schedule."],
                 ["secure the material", "锁定材料", "让客户理解尽快确认订单的意义。", "If the order is confirmed this week, we can secure the material for your production plan."],
-                ["price validity", "报价有效期", "控制价格承诺边界。", "The current price validity can be kept until [date]."],
-                ["supply chain stability", "供应链稳定性", "把新闻转成客户能理解的风险。", "We are monitoring supply chain stability before confirming the next production batch."],
+                ["price validity window", "报价有效窗口", "控制价格承诺边界。", "The current price validity window is until [date]."],
+                ["subject to material confirmation", "以材料确认为准", "避免无条件承诺价格和交期。", "The final offer is subject to material confirmation from our supplier."],
             ],
             "expressions": [
-                "Material availability is becoming more important for production planning.",
-                "We can keep the current price valid for orders confirmed before [date].",
-                "If you confirm the order earlier, we can secure the material and reduce the delivery risk.",
-                "The updated offer may depend on the next material confirmation from our supplier.",
+                "The current offer is subject to material confirmation.",
+                "We can keep this price only for orders confirmed within the validity window.",
+                "To secure the current batch, we would need your confirmation and deposit by [date].",
+                "If confirmation is delayed, the next offer may need to reflect the updated material situation.",
             ],
-            "templates": make_templates(
-                "Material Availability and Price Validity",
-                "Recent changes in the materials supply chain may affect both price validity and production planning. We are checking material availability before confirming the next batch.",
-                "If your order can be confirmed before [date], we can try to secure the material under the current offer. If the confirmation is later, we may need to update the price or delivery schedule.",
-                "We do not want to make an uncertain commitment before the material is secured, so the current offer should be treated as valid only within the stated window."
-            ),
+            "templates": material_templates,
             "practice": {
                 "level1": "填空：We need to confirm material ______ before keeping the same delivery schedule.",
-                "level2": "把这句话改得更专业：The material is hard to buy now, so the price may change.",
-                "level3": "客户问为什么报价有效期变短。请写一封 80 词以内英文回复，说明材料供应、报价有效期和下单窗口。"
+                "level2": "改写：The material is hard to buy now, so the price may change. 要改成不刺激客户、但边界清楚的商务英文。",
+                "level3": "客户说：Your competitor can keep the old price. 请写 80 词以内英文回复，要求对齐材料锁定、报价有效期和交付承诺。"
             },
         }
     if scenario_id == "shipping-cost-rise":
+        shipping_templates = [
+            {
+                "name": "客户嫌运费高",
+                "note": "把贵变成可选择方案。",
+                "subject": "Shipping Options for Your Order",
+                "body": "Dear [Name],\n\nThank you for your feedback.\n\nWe understand the freight cost is an important concern. Instead of only quoting one shipping cost, we can compare two options for this order.\n\nOption A is the standard route, with a lower cost and a longer delivery window. Option B is the faster route, with a higher cost but a shorter delivery time. If your schedule is flexible, we can also check whether a consolidated shipment can reduce the total landed cost.\n\nPlease let us know whether cost, speed or delivery stability is the priority, and I will prepare the best option accordingly.\n\nBest regards,\n[Your Name]"
+            },
+            {
+                "name": "客户要更快交付",
+                "note": "说明加急的成本和风险，不空口承诺。",
+                "subject": "Delivery Window and Freight Option",
+                "body": "Dear [Name],\n\nThank you for confirming the urgency.\n\nWe can check a faster shipping option for this order, but the freight cost and available delivery window need to be confirmed with the carrier first. The faster option may reduce transit time, while the standard option remains more cost-effective.\n\nBefore we finalize the shipping plan, please confirm whether the priority is earlier arrival or lower total landed cost. Once we have your preference, we will check the carrier schedule and send the updated proposal.\n\nBest regards,\n[Your Name]"
+            },
+            {
+                "name": "客户只看单项运费",
+                "note": "引导客户比较总成本，而不是只看 freight charge。",
+                "subject": "Total Landed Cost Comparison",
+                "body": "Dear [Name],\n\nThank you for reviewing the freight cost.\n\nFor this shipment, we suggest comparing the total landed cost rather than only the freight charge. Different shipping methods may affect delivery time, customs arrangement, storage risk and the final arrival schedule.\n\nWe can prepare a simple comparison between the lower-cost option and the faster option, including estimated delivery window and main risk points. This will help you choose the option that fits your order plan better.\n\nPlease let us know your preferred priority, and we will update the proposal.\n\nBest regards,\n[Your Name]"
+            },
+        ]
         return {
             "title": "物流方案变化，如何向客户解释运费和交付选择？",
             "category": "订单与交付",
@@ -609,12 +690,7 @@ def teaching_pack_for_scenario(scenario_id: str, article: Article, paragraphs: l
                 "A consolidated shipment may help reduce the total logistics cost.",
                 "Please let us know whether cost or delivery speed is the priority for this shipment.",
             ],
-            "templates": make_templates(
-                "Shipping Options for Your Order",
-                "The logistics market is offering more service choices, but each option has a different cost and delivery window. For your order, we can compare the standard option, the faster option, and a consolidated shipment.",
-                "Please let us know whether cost, speed, or stability is the priority. Based on your choice, I will prepare the most suitable shipping proposal.",
-                "Before we confirm the final freight cost, we need to align on the shipping method and delivery requirement."
-            ),
+            "templates": shipping_templates,
             "practice": {
                 "level1": "填空：Please let us know whether cost or delivery ______ is the priority.",
                 "level2": "把这句话改得更专业：Shipping is expensive now, you choose.",
@@ -649,6 +725,7 @@ def total_selection_score(article: Article, text: str, scenario_keywords: list[s
 
 def build_live_item(scenario: dict[str, object], article: Article, paragraphs: list[str], window: int, score: int) -> dict[str, object]:
     scenario_id = str(scenario["id"])
+    paragraphs = refine_paragraphs_for_teaching(scenario_id, paragraphs)
     selection_text = f"{article.title} {article.summary} {' '.join(paragraphs)}"
     item = {
         "scenarioId": scenario["id"],
@@ -663,7 +740,7 @@ def build_live_item(scenario: dict[str, object], article: Article, paragraphs: l
             "paragraphs": [
                 {
                     "en": paragraph,
-                    "cn": translate_to_chinese(paragraph),
+                    "cn": local_translation_for_paragraph(scenario_id, paragraph) or translate_to_chinese(paragraph),
                 }
                 for paragraph in paragraphs[:MAX_PARAGRAPHS]
             ],

@@ -684,6 +684,28 @@
       grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 
+    .practice-card {
+      display: grid;
+      gap: 8px;
+      min-height: 132px;
+    }
+
+    .practice-card span {
+      width: fit-content;
+      padding: 3px 8px;
+      border: 1px solid #e7c9b4;
+      color: var(--red);
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+
+    .practice-card p {
+      margin: 0;
+      line-height: 1.75;
+    }
+
     .sticky-panel {
       position: sticky;
       top: 96px;
@@ -3187,6 +3209,26 @@
       `;
     }
 
+    function renderPractice(item) {
+      if (!item.practice) return "";
+      const rows = [
+        ["Level 1", "直接套用", item.practice.level1],
+        ["Level 2", "改得更专业", item.practice.level2],
+        ["Level 3", "真实回复", item.practice.level3]
+      ];
+      return `
+        <div class="practice-grid">
+          ${rows.map(([level, title, task]) => `
+            <div class="practice practice-card">
+              <span>${level}</span>
+              <strong>${title}</strong>
+              <p>${task}</p>
+            </div>
+          `).join("")}
+        </div>
+      `;
+    }
+
     function renderDetail() {
       const item = scenarios.find((s) => s.id === state.currentId) || scenarios[0];
       const related = scenarios
@@ -3272,8 +3314,14 @@
 
             <section class="content-section" id="section-email">
               <h2>4 完整邮件模板</h2>
-              <p class="section-note">改成 Tab 切换，一次只看一封完整邮件，避免三列排版太挤。</p>
+              <p class="section-note">按客户反应切换，不是语气微调，而是不同谈判局面下的完整写法。</p>
               ${renderTemplateTabs(item)}
+            </section>
+
+            <section class="content-section" id="section-practice">
+              <h2>5 分级练习</h2>
+              <p class="section-note">从补词、改写到真实回复，把今天的外刊内容变成能说出口、能发出去的英文。</p>
+              ${renderPractice(item)}
             </section>
 
             <section class="content-section" id="section-related">
@@ -3288,6 +3336,7 @@
                 `).join("")}
               </div>
             </section>
+          </div>
           <aside class="sticky-panel">
             <div class="mini-panel">
               <h3>这篇的核心判断</h3>
@@ -3299,6 +3348,7 @@
                 <button class="secondary" data-jump="section-source">看外刊原文</button>
                 <button class="secondary" data-jump="section-lens">看商业视角</button>
                 <button class="secondary" data-jump="section-email">看邮件模板</button>
+                <button class="secondary" data-jump="section-practice">做分级练习</button>
               </div>
             </div>
             <div class="mini-panel">
