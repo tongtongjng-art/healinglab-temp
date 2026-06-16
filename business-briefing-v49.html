@@ -1844,18 +1844,12 @@
       color: var(--red);
     }
 
-    .daily-focus-subtitle {
-      max-width: 960px;
-      margin-bottom: 22px;
-      font-size: 16px;
-    }
-
     .daily-focus .today-pick {
       position: relative;
       min-height: 380px;
       margin-top: 0;
       display: grid;
-      grid-template-columns: minmax(0, 1fr) 300px;
+      grid-template-columns: minmax(0, 1fr) 380px;
       border: 2px solid var(--line-strong);
       overflow: hidden;
       box-shadow: none;
@@ -1870,27 +1864,15 @@
       right: 0;
       top: 0;
       bottom: 0;
-      width: 300px;
+      width: 380px;
       background:
-        linear-gradient(135deg, rgba(11,61,53,.96), rgba(28,25,21,.94)),
-        var(--teal-2);
+        linear-gradient(180deg, rgba(11,61,53,.05), rgba(28,25,21,.34)),
+        url("assets/business-briefing-hero.png") center / cover no-repeat;
       pointer-events: none;
     }
 
     .daily-focus .today-pick::after {
-      content: "READ";
-      white-space: pre-line;
-      position: absolute;
-      right: 46px;
-      top: 44px;
-      width: 210px;
-      color: #fff8ee;
-      font-family: Georgia, "Times New Roman", serif;
-      font-size: 42px;
-      line-height: 1.02;
-      font-weight: 900;
-      letter-spacing: .02em;
-      pointer-events: none;
+      display: none;
     }
 
     .daily-focus .today-pick-copy {
@@ -1941,13 +1923,17 @@
       justify-self: center;
       width: 190px;
       height: 54px;
-      margin: 0 42px 38px 0;
-      border: 1px solid rgba(255,248,238,.52);
+      margin: 0 0 34px;
+      border: 1px solid rgba(255,248,238,.82);
       border-radius: 2px;
-      background: #fff8ee;
+      background: rgba(255,248,238,.94);
       color: var(--teal-2);
       font-size: 17px;
       font-weight: 900;
+    }
+
+    .scenario-card:first-child {
+      background: var(--paper);
     }
 
     @media (max-width: 1120px) {
@@ -2056,7 +2042,6 @@
             <div class="daily-focus-main">
               <div class="briefing-kicker">Today’s article</div>
               <h1>今日推荐</h1>
-              <p class="daily-focus-subtitle">打开先读今天这篇。2–3 段真实商业原文，中文只翻译段落含义，工作启发单独折叠。</p>
               <section class="today-pick" aria-label="今日抓取推荐文章">
                 <div class="today-pick-copy">
                   <div class="today-pick-eyebrow">TODAY'S ARTICLE · 今日外刊</div>
@@ -2064,7 +2049,6 @@
                   <p class="today-pick-cn" id="todayPickCn">客户嫌价格贵，该怎么回复？</p>
                   <p class="today-pick-original" id="todayPickOriginal"><strong>Reading help:</strong> 这篇文章对应报价、成本和客户压价场景。</p>
                   <p id="todayPickMeta">来源加载中 · 优先展示今天自动抓取到的商业外刊</p>
-                  <p id="todayPickWhy">先看真实商业文章，再判断它如何影响报价、交期、付款、投诉或客户跟进里的英文表达。</p>
                 </div>
                 <button class="primary today-pick-button" id="todayPickOpen" type="button">Start reading</button>
               </section>
@@ -3349,13 +3333,13 @@
       const meta = document.getElementById("todayPickMeta");
       const why = document.getElementById("todayPickWhy");
       const btn = document.getElementById("todayPickOpen");
-      if (!liveFirst || !title || !cnTitle || !original || !meta || !why || !btn) return;
+      if (!liveFirst || !title || !cnTitle || !original || !meta || !btn) return;
       const originalTitle = liveFirst.source && liveFirst.source.title && liveFirst.source.title !== "#" ? liveFirst.source.title : liveFirst.title;
       title.textContent = originalTitle;
       cnTitle.textContent = liveFirst.title;
       original.innerHTML = `<strong>Reading help:</strong> 这篇文章对应「${liveFirst.businessView}」和「${liveFirst.category}」，中文只是帮你快速判断应用场景。`;
       meta.textContent = `来源：${liveFirst.source.name || "内置种子"} · 原文日期：${liveFirst.sourceDate} · 应用场景：${liveFirst.category}`;
-      why.textContent = `今天推荐先读这篇，因为它能落到「${liveFirst.businessView}」和「${liveFirst.category}」：读商业变化，再转成客户沟通里的英文表达。`;
+      if (why) why.textContent = `今天推荐先读这篇，因为它能落到「${liveFirst.businessView}」和「${liveFirst.category}」：读商业变化，再转成客户沟通里的英文表达。`;
       btn.onclick = () => openDetail(liveFirst.id);
     }
 
