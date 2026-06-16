@@ -3122,7 +3122,8 @@
 
     function modeParagraphs(item) {
       return item.source.paragraphs.map((para, index) => {
-        const cnText = para.cn || paragraphCnFallback(item, para, index);
+        const isLiveSource = String(item.freshness || "").includes("自动抓取");
+        const cnText = para.cn || (isLiveSource ? "" : paragraphCnFallback(item, para, index));
         const en = state.sourceMode !== "cn" ? `<p class="excerpt-en">${highlightTerms(para.en)}</p>` : "";
         const cn = state.sourceMode !== "english" && cnText ? `
           <div class="translation-card">

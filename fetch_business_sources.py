@@ -17,7 +17,8 @@ What this script does:
 What this script does not do:
 - It does not bypass paywalls.
 - It does not fabricate article paragraphs.
-- It writes a natural Chinese reading note for each paragraph; this is a practical translation/reading aid, not a paywalled AI translation stage.
+- It writes a Chinese translation for each paragraph when a public translation request succeeds.
+- If translation is unavailable, it leaves cn empty instead of fabricating a reading note.
 """
 
 from __future__ import annotations
@@ -30,6 +31,7 @@ import re
 import sys
 import time
 import urllib.error
+import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass
@@ -45,6 +47,7 @@ MIN_PARAGRAPH_CHARS = 180
 MAX_PARAGRAPH_CHARS = 1500
 MAX_ARTICLE_SECONDS = 18
 USER_AGENT = "BusinessBriefingWorkDesk/1.2 (+public RSS personal learning tool)"
+TRANSLATE_TIMEOUT = 12
 
 FEEDS = [
     {"name": "The Guardian Business", "url": "https://www.theguardian.com/business/rss", "quality": 8},
@@ -247,40 +250,54 @@ def extract_article_paragraphs(article: Article, keywords: list[str]) -> list[st
     picked = best_paragraph_window(paragraphs, keywords)
     return picked if len(picked) >= MIN_PARAGRAPHS else []
 
-def fallback_cn_for_scenario(scenario_id: str, paragraph: str) -> str:
-    """Natural Chinese reading note for public paragraphs.
-    It is written as a readable Chinese translation / gist for the page, without inventing facts beyond the paragraph.
-    """
-    text = paragraph.lower()
-    if "tariff" in text and "china" in text and "india" in text:
-        return "这段大意是：关税上调确实影响了一些小企业，尤其是那些依赖从中国、印度采购原材料的公司。不过很多企业并没有被动承受成本，而是把关税带来的压力转进售价里，甚至有人借这个机会多涨了一点价格。还有一些企业选择等待法律结果，希望之后能拿到退款。"
-    if "packaging industry" in text or ("higher costs" in text and "workers" in text):
-        return "这段大意是：作者提到，接下来他要和一批包装行业公司讨论今年影响企业经营的几个问题：经济环境、成本上升、税务变化、AI，以及在不稳定的就业市场里如何招人和留人。这里的重点不是某个单词，而是企业今年面对的压力已经从单一成本，变成了成本、技术和用工一起变化。"
-    if "should i increase prices" in text or "how will tariffs affect my business" in text:
-        return "这段大意是：一年前，大家最关心的是关税会不会伤到自己的生意、要不要涨价、关税是否合法、什么时候结束。到了现在，很多问题已经有了答案。这说明商业环境会不断变化，客户今天的压价、犹豫或预算收紧，背后往往不是单一情绪，而是他们也在重新判断成本和风险。"
-    if "freight" in text or "shipping" in text or "logistics" in text:
-        return "这段大意是：文章在讲物流、运力或运输成本的变化。对外贸沟通来说，这类内容可以用来解释为什么总价、交期或运输方案会发生变化，而不是简单一句“运费涨了”。"
-    if "payment" in text or "cash flow" in text or "invoice" in text:
-        return "这段大意是：文章提到付款节奏、现金流或账期压力。放到外贸订单里，它提醒我们：催定金、催尾款不能只像催钱，而要说明付款和排产、备货、发货节点之间的关系。"
-    if "quality" in text or "defect" in text or "complaint" in text or "recall" in text:
-        return "这段大意是：文章涉及质量、风险或客户信任问题。处理投诉时，第一步不是急着辩解，而是先承接问题、收集证据，并告诉客户你会在什么时间给出调查结果。"
-    if "demand" in text or "consumer" in text or "buyers" in text:
-        return "这段大意是：市场需求和买方行为正在变化。客户要求折扣、拖延回复或反复比较价格时，背后可能是预算更谨慎、内部审批更慢，或者他们在测试供应商能给出多少空间。"
+def split_for_translation(text: str, limit: int = 460) -> list[str]:
+    sentences = re.split(r"(?<=[.!?])\s+", text.strip())
+    chunks: list[str] = []
+    current = ""
+    for sentence in sentences:
+        if not sentence:
+            continue
+        if len(sentence) > limit:
+            if current:
+                chunks.append(current)
+                current = ""
+            chunks.append(sentence[:limit])
+            continue
+        candidate = f"{current} {sentence}".strip()
+        if len(candidate) > limit and current:
+            chunks.append(current)
+            current = sentence
+        else:
+            current = candidate
+    if current:
+        chunks.append(current)
+    return chunks
 
-    names = {
-        "price-too-high": "客户对价格更敏感，背后可能是成本、预算和内部审批压力",
-        "discount-request": "买方正在争取更有利条件，折扣不能变成无条件让步",
-        "material-cost-rise": "成本变化会影响报价有效期和调价沟通",
-        "delivery-delay": "供应链或生产变化会影响交付承诺",
-        "shipping-cost-rise": "物流和运输成本变化会影响总价与时效",
-        "deposit-reminder": "付款时间会影响排产、备料和交付安排",
-        "balance-payment": "尾款节点和发货安排必须说清楚",
-        "no-reply-follow-up": "客户不回复可能是预算、优先级或内部审批还没定",
-        "sample-follow-up": "样品反馈决定下一步是否进入报价、修改或下单",
-        "quality-complaint": "质量问题会影响信任，第一封回复要先稳住客户",
-    }
-    topic = names.get(scenario_id, "这段原文提供了一个可以转化为客户沟通理由的商业背景")
-    return f"这段大意是：{topic}。读这段时，不要只看新闻本身，而要看它能怎样帮你解释客户反应、判断沟通边界，并转成更稳妥的英文回复。"
+def translate_chunk(text: str) -> str:
+    params = urllib.parse.urlencode({"q": text, "langpair": "en|zh-CN"})
+    url = f"https://api.mymemory.translated.net/get?{params}"
+    request = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
+    with urllib.request.urlopen(request, timeout=TRANSLATE_TIMEOUT) as response:
+        data = json.loads(response.read().decode("utf-8", errors="replace"))
+    translated = str(data.get("responseData", {}).get("translatedText", "")).strip()
+    translated = html.unescape(translated)
+    if not translated or translated.lower() == text.lower():
+        return ""
+    return translated
+
+def translate_to_chinese(paragraph: str) -> str:
+    translated_parts: list[str] = []
+    for chunk in split_for_translation(paragraph):
+        try:
+            translated = translate_chunk(chunk)
+        except (urllib.error.URLError, TimeoutError, OSError, json.JSONDecodeError, ValueError) as exc:
+            print(f"[warn] translation failed: {exc}", file=sys.stderr)
+            return ""
+        if not translated:
+            return ""
+        translated_parts.append(translated)
+        time.sleep(0.2)
+    return "".join(translated_parts)
 
 
 def build_live_item(scenario: dict[str, object], article: Article, paragraphs: list[str], window: int) -> dict[str, object]:
@@ -296,7 +313,7 @@ def build_live_item(scenario: dict[str, object], article: Article, paragraphs: l
             "paragraphs": [
                 {
                     "en": paragraph,
-                    "cn": fallback_cn_for_scenario(scenario_id, paragraph),
+                    "cn": translate_to_chinese(paragraph),
                 }
                 for paragraph in paragraphs[:MAX_PARAGRAPHS]
             ],
