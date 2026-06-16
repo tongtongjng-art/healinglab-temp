@@ -48,18 +48,20 @@ MAX_PARAGRAPH_CHARS = 1500
 MAX_ARTICLE_SECONDS = 18
 USER_AGENT = "BusinessBriefingWorkDesk/1.2 (+public RSS personal learning tool)"
 TRANSLATE_TIMEOUT = 12
+MAX_LIVE_ITEMS = 5
+MIN_SELECTION_SCORE = 95
 
 FEEDS = [
     {"name": "Supply Chain Dive", "url": "https://www.supplychaindive.com/feeds/news/", "quality": 12},
     {"name": "Manufacturing Dive", "url": "https://www.manufacturingdive.com/feeds/news/", "quality": 12},
     {"name": "Packaging Dive", "url": "https://www.packagingdive.com/feeds/news/", "quality": 11},
     {"name": "Payments Dive", "url": "https://www.paymentsdive.com/feeds/news/", "quality": 10},
-    {"name": "Retail Dive", "url": "https://www.retaildive.com/feeds/news/", "quality": 8},
+    {"name": "CFO Dive", "url": "https://www.cfodive.com/feeds/news/", "quality": 9},
+    {"name": "Transport Dive", "url": "https://www.transportdive.com/feeds/news/", "quality": 9},
     {"name": "Financial Times", "url": "https://www.ft.com/?format=rss", "quality": 9},
     {"name": "Wall Street Journal", "url": "https://feeds.a.dj.com/rss/WSJcomUSBusiness.xml", "quality": 9},
     {"name": "The Guardian Business", "url": "https://www.theguardian.com/business/rss", "quality": 4},
     {"name": "BBC Business", "url": "https://feeds.bbci.co.uk/news/business/rss.xml", "quality": 2},
-    {"name": "Harvard Business Review", "url": "https://feeds.harvardbusiness.org/harvardbusiness", "quality": 8},
 ]
 
 BUSINESS_CONTEXT = [
@@ -94,6 +96,18 @@ B2B_CORE_CONTEXT = [
     "delivery", "contract", "contracts", "quality",
 ]
 
+HIGH_VALUE_CONTEXT = [
+    "supply chain disruption", "supplier disruption", "supplier risk",
+    "critical minerals", "rare earth", "raw material shortage", "materials shortage",
+    "input cost", "input costs", "cost pressure", "cost pressures",
+    "production delay", "delivery delay", "lead time", "lead times",
+    "shipping cost", "freight rate", "freight rates", "container rates",
+    "working capital", "cash flow", "payment terms", "invoice payment",
+    "purchase order", "purchase orders", "order volume", "order volumes",
+    "manufacturing capacity", "factory output", "inventory levels",
+    "quality issue", "product recall", "after-sales",
+]
+
 CONSUMER_ONLY_CONTEXT = [
     "driver", "drivers", "motorist", "motorists", "commuter", "commuters",
     "household", "households", "family car", "petrol", "diesel", "pump",
@@ -101,6 +115,7 @@ CONSUMER_ONLY_CONTEXT = [
     "groceries", "supermarket shoppers", "holidaymakers", "tourists",
     "fuel", "gas prices", "oil changes", "cost of living", "retail market",
     "shoppers", "families", "pensioners", "bills", "energy bills",
+    "car insurance", "rail fares", "commuting costs",
 ]
 
 EXCLUDE_TOPICS = [
@@ -123,17 +138,19 @@ PREFER_URL_PARTS = [
 ]
 
 SCENARIOS = [
-    {"id": "price-too-high", "keywords": ["price", "prices", "pricing", "margin", "margins", "cost", "costs", "inflation", "buyer", "buyers", "value", "supplier", "suppliers"]},
-    {"id": "discount-request", "keywords": ["discount", "demand", "buyer", "buyers", "sales", "pricing", "budget", "consumer demand"]},
-    {"id": "material-cost-rise", "keywords": ["raw material", "materials", "commodity", "commodities", "input costs", "costs", "prices", "manufacturer"]},
-    {"id": "delivery-delay", "keywords": ["delay", "delivery", "supply chain", "production", "shipment", "shipping", "factory"]},
-    {"id": "shipping-cost-rise", "keywords": ["freight", "shipping", "logistics", "port", "container", "route", "delivery", "shipping capacity"]},
-    {"id": "deposit-reminder", "keywords": ["payment", "cash flow", "working capital", "deposit", "invoice", "liquidity"]},
-    {"id": "balance-payment", "keywords": ["payment", "invoice", "cash flow", "shipment", "credit", "balance", "receivables"]},
-    {"id": "no-reply-follow-up", "keywords": ["sales", "customer", "demand", "buyer", "buyers", "confidence", "orders", "pipeline"]},
-    {"id": "sample-follow-up", "keywords": ["sample", "product", "quality", "consumer", "design", "testing", "prototype"]},
-    {"id": "quality-complaint", "keywords": ["quality", "recall", "complaint", "defect", "safety", "customer service", "after-sales"]},
+    {"id": "price-too-high", "keywords": ["price", "prices", "pricing", "margin", "margins", "cost", "costs", "input costs", "inflation", "buyer", "buyers", "value", "supplier", "suppliers", "cost pressure"]},
+    {"id": "discount-request", "keywords": ["discount", "demand", "buyer", "buyers", "sales", "pricing", "budget", "order volume", "purchase order"]},
+    {"id": "material-cost-rise", "keywords": ["raw material", "raw materials", "materials", "commodity", "commodities", "critical minerals", "rare earth", "input costs", "costs", "prices", "manufacturer", "manufacturing"]},
+    {"id": "delivery-delay", "keywords": ["delay", "delivery", "lead time", "lead times", "supply chain", "production", "shipment", "shipping", "factory", "capacity"]},
+    {"id": "shipping-cost-rise", "keywords": ["freight", "shipping", "logistics", "port", "container", "containers", "route", "delivery", "shipping capacity", "freight rates"]},
+    {"id": "deposit-reminder", "keywords": ["payment", "cash flow", "working capital", "deposit", "invoice", "liquidity", "payment terms"]},
+    {"id": "balance-payment", "keywords": ["payment", "invoice", "cash flow", "shipment", "credit", "balance", "receivables", "payment terms"]},
+    {"id": "no-reply-follow-up", "keywords": ["sales", "customer", "customers", "client", "clients", "demand", "buyer", "buyers", "confidence", "orders", "pipeline"]},
+    {"id": "sample-follow-up", "keywords": ["sample", "product", "quality", "design", "testing", "prototype", "supplier", "manufacturer"]},
+    {"id": "quality-complaint", "keywords": ["quality", "recall", "complaint", "defect", "safety", "customer service", "after-sales", "supplier"]},
 ]
+
+SOURCE_QUALITY = {str(feed["name"]): int(feed["quality"]) for feed in FEEDS}
 
 @dataclass
 class Article:
@@ -201,6 +218,9 @@ def work_context_score(text: str) -> int:
 
 def b2b_core_score(text: str) -> int:
     return keyword_score(text, B2B_CORE_CONTEXT)
+
+def high_value_score(text: str) -> int:
+    return keyword_score(text, HIGH_VALUE_CONTEXT)
 
 def consumer_only_score(text: str) -> int:
     return keyword_score(text, CONSUMER_ONLY_CONTEXT)
@@ -389,12 +409,37 @@ def translate_to_chinese(paragraph: str) -> str:
     return "".join(translated_parts)
 
 
-def build_live_item(scenario: dict[str, object], article: Article, paragraphs: list[str], window: int) -> dict[str, object]:
+def selection_reason(article: Article, scenario_id: str, text: str) -> dict[str, object]:
+    return {
+        "scenarioId": scenario_id,
+        "sourceQuality": SOURCE_QUALITY.get(article.source, article.quality),
+        "workScore": work_context_score(text),
+        "b2bScore": b2b_core_score(text),
+        "highValueScore": high_value_score(text),
+        "consumerPenalty": consumer_only_score(text),
+    }
+
+def total_selection_score(article: Article, text: str, scenario_keywords: list[str]) -> int:
+    return (
+        keyword_score(text, scenario_keywords) * 3
+        + keyword_score(text, BUSINESS_CONTEXT) * 2
+        + work_context_score(text) * 3
+        + b2b_core_score(text) * 6
+        + high_value_score(text) * 8
+        + SOURCE_QUALITY.get(article.source, article.quality)
+        + preferred_url_score(article.url)
+        - consumer_only_score(text) * 10
+    )
+
+def build_live_item(scenario: dict[str, object], article: Article, paragraphs: list[str], window: int, score: int) -> dict[str, object]:
     scenario_id = str(scenario["id"])
+    selection_text = f"{article.title} {article.summary} {' '.join(paragraphs)}"
     return {
         "scenarioId": scenario["id"],
         "sourceDate": article.published.date().isoformat(),
         "freshness": f"自动抓取｜最近{window}天",
+        "selectionScore": score,
+        "selection": selection_reason(article, scenario_id, selection_text),
         "source": {
             "name": article.source,
             "title": article.title,
@@ -421,22 +466,18 @@ def pick_for_scenario(scenario: dict[str, object], articles: list[Article], now:
             work = work_context_score(text)
             core = b2b_core_score(text)
             consumer = consumer_only_score(text)
-            score = (
-                keyword_score(text, keywords)
-                + keyword_score(text, BUSINESS_CONTEXT)
-                + work * 3
-                + core * 6
-                + article.quality
-                + preferred_url_score(article.url)
-                - consumer * 8
-            )
+            score = total_selection_score(article, text, keywords)
             if keyword_score(text, keywords) >= 2 and not excluded(text) and is_work_relevant(text):
                 scored.append((score, article))
         scored.sort(key=lambda pair: (pair[0], pair[1].published), reverse=True)
         for _, article in scored[:8]:
             paragraphs = extract_article_paragraphs(article, keywords)
             if paragraphs:
-                return build_live_item(scenario, article, paragraphs, window), window
+                full_text = f"{article.title} {article.summary} {' '.join(paragraphs)}"
+                final_score = max(score, total_selection_score(article, full_text, keywords))
+                if final_score < MIN_SELECTION_SCORE:
+                    continue
+                return build_live_item(scenario, article, paragraphs, window, final_score), window
         # Second pass: some feeds have short summaries, so inspect likely business URLs before falling back to seeds.
         relaxed: list[tuple[int, Article]] = []
         for article in articles:
@@ -448,7 +489,7 @@ def pick_for_scenario(scenario: dict[str, object], articles: list[Article], now:
             text = f"{article.title} {article.summary}"
             core = b2b_core_score(text)
             consumer = consumer_only_score(text)
-            score = article.quality + url_bonus + keyword_score(text, BUSINESS_CONTEXT) + core * 4 - consumer * 8
+            score = total_selection_score(article, text, keywords)
             if consumer > 0 and core < 8:
                 continue
             relaxed.append((score, article))
@@ -456,7 +497,11 @@ def pick_for_scenario(scenario: dict[str, object], articles: list[Article], now:
         for _, article in relaxed[:10]:
             paragraphs = extract_article_paragraphs(article, keywords, require_work=False)
             if paragraphs:
-                return build_live_item(scenario, article, paragraphs, window), window
+                full_text = f"{article.title} {article.summary} {' '.join(paragraphs)}"
+                final_score = max(score, total_selection_score(article, full_text, keywords))
+                if final_score < MIN_SELECTION_SCORE:
+                    continue
+                return build_live_item(scenario, article, paragraphs, window, final_score), window
     return None, None
 
 def main() -> int:
@@ -479,6 +524,16 @@ def main() -> int:
             seen_urls.add(url)
             live_items.append(item)
             windows_used.append(window)
+            if len(live_items) >= MAX_LIVE_ITEMS:
+                break
+
+    live_items.sort(
+        key=lambda item: (
+            int(item.get("selectionScore", 0)),
+            str(item.get("sourceDate", "")),
+        ),
+        reverse=True,
+    )
 
     payload = {
         "generatedAt": now.isoformat(),
