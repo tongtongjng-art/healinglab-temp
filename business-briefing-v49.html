@@ -3131,13 +3131,7 @@
             <p>${cnText}</p>
           </div>
         ` : "";
-        const insightText = para.insight || "";
-        const insight = insightText ? `
-          <details class="work-connection">
-            <summary>展开：这段和工作场景有什么关系</summary>
-            <p>${insightText}</p>
-          </details>
-        ` : "";
+        const insight = "";
         return `<div class="excerpt">${en}${cn}${insight}</div>`;
       }).join("");
     }
