@@ -706,6 +706,50 @@
       line-height: 1.75;
     }
 
+    .methodology-box {
+      margin-top: 14px;
+      padding: 14px 16px;
+      border: 1px solid #ddc8aa;
+      background: #fffaf2;
+    }
+
+    .methodology-box strong {
+      display: block;
+      margin-bottom: 10px;
+      color: var(--teal-2);
+      font-size: 15px;
+    }
+
+    .methodology-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .methodology-list li {
+      padding: 10px 12px;
+      border-left: 3px solid var(--red);
+      background: rgba(255,255,255,.55);
+    }
+
+    .methodology-list a {
+      display: block;
+      color: var(--ink);
+      font-weight: 900;
+      text-decoration: none;
+    }
+
+    .methodology-list span {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
     .sticky-panel {
       position: sticky;
       top: 96px;
@@ -3246,6 +3290,23 @@
       `;
     }
 
+    function renderMethodologySources(item) {
+      if (!item.methodologySources || !item.methodologySources.length) return "";
+      return `
+        <div class="methodology-box">
+          <strong>辅助方法论来源</strong>
+          <ul class="methodology-list">
+            ${item.methodologySources.map((source) => `
+              <li>
+                <a href="${source.url}" target="_blank" rel="noopener">${source.name}</a>
+                <span>${source.use}</span>
+              </li>
+            `).join("")}
+          </ul>
+        </div>
+      `;
+    }
+
     function renderDetail() {
       const item = scenarios.find((s) => s.id === state.currentId) || scenarios[0];
       const related = scenarios
@@ -3285,6 +3346,7 @@
             <section class="content-section compact-brief" id="section-brief">
               <div class="brief-strip">
                 <strong>本篇读法</strong>
+                <span><b>轨道</b> ${item.contentTrack || "外刊商业观察 + 外贸/跨境应用"}</span>
                 <span><b>问题</b> ${item.coreProblem}</span>
                 <span><b>别误读</b> ${item.scenario.wrong}</span>
                 <span><b>读重点</b> ${item.scenario.strategy}</span>
@@ -3309,6 +3371,7 @@
               <h2>2 商业观察 + 外贸/跨境应用</h2>
               <p class="section-note">不是把外刊翻成中文，而是说明从哪句原文看出市场机会、客户变化或跨境动作。</p>
               ${renderJudgement(item)}
+              ${renderMethodologySources(item)}
             </section>
 
             <section class="content-section" id="section-phrases">
@@ -3488,9 +3551,10 @@
         item.sourceDate = liveItem.sourceDate || item.sourceDate;
         item.date = payload.generatedAt ? payload.generatedAt.slice(0, 10) : item.date;
         item.freshness = liveItem.freshness || `自动抓取｜${payload.lookbackWindowUsed || payload.lookbackDays || ""}天内`;
-        ["title", "category", "businessView", "level", "targetUser", "coreProblem"].forEach((key) => {
+        ["title", "category", "businessView", "contentTrack", "level", "targetUser", "coreProblem"].forEach((key) => {
           if (liveItem[key]) item[key] = liveItem[key];
         });
+        if (liveItem.methodologySources) item.methodologySources = liveItem.methodologySources;
         if (liveItem.scenario) item.scenario = liveItem.scenario;
         if (Array.isArray(liveItem.judgement) && liveItem.judgement.length) item.judgement = liveItem.judgement;
         if (Array.isArray(liveItem.phrases) && liveItem.phrases.length) item.phrases = liveItem.phrases;

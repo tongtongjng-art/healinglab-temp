@@ -9,6 +9,7 @@ What this script does:
 - Reads public RSS feeds.
 - Uses a real 14 / 30 / 90 day priority window.
 - Scores articles against business briefing topics and real-work scenarios.
+- Keeps business news as the primary source; export/cross-border methodology is only a supporting layer.
 - Rejects obviously irrelevant topics such as housing prices, entertainment, politics-only items.
 - Fetches public article pages when available.
 - Extracts up to 3 complete public paragraphs, keeping 2 only when the public article page exposes no more usable text.
@@ -50,6 +51,25 @@ USER_AGENT = "BusinessBriefingWorkDesk/1.2 (+public RSS personal learning tool)"
 TRANSLATE_TIMEOUT = 12
 MAX_LIVE_ITEMS = 5
 MIN_SELECTION_SCORE = 95
+
+METHODOLOGY_SOURCES = {
+    "payment": [
+        {"name": "Trade.gov Methods of Payment", "url": "https://www.trade.gov/methods-payment", "use": "付款方式、账期、催款和风险边界"},
+        {"name": "Trade.gov Export Solutions", "url": "https://www.trade.gov/export-solutions", "use": "出口流程和买卖双方风险分配"},
+    ],
+    "logistics": [
+        {"name": "ICC Incoterms Rules", "url": "https://iccwbo.org/business-solutions/incoterms-rules/", "use": "交付责任、风险转移和贸易术语"},
+        {"name": "Trade.gov Export Solutions", "url": "https://www.trade.gov/export-solutions", "use": "出口物流和国际销售基础流程"},
+    ],
+    "customer_development": [
+        {"name": "Trade.gov Export Solutions", "url": "https://www.trade.gov/export-solutions", "use": "市场进入、客户开发和出口准备"},
+        {"name": "Trade.gov Research Center", "url": "https://www.trade.gov/research-center", "use": "按行业和国家寻找市场线索"},
+    ],
+    "crossborder": [
+        {"name": "Shopify Enterprise Blog", "url": "https://www.shopify.com/enterprise/blog", "use": "跨境电商、品牌、渠道和增长案例"},
+        {"name": "DHL Discover", "url": "https://www.dhl.com/discover", "use": "跨境物流、电商配送和国际消费者趋势"},
+    ],
+}
 
 FEEDS = [
     {"name": "Supply Chain Dive", "url": "https://www.supplychaindive.com/feeds/news/", "quality": 12},
@@ -584,6 +604,26 @@ def make_templates(subject: str, context: str, option: str, boundary: str) -> li
         },
     ]
 
+def track_label_for_scenario(scenario_id: str) -> str:
+    if scenario_id in {"deposit-reminder", "balance-payment", "delivery-delay", "shipping-cost-rise", "quality-complaint"}:
+        return "模块A｜实战应用：对外沟通与风险处理"
+    if scenario_id in {"sample-follow-up", "no-reply-follow-up", "discount-request", "price-too-high"}:
+        return "模块B｜增长应用：客户开发、跟进与转化"
+    if scenario_id == "material-cost-rise":
+        return "模块C→B｜商业观察转客户开发"
+    return "模块C｜商业观察：市场、行业与机会判断"
+
+def methodology_for_scenario(scenario_id: str) -> list[dict[str, str]]:
+    if scenario_id in {"deposit-reminder", "balance-payment"}:
+        return METHODOLOGY_SOURCES["payment"]
+    if scenario_id in {"shipping-cost-rise", "delivery-delay"}:
+        return METHODOLOGY_SOURCES["logistics"]
+    if scenario_id in {"material-cost-rise", "sample-follow-up", "no-reply-follow-up"}:
+        return METHODOLOGY_SOURCES["customer_development"]
+    if scenario_id in {"discount-request", "price-too-high"}:
+        return METHODOLOGY_SOURCES["customer_development"] + METHODOLOGY_SOURCES["payment"][:1]
+    return METHODOLOGY_SOURCES["crossborder"]
+
 def teaching_pack_for_scenario(scenario_id: str, article: Article, paragraphs: list[str]) -> dict[str, object]:
     if scenario_id == "material-cost-rise":
         material_templates = [
@@ -610,6 +650,8 @@ def teaching_pack_for_scenario(scenario_id: str, article: Article, paragraphs: l
             "title": "关键材料与化学加工：外贸人如何从产业新闻里发现客户开发机会？",
             "category": "客户开发",
             "businessView": "供应链重构",
+            "contentTrack": track_label_for_scenario(scenario_id),
+            "methodologySources": methodology_for_scenario(scenario_id),
             "level": "Level2",
             "targetUser": "化工材料 / 工业品 / 设备 / 检测与供应链服务外贸人",
             "coreProblem": "这篇不是直接教你解释涨价，而是提醒你：关键材料、加工能力和供应链缺口，可能变成新的客户开发入口。",
@@ -667,6 +709,8 @@ def teaching_pack_for_scenario(scenario_id: str, article: Article, paragraphs: l
             "title": "物流方案变化，如何向客户解释运费和交付选择？",
             "category": "订单与交付",
             "businessView": "物流与交付",
+            "contentTrack": track_label_for_scenario(scenario_id),
+            "methodologySources": methodology_for_scenario(scenario_id),
             "level": "Level2",
             "coreProblem": "客户关心的不只是运费贵不贵，而是货能不能稳定送达、时效和成本如何取舍。",
             "scenario": {
@@ -734,6 +778,8 @@ def build_live_item(scenario: dict[str, object], article: Article, paragraphs: l
         "freshness": f"自动抓取｜最近{window}天",
         "selectionScore": score,
         "selection": selection_reason(article, scenario_id, selection_text),
+        "contentTrack": track_label_for_scenario(scenario_id),
+        "methodologySources": methodology_for_scenario(scenario_id),
         "source": {
             "name": article.source,
             "title": article.title,
