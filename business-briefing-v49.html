@@ -1005,7 +1005,7 @@
     }
 
     .scenario-card:first-child::after {
-      content: "Lead signal";
+      content: "Lead scenario";
       position: absolute;
       right: 20px;
       top: 20px;
@@ -1581,53 +1581,6 @@
       padding-top: 0;
     }
 
-    /* V55 global-business-output refinements */
-    .signal-card-grid { max-width: 980px; }
-    .scenario-card:first-child .signal-card-grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      max-width: 1120px;
-    }
-    .scenario-card:first-child .signal-card-grid p { min-height: 86px; }
-    .trend-callout {
-      margin: 14px 0;
-      padding: 14px 16px;
-      border-left: 4px solid var(--red);
-      background: rgba(255, 255, 255, .5);
-      font-weight: 800;
-      line-height: 1.7;
-    }
-    .signal-mini-grid,
-    .impact-grid,
-    .use-grid {
-      display: grid;
-      gap: 12px;
-      margin-top: 16px;
-    }
-    .signal-mini-grid,
-    .use-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-    .impact-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .signal-mini-grid > div,
-    .impact-grid > div,
-    .use-grid > div {
-      padding: 16px;
-      border: 1px solid var(--line);
-      background: rgba(255, 253, 248, .72);
-    }
-    .signal-mini-grid strong,
-    .impact-grid strong,
-    .use-grid strong { display: block; margin-bottom: 8px; color: var(--teal-2); }
-    .signal-mini-grid p,
-    .impact-grid p,
-    .use-grid p { margin: 0; color: var(--ink); line-height: 1.7; }
-    @media (max-width: 860px) {
-      .scenario-card:first-child { grid-column: auto !important; }
-      .scenario-card:first-child .signal-card-grid,
-      .signal-mini-grid,
-      .impact-grid,
-      .use-grid { grid-template-columns: 1fr; }
-      .scenario-card:first-child .signal-card-grid p { min-height: 0; }
-    }
-
   </style>
 </head>
 <body>
@@ -1639,12 +1592,12 @@
       </div>
       <nav class="nav" aria-label="主导航">
         <button class="active" data-nav="feed">首页 Briefing</button>
-        <button data-nav="scenes">行业机会</button>
-        <button data-nav="views">商业观察</button>
+        <button data-nav="scenes">实战场景</button>
+        <button data-nav="views">商业视野</button>
         <button data-nav="history">历史文章</button>
       </nav>
       <div class="top-actions">
-        <input class="search" id="searchInput" placeholder="搜索趋势、行业、商务表达" />
+        <input class="search" id="searchInput" placeholder="搜索场景、表达、客户问题" />
       </div>
     </div>
   </header>
@@ -1654,22 +1607,20 @@
       <div class="side-section detail-toc" id="detailToc">
         <h2>本篇导航</h2>
         <div class="filter-list">
-          <button class="filter jump-button" data-jump="section-brief">今日信号</button>
-          <button class="filter jump-button" data-jump="section-source">外刊摘录</button>
-          <button class="filter jump-button" data-jump="section-lens">趋势判断</button>
+          <button class="filter jump-button" data-jump="section-brief">今日议题</button>
+          <button class="filter jump-button" data-jump="section-source">外刊原文</button>
+          <button class="filter jump-button" data-jump="section-lens">商业视角</button>
           <button class="filter jump-button" data-jump="section-phrases">商务表达</button>
-          <button class="filter jump-button" data-jump="section-email">模板</button>
-          <button class="filter jump-button" data-jump="section-impact">影响行业</button>
-          <button class="filter jump-button" data-jump="section-use">中国用户怎么用</button>
-          <button class="filter jump-button" data-jump="section-related">相关内容</button>
+          <button class="filter jump-button" data-jump="section-email">邮件模板</button>
+          <button class="filter jump-button" data-jump="section-related">相关场景</button>
         </div>
       </div>
       <div class="side-section">
-        <h2>趋势标签</h2>
+        <h2>实战场景</h2>
         <div class="filter-list" id="categoryFilters"></div>
       </div>
       <div class="side-section">
-        <h2>行业 / 商业信号</h2>
+        <h2>商业视野</h2>
         <div class="filter-list" id="viewFilters"></div>
       </div>
       <div class="side-section">
@@ -1682,19 +1633,19 @@
       <section class="feed active" id="feedView">
         <div class="summary-band">
           <div class="status-row">
-            <span class="chip">全球商业趋势</span>
+            <span class="chip">商业外刊主线</span>
             <span class="chip blue" id="fetchStatus">正在检查最新外刊</span>
-            <span class="chip amber">商务英文输出</span>
+            <span class="chip amber">工作表达落地</span>
           </div>
           <div class="briefing-kicker">Daily Business Briefing</div>
-          <h1>每天读一篇全球商业外刊，带走一个商业判断和一组商务英文输出。</h1>
-          <p>不是普通新闻站，也不是单纯邮件模板库。先看懂全球商业趋势、行业变化、消费信号、供应链、成本、汇率、关税和 AI 效率，再转成可直接使用的商务英文表达。</p>
+          <h1>每天读一篇商业外刊，顺手带走能用于客户沟通的英文表达。</h1>
+          <p>不是纯外刊精读，也不是邮件模板库。先看懂商业变化，再判断它如何影响报价、交期、付款、投诉和客户跟进。</p>
           <section class="today-pick" aria-label="今日抓取推荐文章">
             <div class="today-pick-copy">
               <div class="today-pick-eyebrow">TODAY'S PICK · 今日抓取推荐</div>
               <h2 id="todayPickTitle">客户嫌价格贵，该怎么回复？</h2>
               <p id="todayPickMeta">来源加载中 · 优先展示今天自动抓取到的商业外刊</p>
-              <p id="todayPickWhy">首页先突出今日主文：先读真实商业文章，再看它如何转成趋势判断、行业启发和商务英文输出。</p>
+              <p id="todayPickWhy">首页先突出今日主文：先读真实商业文章，再看它如何转成报价、交期、付款、投诉或客户跟进里的英文表达。</p>
             </div>
             <button class="primary today-pick-button" id="todayPickOpen" type="button">进入今日主文</button>
           </section>
@@ -1706,9 +1657,9 @@
                 <span>2026.06.15</span>
               </div>
               <div>
-                <h2>今日主线：全球商业趋势 → 商业判断 → 商务英文输出。</h2>
-                <p>每篇保留 2–3 段真实可访问的英文原文，提炼商业信号，再转成外贸、跨境和职场都能使用的英文表达。</p>
-                <div class="briefing-lead"><div><strong>读什么</strong>全球商业趋势、消费信号、供应链、成本、关税、汇率和 AI 效率。</div><div><strong>看什么</strong>行业机会、需求变化、库存风险、成本压力和商业信号。</div><div><strong>带走什么</strong>商务表达、邮件、汇报句和今日输出练习。</div></div>
+                <h2>今日主线：商业外刊 → 商业视角 → 外贸工作应用。</h2>
+                <p>每篇保留 2–3 段真实可访问的英文原文，提炼商业信号，再转成外贸沟通判断和可直接改写的邮件表达。</p>
+                <div class="briefing-lead"><div><strong>读什么</strong>成本、供应链、物流、汇率、AI、消费趋势。</div><div><strong>看什么</strong>市场信号、客户心理、谈判边界。</div><div><strong>带走什么</strong>表达、邮件和回复策略。</div></div>
               </div>
             </div>
             <div class="signal-board" aria-label="内容信号">
@@ -1727,7 +1678,7 @@
               <div class="signal">
                 <small>Lens</small>
                 <strong>3pt</strong>
-                <span>商业信号、影响行业、中国用户怎么用。</span>
+                <span>市场信号、客户心理、外贸判断。</span>
                 <div class="signal-bars"><i></i><i></i><i></i></div>
               </div>
             </div>
@@ -1737,7 +1688,7 @@
             <select class="mode-select" id="sortSelect" aria-label="排序">
               <option value="latest">按来源日期优先</option>
               <option value="level">按难度排序</option>
-              <option value="category">按主题排序</option>
+              <option value="category">按场景排序</option>
             </select>
           </div>
         </div>
@@ -1749,20 +1700,20 @@
 
     <aside class="aside">
       <div class="aside-card">
-        <h3>今日选文规则</h3>
+        <h3>今日生成规则</h3>
         <ul>
           <li>先抓最新商业文章，按日期倒序。</li>
           <li>没有当天内容时，最多回看 90 天。</li>
-          <li>只选能转成商业判断和商务英文输出的材料。</li>
+          <li>只选能落到工作回复的材料。</li>
         </ul>
       </div>
       <div class="aside-card">
-        <h3>内容价值</h3>
+        <h3>内容验收</h3>
         <ul>
-          <li>有清楚的商业信号。</li>
-          <li>有趋势判断和中文拆解。</li>
-          <li>有可复制商务英文。</li>
-          <li>有今日输出练习。</li>
+          <li>有真实客户问题。</li>
+          <li>有不能说的话。</li>
+          <li>有可复制邮件。</li>
+          <li>有 Level1 到 Level3 练习。</li>
         </ul>
       </div>
       <div class="aside-card">
@@ -2511,8 +2462,8 @@
       }
     ];
 
-    const categories = ["全部", "商业趋势", "行业机会", "成本与利润", "供应链", "需求变化", "AI效率", "商务表达"];
-    const views = ["全部", "需求疲软", "成本上涨", "库存压力", "供应链", "关税", "汇率", "AI效率", "零售趋势", "健康消费", "美妆个护", "宠物护理", "家居小家电"];
+    const categories = ["全部", "报价与议价", "订单与交付", "付款与催款", "客户跟进", "投诉与售后", "合作与开发"];
+    const views = ["全部", "成本上涨", "需求疲软", "供应链", "物流", "付款风险", "消费趋势", "AI"];
     const levels = ["全部", "Level1", "Level2", "Level3"];
     const state = {
       category: "全部",
@@ -2526,177 +2477,6 @@
       templateIndex: 0,
       fetchLoaded: false
     };
-
-    const COMMERCIAL_OVERRIDES = {
-      "price-too-high": {
-        title: "成本上涨与买方压价：如何把价格压力转成价值说明？",
-        category: "成本与利润",
-        businessView: "成本上涨",
-        targetUser: "外贸 / 跨境 / 销售 / 职场汇报",
-        commercialSignal: "客户压价背后通常是预算压力、需求放缓或内部审批收紧，不只是单纯嫌贵。",
-        affectedIndustries: "B2B 供应商 / 消费品 / 跨境电商 / 批发零售 / 制造业",
-        chinaInsight: "不要只学一句降价回复，要学会解释成本、价值、交付责任和可替代方案。",
-        trendJudgement: "价格沟通正在从“给折扣”转向“说明价值、范围和预算边界”。",
-        businessEnglish: "We can review the scope and payment terms before adjusting the price."
-      },
-      "discount-request": {
-        title: "消费谨慎与折扣请求：如何不牺牲利润地回应？",
-        category: "需求变化",
-        businessView: "需求疲软",
-        targetUser: "销售 / 跨境运营 / 外贸 / 客户沟通",
-        commercialSignal: "当需求变谨慎，客户会更频繁测试折扣、账期和订单条件。",
-        affectedIndustries: "零售 / 消费品 / 美妆个护 / 家居小家电 / 跨境电商",
-        chinaInsight: "折扣不是单向让利，应和数量、付款、交付、规格或长期合作绑定。",
-        trendJudgement: "折扣沟通要从“便宜一点”转成“条件交换”。",
-        businessEnglish: "The discount can be reviewed based on the order quantity and payment terms."
-      },
-      "material-cost-rise": {
-        title: "材料与成本波动：如何判断报价和供应风险？",
-        category: "成本与利润",
-        businessView: "成本上涨",
-        targetUser: "外贸 / 制造业 / 采购 / 职场汇报",
-        commercialSignal: "原材料、能源、关税或汇率变化会影响报价有效期、库存和交付承诺。",
-        affectedIndustries: "制造业 / 工业品 / 化工材料 / 消费品供应链 / B2B 采购",
-        chinaInsight: "把成本变化转成报价有效期、替代材料、库存锁定和客户沟通方案。",
-        trendJudgement: "成本波动下，最重要的是提前说明 price validity 和 supply risk。",
-        businessEnglish: "The current price can be kept for orders confirmed before the validity date."
-      },
-      "delivery-delay": {
-        title: "交付不确定性：如何提前沟通风险和新时间表？",
-        category: "供应链",
-        businessView: "供应链",
-        targetUser: "跟单 / 外贸 / 运营 / 项目协作",
-        commercialSignal: "供应链或生产节奏变化会直接影响交付承诺和客户体验。",
-        affectedIndustries: "制造业 / 物流 / 外贸订单 / 跨境履约 / 批发零售",
-        chinaInsight: "交付问题不能等客户追问，要主动给原因、影响、新时间和补救动作。",
-        trendJudgement: "交付沟通的关键不是道歉，而是 revised timeline 和 impact control。",
-        businessEnglish: "We will share the revised delivery schedule and keep you updated on the progress."
-      },
-      "shipping-cost-rise": {
-        title: "物流方案变化：如何判断履约成本和交付选择？",
-        category: "供应链",
-        businessView: "供应链",
-        targetUser: "跨境 / 物流 / 外贸 / 批发零售",
-        commercialSignal: "物流、仓储和履约能力正在影响企业成本、交付体验和客户选择。",
-        affectedIndustries: "跨境电商 / 批发零售 / 消费品 / 物流服务 / B2B 供应商",
-        chinaInsight: "不要只看运费涨跌，要看履约方式、库存位置和交付承诺如何改变客户决策。",
-        trendJudgement: "物流服务从成本项变成竞争力，企业需要比较 delivery window 和 total landed cost。",
-        businessEnglish: "We can compare the total landed cost and delivery window before confirming the best option."
-      },
-      "deposit-reminder": {
-        title: "现金流与排产：如何把付款节点说成订单推进？",
-        category: "成本与利润",
-        businessView: "库存压力",
-        targetUser: "外贸 / 财务协同 / 跟单 / 运营",
-        commercialSignal: "现金流和付款周期会影响企业是否能锁定库存、排产和交付窗口。",
-        affectedIndustries: "制造业 / 批发贸易 / 供应链金融 / 跨境订单 / 零售库存",
-        chinaInsight: "催款不是催债，而是说明付款和排产、备料、交付之间的关系。",
-        trendJudgement: "在预算谨慎和库存压力下，payment timing 本身就是风险管理。",
-        businessEnglish: "Payment timing will help us secure the production schedule and delivery window."
-      },
-      "balance-payment": {
-        title: "发货前付款节点：如何不伤关系地推进尾款？",
-        category: "成本与利润",
-        businessView: "库存压力",
-        targetUser: "外贸 / 财务 / 跟单 / 供应链协同",
-        commercialSignal: "尾款延迟会影响出货、库存占用和现金回笼。",
-        affectedIndustries: "制造业 / 外贸订单 / 批发贸易 / 跨境履约 / 物流",
-        chinaInsight: "先给订单状态，再把尾款和发货安排绑定，避免语气像催债。",
-        trendJudgement: "付款沟通要从情绪化催促转成 shipment readiness 和 payment confirmation。",
-        businessEnglish: "Once the balance is received, we can arrange shipment immediately."
-      },
-      "no-reply-follow-up": {
-        title: "需求不确定时，如何让客户继续回复？",
-        category: "商务表达",
-        businessView: "需求疲软",
-        targetUser: "销售 / 外贸 / 跨境 / 职场沟通",
-        commercialSignal: "客户不回复可能来自预算未定、需求变弱、内部审批慢或替代方案比较。",
-        affectedIndustries: "B2B 销售 / 跨境电商 / 消费品 / 客户成功 / 外贸开发",
-        chinaInsight: "不要反复问 any update，要给客户一个更容易回复的小问题或选项。",
-        trendJudgement: "低回复率下，follow-up 要降低客户回复成本。",
-        businessEnglish: "Would it be helpful if I prepare a revised option based on your target budget?"
-      },
-      "sample-follow-up": {
-        title: "品类趋势与样品验证：如何把兴趣推进到下一步？",
-        category: "行业机会",
-        businessView: "零售趋势",
-        targetUser: "消费品 / 美妆个护 / 宠物护理 / 家居小家电 / 跨境选品",
-        commercialSignal: "新品类、新消费信号和样品反馈会决定客户是否继续推进订单。",
-        affectedIndustries: "美妆个护 / 宠物护理 / 健康消费 / 家居小家电 / 消费品供应链",
-        chinaInsight: "样品跟进不要只问喜不喜欢，要问测试结果、规格、包装、使用场景和下一步计划。",
-        trendJudgement: "样品沟通要从主观感受转成 sample evaluation 和 product fit。",
-        businessEnglish: "May I know how the sample evaluation is going?"
-      },
-      "quality-complaint": {
-        title: "质量风险与品牌信任：如何先稳住客户？",
-        category: "供应链",
-        businessView: "零售趋势",
-        targetUser: "售后 / 品控 / 外贸 / 品牌运营",
-        commercialSignal: "质量问题不仅是售后成本，也会影响客户信任、复购和品牌声誉。",
-        affectedIndustries: "消费品 / 美妆个护 / 宠物护理 / 家居用品 / B2B 供应链",
-        chinaInsight: "第一封回复不要争责任，要先承接、收集证据、给调查节点和后续方案。",
-        trendJudgement: "质量沟通要从辩解转成 investigation, evidence and corrective action。",
-        businessEnglish: "We take your feedback seriously and will look into it immediately."
-      }
-    };
-
-    function overrideFor(item) {
-      return COMMERCIAL_OVERRIDES[item?.id] || {};
-    }
-
-    function fieldOf(item, key) {
-      const override = overrideFor(item);
-      return override[key] !== undefined && override[key] !== null && override[key] !== "" ? override[key] : item?.[key];
-    }
-
-    function displayTitle(item) {
-      return fieldOf(item, "title") || item?.title || "";
-    }
-
-    function categoryGroup(item) {
-      return fieldOf(item, "category") || item?.category || "商业趋势";
-    }
-
-    function viewGroup(item) {
-      return fieldOf(item, "businessView") || item?.businessView || "需求变化";
-    }
-
-    function commercialSignal(item) {
-      return fieldOf(item, "commercialSignal") || item?.scenario?.problem || fieldOf(item, "coreProblem");
-    }
-
-    function affectedIndustries(item) {
-      const value = fieldOf(item, "affectedIndustries") || fieldOf(item, "targetUser") || viewGroup(item);
-      return Array.isArray(value) ? value.join(" / ") : value;
-    }
-
-    function chinaInsight(item) {
-      return fieldOf(item, "chinaInsight") || item?.scenario?.strategy || "把外刊里的市场变化转成选品、客户沟通、汇报和商务英文表达。";
-    }
-
-    function trendJudgement(item) {
-      return fieldOf(item, "trendJudgement") || commercialSignal(item);
-    }
-
-    function todayEnglish(item) {
-      return fieldOf(item, "businessEnglish") || item?.expressions?.[0] || item?.phrases?.[0]?.[3] || "";
-    }
-
-    function industryImpact(item) {
-      return fieldOf(item, "industryImpact") || {
-        benefit: item?.benefitIndustries || "能提供替代供应、效率工具、稳定交付、成本优化方案的企业。",
-        pressure: item?.pressureIndustries || "成本上升、库存周转慢、需求变弱或交付不稳定的企业。"
-      };
-    }
-
-    function userUse(item) {
-      return fieldOf(item, "userUse") || {
-        trade: item?.tradeUse || "把趋势写进开发信、报价解释、客户跟进和供应链沟通。",
-        ecommerce: item?.crossborderUse || "用需求、消费信号和成本变化判断选品、定价、库存和页面卖点。",
-        workplace: item?.workplaceUse || "把外刊内容转成会议发言、英文汇报、邮件和老板能听懂的商业判断。"
-      };
-    }
-
 
     const $ = (selector) => document.querySelector(selector);
 
@@ -2741,13 +2521,13 @@
     function getFilteredScenarios() {
       const query = state.query.trim().toLowerCase();
       let list = scenarios.filter((item) => {
-        const categoryMatch = state.category === "全部" || categoryGroup(item) === state.category;
-        const viewMatch = state.view === "全部" || viewGroup(item) === state.view;
+        const categoryMatch = state.category === "全部" || item.category === state.category;
+        const viewMatch = state.view === "全部" || item.businessView === state.view;
         const levelMatch = state.level === "全部" || item.level === state.level;
         const text = [
-          displayTitle(item),
-          categoryGroup(item),
-          viewGroup(item),
+          item.title,
+          item.category,
+          item.businessView,
           item.level,
           item.coreProblem,
           ...item.expressions,
@@ -2775,7 +2555,7 @@
       const list = getFilteredScenarios();
       grid.innerHTML = "";
       $("#resultStatus").innerHTML = `
-        <span class="chip gray">${list.length} 个商业信号</span>
+        <span class="chip gray">${list.length} 个场景</span>
         <span class="chip blue">最新来源：${scenarios[0].sourceDate}</span>
         <span class="chip amber">当前筛选：${state.category} / ${state.view} / ${state.level}</span>
       `;
@@ -2786,17 +2566,13 @@
         card.innerHTML = `
           <div>
             <div class="card-meta">
-              <span class="chip">${categoryGroup(item)}</span>
-              <span class="chip blue">${viewGroup(item)}</span>
+              <span class="chip">${item.category}</span>
+              <span class="chip blue">${item.businessView}</span>
               <span class="chip amber">${item.level}</span>
             </div>
-            <h3>${displayTitle(item)}</h3>
-            <div class="signal-card-grid">
-              <p><b>商业信号</b>${commercialSignal(item)}</p>
-              <p><b>影响行业</b>${affectedIndustries(item)}</p>
-              <p><b>中国用户启发</b>${chinaInsight(item)}</p>
-              <p><b>今日商务英文</b><em>${todayEnglish(item)}</em></p>
-            </div>
+            <h3>${item.title}</h3>
+            <p>${item.targetUser}</p>
+            <div class="card-point">${item.coreProblem}</div>
           </div>
           <div class="card-actions">
             <button class="primary" data-open="${item.id}">阅读全文</button>
@@ -2835,10 +2611,10 @@
         return "这段大意是：一年前，大家最关心的是关税会不会伤到自己的生意、要不要涨价、关税是否合法、什么时候结束。到了现在，很多问题已经有了答案。这说明商业环境会不断变化，客户今天的压价、犹豫或预算收紧，背后往往不是单一情绪，而是他们也在重新判断成本和风险。";
       }
       if (text.includes("freight") || text.includes("shipping") || text.includes("logistics")) {
-        return "这段大意是：文章在讲物流、运力或运输成本的变化。对商务沟通来说，这类内容可以用来解释为什么总价、交期或运输方案会发生变化，而不是简单一句“运费涨了”。";
+        return "这段大意是：文章在讲物流、运力或运输成本的变化。对外贸沟通来说，这类内容可以用来解释为什么总价、交期或运输方案会发生变化，而不是简单一句“运费涨了”。";
       }
       if (text.includes("payment") || text.includes("cash flow") || text.includes("invoice")) {
-        return "这段大意是：文章提到付款节奏、现金流或账期压力。放到订单和供应链沟通里，它提醒我们：催定金、催尾款不能只像催钱，而要说明付款和排产、备货、发货节点之间的关系。";
+        return "这段大意是：文章提到付款节奏、现金流或账期压力。放到外贸订单里，它提醒我们：催定金、催尾款不能只像催钱，而要说明付款和排产、备货、发货节点之间的关系。";
       }
       if (text.includes("quality") || text.includes("defect") || text.includes("complaint") || text.includes("recall")) {
         return "这段大意是：文章涉及质量、风险或客户信任问题。处理投诉时，第一步不是急着辩解，而是先承接问题、收集证据，并告诉客户你会在什么时间给出调查结果。";
@@ -2870,14 +2646,14 @@
         const en = state.sourceMode !== "cn" ? `<p class="excerpt-en">${para.en}</p>` : "";
         const cn = state.sourceMode !== "english" && cnText ? `
           <div class="translation-card">
-            <strong>中文翻译</strong>
+            <strong>自然中文翻译 / 大意</strong>
             <p>${cnText}</p>
           </div>
         ` : "";
         const insightText = para.insight || paragraphInsightFallback(item, para, index);
         const insight = state.sourceMode !== "english" && insightText ? `
           <div class="work-connection">
-            <strong>中文拆解</strong>
+            <strong>这段和本主题有什么关系</strong>
             <p>${insightText}</p>
           </div>
         ` : "";
@@ -2889,16 +2665,16 @@
       return `
         <div class="source-bridge">
           <div>
-            <strong>这篇为什么值得读？</strong>
-            <p>它提供的是「${viewGroup(item)}」这个商业信号，不是为了单纯背单词。读完后要能回答：发生了什么、影响谁、中国用户能拿来做什么。</p>
+            <strong>这篇外刊为什么放在这里？</strong>
+            <p>它提供的是「${item.businessView}」这个商业背景，不是为了单纯背单词。读完后要能回答：客户为什么会这样反应、我方边界在哪里、下一封邮件该怎么说。</p>
           </div>
           <div>
-            <strong>中国用户怎么用</strong>
-            <p>外贸用户看客户沟通，跨境用户看选品和库存，职场用户看汇报和英文表达。</p>
+            <strong>和外贸工作的关系</strong>
+            <p>对应到「${item.category}」场景，重点不是复述新闻，而是把市场变化转成报价解释、交期说明、付款推进或售后沟通中的可用理由。</p>
           </div>
           <div>
             <strong>今天带走什么</strong>
-            <p>带走 1 个商业判断、几组可迁移表达，以及一段可以复制改写的商务英文输出。</p>
+            <p>带走 1 个商业判断、几组可迁移表达，以及一封可以复制改写的商务邮件。</p>
           </div>
         </div>
       `;
@@ -2955,41 +2731,18 @@
       `;
     }
 
-
-    function renderPractice(item) {
-      if (!item.practice) return "";
-      const rows = [
-        ["Level 1", "直接套用", item.practice.level1],
-        ["Level 2", "改得更专业", item.practice.level2],
-        ["Level 3", "真实输出", item.practice.level3]
-      ];
-      return `
-        <div class="practice-grid">
-          ${rows.map(([level, title, task]) => `
-            <div class="practice practice-card">
-              <span>${level}</span>
-              <strong>${title}</strong>
-              <p>${task}</p>
-            </div>
-          `).join("")}
-        </div>
-      `;
-    }
-
     function renderDetail() {
       const item = scenarios.find((s) => s.id === state.currentId) || scenarios[0];
       const related = scenarios
-        .filter((s) => s.id !== item.id && (categoryGroup(s) === categoryGroup(item) || viewGroup(s) === viewGroup(item)))
+        .filter((s) => s.id !== item.id && (s.category === item.category || s.businessView === item.businessView))
         .slice(0, 3);
-      const impact = industryImpact(item);
-      const use = userUse(item);
 
       $("#detailView").innerHTML = `
         <div class="back-row">
           <button class="ghost" id="backToFeed">返回首页 Feed</button>
           <div class="status-row">
-            <span class="chip">${categoryGroup(item)}</span>
-            <span class="chip blue">${viewGroup(item)}</span>
+            <span class="chip">${item.category}</span>
+            <span class="chip blue">${item.businessView}</span>
             <span class="chip amber">${item.level}</span>
           </div>
         </div>
@@ -3000,8 +2753,8 @@
             <span class="chip blue">来源日期：${item.sourceDate}</span>
             <span class="chip amber">${item.freshness}</span>
           </div>
-          <h1>${displayTitle(item)}</h1>
-          <p>${commercialSignal(item)}</p>
+          <h1>${item.title}</h1>
+          <p>${item.coreProblem}</p>
           <div class="detail-reading-mode">
             <span>阅读模式</span>
             <select class="mode-select" data-source-mode aria-label="阅读模式">
@@ -3015,24 +2768,24 @@
         <div class="detail-layout">
           <div>
             <section class="content-section" id="section-brief">
-              <h2>1 今日商业信号</h2>
-              <p class="section-note">先明确这篇商业内容为什么值得读，以及它能如何转成商务英文输出。</p>
+              <h2>1 今日商业议题</h2>
+              <p class="section-note">先明确这篇商业内容为什么值得读，以及它能落到哪个外贸工作场景。</p>
               <div class="field-grid">
-                <div class="field"><strong>商业信号</strong>${commercialSignal(item)}</div>
+                <div class="field"><strong>商业问题</strong>${item.coreProblem}</div>
                 <div class="field bad"><strong>不能只这样理解</strong>${item.scenario.wrong}</div>
-                <div class="field good"><strong>今天怎么用</strong>${chinaInsight(item)}</div>
+                <div class="field good"><strong>今天的工作读法</strong>${item.scenario.strategy}</div>
               </div>
             </section>
 
             <section class="content-section" id="section-source">
               <div class="source-bar">
                 <div>
-                  <h2>2 外刊摘录</h2>
+                  <h2>2 外刊 / 商业原文摘录</h2>
                   <p class="section-note">
                     来源：${item.source.name} | 原文标题：${item.source.title}
                     ${item.source.url && item.source.url !== "#" ? ` | <a href="${item.source.url}" target="_blank" rel="noreferrer">打开原文来源</a>` : ""}
                   </p>
-                  <div class="source-status">公开来源 · 保留 2–3 段英文摘录 · 用于商业判断和商务英文输出</div>
+                  <div class="source-status">规则：优先抓取最近 14 天公开文章；每篇尽量保留 2–3 个完整英文段落，不足 2 段不强行伪造。</div>
                 </div>
                 <select class="mode-select" data-source-mode aria-label="外刊阅读模式">
                   <option value="both"${state.sourceMode === "both" ? " selected" : ""}>中英对照</option>
@@ -3045,39 +2798,14 @@
             </section>
 
             <section class="content-section" id="section-lens">
-              <h2>3 中文拆解 + 趋势判断</h2>
-              <p class="section-note">把原文里的商业变化拆成“发生了什么、影响谁、中国用户能拿来做什么”。</p>
-              <div class="trend-callout">${trendJudgement(item)}</div>
-              <div class="signal-mini-grid">
-                <div><strong>发生了什么</strong><p>${commercialSignal(item)}</p></div>
-                <div><strong>影响行业</strong><p>${affectedIndustries(item)}</p></div>
-                <div><strong>中国用户启发</strong><p>${chinaInsight(item)}</p></div>
-              </div>
-              <div style="margin-top:16px">${renderJudgement(item)}</div>
-            </section>
-
-            <section class="content-section" id="section-impact">
-              <h2>4 影响行业：受益 / 承压</h2>
-              <p class="section-note">把外刊里的变化转成行业判断，方便选品、客户开发、汇报和商业观察。</p>
-              <div class="impact-grid">
-                <div><strong>可能受益</strong><p>${impact.benefit}</p></div>
-                <div><strong>可能承压</strong><p>${impact.pressure}</p></div>
-              </div>
-            </section>
-
-            <section class="content-section" id="section-use">
-              <h2>5 中国用户怎么用：外贸 / 跨境 / 职场</h2>
-              <p class="section-note">同一篇外刊，外贸、跨境和职场用户拿到的动作不一样。</p>
-              <div class="use-grid">
-                <div><strong>外贸</strong><p>${use.trade}</p></div>
-                <div><strong>跨境</strong><p>${use.ecommerce}</p></div>
-                <div><strong>职场</strong><p>${use.workplace}</p></div>
-              </div>
+              <h2>3 商业视角 + 外贸工作判断</h2>
+              <p class="section-note">不是把外刊翻成中文，而是判断商业变化会怎样影响客户、采购和沟通边界。</p>
+              ${renderJudgement(item)}
             </section>
 
             <section class="content-section" id="section-phrases">
-              <h2>6 商务英文表达</h2>
-              <p class="section-note">保留能从外刊语境迁移到邮件、汇报、会议和客户沟通里的表达，不做普通生词表。</p>
+              <h2>4 可迁移商务表达</h2>
+              <p class="section-note">保留能从外刊语境迁移到客户沟通里的表达，不做普通生词表。</p>
               <div class="phrase-grid">
                 ${item.phrases.map(([phrase, meaning, useCase, example]) => `
                   <div class="phrase">
@@ -3094,49 +2822,41 @@
             </section>
 
             <section class="content-section" id="section-email">
-              <h2>7 邮件或汇报模板</h2>
-              <p class="section-note">根据文章适用场景，输出开发信、客户邮件、会议汇报或英文说明。</p>
+              <h2>5 完整邮件模板</h2>
+              <p class="section-note">改成 Tab 切换，一次只看一封完整邮件，避免三列排版太挤。</p>
               ${renderTemplateTabs(item)}
             </section>
 
-            <section class="content-section" id="section-practice">
-              <h2>8 今日输出练习</h2>
-              <p class="section-note">从补词、改写到真实输出，把今天的外刊内容变成能说出口、能发出去的英文。</p>
-              ${renderPractice(item)}
-            </section>
-
             <section class="content-section" id="section-related">
-              <h2>相关内容</h2>
-              <p class="section-note">继续看相邻商业信号。</p>
+              <h2>相关场景</h2>
+              <p class="section-note">继续解决相邻工作问题。</p>
               <div class="related-grid">
                 ${related.map((r) => `
                   <button class="related" data-related="${r.id}">
-                    <strong>${categoryGroup(r)}</strong>
-                    ${displayTitle(r)}
+                    <strong>${r.category}</strong>
+                    ${r.title}
                   </button>
                 `).join("")}
               </div>
             </section>
-          </div>
           <aside class="sticky-panel">
             <div class="mini-panel">
               <h3>这篇的核心判断</h3>
-              <p>${commercialSignal(item)}</p>
+              <p>${item.scenario.problem}</p>
             </div>
             <div class="mini-panel">
               <h3>页内快速跳转</h3>
               <div class="mini-actions">
-                <button class="secondary" data-jump="section-source">看外刊摘录</button>
-                <button class="secondary" data-jump="section-lens">看趋势判断</button>
-                <button class="secondary" data-jump="section-use">看怎么用</button>
-                <button class="secondary" data-jump="section-email">看模板</button>
+                <button class="secondary" data-jump="section-source">看外刊原文</button>
+                <button class="secondary" data-jump="section-lens">看商业视角</button>
+                <button class="secondary" data-jump="section-email">看邮件模板</button>
               </div>
             </div>
             <div class="mini-panel">
               <h3>可直接复制</h3>
               <div class="mini-actions">
-                <button class="primary" id="copyDefault">复制默认模板</button>
-                <button class="secondary" id="saveScene">收藏这个信号</button>
+                <button class="primary" id="copyDefault">复制默认邮件</button>
+                <button class="secondary" id="saveScene">收藏这个场景</button>
                 <button class="secondary" id="copyExpressions">复制商务表达</button>
               </div>
             </div>
@@ -3152,13 +2872,12 @@
         });
       });
       $("#copyDefault").addEventListener("click", () => copyText(formatTemplate(item.templates[0])));
-      $("#copyExpressions").addEventListener("click", () => copyText(item.expressions.join("
-")));
+      $("#copyExpressions").addEventListener("click", () => copyText(item.expressions.join("\n")));
       $("#saveScene").addEventListener("click", () => {
         const saved = JSON.parse(localStorage.getItem("businessEnglishSaved") || "[]");
         if (!saved.includes(item.id)) saved.push(item.id);
         localStorage.setItem("businessEnglishSaved", JSON.stringify(saved));
-        showToast("已收藏这个商业信号");
+        showToast("已收藏这个场景");
       });
       $("#detailView").querySelectorAll("[data-template-tab]").forEach((button) => {
         button.addEventListener("click", () => {
@@ -3176,7 +2895,6 @@
         button.addEventListener("click", () => scrollToSection(button.dataset.jump));
       });
     }
-
 
     function scrollToSection(id) {
       const el = document.getElementById(id);
@@ -3226,7 +2944,7 @@
       const btn = document.getElementById("todayPickOpen");
       if (!liveFirst || !title || !meta || !why || !btn) return;
       title.textContent = liveFirst.source && liveFirst.source.title && liveFirst.source.title !== "#" ? liveFirst.source.title : liveFirst.title;
-      meta.textContent = `来源：${liveFirst.source.name || "内置种子"} · 原文日期：${liveFirst.sourceDate} · 商业信号：${viewGroup(liveFirst)}`;
+      meta.textContent = `来源：${liveFirst.source.name || "内置种子"} · 原文日期：${liveFirst.sourceDate} · 应用场景：${liveFirst.category}`;
       why.textContent = `今天推荐先读这篇，因为它能落到「${liveFirst.businessView}」和「${liveFirst.category}」：读商业变化，再转成客户沟通里的英文表达。`;
       btn.onclick = () => openDetail(liveFirst.id);
     }

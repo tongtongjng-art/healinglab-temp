@@ -41,19 +41,6 @@ LOOKBACK_DAYS = 90
 MAX_ARTICLE_SECONDS = 18
 USER_AGENT = "BusinessEnglishWorkDesk/1.0 (+personal learning tool)"
 
-GLOBAL_EXCLUDE_TOPICS = [
-    "housing market", "house prices", "home prices", "mortgage", "real estate",
-    "celebrity", "film", "music", "sports", "election", "politician",
-    "crime", "murder", "lawsuit", "pure stock", "stock market debut",
-]
-
-GLOBAL_BUSINESS_TERMS = [
-    "business", "company", "companies", "consumer demand", "retail", "supplier", "supply chain",
-    "shipping", "freight", "tariff", "tariffs", "currency", "exchange rate", "cost", "pricing",
-    "inventory", "cash flow", "payment", "beauty", "pet care", "home goods", "small appliances",
-    "health and wellness", "ai", "automation", "productivity", "budget pressure", "cautious spending",
-]
-
 FEEDS = [
     {
         "name": "The Guardian Business",
@@ -80,47 +67,44 @@ FEEDS = [
         "url": "https://feeds.harvardbusiness.org/harvardbusiness",
         "quality": 8,
     },
-    {
-        "name": "Retail Dive",
-        "url": "https://www.retaildive.com/feeds/news/",
-        "quality": 8,
-    },
-    {
-        "name": "Marketing Dive",
-        "url": "https://www.marketingdive.com/feeds/news/",
-        "quality": 7,
-    },
-    {
-        "name": "CIO Dive",
-        "url": "https://www.ciodive.com/feeds/news/",
-        "quality": 7,
-    },
 ]
 
 SCENARIOS = [
     {
         "id": "price-too-high",
         "keywords": [
-            "price", "prices", "pricing", "margin", "margins", "cost", "costs", "inflation",
-            "customer", "customers", "buyer", "buyers", "value", "supplier", "suppliers",
-            "tariff", "tariffs", "currency", "exchange rate", "budget pressure", "cautious spending",
+            "price",
+            "prices",
+            "pricing",
+            "margin",
+            "margins",
+            "cost",
+            "costs",
+            "inflation",
+            "customer",
+            "customers",
+            "buyer",
+            "buyers",
+            "value",
+            "supplier",
+            "suppliers",
         ],
     },
     {
         "id": "discount-request",
-        "keywords": ["discount", "demand", "buyer", "buyers", "sales", "pricing", "budget", "consumer demand", "retail trend", "cautious spending", "budget pressure"],
+        "keywords": ["discount", "demand", "buyer", "buyers", "sales", "pricing", "budget"],
     },
     {
         "id": "material-cost-rise",
-        "keywords": ["raw material", "materials", "commodity", "commodities", "input costs", "costs", "prices", "tariffs", "currency", "exchange rate", "inventory", "supply chain"],
+        "keywords": ["raw material", "materials", "commodity", "commodities", "input costs", "costs", "prices"],
     },
     {
         "id": "delivery-delay",
-        "keywords": ["delay", "delivery", "supply chain", "production", "shipment", "shipping", "inventory", "supplier risk", "lead time"],
+        "keywords": ["delay", "delivery", "supply chain", "production", "shipment", "shipping"],
     },
     {
         "id": "shipping-cost-rise",
-        "keywords": ["freight", "shipping", "logistics", "port", "container", "route", "delivery", "warehouse", "fulfilment", "last mile", "inventory"],
+        "keywords": ["freight", "shipping", "logistics", "port", "container", "route", "delivery"],
     },
     {
         "id": "deposit-reminder",
@@ -136,7 +120,7 @@ SCENARIOS = [
     },
     {
         "id": "sample-follow-up",
-        "keywords": ["sample", "product", "quality", "consumer", "design", "testing", "pet care", "health and wellness", "beauty", "home goods", "small appliances", "retail trend"],
+        "keywords": ["sample", "product", "quality", "consumer", "design", "testing"],
     },
     {
         "id": "quality-complaint",
@@ -242,11 +226,6 @@ def parse_feed(feed: dict[str, object]) -> list[Article]:
         published = parse_date(item.findtext("pubDate", ""))
         if not title or not link or not published:
             continue
-        joined = f"{title} {summary}".lower()
-        if any(bit in joined for bit in GLOBAL_EXCLUDE_TOPICS):
-            continue
-        if not any(bit in joined for bit in GLOBAL_BUSINESS_TERMS):
-            continue
         items.append(
             Article(
                 source=str(feed["name"]),
@@ -298,106 +277,9 @@ def fallback_summary_paragraphs(article: Article) -> list[str]:
     return []
 
 
-def commercial_pack_for_scenario(scenario_id: str) -> dict[str, object]:
-    packs = {
-        "price-too-high": {
-            "title": "成本上涨与买方压价：如何把价格压力转成价值说明？",
-            "category": "成本与利润",
-            "businessView": "成本上涨",
-            "commercialSignal": "客户压价背后通常是预算压力、需求放缓或内部审批收紧。",
-            "affectedIndustries": "B2B 供应商 / 消费品 / 跨境电商 / 批发零售 / 制造业",
-            "chinaInsight": "不要只学一句降价回复，要学会解释成本、价值、交付责任和可替代方案。",
-            "businessEnglish": "We can review the scope and payment terms before adjusting the price.",
-        },
-        "discount-request": {
-            "title": "消费谨慎与折扣请求：如何不牺牲利润地回应？",
-            "category": "需求变化",
-            "businessView": "需求疲软",
-            "commercialSignal": "当需求变谨慎，客户会更频繁测试折扣、账期和订单条件。",
-            "affectedIndustries": "零售 / 消费品 / 美妆个护 / 家居小家电 / 跨境电商",
-            "chinaInsight": "折扣不是单向让利，应和数量、付款、交付、规格或长期合作绑定。",
-            "businessEnglish": "The discount can be reviewed based on the order quantity and payment terms.",
-        },
-        "material-cost-rise": {
-            "title": "材料与成本波动：如何判断报价和供应风险？",
-            "category": "成本与利润",
-            "businessView": "成本上涨",
-            "commercialSignal": "原材料、能源、关税或汇率变化会影响报价有效期、库存和交付承诺。",
-            "affectedIndustries": "制造业 / 工业品 / 化工材料 / 消费品供应链 / B2B 采购",
-            "chinaInsight": "把成本变化转成报价有效期、替代材料、库存锁定和客户沟通方案。",
-            "businessEnglish": "The current price can be kept for orders confirmed before the validity date.",
-        },
-        "delivery-delay": {
-            "title": "交付不确定性：如何提前沟通风险和新时间表？",
-            "category": "供应链",
-            "businessView": "供应链",
-            "commercialSignal": "供应链或生产节奏变化会直接影响交付承诺和客户体验。",
-            "affectedIndustries": "制造业 / 物流 / 外贸订单 / 跨境履约 / 批发零售",
-            "chinaInsight": "交付问题不能等客户追问，要主动给原因、影响、新时间和补救动作。",
-            "businessEnglish": "We will share the revised delivery schedule and keep you updated on the progress.",
-        },
-        "shipping-cost-rise": {
-            "title": "物流方案变化：如何判断履约成本和交付选择？",
-            "category": "供应链",
-            "businessView": "供应链",
-            "commercialSignal": "物流、仓储和履约能力正在影响企业成本、交付体验和客户选择。",
-            "affectedIndustries": "跨境电商 / 批发零售 / 消费品 / 物流服务 / B2B 供应商",
-            "chinaInsight": "不要只看运费涨跌，要看履约方式、库存位置和交付承诺如何改变客户决策。",
-            "businessEnglish": "We can compare the total landed cost and delivery window before confirming the best option.",
-        },
-        "deposit-reminder": {
-            "title": "现金流与排产：如何把付款节点说成订单推进？",
-            "category": "成本与利润",
-            "businessView": "库存压力",
-            "commercialSignal": "现金流和付款周期会影响企业是否能锁定库存、排产和交付窗口。",
-            "affectedIndustries": "制造业 / 批发贸易 / 供应链金融 / 跨境订单 / 零售库存",
-            "chinaInsight": "催款不是催债，而是说明付款和排产、备料、交付之间的关系。",
-            "businessEnglish": "Payment timing will help us secure the production schedule and delivery window.",
-        },
-        "balance-payment": {
-            "title": "发货前付款节点：如何不伤关系地推进尾款？",
-            "category": "成本与利润",
-            "businessView": "库存压力",
-            "commercialSignal": "尾款延迟会影响出货、库存占用和现金回笼。",
-            "affectedIndustries": "制造业 / 外贸订单 / 批发贸易 / 跨境履约 / 物流",
-            "chinaInsight": "先给订单状态，再把尾款和发货安排绑定，避免语气像催债。",
-            "businessEnglish": "Once the balance is received, we can arrange shipment immediately.",
-        },
-        "no-reply-follow-up": {
-            "title": "需求不确定时，如何让客户继续回复？",
-            "category": "商务表达",
-            "businessView": "需求疲软",
-            "commercialSignal": "客户不回复可能来自预算未定、需求变弱、内部审批慢或替代方案比较。",
-            "affectedIndustries": "B2B 销售 / 跨境电商 / 消费品 / 客户成功 / 外贸开发",
-            "chinaInsight": "不要反复问 any update，要给客户一个更容易回复的小问题或选项。",
-            "businessEnglish": "Would it be helpful if I prepare a revised option based on your target budget?",
-        },
-        "sample-follow-up": {
-            "title": "品类趋势与样品验证：如何把兴趣推进到下一步？",
-            "category": "行业机会",
-            "businessView": "零售趋势",
-            "commercialSignal": "新品类、新消费信号和样品反馈会决定客户是否继续推进订单。",
-            "affectedIndustries": "美妆个护 / 宠物护理 / 健康消费 / 家居小家电 / 消费品供应链",
-            "chinaInsight": "样品跟进不要只问喜不喜欢，要问测试结果、规格、包装、使用场景和下一步计划。",
-            "businessEnglish": "May I know how the sample evaluation is going?",
-        },
-        "quality-complaint": {
-            "title": "质量风险与品牌信任：如何先稳住客户？",
-            "category": "供应链",
-            "businessView": "零售趋势",
-            "commercialSignal": "质量问题不仅是售后成本，也会影响客户信任、复购和品牌声誉。",
-            "affectedIndustries": "消费品 / 美妆个护 / 宠物护理 / 家居用品 / B2B 供应链",
-            "chinaInsight": "第一封回复不要争责任，要先承接、收集证据、给调查节点和后续方案。",
-            "businessEnglish": "We take your feedback seriously and will look into it immediately.",
-        },
-    }
-    return packs.get(scenario_id, {})
-
-
 def build_live_item(scenario: dict[str, object], article: Article, paragraphs: list[str]) -> dict[str, object]:
-    scenario_id = str(scenario["id"])
-    item = {
-        "scenarioId": scenario_id,
+    return {
+        "scenarioId": scenario["id"],
         "sourceDate": article.published.date().isoformat(),
         "freshness": "自动抓取",
         "source": {
@@ -414,8 +296,6 @@ def build_live_item(scenario: dict[str, object], article: Article, paragraphs: l
             ],
         },
     }
-    item.update(commercial_pack_for_scenario(scenario_id))
-    return item
 
 
 def main() -> int:
@@ -450,7 +330,7 @@ def main() -> int:
     payload = {
         "generatedAt": now.isoformat(),
         "lookbackDays": LOOKBACK_DAYS,
-        "note": "Articles are filtered for global business trends that can become commercial judgement and business-English output. cn and insight are intentionally blank unless a translation/GPT step fills them.",
+        "note": "cn and insight are intentionally blank unless your translation/GPT step fills them. The page will show English only for blank translations.",
         "scenarios": live_items,
     }
     OUTPUT.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
