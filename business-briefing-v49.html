@@ -1017,35 +1017,89 @@ function inferTrendFromText(text){
 
 function liveToArticle(live, idx){
   const source = live.source || {};
-  const title = source.title || `Live Business Signal ${idx+1}`;
+  const title = source.title || live.title || `Live Business Signal ${idx+1}`;
   const firstPara = (source.paragraphs && source.paragraphs[0]) || {};
-  const text = `${title} ${firstPara.en || ""} ${live.scenarioId || ""}`;
-  const trend = inferTrendFromText(text);
-  const firstExcerpt = firstPara.en || source.summary || title;
+  const text = `${title} ${firstPara.en || ""} ${live.scenarioId || ""} ${live.signal || ""} ${live.trend || ""}`;
+
+  const trend = live.trend || inferTrendFromText(text);
+  const firstExcerpt = firstPara.en || source.summary || live.excerpt || title;
+
+  const fallbackByTrend = {
+    "consumer-demand": {
+      signal:"Consumer Demand",
+      titleCn:"消费需求变化正在影响定价、选品和客户沟通",
+      why:"看懂消费者预算、偏好和购买动机如何变化，避免只凭感觉判断市场。",
+      action:"转成选品判断、价格解释、客户开发和销售汇报中的可用表达。",
+      english:"consumer demand is shifting toward value-conscious choices"
+    },
+    "supply-chain-cost": {
+      signal:"Supply Chain / Cost Pressure",
+      titleCn:"供应链与成本压力正在改变企业交付和利润逻辑",
+      why:"看懂成本、库存、物流和供应稳定性如何影响报价与交付。",
+      action:"转成报价解释、供应商沟通、交期说明和内部汇报中的可用表达。",
+      english:"manage cost pressure across the supply chain"
+    },
+    "tariff-currency": {
+      signal:"Tariff / Currency",
+      titleCn:"关税与汇率变化正在重塑跨境成本和报价策略",
+      why:"看懂关税、汇率和贸易政策如何影响总 landed cost。",
+      action:"转成报价重算、客户解释、采购路线调整和风险提示中的可用表达。",
+      english:"reduce exposure to tariff-related cost pressure"
+    },
+    "ai-productivity": {
+      signal:"AI Productivity",
+      titleCn:"AI 效率工具正在改变工作流程和运营成本结构",
+      why:"看懂 AI 不只是写文案，而是如何影响客服、运营、流程和生产率。",
+      action:"转成内部提案、流程优化、客服自动化和效率汇报中的可用表达。",
+      english:"streamline workflows and reduce manual workload"
+    },
+    "retail-inventory": {
+      signal:"Retail / Inventory",
+      titleCn:"零售与库存变化正在影响促销、利润和现金流",
+      why:"看懂库存压力、折扣、零售需求和品牌利润之间的关系。",
+      action:"转成库存决策、促销规划、渠道沟通和销售复盘中的可用表达。",
+      english:"rebalance inventory while protecting margins"
+    },
+    "business-strategy": {
+      signal:"Business Strategy",
+      titleCn:"企业正在重新校准增长、成本和运营韧性",
+      why:"看懂企业如何在不确定环境里调整战略、组织和资源配置。",
+      action:"转成汇报、复盘、管理沟通和商务邮件里的判断表达。",
+      english:"recalibrate our operating model"
+    }
+  };
+
+  const fallback = fallbackByTrend[trend] || fallbackByTrend["business-strategy"];
+
   return {
-    id:`live-${idx}-${String(live.scenarioId || "signal").replace(/[^a-z0-9-]/gi,"")}`,
+    id: live.id || `live-${idx}-${String(live.scenarioId || "signal").replace(/[^a-z0-9-]/gi,"")}`,
     trend,
-    industry:"crossborder",
-    signal: trend === "ai" ? "AI Productivity" : trend === "tariff" ? "Tariff / Currency" : trend === "supply" ? "Supply Chain / Cost Pressure" : "Consumer Demand",
-    pill:"Auto Pick",
+    industry: live.industry || "crossborder",
+    signal: live.signal || fallback.signal,
+    pill: live.pill || live.sourceType || "Auto Pick",
     title,
-    titleCn: "今日商业信号：从这篇外刊里提炼趋势判断和商务英文输出",
-    desc:"这篇文章可用于提炼商业变化、行业影响和工作场景里的英文表达。",
-    why:"先看它反映了什么市场变化，再判断它如何影响成本、需求、交付或客户沟通。",
-    action:"转成客户沟通、邮件、汇报或选品判断里的可用表达。",
-    source: source.name || "Live Source",
-    sourceUrl: source.url || "",
-    date: live.sourceDate || "",
-    readingTime:"5 分钟",
-    excerpt:firstExcerpt,
-    breakdown:firstPara.cn || "这段需要你在编辑步骤里补充中文拆解：它讲的不是孤立新闻，而是一个可以转化为业务判断的商业信号。",
-    judgement:firstPara.insight || "先判断这件事会影响成本、需求、供应链还是工作效率，再转成对应的商务英文表达。",
-    win:"能快速响应变化、具备供应链或客户沟通能力的团队。",
-    lose:"只看单点新闻、不能转成业务动作的团队。",
-    userUse:"外贸可用于客户沟通；跨境可用于选品和供应链判断；职场可用于英文汇报。",
-    english:"We are monitoring this trend and will adjust our plan accordingly.",
-    template:"Hi [Name],\\n\\nWe are monitoring this trend closely and will adjust our plan accordingly. I will share a more detailed update once we have confirmed the potential impact on cost, demand and delivery.\\n\\nBest,\\n[Your Name]",
-    practice:"用英文写 2 句话，说明这条新闻对你的业务有什么影响。"
+    titleCn: live.titleCn || source.titleCn || fallback.titleCn,
+    desc: live.desc || source.summaryCn || fallback.titleCn,
+    why: live.why || source.why || fallback.why,
+    action: live.action || source.action || fallback.action,
+    source: source.name || live.sourceName || "Live Source",
+    sourceUrl: source.url || live.sourceUrl || "",
+    date: live.sourceDate || live.date || "",
+    readingTime: live.readingTime || "5 分钟",
+    excerpt: firstExcerpt,
+    breakdown: live.breakdown || firstPara.cn || "这篇文章反映的不是孤立新闻，而是一个可以转化为业务判断的商业信号。先判断它影响成本、需求、供应链、汇率还是工作效率，再转成对应的商务英文表达。",
+    judgement: live.judgement || firstPara.insight || "优先看它对需求、成本、交付和客户沟通的影响，而不是只看新闻标题本身。",
+    win: live.win || "能快速调整供应链、成本结构、运营流程和客户沟通方式的企业。",
+    lose: live.lose || "只依赖单一市场、单一供应链或单一低价策略的企业。",
+    userUse: live.userUse || "外贸可用于客户沟通；跨境可用于选品和供应链判断；职场可用于英文汇报。",
+    english: live.english || fallback.english,
+    template: live.template || `Hi [Name],
+
+We are monitoring this trend closely and will adjust our plan accordingly. I will share a more detailed update once we have confirmed the potential impact on cost, demand and delivery.
+
+Best,
+[Your Name]`,
+    practice: live.practice || "用英文写 2 句话，说明这条新闻对你的业务有什么影响。"
   };
 }
 
