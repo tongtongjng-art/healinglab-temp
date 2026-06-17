@@ -150,8 +150,8 @@ MAX_OUTPUT = 8
 # 严格质量门槛
 MIN_CATEGORY_SCORE = 6
 MIN_EFFECTIVE_PARAGRAPHS = 2
-MIN_TOTAL_WORDS = 180
-MIN_AVG_PARAGRAPH_WORDS = 55
+MIN_TOTAL_WORDS = 240
+MIN_AVG_PARAGRAPH_WORDS = 65
 
 
 def clean_html(value: str) -> str:
@@ -383,8 +383,8 @@ def build_article(entry, source_name: str):
 
     para_objs = [{
         "en": p,
-        "cn": make_cn_explanation(category, source_name, title),
-        "insight": make_insight(category),
+        "cn": "【待精译】这是一段自动抓取的英文原文。请在 AI 精修后补入准确中文翻译，避免机器规则硬译误导读者。",
+        "insight": "",
     } for p in paragraphs[:3]]
 
     english = rules["english"]
@@ -397,15 +397,17 @@ def build_article(entry, source_name: str):
         "pill": source_name.split()[0],
         "sourceType": "Auto Pick",
         "titleCn": rules["titleCn"],
-        "desc": f"这篇文章正文信息量充足，可用于提炼「{rules['signal']}」相关的商业判断和商务英文表达。",
+        "desc": f"这篇文章已抓取到足够英文正文，可先作为「{rules['signal']}」候选原文阅读。深度中文拆解需经过 AI 或人工精修后发布。",
         "why": rules["why"],
         "action": rules["action"],
         "english": english,
-        "breakdown": make_cn_explanation(category, source_name, title),
-        "judgement": make_insight(category),
-        "win": "能够基于真实市场变化快速调整成本、流程、供应链或客户沟通方式的企业。",
-        "lose": "只看标题、不看成本传导和运营细节，仍按旧逻辑报价、备货或沟通的企业。",
-        "userUse": "外贸可用于客户沟通；跨境可用于选品和供应链判断；职场可用于英文汇报。",
+        "breakdown": "",
+        "judgement": "",
+        "win": "",
+        "lose": "",
+        "userUse": "",
+        "analysisStatus": "needs_ai_enrichment",
+        "deepReady": False,
         "template": template_for_category(category, english),
         "practice": practice_for_category(category),
         "sourceDate": date_str,

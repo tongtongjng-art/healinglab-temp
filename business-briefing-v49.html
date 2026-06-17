@@ -939,54 +939,76 @@ function showHome(){
   window.scrollTo(0,0);
 }
 
+function renderExcerptBlocks(item){
+  const paragraphs = Array.isArray(item.paragraphs) && item.paragraphs.length ? item.paragraphs : [{en:item.excerpt || item.title, cn:item.translation || ""}];
+  return `<div class="excerpt-list">` + paragraphs.slice(0,3).map((p, idx) => {
+    const en = p.en || p.text || "";
+    const cn = p.cn || p.translation || "这段中文翻译需要经过人工或 AI 精译后补充。当前自动抓取只保证英文摘录，不再伪造深度翻译。";
+    return `
+      <div class="excerpt-block">
+        <div class="excerpt-en">“${escapeHtml(en)}”</div>
+        <details class="translation-fold">
+          <summary>展开中文翻译 / Translation ${idx + 1}</summary>
+          <p>${escapeHtml(cn)}</p>
+        </details>
+      </div>
+    `;
+  }).join("") + `</div>`;
+}
+
+function renderOptionalLayer(num, title, value){
+  if(!value || String(value).trim().length < 20) return "";
+  return `
+    <article class="layer">
+      <div class="layer-title"><span class="layer-num">${num}</span> ${title}</div>
+      <p>${escapeHtml(value)}</p>
+    </article>
+  `;
+}
+
 function detailHTML(item){
   const sourceUrl = item.sourceUrl ? `<p><a href="${escapeAttr(item.sourceUrl)}" target="_blank" rel="noopener">查看原文来源 →</a></p>` : "";
+  const isDraft = item.analysisStatus === "needs_ai_enrichment" || item.deepReady === false;
   return `
     <article class="layer">
       <div class="layer-title"><span class="layer-num">01</span> Today’s Business Signal</div>
       <p>${escapeHtml(item.desc)}</p>
+      ${isDraft ? `<div class="weak-note">当前为「原文摘录版」。这篇文章已经通过正文质量门槛，但还没有经过深度中文拆解，因此不会再硬套空泛的趋势判断。适合先读原文，再人工/AI 精修成完整 1–9 层。</div>` : ""}
     </article>
     <article class="layer">
       <div class="layer-title"><span class="layer-num">02</span> Excerpt / 外刊摘录</div>
-      <div class="excerpt">“${escapeHtml(item.excerpt || item.title)}”</div>
+      ${renderExcerptBlocks(item)}
       ${sourceUrl}
     </article>
-    <article class="layer">
-      <div class="layer-title"><span class="layer-num">03</span> 中文拆解</div>
-      <p>${escapeHtml(item.breakdown)}</p>
-    </article>
-    <article class="layer">
-      <div class="layer-title"><span class="layer-num">04</span> 趋势判断</div>
-      <p>${escapeHtml(item.judgement)}</p>
-    </article>
+    ${renderOptionalLayer("03", "中文拆解", item.breakdown)}
+    ${renderOptionalLayer("04", "趋势判断", item.judgement)}
+    ${(item.win && item.lose && !isDraft) ? `
     <article class="layer">
       <div class="layer-title"><span class="layer-num">05</span> Industry Impact / 影响行业</div>
       <div class="two-col">
         <div class="impact"><b>受益：</b><br>${escapeHtml(item.win)}</div>
         <div class="impact"><b>承压：</b><br>${escapeHtml(item.lose)}</div>
       </div>
-    </article>
-    <article class="layer">
-      <div class="layer-title"><span class="layer-num">06</span> 中国用户怎么用</div>
-      <p>${escapeHtml(item.userUse)}</p>
-    </article>
+    </article>` : ""}
+    ${renderOptionalLayer("06", "中国用户怎么用", item.userUse)}
     <article class="layer">
       <div class="layer-title"><span class="layer-num">07</span> Business English</div>
       <h3 class="serif">${escapeHtml(item.english)}</h3>
     </article>
+    ${(!isDraft && item.template) ? `
     <article class="layer">
       <div class="layer-title"><span class="layer-num">08</span> Email / Briefing Template</div>
       <div class="email-box">${escapeHtml(item.template)}</div>
-    </article>
+    </article>` : ""}
     <article class="layer">
       <div class="layer-title"><span class="layer-num">09</span> Output Practice</div>
-      <p>${escapeHtml(item.practice)}</p>
+      <p>${escapeHtml(item.practice || "读完 2–3 段原文后，用英文写 2 句话概括它对业务的影响。")}</p>
       <textarea placeholder="在这里写你的今日商务英文输出..."></textarea>
     </article>
   `;
 }
 
-function escapeHtml(value){
+function escapeHtmlfunction escapeHtml(value){
   return String(value ?? "").replace(/[&<>"']/g, ch => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[ch]));
 }
 function escapeAttr(value){ return escapeHtml(value); }
@@ -1022,6 +1044,7 @@ function liveToArticle(live, idx){
   const text = `${title} ${firstPara.en || ""} ${live.scenarioId || ""} ${live.signal || ""} ${live.trend || ""}`;
 
   const trend = live.trend || inferTrendFromText(text);
+  const rawParas = Array.isArray(source.paragraphs) ? source.paragraphs.filter(p => p && (p.en || p.text)) : [];
   const firstExcerpt = firstPara.en || source.summary || live.excerpt || title;
 
   const fallbackByTrend = {
@@ -1087,11 +1110,14 @@ function liveToArticle(live, idx){
     date: live.sourceDate || live.date || "",
     readingTime: live.readingTime || "5 分钟",
     excerpt: firstExcerpt,
-    breakdown: live.breakdown || firstPara.cn || "这篇文章反映的不是孤立新闻，而是一个可以转化为业务判断的商业信号。先判断它影响成本、需求、供应链、汇率还是工作效率，再转成对应的商务英文表达。",
-    judgement: live.judgement || firstPara.insight || "优先看它对需求、成本、交付和客户沟通的影响，而不是只看新闻标题本身。",
-    win: live.win || "能快速调整供应链、成本结构、运营流程和客户沟通方式的企业。",
-    lose: live.lose || "只依赖单一市场、单一供应链或单一低价策略的企业。",
-    userUse: live.userUse || "外贸可用于客户沟通；跨境可用于选品和供应链判断；职场可用于英文汇报。",
+    paragraphs: rawParas.length ? rawParas : [{en:firstExcerpt, cn:firstPara.cn || ""}],
+    analysisStatus: live.analysisStatus || "needs_ai_enrichment",
+    deepReady: live.deepReady === true,
+    breakdown: live.breakdown || "",
+    judgement: live.judgement || "",
+    win: live.win || "",
+    lose: live.lose || "",
+    userUse: live.userUse || "",
     english: live.english || fallback.english,
     template: live.template || `Hi [Name],
 
