@@ -92,6 +92,9 @@ BUSINESS_CONTEXT = [
     "supply chain", "logistics", "shipping", "freight", "tariff", "tariffs",
     "currency", "exchange rate", "cost", "costs", "pricing", "demand", "consumer",
     "inventory", "cash flow", "payment", "invoice", "quality", "production",
+    "retail", "retailer", "retailers", "consumer demand", "cautious spending",
+    "budget pressure", "health and wellness", "beauty", "pet care", "home goods",
+    "small appliances", "ai productivity", "automation", "productivity",
 ]
 
 WORK_CONTEXT = [
@@ -104,6 +107,10 @@ WORK_CONTEXT = [
     "raw materials", "input costs", "payment", "invoice", "cash flow", "margin",
     "margins", "pricing", "cost pressures", "working capital", "lead times",
     "delivery", "quality", "recall", "after-sales",
+    "consumer demand", "retail trend", "inventory", "cautious spending",
+    "budget pressure", "tariffs", "currency", "exchange rate", "ai productivity",
+    "automation", "small appliances", "beauty", "pet care", "home goods",
+    "health and wellness",
 ]
 
 B2B_CORE_CONTEXT = [
@@ -116,6 +123,10 @@ B2B_CORE_CONTEXT = [
     "raw material", "raw materials", "input costs", "payment", "invoice",
     "cash flow", "margin", "margins", "pricing", "lead time", "lead times",
     "delivery", "contract", "contracts", "quality",
+    "tariff", "tariffs", "currency", "exchange rate", "inventory",
+    "consumer demand", "retail trend", "budget pressure", "cautious spending",
+    "ai productivity", "automation", "productivity", "category growth",
+    "sales channel", "retailers", "brands",
 ]
 
 HIGH_VALUE_CONTEXT = [
@@ -128,6 +139,10 @@ HIGH_VALUE_CONTEXT = [
     "purchase order", "purchase orders", "order volume", "order volumes",
     "manufacturing capacity", "factory output", "inventory levels",
     "quality issue", "product recall", "after-sales",
+    "consumer demand", "retail trend", "pet care", "health and wellness",
+    "small appliances", "beauty", "home goods", "ai productivity",
+    "tariff pressure", "currency volatility", "inventory pressure",
+    "cautious spending", "budget pressure", "demand slowdown",
 ]
 
 COMMERCIAL_LENS_CONTEXT = [
@@ -144,6 +159,11 @@ COMMERCIAL_LENS_CONTEXT = [
     "economic security", "capacity", "manufacturing capacity", "service offering",
     "shipping network", "less-than-truckload", "ltl", "open to all businesses",
     "business customers", "enterprise customers",
+    "consumer demand", "retail trend", "cautious spending", "budget pressure",
+    "health and wellness", "pet care", "beauty", "home goods", "small appliances",
+    "ai productivity", "automation", "efficiency", "tariff", "tariffs",
+    "currency", "exchange rate", "inventory", "stock levels", "category demand",
+    "consumer behavior", "shopping habits", "trade down", "premiumization",
 ]
 
 CONSUMER_ONLY_CONTEXT = [
@@ -177,16 +197,16 @@ PREFER_URL_PARTS = [
 ]
 
 SCENARIOS = [
-    {"id": "material-cost-rise", "keywords": ["raw material", "raw materials", "materials", "commodity", "commodities", "critical minerals", "rare earth", "input costs", "costs", "prices", "manufacturer", "manufacturing"]},
-    {"id": "delivery-delay", "keywords": ["delay", "delivery", "lead time", "lead times", "supply chain", "production", "shipment", "shipping", "factory", "capacity"]},
-    {"id": "shipping-cost-rise", "keywords": ["freight", "shipping", "logistics", "port", "container", "containers", "route", "delivery", "shipping capacity", "freight rates"]},
-    {"id": "deposit-reminder", "keywords": ["payment", "cash flow", "working capital", "deposit", "invoice", "liquidity", "payment terms"]},
-    {"id": "balance-payment", "keywords": ["payment", "invoice", "cash flow", "shipment", "credit", "balance", "receivables", "payment terms"]},
-    {"id": "price-too-high", "keywords": ["price", "prices", "pricing", "margin", "margins", "input costs", "inflation", "buyer", "buyers", "value", "supplier", "suppliers", "cost pressure"]},
-    {"id": "discount-request", "keywords": ["discount", "demand", "buyer", "buyers", "sales", "pricing", "budget", "order volume", "purchase order"]},
-    {"id": "no-reply-follow-up", "keywords": ["sales", "customer", "customers", "client", "clients", "demand", "buyer", "buyers", "confidence", "orders", "pipeline"]},
-    {"id": "sample-follow-up", "keywords": ["sample", "product", "quality", "design", "testing", "prototype", "supplier", "manufacturer"]},
-    {"id": "quality-complaint", "keywords": ["quality", "recall", "complaint", "defect", "safety", "customer service", "after-sales", "supplier"]},
+    {"id": "material-cost-rise", "keywords": ["raw material", "raw materials", "materials", "commodity", "commodities", "critical minerals", "rare earth", "input costs", "costs", "prices", "manufacturer", "manufacturing", "tariffs", "currency", "inventory pressure", "supply chain gaps"]},
+    {"id": "delivery-delay", "keywords": ["delay", "delivery", "lead time", "lead times", "supply chain", "production", "shipment", "shipping", "factory", "capacity", "inventory", "supplier risk", "production planning"]},
+    {"id": "shipping-cost-rise", "keywords": ["freight", "shipping", "logistics", "port", "container", "containers", "route", "delivery", "shipping capacity", "freight rates", "last mile", "fulfilment", "warehouse", "inventory"]},
+    {"id": "deposit-reminder", "keywords": ["payment", "cash flow", "working capital", "deposit", "invoice", "liquidity", "payment terms", "budget pressure", "cautious spending", "credit"]},
+    {"id": "balance-payment", "keywords": ["payment", "invoice", "cash flow", "shipment", "credit", "balance", "receivables", "payment terms", "working capital", "inventory financing"]},
+    {"id": "price-too-high", "keywords": ["price", "prices", "pricing", "margin", "margins", "input costs", "inflation", "buyer", "buyers", "value", "supplier", "suppliers", "cost pressure", "tariffs", "currency", "budget pressure"]},
+    {"id": "discount-request", "keywords": ["discount", "demand", "buyer", "buyers", "sales", "pricing", "budget", "order volume", "purchase order", "consumer demand", "cautious spending", "retail trend", "trade down"]},
+    {"id": "no-reply-follow-up", "keywords": ["sales", "customer", "customers", "client", "clients", "demand", "buyer", "buyers", "confidence", "orders", "pipeline", "consumer demand", "retail", "category demand", "market opportunity"]},
+    {"id": "sample-follow-up", "keywords": ["sample", "product", "quality", "design", "testing", "prototype", "supplier", "manufacturer", "beauty", "pet care", "health and wellness", "small appliances", "home goods", "product validation"]},
+    {"id": "quality-complaint", "keywords": ["quality", "recall", "complaint", "defect", "safety", "customer service", "after-sales", "supplier", "brand trust", "consumer reviews", "product safety"]},
 ]
 
 SOURCE_QUALITY = {str(feed["name"]): int(feed["quality"]) for feed in FEEDS}
@@ -303,7 +323,7 @@ def is_work_relevant(text: str) -> bool:
         return False
     if work < 6 and lens < 6:
         return False
-    if consumer > 0 and (core + lens) < 12:
+    if consumer > 0 and (core + lens) < 8:
         return False
     return True
 
@@ -433,9 +453,9 @@ def best_paragraph_window(paragraphs: list[str], keywords: list[str], title_cont
             consumer = consumer_only_score(joined)
             if kw <= 0 or business < 2 or (work + lens) < 6 or (core + lens) < 5:
                 continue
-            if consumer > 0 and (core + lens) < 12:
+            if consumer > 0 and (core + lens) < 8:
                 continue
-            score = kw * 4 + business + work * 3 + core * 5 + lens * 6 + size * 3 - consumer * 8
+            score = kw * 4 + business + work * 3 + core * 5 + lens * 6 + size * 3 - consumer * 3
             candidates.append((score, size, -start, window))
     if not candidates:
         return []
@@ -478,9 +498,9 @@ def best_general_business_window(paragraphs: list[str], keywords: list[str], tit
             consumer = consumer_only_score(joined)
             if business < 4 or (work + lens) < 7 or (core + lens) < 6:
                 continue
-            if consumer > 0 and (core + lens) < 12:
+            if consumer > 0 and (core + lens) < 8:
                 continue
-            score = keyword_score(joined, keywords) * 3 + business * 3 + work * 3 + core * 5 + lens * 6 + size * 3 - consumer * 8
+            score = keyword_score(joined, keywords) * 3 + business * 3 + work * 3 + core * 5 + lens * 6 + size * 3 - consumer * 3
             candidates.append((score, size, -start, window))
     if not candidates:
         return []
@@ -647,9 +667,9 @@ def teaching_pack_for_scenario(scenario_id: str, article: Article, paragraphs: l
             },
         ]
         return {
-            "title": "关键材料与化学加工：外贸人如何从产业新闻里发现客户开发机会？",
-            "category": "客户开发",
-            "businessView": "供应链重构",
+            "title": "关键材料与化学加工：如何从产业新闻里发现客户开发机会？",
+            "category": "行业机会",
+            "businessView": "供应链",
             "contentTrack": track_label_for_scenario(scenario_id),
             "methodologySources": methodology_for_scenario(scenario_id),
             "level": "Level2",
@@ -706,9 +726,9 @@ def teaching_pack_for_scenario(scenario_id: str, article: Article, paragraphs: l
             },
         ]
         return {
-            "title": "物流方案变化，如何向客户解释运费和交付选择？",
-            "category": "订单与交付",
-            "businessView": "物流与交付",
+            "title": "物流方案变化：如何判断履约成本和交付选择？",
+            "category": "供应链",
+            "businessView": "供应链",
             "contentTrack": track_label_for_scenario(scenario_id),
             "methodologySources": methodology_for_scenario(scenario_id),
             "level": "Level2",
@@ -744,6 +764,110 @@ def teaching_pack_for_scenario(scenario_id: str, article: Article, paragraphs: l
         }
     return {}
 
+def commercial_fields_for_scenario(scenario_id: str, article: Article, paragraphs: list[str]) -> dict[str, object]:
+    text = f"{article.title} {article.summary} {' '.join(paragraphs)}".lower()
+    if scenario_id == "shipping-cost-rise":
+        return {
+            "commercialSignal": "物流、仓储和履约能力正在影响企业成本、交付体验和客户选择。",
+            "affectedIndustries": "跨境电商 / 批发零售 / 消费品 / 物流服务 / B2B 供应商",
+            "chinaInsight": "不要只看运费涨跌，要看履约方式、库存位置和交付承诺如何改变客户决策。",
+            "trendJudgement": "当物流服务从成本项变成竞争力，企业需要用 delivery window、total landed cost 和 shipping option 来沟通。",
+            "industryImpact": {
+                "benefit": "能提供稳定履约、海外仓、合并出货、路线选择和成本测算的企业。",
+                "pressure": "只靠低价、不解释交付风险、库存周转慢或配送链条不稳定的企业。",
+            },
+            "userUse": {
+                "trade": "报价时把运输方案、时效、风险和总成本一起讲清。",
+                "ecommerce": "判断是否需要海外仓、合并发货、包邮门槛或更稳的尾程服务。",
+                "workplace": "汇报时用 logistics cost, delivery window, total landed cost 表达商业影响。",
+            },
+            "businessEnglish": "We can compare the total landed cost and delivery window before confirming the best option.",
+        }
+    if scenario_id == "material-cost-rise":
+        return {
+            "commercialSignal": "关键材料、加工能力和供应链缺口正在被重新重视，可能带来新的客户开发入口。",
+            "affectedIndustries": "化工材料 / 工业品 / 设备 / 新能源 / 电子制造 / 供应链服务",
+            "chinaInsight": "不要只读成原材料涨价，要看谁需要替代供应、样品验证、加工能力或第二供应商。",
+            "trendJudgement": "产业链补短板会让客户更关注 material availability、processing capacity 和 alternative sourcing。",
+            "industryImpact": {
+                "benefit": "有稳定材料、加工能力、样品验证、技术文件和交付能力的供应商。",
+                "pressure": "依赖单一供应来源、缺少技术说明、交付不稳定或无法配合验证的企业。",
+            },
+            "userUse": {
+                "trade": "用行业观察切入开发信，先说趋势，再说材料/加工/样品验证能力。",
+                "ecommerce": "如果做相关工业品或工具类产品，可关注供应链短缺带来的替代采购需求。",
+                "workplace": "汇报时把新闻转成供应链风险、客户需求和合作机会，而不是只复述新闻。",
+            },
+            "businessEnglish": "We can support sample validation and alternative sourcing before larger production.",
+        }
+    if scenario_id in {"price-too-high", "discount-request"}:
+        return {
+            "commercialSignal": "需求放缓、预算压力或成本变化会让客户更重视价格、价值和付款条件。",
+            "affectedIndustries": "消费品 / 零售 / 跨境电商 / B2B 采购 / 供应商",
+            "chinaInsight": "客户说贵，不一定只是要降价，也可能是在测试预算、替代方案和价值边界。",
+            "trendJudgement": "价格沟通要从单纯让价，转向 value, scope, payment terms and validity window。",
+            "industryImpact": {
+                "benefit": "能清楚说明价值、成本结构、服务范围和可选方案的企业。",
+                "pressure": "只靠低价、利润薄、无法解释价值或没有替代方案的企业。",
+            },
+            "userUse": {
+                "trade": "报价回复里说明规格、服务范围、价格有效期和可调整项。",
+                "ecommerce": "根据预算压力调整套装、折扣门槛、页面卖点和价格带。",
+                "workplace": "用 margin pressure, budget pressure, value proposition 表达商业判断。",
+            },
+            "businessEnglish": "We can review the scope and payment terms before adjusting the price.",
+        }
+    if scenario_id in {"no-reply-follow-up", "sample-follow-up"}:
+        return {
+            "commercialSignal": "消费趋势、品类变化和客户兴趣会影响开发节奏、样品验证和跟进话术。",
+            "affectedIndustries": "美妆个护 / 宠物护理 / 健康消费 / 家居小家电 / 消费品供应链",
+            "chinaInsight": "不要只问客户有没有进展，要用市场信号给客户一个继续讨论的理由。",
+            "trendJudgement": "当需求变化不确定时，跟进要从催回复变成确认 interest, sample feedback and next step。",
+            "industryImpact": {
+                "benefit": "能快速打样、提供规格、解释卖点并配合小批量测试的企业。",
+                "pressure": "跟进空泛、样品反馈慢、无法把趋势转成产品卖点的企业。",
+            },
+            "userUse": {
+                "trade": "跟进邮件里加入行业趋势、样品反馈问题和下一步选项。",
+                "ecommerce": "把趋势转成选品、Listing 卖点和内容测试方向。",
+                "workplace": "用 consumer demand, category trend, sample feedback 组织英文汇报。",
+            },
+            "businessEnglish": "May I check whether this trend matches your current product plan?",
+        }
+    if scenario_id in {"deposit-reminder", "balance-payment"}:
+        return {
+            "commercialSignal": "现金流、库存和付款周期会影响企业是否能按时排产、发货和承诺交付。",
+            "affectedIndustries": "制造业 / 批发贸易 / 跨境订单 / 供应链金融 / 零售库存",
+            "chinaInsight": "付款沟通不要像催债，要把付款节点和库存、排产、交付窗口绑定起来。",
+            "trendJudgement": "在预算谨慎和库存压力下，payment timing 本身就是商业风险管理。",
+            "industryImpact": {
+                "benefit": "付款节点清晰、库存计划稳定、能给客户明确时间窗口的企业。",
+                "pressure": "账期混乱、现金流紧、库存占用高或无法锁定生产计划的企业。",
+            },
+            "userUse": {
+                "trade": "催款时说明付款和排产/发货之间的关系。",
+                "ecommerce": "根据现金流和库存周转调整备货节奏和促销节奏。",
+                "workplace": "用 cash flow, payment timing, production schedule 汇报风险。",
+            },
+            "businessEnglish": "Payment timing will help us secure the production schedule and delivery window.",
+        }
+    return {
+        "commercialSignal": "这篇文章反映了一个商业变量正在变化，需要判断它如何影响需求、成本、供应链或效率。",
+        "affectedIndustries": "外贸 / 跨境 / 职场汇报 / 相关行业从业者",
+        "chinaInsight": "先抓商业变量，再决定它能转成客户沟通、选品判断、汇报表达还是邮件素材。",
+        "trendJudgement": "能转成商业判断的外刊，不只提供信息，还能提供商务英文输出场景。",
+        "industryImpact": {
+            "benefit": "能快速解释趋势并调整沟通、产品或供应链策略的企业。",
+            "pressure": "只看新闻表面、无法把变化转成动作的企业。",
+        },
+        "userUse": {
+            "trade": "转成客户开发、报价解释或跟进沟通。",
+            "ecommerce": "转成选品、定价、库存和卖点判断。",
+            "workplace": "转成英文汇报、会议表达和邮件说明。",
+        },
+        "businessEnglish": "This trend may affect demand, cost and customer decisions in the next few months.",
+    }
+
 def selection_reason(article: Article, scenario_id: str, text: str) -> dict[str, object]:
     return {
         "scenarioId": scenario_id,
@@ -765,7 +889,7 @@ def total_selection_score(article: Article, text: str, scenario_keywords: list[s
         + commercial_lens_score(text) * 7
         + SOURCE_QUALITY.get(article.source, article.quality)
         + preferred_url_score(article.url)
-        - consumer_only_score(text) * 10
+        - consumer_only_score(text) * 3
     )
 
 def build_live_item(scenario: dict[str, object], article: Article, paragraphs: list[str], window: int, score: int) -> dict[str, object]:
@@ -793,7 +917,10 @@ def build_live_item(scenario: dict[str, object], article: Article, paragraphs: l
             ],
         },
     }
+    item.update(commercial_fields_for_scenario(scenario_id, article, paragraphs))
     item.update(teaching_pack_for_scenario(scenario_id, article, paragraphs))
+    for key, value in commercial_fields_for_scenario(scenario_id, article, paragraphs).items():
+        item.setdefault(key, value)
     return item
 
 def pick_for_scenario(scenario: dict[str, object], articles: list[Article], now: dt.datetime) -> tuple[dict[str, object] | None, int | None]:
@@ -832,7 +959,7 @@ def pick_for_scenario(scenario: dict[str, object], articles: list[Article], now:
             core = b2b_core_score(text)
             consumer = consumer_only_score(text)
             score = total_selection_score(article, text, keywords)
-            if consumer > 0 and core < 8:
+            if consumer > 0 and (core + commercial_lens_score(text)) < 8:
                 continue
             relaxed.append((score, article))
         relaxed.sort(key=lambda pair: (pair[0], pair[1].published), reverse=True)
@@ -882,7 +1009,7 @@ def main() -> int:
         "lookbackWindows": LOOKBACK_WINDOWS,
         "lookbackWindowUsed": max(windows_used) if windows_used else None,
         "minParagraphs": MIN_PARAGRAPHS,
-        "note": "Articles are filtered for supplier/buyer/manufacturing/orders/logistics/payment work contexts. cn is a paragraph translation when available; no paywalls are bypassed and no article paragraphs are fabricated.",
+        "note": "Articles are filtered for global business trends that can become commercial judgement and business-English output. cn is a paragraph translation when available; no paywalls are bypassed and no article paragraphs are fabricated.",
         "scenarios": live_items,
     }
     OUTPUT.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")

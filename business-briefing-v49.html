@@ -329,6 +329,35 @@
       font-weight: 700;
     }
 
+    .signal-card-grid {
+      margin-top: 12px;
+      display: grid;
+      gap: 8px;
+      color: var(--ink);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .signal-card-grid p {
+      margin: 0;
+      padding: 9px 10px;
+      border-left: 3px solid var(--red);
+      background: rgba(255, 255, 255, .42);
+    }
+
+    .signal-card-grid b {
+      display: block;
+      margin-bottom: 3px;
+      color: var(--teal-2);
+      font-size: 12px;
+      letter-spacing: .06em;
+    }
+
+    .signal-card-grid em {
+      color: var(--blue);
+      font-style: normal;
+    }
+
     .card-actions {
       margin-top: 18px;
       display: flex;
@@ -610,6 +639,53 @@
     .judgement-card p {
       margin: 0;
       color: var(--ink);
+    }
+
+    .signal-mini-grid,
+    .impact-grid,
+    .use-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .impact-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .signal-mini-grid > div,
+    .impact-grid > div,
+    .use-grid > div {
+      padding: 16px;
+      border: 1px solid var(--line);
+      background: rgba(255, 253, 248, .72);
+    }
+
+    .signal-mini-grid strong,
+    .impact-grid strong,
+    .use-grid strong {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--teal-2);
+      font-size: 15px;
+    }
+
+    .signal-mini-grid p,
+    .impact-grid p,
+    .use-grid p {
+      margin: 0;
+      color: var(--ink);
+      line-height: 1.7;
+    }
+
+    .trend-callout {
+      margin: 14px 0;
+      padding: 14px 16px;
+      border-left: 4px solid var(--red);
+      background: rgba(255, 255, 255, .5);
+      font-weight: 800;
+      line-height: 1.7;
     }
 
     .phrase-grid {
@@ -2053,6 +2129,445 @@
       display: block;
     }
 
+    /* Mobile reading app layout */
+    @media (max-width: 720px) {
+      html,
+      body {
+        width: 100%;
+        overflow-x: hidden;
+      }
+
+      body {
+        min-width: 0 !important;
+        background:
+          linear-gradient(180deg, rgba(255,248,238,.96), rgba(247,238,225,.94)),
+          var(--bg);
+      }
+
+      .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 30;
+        border-bottom: 1px solid var(--line-strong);
+        background: rgba(255,248,238,.96);
+        backdrop-filter: blur(10px);
+      }
+
+      .topbar-inner {
+        height: auto;
+        padding: 10px 12px 8px;
+        gap: 8px;
+      }
+
+      .brand {
+        min-width: 0;
+        flex: 1 1 100%;
+      }
+
+      .brand strong {
+        font-size: 22px;
+        line-height: 1.15;
+      }
+
+      .brand span {
+        font-size: 10px;
+        letter-spacing: .14em;
+      }
+
+      .nav {
+        order: 2;
+        width: 100%;
+        justify-content: flex-start;
+        gap: 6px;
+        overflow-x: auto;
+        padding-bottom: 2px;
+        scrollbar-width: none;
+      }
+
+      .nav::-webkit-scrollbar {
+        display: none;
+      }
+
+      .nav button {
+        flex: 0 0 auto;
+        min-height: 34px;
+        padding: 0 12px;
+        border-radius: 999px;
+        font-size: 13px;
+        white-space: nowrap;
+      }
+
+      .top-actions {
+        order: 3;
+        width: 100%;
+        min-width: 0;
+      }
+
+      body.detail-open .top-actions {
+        display: none;
+      }
+
+      .search {
+        width: 100%;
+        height: 36px;
+        border-radius: 999px;
+      }
+
+      .app-shell,
+      body.detail-open .app-shell {
+        display: block;
+        max-width: none;
+        padding: 0 12px 32px;
+      }
+
+      .aside {
+        display: none !important;
+      }
+
+      .side {
+        display: none;
+      }
+
+      body.detail-open .side {
+        display: block;
+        position: sticky;
+        top: 94px;
+        z-index: 20;
+        margin: 0 -12px 10px;
+        padding: 8px 12px;
+        border-bottom: 1px solid var(--line);
+        background: rgba(255,248,238,.96);
+        backdrop-filter: blur(8px);
+      }
+
+      body.detail-open .side-section:not(.detail-toc) {
+        display: none !important;
+      }
+
+      .side-section.detail-toc {
+        display: block;
+        margin: 0;
+        padding: 0;
+        border: 0;
+        background: transparent;
+      }
+
+      .side-section.detail-toc h2 {
+        display: none;
+      }
+
+      .detail-toc .filter-list {
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        scrollbar-width: none;
+      }
+
+      .detail-toc .filter-list::-webkit-scrollbar {
+        display: none;
+      }
+
+      .detail-toc .filter {
+        flex: 0 0 auto;
+        width: auto;
+        min-height: 32px;
+        padding: 6px 12px;
+        border-radius: 999px;
+        background: #fffefa;
+        white-space: nowrap;
+      }
+
+      .jump-button {
+        padding-left: 12px;
+      }
+
+      .jump-button::before {
+        display: none;
+      }
+
+      .summary-band {
+        width: 100%;
+        margin: 0 0 14px;
+        padding: 0 0 14px;
+      }
+
+      .daily-focus {
+        border: 0;
+        box-shadow: none;
+        background: transparent;
+      }
+
+      .daily-focus-main {
+        padding: 14px 0 0;
+      }
+
+      .daily-focus h1 {
+        margin: 0 0 10px;
+        font-size: 14px;
+        letter-spacing: .12em;
+      }
+
+      .daily-focus .today-pick {
+        min-height: 0;
+        display: block;
+        border: 1px solid var(--line-strong);
+        box-shadow: 7px 7px 0 rgba(28,25,21,.07);
+        background: var(--paper);
+      }
+
+      .daily-focus .today-pick::before,
+      .daily-focus .today-pick::after {
+        display: none;
+      }
+
+      .daily-focus .today-pick-copy {
+        padding: 18px 18px 16px;
+      }
+
+      .daily-focus .today-pick-eyebrow {
+        margin-bottom: 10px;
+        font-size: 11px;
+        letter-spacing: .1em;
+      }
+
+      .daily-focus .today-pick h2 {
+        font-size: 31px;
+        line-height: 1.08;
+      }
+
+      .today-pick-cn {
+        margin-top: 10px;
+        font-size: 15px;
+      }
+
+      .today-pick-original,
+      #todayPickMeta {
+        display: none;
+      }
+
+      .daily-focus .today-pick-button {
+        width: calc(100% - 36px);
+        min-height: 46px;
+        margin: 0 18px 18px;
+        color: #fff8ee;
+        background: var(--teal-2);
+        border-radius: 2px;
+      }
+
+      .summary-band .toolbar {
+        margin-top: 14px;
+        padding-top: 10px;
+      }
+
+      .toolbar {
+        align-items: stretch;
+      }
+
+      .toolbar .mode-select,
+      #sortSelect {
+        width: 100%;
+      }
+
+      .feed-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+
+      .scenario-card {
+        min-height: 0;
+        padding: 14px;
+        border-radius: 0;
+        box-shadow: none;
+      }
+
+      .scenario-card h3 {
+        font-size: 22px;
+      }
+
+      .card-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .back-row {
+        margin: 12px 0 8px;
+      }
+
+      .back-row .status-row {
+        display: none;
+      }
+
+      .detail-hero {
+        margin: 0 0 10px;
+        padding: 18px 16px;
+        border: 1px solid var(--line-strong);
+        border-top: 3px solid var(--line-strong);
+        box-shadow: none;
+        background: var(--paper);
+      }
+
+      .detail-hero .status-row {
+        gap: 6px;
+      }
+
+      .detail-hero h1 {
+        margin-top: 12px;
+        font-size: 35px;
+        line-height: 1.08;
+      }
+
+      .detail-hero p {
+        font-size: 15px;
+        line-height: 1.65;
+      }
+
+      .detail-layout {
+        display: block;
+        margin-top: 0;
+      }
+
+      .compact-brief {
+        padding: 12px 14px;
+      }
+
+      .brief-strip {
+        display: grid;
+        gap: 8px;
+        font-size: 13px;
+      }
+
+      .brief-strip span {
+        padding-left: 10px;
+      }
+
+      .content-section {
+        margin: 0 0 12px;
+        padding: 18px 16px;
+        border: 1px solid var(--line);
+        border-top: 3px solid var(--line-strong);
+        border-radius: 0;
+        background: rgba(255,253,248,.97);
+      }
+
+      .content-section h2 {
+        font-size: 25px;
+        line-height: 1.2;
+      }
+
+      .section-note {
+        font-size: 13px;
+        line-height: 1.6;
+      }
+
+      .source-bar {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+
+      .source-bar .mode-select {
+        width: 100%;
+        border-radius: 2px;
+      }
+
+      .excerpt {
+        padding: 14px 0 16px 12px;
+        border-left-width: 3px;
+      }
+
+      .excerpt-en {
+        font-size: 20px;
+        line-height: 1.75;
+      }
+
+      .translation-card {
+        padding: 12px 13px;
+      }
+
+      .translation-card p {
+        font-size: 15px;
+        line-height: 1.75;
+      }
+
+      .judgement-grid,
+      .phrase-grid,
+      .practice-grid,
+      .related-grid,
+      .signal-mini-grid,
+      .impact-grid,
+      .use-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .judgement-card {
+        grid-template-columns: 1fr;
+        gap: 10px;
+        padding: 14px;
+      }
+
+      .judgement-card strong {
+        font-size: 16px;
+      }
+
+      .phrase,
+      .practice,
+      .related {
+        padding: 13px;
+      }
+
+      .expression-list li {
+        padding: 10px;
+      }
+
+      .template-tabs {
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        padding-bottom: 8px;
+        scrollbar-width: none;
+      }
+
+      .template-tabs::-webkit-scrollbar {
+        display: none;
+      }
+
+      .template-tab {
+        flex: 0 0 auto;
+        min-height: 36px;
+        white-space: nowrap;
+      }
+
+      .template-reader {
+        padding: 14px;
+      }
+
+      .template-reader h3 {
+        font-size: 24px;
+      }
+
+      .email-body,
+      .template-reader .email-body {
+        min-height: 0;
+        padding: 12px;
+        font-size: 14px;
+        line-height: 1.85;
+        overflow-wrap: anywhere;
+      }
+
+      .section-actions .primary,
+      .section-actions .secondary {
+        width: 100%;
+      }
+
+      .practice-card {
+        min-height: 0;
+      }
+
+      .sticky-panel {
+        display: none;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -2064,12 +2579,12 @@
       </div>
       <nav class="nav" aria-label="主导航">
         <button class="active" data-nav="feed">首页 Briefing</button>
-        <button data-nav="scenes">实战场景</button>
+        <button data-nav="scenes">行业机会</button>
         <button data-nav="views">商业观察</button>
         <button data-nav="history">历史文章</button>
       </nav>
       <div class="top-actions">
-        <input class="search" id="searchInput" placeholder="搜索场景、表达、客户问题" />
+        <input class="search" id="searchInput" placeholder="搜索趋势、行业、商务表达" />
       </div>
     </div>
   </header>
@@ -2079,20 +2594,21 @@
       <div class="side-section detail-toc" id="detailToc">
         <h2>本篇导航</h2>
         <div class="filter-list">
-          <button class="filter jump-button" data-jump="section-brief">本篇读法</button>
-          <button class="filter jump-button" data-jump="section-source">外刊原文</button>
-          <button class="filter jump-button" data-jump="section-lens">商业观察</button>
+          <button class="filter jump-button" data-jump="section-brief">今日信号</button>
+          <button class="filter jump-button" data-jump="section-source">外刊摘录</button>
+          <button class="filter jump-button" data-jump="section-breakdown">中文拆解</button>
+          <button class="filter jump-button" data-jump="section-lens">趋势判断</button>
+          <button class="filter jump-button" data-jump="section-use">中国用户怎么用</button>
           <button class="filter jump-button" data-jump="section-phrases">商务表达</button>
-          <button class="filter jump-button" data-jump="section-email">邮件模板</button>
           <button class="filter jump-button" data-jump="section-related">相关场景</button>
         </div>
       </div>
       <div class="side-section">
-        <h2>实战场景</h2>
+        <h2>趋势标签</h2>
         <div class="filter-list" id="categoryFilters"></div>
       </div>
       <div class="side-section">
-        <h2>商业观察</h2>
+        <h2>行业 / 商业信号</h2>
         <div class="filter-list" id="viewFilters"></div>
       </div>
       <div class="side-section">
@@ -2126,14 +2642,14 @@
               </div>
               <div class="rail-card">
                 <strong>今天怎么读</strong>
-                <p>先读外刊里的市场信号，再判断外贸和跨境人能看到什么机会或风险。</p>
+                <p>先读外刊里的全球商业信号，再判断行业变化、消费需求、供应链、成本、汇率、关税和 AI 效率。</p>
               </div>
               <details class="method-drawer">
                 <summary>方法说明</summary>
                 <div class="briefing-lead">
-                  <div><strong>读什么</strong>爆品、AI、供应链、渠道、关税、海外需求。</div>
-                  <div><strong>看什么</strong>市场机会、客户变化、选品线索、开发角度。</div>
-                  <div><strong>带走什么</strong>开发信、跟进话术、报价解释和跨境表达。</div>
+                  <div><strong>读什么</strong>全球商业趋势、消费信号、供应链、成本、关税、汇率和 AI 效率。</div>
+                  <div><strong>看什么</strong>行业机会、需求变化、成本压力、库存风险和商务表达场景。</div>
+                  <div><strong>带走什么</strong>邮件、汇报、会议发言、客户沟通和跨境/外贸应用表达。</div>
                 </div>
               </details>
             </aside>
@@ -2159,7 +2675,7 @@
         <ul>
           <li>先抓最新商业文章，按日期倒序。</li>
           <li>没有当天内容时，最多回看 90 天。</li>
-          <li>只选能落到外贸或跨境动作的材料。</li>
+          <li>只选能转成商业判断和商务英文输出的材料。</li>
         </ul>
       </div>
       <div class="aside-card">
@@ -2917,20 +3433,21 @@
       }
     ];
 
-    const categories = ["全部", "报价与议价", "订单与交付", "付款与催款", "客户跟进", "投诉与售后", "合作与开发"];
+    const categories = ["全部", "商业趋势", "行业机会", "成本与利润", "供应链", "需求变化", "AI效率", "商务表达"];
     const views = [
       "全部",
-      "爆品与趋势",
-      "AI与产品",
-      "新兴行业",
-      "消费心理",
-      "品牌与渠道",
-      "供应链重构",
-      "政策与关税",
-      "海外市场机会",
-      "价格与利润",
-      "跨境物流",
-      "付款与风控"
+      "需求疲软",
+      "成本上涨",
+      "库存压力",
+      "供应链",
+      "关税",
+      "汇率",
+      "AI效率",
+      "零售趋势",
+      "健康消费",
+      "美妆个护",
+      "宠物护理",
+      "家居小家电"
     ];
     const levels = ["全部", "Level1", "Level2", "Level3"];
     const state = {
@@ -2989,13 +3506,15 @@
     function getFilteredScenarios() {
       const query = state.query.trim().toLowerCase();
       let list = scenarios.filter((item) => {
-        const categoryMatch = state.category === "全部" || item.category === state.category;
-        const viewMatch = state.view === "全部" || item.businessView === state.view;
+        const categoryMatch = state.category === "全部" || categoryGroup(item) === state.category;
+        const viewMatch = state.view === "全部" || viewGroup(item) === state.view;
         const levelMatch = state.level === "全部" || item.level === state.level;
         const text = [
           item.title,
           item.category,
           item.businessView,
+          categoryGroup(item),
+          viewGroup(item),
           item.level,
           item.coreProblem,
           ...item.expressions,
@@ -3018,12 +3537,67 @@
       return list;
     }
 
+    function categoryGroup(item) {
+      const value = item.category || "";
+      if (categories.includes(value)) return value;
+      if (["报价与议价", "付款与催款"].includes(value)) return "成本与利润";
+      if (["订单与交付", "投诉与售后"].includes(value)) return "供应链";
+      if (["客户跟进", "合作与开发"].includes(value)) return "商务表达";
+      return "商业趋势";
+    }
+
+    function viewGroup(item) {
+      const value = item.businessView || "";
+      if (views.includes(value)) return value;
+      if (["价格与利润", "付款与风控"].includes(value)) return "成本上涨";
+      if (["供应链重构", "跨境物流"].includes(value)) return "供应链";
+      if (["消费心理", "爆品与趋势"].includes(value)) return "零售趋势";
+      if (value === "AI与产品") return "AI效率";
+      return value || "需求变化";
+    }
+
+    function commercialSignal(item) {
+      return item.commercialSignal || item.signal || item.scenario?.problem || item.coreProblem;
+    }
+
+    function affectedIndustries(item) {
+      const value = item.affectedIndustries || item.industries || item.targetUser || item.businessView;
+      return Array.isArray(value) ? value.join(" / ") : value;
+    }
+
+    function chinaInsight(item) {
+      return item.chinaInsight || item.userInsight || item.scenario?.strategy || "把外刊里的市场变化转成选品、客户沟通、汇报和商务英文表达。";
+    }
+
+    function todayEnglish(item) {
+      return item.businessEnglish || item.todayExpression || item.expressions?.[0] || item.phrases?.[0]?.[3] || "";
+    }
+
+    function trendJudgement(item) {
+      return item.trendJudgement || item.trend || commercialSignal(item);
+    }
+
+    function industryImpact(item) {
+      return item.industryImpact || {
+        benefit: item.benefitIndustries || "能提供替代供应、效率工具、稳定交付、成本优化方案的企业。",
+        pressure: item.pressureIndustries || "成本上升、库存周转慢、需求变弱或交付不稳定的企业。"
+      };
+    }
+
+    function userUse(item) {
+      return item.userUse || {
+        trade: item.tradeUse || "把趋势写进开发信、报价解释、客户跟进和供应链沟通。",
+        ecommerce: item.crossborderUse || "用需求、消费信号和成本变化判断选品、定价、库存和页面卖点。",
+        workplace: item.workplaceUse || "把外刊内容转成会议发言、英文汇报、邮件和老板能听懂的商业判断。"
+      };
+    }
+
     function renderCards() {
       const grid = $("#cardGrid");
       const list = getFilteredScenarios();
       grid.innerHTML = "";
       $("#resultStatus").innerHTML = `
-        <span class="chip gray">${list.length} 个场景</span>
+        <span class="chip gray">${list.length} 个商业信号</span>
         <span class="chip blue">最新来源：${scenarios[0].sourceDate}</span>
         <span class="chip amber">当前筛选：${state.category} / ${state.view} / ${state.level}</span>
       `;
@@ -3034,13 +3608,17 @@
         card.innerHTML = `
           <div>
             <div class="card-meta">
-              <span class="chip">${item.category}</span>
-              <span class="chip blue">${item.businessView}</span>
+              <span class="chip">${categoryGroup(item)}</span>
+              <span class="chip blue">${viewGroup(item)}</span>
               <span class="chip amber">${item.level}</span>
             </div>
             <h3>${item.title}</h3>
-            <p>${item.targetUser}</p>
-            <div class="card-point">${item.coreProblem}</div>
+            <div class="signal-card-grid">
+              <p><b>商业信号</b>${commercialSignal(item)}</p>
+              <p><b>影响行业</b>${affectedIndustries(item)}</p>
+              <p><b>中国用户启发</b>${chinaInsight(item)}</p>
+              <p><b>今日商务英文</b><em>${todayEnglish(item)}</em></p>
+            </div>
           </div>
           <div class="card-actions">
             <button class="primary" data-open="${item.id}">阅读全文</button>
@@ -3194,7 +3772,7 @@
                 <p>${line.reading}</p>
               </div>
               <div>
-                <span>外贸/跨境动作</span>
+                <span>商务输出</span>
                 <p>${line.response}</p>
               </div>
             </article>
@@ -3256,8 +3834,8 @@
         <div class="back-row">
           <button class="ghost" id="backToFeed">返回首页 Feed</button>
           <div class="status-row">
-            <span class="chip">${item.category}</span>
-            <span class="chip blue">${item.businessView}</span>
+            <span class="chip">${categoryGroup(item)}</span>
+            <span class="chip blue">${viewGroup(item)}</span>
             <span class="chip amber">${item.level}</span>
           </div>
         </div>
@@ -3269,24 +3847,24 @@
             <span class="chip amber">${item.freshness}</span>
           </div>
           <h1>${item.title}</h1>
-          <p>${item.coreProblem}</p>
+          <p>${commercialSignal(item)}</p>
         </div>
 
         <div class="detail-layout">
           <div>
             <section class="content-section compact-brief" id="section-brief">
               <div class="brief-strip">
-                <strong>本篇读法</strong>
-                <span><b>轨道</b> ${item.contentTrack || "外刊商业观察 + 外贸/跨境应用"}</span>
+                <strong>今日商业信号</strong>
+                <span><b>趋势</b> ${commercialSignal(item)}</span>
                 <span><b>别误读</b> ${item.scenario.wrong}</span>
-                <span><b>读重点</b> ${item.scenario.strategy}</span>
+                <span><b>怎么读</b> ${chinaInsight(item)}</span>
               </div>
             </section>
 
             <section class="content-section" id="section-source">
               <div class="source-bar">
                 <div>
-                  <h2>1 外刊 / 商业原文摘录</h2>
+                  <h2>1 外刊摘录</h2>
                 </div>
                 <select class="mode-select" data-source-mode aria-label="外刊阅读模式">
                   <option value="both"${state.sourceMode === "both" ? " selected" : ""}>中英对照</option>
@@ -3297,15 +3875,45 @@
               ${modeParagraphs(item)}
             </section>
 
+            <section class="content-section" id="section-breakdown">
+              <h2>2 中文拆解</h2>
+              <p class="section-note">不是泛泛翻译，而是把原文里的商业变化拆成“发生了什么、影响谁、中文用户能拿来做什么”。</p>
+              <div class="signal-mini-grid">
+                <div><strong>发生了什么</strong><p>${commercialSignal(item)}</p></div>
+                <div><strong>影响行业</strong><p>${affectedIndustries(item)}</p></div>
+                <div><strong>中国用户启发</strong><p>${chinaInsight(item)}</p></div>
+              </div>
+            </section>
+
             <section class="content-section" id="section-lens">
-              <h2>2 商业观察 + 外贸/跨境应用</h2>
-              <p class="section-note">不是把外刊翻成中文，而是说明从哪句原文看出市场机会、客户变化或跨境动作。</p>
+              <h2>3 趋势判断</h2>
+              <p class="section-note">从原文证据判断需求、成本、供应链、消费或效率变化，而不是把新闻看完就结束。</p>
+              <div class="trend-callout">${trendJudgement(item)}</div>
               ${renderJudgement(item)}
             </section>
 
+            <section class="content-section" id="section-impact">
+              <h2>4 影响行业：受益 / 承压</h2>
+              <p class="section-note">把外刊里的变化转成行业判断，方便选品、客户开发、汇报和商业观察。</p>
+              <div class="impact-grid">
+                <div><strong>可能受益</strong><p>${industryImpact(item).benefit}</p></div>
+                <div><strong>可能承压</strong><p>${industryImpact(item).pressure}</p></div>
+              </div>
+            </section>
+
+            <section class="content-section" id="section-use">
+              <h2>5 中国用户怎么用</h2>
+              <p class="section-note">同一篇外刊，外贸、跨境和职场用户拿到的动作不一样。</p>
+              <div class="use-grid">
+                <div><strong>外贸</strong><p>${userUse(item).trade}</p></div>
+                <div><strong>跨境</strong><p>${userUse(item).ecommerce}</p></div>
+                <div><strong>职场</strong><p>${userUse(item).workplace}</p></div>
+              </div>
+            </section>
+
             <section class="content-section" id="section-phrases">
-              <h2>3 可迁移商务表达</h2>
-              <p class="section-note">保留能从外刊语境迁移到客户沟通里的表达，不做普通生词表。</p>
+              <h2>6 商务英文表达</h2>
+              <p class="section-note">保留能从外刊语境迁移到邮件、汇报、会议和客户沟通里的表达，不做普通生词表。</p>
               <div class="phrase-grid">
                 ${item.phrases.map(([phrase, meaning, useCase, example]) => `
                   <div class="phrase">
@@ -3322,13 +3930,13 @@
             </section>
 
             <section class="content-section" id="section-email">
-              <h2>4 完整邮件模板</h2>
-              <p class="section-note">按客户反应切换，不是语气微调，而是不同谈判局面下的完整写法。</p>
+              <h2>7 邮件或汇报模板</h2>
+              <p class="section-note">根据文章适用场景，输出开发信、客户邮件、会议汇报或英文说明。</p>
               ${renderTemplateTabs(item)}
             </section>
 
             <section class="content-section" id="section-practice">
-              <h2>5 分级练习</h2>
+              <h2>8 今日输出练习</h2>
               <p class="section-note">从补词、改写到真实回复，把今天的外刊内容变成能说出口、能发出去的英文。</p>
               ${renderPractice(item)}
             </section>
@@ -3456,9 +4064,9 @@
       const originalTitle = liveFirst.source && liveFirst.source.title && liveFirst.source.title !== "#" ? liveFirst.source.title : liveFirst.title;
       title.textContent = originalTitle;
       cnTitle.textContent = liveFirst.title;
-      original.innerHTML = `<strong>Reading help:</strong> 这篇文章对应「${liveFirst.businessView}」和「${liveFirst.category}」，先看商业变化，再落到外贸/跨境动作。`;
-      meta.textContent = `来源：${liveFirst.source.name || "内置种子"} · 原文日期：${liveFirst.sourceDate} · 应用场景：${liveFirst.category}`;
-      if (why) why.textContent = `今天推荐先读这篇，因为它能落到「${liveFirst.businessView}」和「${liveFirst.category}」：读市场信号，再转成开发、跟进或客户沟通里的英文表达。`;
+      original.innerHTML = `<strong>Reading help:</strong> 这篇文章对应「${viewGroup(liveFirst)}」和「${categoryGroup(liveFirst)}」，先看全球商业变化，再转成商务英文输出。`;
+      meta.textContent = `来源：${liveFirst.source.name || "内置种子"} · 原文日期：${liveFirst.sourceDate} · 商业信号：${viewGroup(liveFirst)}`;
+      if (why) why.textContent = `今天推荐先读这篇，因为它能把「${viewGroup(liveFirst)}」转成行业判断、商务表达、邮件或汇报素材。`;
       btn.onclick = () => openDetail(liveFirst.id);
     }
 
@@ -3480,7 +4088,11 @@
         item.sourceDate = liveItem.sourceDate || item.sourceDate;
         item.date = payload.generatedAt ? payload.generatedAt.slice(0, 10) : item.date;
         item.freshness = liveItem.freshness || `自动抓取｜${payload.lookbackWindowUsed || payload.lookbackDays || ""}天内`;
-        ["title", "category", "businessView", "contentTrack", "level", "targetUser", "coreProblem"].forEach((key) => {
+        [
+          "title", "category", "businessView", "contentTrack", "level", "targetUser", "coreProblem",
+          "commercialSignal", "affectedIndustries", "chinaInsight", "businessEnglish",
+          "trendJudgement", "industryImpact", "userUse"
+        ].forEach((key) => {
           if (liveItem[key]) item[key] = liveItem[key];
         });
         if (liveItem.methodologySources) item.methodologySources = liveItem.methodologySources;
