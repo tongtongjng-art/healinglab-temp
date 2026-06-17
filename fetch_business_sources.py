@@ -2,40 +2,12 @@
 # -*- coding: utf-8 -*-
 
 """
-Business Briefing RSS fetcher
-目标：为“商业外刊工作读本”生成 business-english-live.json
+Business Briefing RSS fetcher — strict quality gate version
 
-定位：
-- 全球商业趋势
-- 供应链与成本
-- 关税与汇率
-- 消费需求
-- 零售与库存
-- AI 效率
-- 商务英文输出
-
-输出兼容当前前端：
-{
-  "generated_at": "...",
-  "scenarios": [
-    {
-      "scenarioId": "supply-chain-cost",
-      "trend": "supply-chain-cost",
-      "signal": "Supply Chain / Cost Pressure",
-      "titleCn": "...",
-      "why": "...",
-      "action": "...",
-      "english": "...",
-      "source": {
-        "name": "...",
-        "title": "...",
-        "url": "...",
-        "summary": "...",
-        "paragraphs": [{"en": "...", "cn": "...", "insight": "..."}]
-      }
-    }
-  ]
-}
+核心原则：
+- 不拿半段 RSS 摘要硬做 1-9 层
+- 原文正文抓不到足够信息，就不发布
+- 宁可当天不更新，也不发布空、浅、硬扯的文章
 """
 
 import json
@@ -44,7 +16,7 @@ import time
 import html
 import hashlib
 import urllib.request
-import urllib.error
+from pathlib import Path
 from datetime import datetime, timezone, timedelta
 from email.utils import parsedate_to_datetime
 
@@ -54,7 +26,6 @@ except ImportError:
     raise SystemExit("Missing dependency: feedparser. Install with: pip3 install feedparser")
 
 
-# 一、主粮仓：综合商业 + 供应链 + 零售 + 管理 + AI
 RSS_FEEDS = {
     "The Guardian Business": "https://www.theguardian.com/business/rss",
     "BBC Business": "https://feeds.bbci.co.uk/news/business/rss.xml",
@@ -66,7 +37,6 @@ RSS_FEEDS = {
     "VentureBeat AI": "https://venturebeat.com/category/ai/feed/",
 }
 
-# 可选源：有时会 403 / RSS 结构变化，不作为稳定核心
 OPTIONAL_FEEDS = {
     "Financial Times": "https://www.ft.com/?format=rss",
     "McKinsey Insights": "https://www.mckinsey.com/insights/rss.xml",
@@ -80,11 +50,11 @@ CATEGORY_RULES = {
             "supply chain", "supplier", "sourcing", "logistics", "shipping", "freight",
             "delivery", "warehouse", "inventory", "manufacturing", "factory",
             "input cost", "cost pressure", "margin pressure", "procurement",
-            "raw material", "oil prices", "transport costs", "port", "container"
+            "raw material", "transport costs", "port", "container"
         ],
         "titleCn": "供应链与成本压力正在改变企业交付和利润逻辑",
-        "why": "看懂成本、库存、物流和供应稳定性如何影响报价与交付。",
-        "action": "转成报价解释、供应商沟通、交期说明和内部汇报中的可用表达。",
+        "why": "这篇文章值得读，是因为它能帮助判断成本、库存、物流或供应稳定性是否正在影响企业利润和交付承诺。",
+        "action": "适合转化为报价解释、交期说明、供应商沟通、库存判断和内部风险汇报。",
         "english": "manage cost pressure across the supply chain",
     },
     "tariff-currency": {
@@ -95,8 +65,8 @@ CATEGORY_RULES = {
             "euro", "sterling", "fx", "foreign exchange", "trade policy"
         ],
         "titleCn": "关税与汇率变化正在重塑跨境成本和报价策略",
-        "why": "看懂关税、汇率和贸易政策如何影响总 landed cost。",
-        "action": "转成报价重算、客户解释、采购路线调整和风险提示中的可用表达。",
+        "why": "这篇文章值得读，是因为它能帮助判断关税、汇率或贸易规则如何改变跨境交易的真实成本。",
+        "action": "适合转化为报价重算、价格有效期说明、客户解释和采购路线调整。",
         "english": "reduce exposure to tariff-related cost pressure",
     },
     "consumer-demand": {
@@ -108,8 +78,8 @@ CATEGORY_RULES = {
             "beauty", "wellness", "pet care", "home goods", "small appliances"
         ],
         "titleCn": "消费需求变化正在影响定价、选品和客户沟通",
-        "why": "看懂消费者预算、偏好和购买动机如何变化，避免只凭感觉判断市场。",
-        "action": "转成选品判断、价格解释、客户开发和销售汇报中的可用表达。",
+        "why": "这篇文章值得读，是因为它能帮助判断消费者预算、偏好和购买动机是否正在发生变化。",
+        "action": "适合转化为选品判断、价格解释、客户开发话术和销售汇报。",
         "english": "consumer demand is shifting toward value-conscious choices",
     },
     "retail-inventory": {
@@ -120,8 +90,8 @@ CATEGORY_RULES = {
             "brand", "sales channel", "holiday shopping", "category"
         ],
         "titleCn": "零售与库存变化正在影响促销、利润和现金流",
-        "why": "看懂库存压力、折扣、零售需求和品牌利润之间的关系。",
-        "action": "转成库存决策、促销规划、渠道沟通和销售复盘中的可用表达。",
+        "why": "这篇文章值得读，是因为它能帮助判断库存、折扣、零售需求和利润之间的压力传导。",
+        "action": "适合转化为库存决策、促销规划、渠道沟通和销售复盘。",
         "english": "rebalance inventory while protecting margins",
     },
     "ai-productivity": {
@@ -129,12 +99,12 @@ CATEGORY_RULES = {
         "keywords": [
             "ai", "artificial intelligence", "generative ai", "automation",
             "productivity", "workflow", "efficiency", "software", "chatbot",
-            "customer service", "agentic", "machine learning", "enterprise ai",
-            "automate", "operational efficiency"
+            "customer service", "enterprise ai", "automate", "operational efficiency",
+            "process", "tools", "workload"
         ],
         "titleCn": "AI 效率工具正在改变工作流程和运营成本结构",
-        "why": "看懂 AI 不只是写文案，而是如何影响客服、运营、流程和生产率。",
-        "action": "转成内部提案、流程优化、客服自动化和效率汇报中的可用表达。",
+        "why": "这篇文章值得读，是因为它能帮助判断 AI 是否真正进入工作流程，而不是停留在内容生成层面。",
+        "action": "适合转化为内部提案、流程优化、客服自动化和效率汇报。",
         "english": "streamline workflows and reduce manual workload",
     },
     "business-strategy": {
@@ -145,26 +115,24 @@ CATEGORY_RULES = {
             "risk", "uncertainty", "investment", "pricing power"
         ],
         "titleCn": "企业正在重新校准增长、成本和运营韧性",
-        "why": "看懂企业如何在不确定环境里调整战略、组织和资源配置。",
-        "action": "转成汇报、复盘、管理沟通和商务邮件里的判断表达。",
+        "why": "这篇文章值得读，是因为它能帮助理解企业如何在不确定环境中调整战略、组织和资源配置。",
+        "action": "适合转化为经营复盘、管理沟通、英文汇报和商务判断表达。",
         "english": "recalibrate our operating model",
     },
 }
 
-# 二、排除：不适合“商业判断 + 商务英文输出”的文章
 EXCLUDE_PATTERNS = [
     r"\belection\b", r"\bcampaign\b", r"\bparliament\b", r"\bminister\b",
     r"\bcelebrity\b", r"\bhollywood\b", r"\bfilm\b", r"\bmovie\b",
     r"\bsport\b", r"\bfootball\b", r"\bsoccer\b", r"\btennis\b",
-    r"\bproperty prices only\b", r"\bhouse prices\b",
-    r"\bstock price\b", r"\bshare price\b", r"\bshares rise\b", r"\bshares fall\b",
-    r"\bearnings per share\b", r"\bquarterly profit beats\b",
-    r"\bcrypto\b", r"\bbitcoin\b",
+    r"\bhouse prices\b", r"\bstock price\b", r"\bshare price\b",
+    r"\bshares rise\b", r"\bshares fall\b", r"\bearnings per share\b",
+    r"\bquarterly profit beats\b", r"\bcrypto\b", r"\bbitcoin\b",
 ]
 
 SOURCE_PRIORITY = {
     "Wall Street Journal Business": 9,
-    "Harvard Business Review": 9,
+    "Harvard Business Review": 8,
     "MIT Sloan Management Review": 8,
     "Supply Chain Brain": 8,
     "Retail Dive": 8,
@@ -177,7 +145,13 @@ SOURCE_PRIORITY = {
 }
 
 MAX_DAYS = 90
-MAX_OUTPUT = 10
+MAX_OUTPUT = 8
+
+# 严格质量门槛
+MIN_CATEGORY_SCORE = 6
+MIN_EFFECTIVE_PARAGRAPHS = 2
+MIN_TOTAL_WORDS = 180
+MIN_AVG_PARAGRAPH_WORDS = 55
 
 
 def clean_html(value: str) -> str:
@@ -187,8 +161,11 @@ def clean_html(value: str) -> str:
     return value
 
 
+def word_count(text: str) -> int:
+    return len(re.findall(r"[A-Za-z][A-Za-z'-]*", text or ""))
+
+
 def parse_date(entry) -> str:
-    # feedparser published_parsed
     parsed = entry.get("published_parsed") or entry.get("updated_parsed")
     if parsed:
         try:
@@ -199,8 +176,7 @@ def parse_date(entry) -> str:
     raw = entry.get("published") or entry.get("updated") or ""
     if raw:
         try:
-            dt = parsedate_to_datetime(raw)
-            return dt.strftime("%Y-%m-%d")
+            return parsedate_to_datetime(raw).strftime("%Y-%m-%d")
         except Exception:
             pass
 
@@ -224,7 +200,6 @@ def category_score(text: str, category: str) -> int:
     lower = text.lower()
     score = 0
     for kw in CATEGORY_RULES[category]["keywords"]:
-        # phrase match
         if kw in lower:
             score += 4 if " " in kw else 2
     return score
@@ -263,62 +238,94 @@ def fetch_url_text(url: str, timeout: int = 8) -> str:
     )
     try:
         with urllib.request.urlopen(req, timeout=timeout) as resp:
-            raw = resp.read(350_000)
+            raw = resp.read(500_000)
             charset = resp.headers.get_content_charset() or "utf-8"
             return raw.decode(charset, errors="ignore")
     except Exception:
         return ""
 
 
-def extract_paragraphs_from_html(doc: str, fallback: str):
+def extract_paragraphs_from_html(doc: str):
     if not doc:
-        return [fallback] if fallback else []
+        return []
 
-    # Remove scripts/styles
     doc = re.sub(r"(?is)<script.*?</script>", " ", doc)
     doc = re.sub(r"(?is)<style.*?</style>", " ", doc)
+    doc = re.sub(r"(?is)<noscript.*?</noscript>", " ", doc)
 
-    # Extract p tags
     paras = re.findall(r"(?is)<p[^>]*>(.*?)</p>", doc)
     cleaned = []
     for p in paras:
         text = clean_html(p)
-        # keep meaningful English paragraphs
-        if 80 <= len(text) <= 600 and re.search(r"[a-zA-Z]", text):
-            # filter boilerplate
-            if any(bad in text.lower() for bad in ["sign up", "newsletter", "cookies", "all rights reserved", "advertisement"]):
-                continue
-            cleaned.append(text)
-        if len(cleaned) >= 3:
+        wc = word_count(text)
+
+        if wc < 45 or wc > 180:
+            continue
+        if any(bad in text.lower() for bad in [
+            "sign up", "newsletter", "cookies", "all rights reserved",
+            "advertisement", "subscribe", "log in", "privacy policy",
+            "terms of use", "©", "read more"
+        ]):
+            continue
+        if not re.search(r"[a-zA-Z]", text):
+            continue
+        # 摘要截断型内容，不能当正文
+        if text.endswith("[...]") or text.endswith("..."):
+            continue
+
+        cleaned.append(text)
+        if len(cleaned) >= 4:
             break
 
-    if not cleaned and fallback:
-        cleaned = [fallback]
-
-    return cleaned[:3]
+    return cleaned
 
 
-def make_cn_explanation(category: str, source_name: str) -> str:
-    mapping = {
-        "supply-chain-cost": f"这段来自 {source_name} 的商业报道，核心不是单一新闻事件，而是供应链、成本、库存或交付稳定性正在发生变化。",
-        "tariff-currency": f"这段来自 {source_name} 的商业报道，重点在关税、汇率或贸易规则如何改变企业的跨境成本。",
-        "consumer-demand": f"这段来自 {source_name} 的商业报道，反映消费者预算、偏好或购买行为正在变化。",
-        "retail-inventory": f"这段来自 {source_name} 的商业报道，说明零售、库存、折扣和利润之间的关系正在重新调整。",
-        "ai-productivity": f"这段来自 {source_name} 的商业报道，说明 AI 或自动化正在影响工作流程、效率和运营成本。",
-        "business-strategy": f"这段来自 {source_name} 的商业报道，反映企业正在重新校准增长、成本、风险和运营韧性。",
-    }
-    return mapping.get(category, mapping["business-strategy"])
+def quality_check(title: str, summary: str, paragraphs: list, cat_score: int):
+    reasons = []
+    full = " ".join(paragraphs)
+    total_words = word_count(full)
+    avg_words = int(total_words / max(1, len(paragraphs)))
+
+    if cat_score < MIN_CATEGORY_SCORE:
+        reasons.append(f"category_score_too_low={cat_score}")
+
+    if len(paragraphs) < MIN_EFFECTIVE_PARAGRAPHS:
+        reasons.append(f"not_enough_body_paragraphs={len(paragraphs)}")
+
+    if total_words < MIN_TOTAL_WORDS:
+        reasons.append(f"body_too_short_words={total_words}")
+
+    if avg_words < MIN_AVG_PARAGRAPH_WORDS:
+        reasons.append(f"paragraphs_too_thin_avg_words={avg_words}")
+
+    # 只有标题 + 提问式摘要，通常不可拆成 1-9 层
+    combined_summary = f"{title} {summary}".lower()
+    question_marks = combined_summary.count("?")
+    if question_marks >= 2 and total_words < 240:
+        reasons.append("question_summary_without_enough_body")
+
+    # 常见 RSS 摘要截断
+    if "[...]" in summary or summary.strip().endswith("..."):
+        if total_words < 240:
+            reasons.append("rss_summary_truncated")
+
+    return reasons
+
+
+def make_cn_explanation(category: str, source_name: str, title: str) -> str:
+    signal = CATEGORY_RULES[category]["signal"]
+    return f"这篇来自 {source_name} 的报道可归入「{signal}」。它的价值不在标题本身，而在于能否从原文中提炼出对成本、需求、流程或供应链的具体影响。"
 
 
 def make_insight(category: str) -> str:
     return {
-        "supply-chain-cost": "阅读重点：判断它会如何影响采购路线、交期、报价和客户解释。",
-        "tariff-currency": "阅读重点：判断它会如何影响 landed cost、价格有效期和报价重算。",
-        "consumer-demand": "阅读重点：判断需求变化背后的预算压力、消费偏好和产品定位机会。",
-        "retail-inventory": "阅读重点：判断库存压力是否会引发折扣、现金流压力或渠道变化。",
-        "ai-productivity": "阅读重点：判断 AI 是否真正嵌入流程，而不是停留在内容生成层面。",
-        "business-strategy": "阅读重点：判断企业正在如何调整战略、流程和资源配置。",
-    }.get(category, "阅读重点：从新闻里提炼可转化为工作表达的商业判断。")
+        "supply-chain-cost": "阅读时重点看：成本压力从哪里来，企业是否正在改变采购、库存、交付或报价策略。",
+        "tariff-currency": "阅读时重点看：政策、关税或汇率变化是否会改变最终成交成本和报价有效期。",
+        "consumer-demand": "阅读时重点看：消费者是变得更谨慎、更重视价值，还是转向新的品类和场景。",
+        "retail-inventory": "阅读时重点看：库存压力是否正在带来促销、折扣、现金流和利润率变化。",
+        "ai-productivity": "阅读时重点看：AI 是否进入了真实工作流，是否减少了人工重复劳动或改变了组织决策。",
+        "business-strategy": "阅读时重点看：企业是在扩张、收缩、提效，还是重新分配资源。",
+    }.get(category, "阅读时重点看：这条新闻能否转化为具体工作判断。")
 
 
 def template_for_category(category: str, english: str) -> str:
@@ -349,41 +356,36 @@ def build_article(entry, source_name: str):
     url = entry.get("link", "")
     date_str = parse_date(entry)
 
-    if not title or not is_recent(date_str):
-        return None
+    if not title:
+        return None, "empty_title"
+    if not is_recent(date_str):
+        return None, "too_old"
 
-    full_text = f"{title} {summary}"
-    if excluded(full_text):
-        return None
+    seed_text = f"{title} {summary}"
+    if excluded(seed_text):
+        return None, "excluded_topic"
 
-    category, cat_score, scores = classify(full_text)
+    category, cat_score, scores = classify(seed_text)
     if cat_score <= 0:
-        return None
+        return None, "no_relevant_category"
+
+    page_html = fetch_url_text(url)
+    paragraphs = extract_paragraphs_from_html(page_html)
+
+    quality_reasons = quality_check(title, summary, paragraphs, cat_score)
+    if quality_reasons:
+        return None, "; ".join(quality_reasons)
 
     rules = CATEGORY_RULES[category]
-    page_html = fetch_url_text(url)
-    paragraphs = extract_paragraphs_from_html(page_html, summary or title)
-    first_excerpt = paragraphs[0] if paragraphs else summary or title
-
     uid_raw = f"{source_name}-{title}-{url}"
     uid = hashlib.sha1(uid_raw.encode("utf-8")).hexdigest()[:10]
+    total_score = cat_score + SOURCE_PRIORITY.get(source_name, 5) + recency_score(date_str) + min(8, word_count(" ".join(paragraphs)) // 80)
 
-    total_score = cat_score + SOURCE_PRIORITY.get(source_name, 5) + recency_score(date_str)
-
-    para_objs = []
-    for p in paragraphs[:3]:
-        para_objs.append({
-            "en": p,
-            "cn": make_cn_explanation(category, source_name),
-            "insight": make_insight(category),
-        })
-
-    if not para_objs:
-        para_objs = [{
-            "en": summary or title,
-            "cn": make_cn_explanation(category, source_name),
-            "insight": make_insight(category),
-        }]
+    para_objs = [{
+        "en": p,
+        "cn": make_cn_explanation(category, source_name, title),
+        "insight": make_insight(category),
+    } for p in paragraphs[:3]]
 
     english = rules["english"]
 
@@ -395,19 +397,26 @@ def build_article(entry, source_name: str):
         "pill": source_name.split()[0],
         "sourceType": "Auto Pick",
         "titleCn": rules["titleCn"],
-        "desc": f"这篇文章可用于提炼「{rules['signal']}」相关的商业判断和商务英文表达。",
+        "desc": f"这篇文章正文信息量充足，可用于提炼「{rules['signal']}」相关的商业判断和商务英文表达。",
         "why": rules["why"],
         "action": rules["action"],
         "english": english,
-        "breakdown": make_cn_explanation(category, source_name),
+        "breakdown": make_cn_explanation(category, source_name, title),
         "judgement": make_insight(category),
-        "win": "能快速调整供应链、成本结构、运营流程和客户沟通方式的企业。",
-        "lose": "只依赖单一市场、单一供应链或单一低价策略的企业。",
+        "win": "能够基于真实市场变化快速调整成本、流程、供应链或客户沟通方式的企业。",
+        "lose": "只看标题、不看成本传导和运营细节，仍按旧逻辑报价、备货或沟通的企业。",
         "userUse": "外贸可用于客户沟通；跨境可用于选品和供应链判断；职场可用于英文汇报。",
         "template": template_for_category(category, english),
         "practice": practice_for_category(category),
         "sourceDate": date_str,
         "score": total_score,
+        "quality": "strong",
+        "publishable": True,
+        "qualityMeta": {
+            "bodyParagraphs": len(paragraphs),
+            "bodyWords": word_count(" ".join(paragraphs)),
+            "categoryScore": cat_score,
+        },
         "source": {
             "name": source_name,
             "title": title,
@@ -416,30 +425,34 @@ def build_article(entry, source_name: str):
             "paragraphs": para_objs,
         },
         "_debugScores": scores,
-    }
+    }, None
 
 
 def fetch_feed(source_name: str, url: str):
     print(f"[feed] {source_name}: {url}")
+    accepted = []
+    rejected = []
+
     try:
         feed = feedparser.parse(url)
     except Exception as e:
-        print(f"[warn] feed failed: {source_name} {e}")
-        return []
+        return accepted, [(source_name, "", f"feed_failed={e}")]
 
     if getattr(feed, "bozo", False):
-        # Some feeds still parse with bozo=True; keep going but log.
         print(f"[warn] feed parse warning: {source_name} {getattr(feed, 'bozo_exception', '')}")
 
-    articles = []
-    for entry in feed.entries[:30]:
+    for entry in feed.entries[:35]:
+        title = clean_html(entry.get("title", ""))
         try:
-            item = build_article(entry, source_name)
+            item, reason = build_article(entry, source_name)
             if item:
-                articles.append(item)
+                accepted.append(item)
+            else:
+                rejected.append((source_name, title, reason or "rejected"))
         except Exception as e:
-            print(f"[warn] article failed: {source_name} {e}")
-    return articles
+            rejected.append((source_name, title, f"article_failed={e}"))
+
+    return accepted, rejected
 
 
 def dedupe(items):
@@ -456,40 +469,61 @@ def dedupe(items):
 
 def main():
     all_items = []
+    all_rejected = []
 
     for name, url in RSS_FEEDS.items():
-        all_items.extend(fetch_feed(name, url))
+        items, rejected = fetch_feed(name, url)
+        all_items.extend(items)
+        all_rejected.extend(rejected)
 
-    # Optional feeds are tried, but failures do not matter.
     for name, url in OPTIONAL_FEEDS.items():
-        all_items.extend(fetch_feed(name, url))
+        items, rejected = fetch_feed(name, url)
+        all_items.extend(items)
+        all_rejected.extend(rejected)
 
     all_items = dedupe(all_items)
     all_items.sort(key=lambda x: (x.get("score", 0), x.get("sourceDate", "")), reverse=True)
-
     selected = all_items[:MAX_OUTPUT]
+
+    with open("business-candidates-rejected.txt", "w", encoding="utf-8") as f:
+        for source, title, reason in all_rejected:
+            f.write(f"[REJECTED] {source} | {title}\n")
+            f.write(f"Reason: {reason}\n\n")
+
+    with open("business-candidates.txt", "w", encoding="utf-8") as f:
+        for i, item in enumerate(selected, 1):
+            qm = item.get("qualityMeta", {})
+            f.write(f"{i}. [{item['signal']}] {item['source']['title']}\n")
+            f.write(f"   Source: {item['source']['name']} | Date: {item['sourceDate']} | Score: {item['score']}\n")
+            f.write(f"   Body: {qm.get('bodyParagraphs')} paragraphs / {qm.get('bodyWords')} words | CategoryScore: {qm.get('categoryScore')}\n")
+            f.write(f"   URL: {item['source'].get('url','')}\n")
+            f.write(f"   Why: {item['why']}\n")
+            f.write(f"   English: {item['english']}\n\n")
+
+    if not selected:
+        print("no high-quality publishable article found; keeping existing business-english-live.json unchanged")
+        print("wrote business-candidates-rejected.txt for review")
+        return
 
     payload = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "count": len(selected),
-        "method": "rss_keyword_scoring_v2_global_business_signal",
+        "method": "rss_keyword_scoring_v3_strict_quality_gate",
+        "qualityGate": {
+            "minCategoryScore": MIN_CATEGORY_SCORE,
+            "minEffectiveParagraphs": MIN_EFFECTIVE_PARAGRAPHS,
+            "minTotalWords": MIN_TOTAL_WORDS,
+            "minAvgParagraphWords": MIN_AVG_PARAGRAPH_WORDS,
+        },
         "scenarios": selected,
     }
 
     with open("business-english-live.json", "w", encoding="utf-8") as f:
         json.dump(payload, f, ensure_ascii=False, indent=2)
 
-    # Also write a readable candidates file for manual review.
-    with open("business-candidates.txt", "w", encoding="utf-8") as f:
-        for i, item in enumerate(selected, 1):
-            f.write(f"{i}. [{item['signal']}] {item['source']['title']}\n")
-            f.write(f"   Source: {item['source']['name']} | Date: {item['sourceDate']} | Score: {item['score']}\n")
-            f.write(f"   URL: {item['source'].get('url','')}\n")
-            f.write(f"   Why: {item['why']}\n")
-            f.write(f"   English: {item['english']}\n\n")
-
-    print(f"wrote business-english-live.json with {len(selected)} business signal matches")
-    print("wrote business-candidates.txt for review")
+    print(f"wrote business-english-live.json with {len(selected)} strong business signal matches")
+    print("wrote business-candidates.txt")
+    print("wrote business-candidates-rejected.txt")
 
 
 if __name__ == "__main__":

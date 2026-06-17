@@ -1109,7 +1109,7 @@ async function loadLive(){
     if(!res.ok) return;
     const payload = await res.json();
     if(!payload || !Array.isArray(payload.scenarios) || !payload.scenarios.length) return;
-    const liveArticles = payload.scenarios.map(liveToArticle);
+    const liveArticles = payload.scenarios.filter(x => x && x.publishable !== false && x.quality !== "weak").map(liveToArticle);
     state.articles = [...liveArticles, ...DEFAULT_ARTICLES];
     state.current = state.articles[0];
     renderHero();
