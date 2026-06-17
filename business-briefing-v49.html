@@ -899,7 +899,9 @@ function renderHero(){
   document.getElementById("heroWhy").textContent = item.why;
   document.getElementById("heroAction").textContent = item.action;
   document.getElementById("heroSource").textContent = `Source: ${item.source} · ${item.date} · 阅读时间 ${item.readingTime}`;
-  document.getElementById("heroCta").onclick = (e) => { e.preventDefault(); openDetail(item.id); };
+  const heroCta = document.getElementById("heroCta");
+  heroCta.href = "#article-" + encodeURIComponent(item.id);
+  heroCta.onclick = (e) => { e.preventDefault(); openDetail(item.id); };
 }
 
 function renderCards(){
@@ -930,9 +932,11 @@ function openDetail(id){
   document.getElementById("detailCn").textContent = item.titleCn;
   document.getElementById("pipeline").innerHTML = detailHTML(item);
   window.scrollTo(0,0);
+  if(location.hash !== "#article-" + encodeURIComponent(item.id)) history.replaceState(null, "", "#article-" + encodeURIComponent(item.id));
 }
 
 function showHome(){
+  if(location.hash) history.replaceState(null, "", location.pathname + location.search);
   document.body.classList.remove("detail-open");
   renderHero();
   renderCards();
@@ -1008,7 +1012,7 @@ function detailHTML(item){
   `;
 }
 
-function escapeHtmlfunction escapeHtml(value){
+function escapeHtml(value){
   return String(value ?? "").replace(/[&<>"']/g, ch => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[ch]));
 }
 function escapeAttr(value){ return escapeHtml(value); }
@@ -1140,14 +1144,25 @@ async function loadLive(){
     state.current = state.articles[0];
     renderHero();
     renderCards();
+    openFromHash();
   } catch(err) {
     console.warn("live json not loaded", err);
   }
 }
 
+
+function openFromHash(){
+  if(!location.hash || !location.hash.startsWith("#article-")) return;
+  const id = decodeURIComponent(location.hash.replace("#article-",""));
+  const item = state.articles.find(a => a.id === id);
+  if(item) openDetail(id);
+}
+window.addEventListener("hashchange", openFromHash);
+
 renderHero();
 renderCards();
 loadLive();
+openFromHash();
 </script>
 </body>
 </html>
