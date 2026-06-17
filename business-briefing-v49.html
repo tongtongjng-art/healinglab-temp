@@ -931,7 +931,7 @@ function renderCards(){
       <div class="english">${escapeHtml(item.english || "work-ready business expression")}</div>
       <div class="heart">♡</div>
     `;
-    card.onclick = () => openDetail(item.id);
+    card.onclick = () => openDetail(item.id); card.setAttribute("data-open", item.id);
     box.appendChild(card);
   });
 }
@@ -981,7 +981,7 @@ function renderExcerptBlocks(item){
   }).join("") + `</div>`;
 }
 
-function renderOptionalLayerfunction renderOptionalLayer(num, title, value){
+function renderOptionalLayer(num, title, value){
   if(!value || String(value).trim().length < 20) return "";
   return `
     <article class="layer">
