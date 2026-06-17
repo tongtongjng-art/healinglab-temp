@@ -647,7 +647,20 @@
     .hero-title { font-size:34px; }
     .detail-title { font-size:34px; }
   }
-</style>
+
+    .excerpt-list{display:flex;flex-direction:column;gap:20px;margin-top:8px;}
+    .excerpt-block{border:1px solid var(--line);background:#f8f8f5;padding:20px 24px;}
+    .excerpt-kicker{font-size:11px;font-weight:900;letter-spacing:.18em;color:var(--red);text-transform:uppercase;margin-bottom:10px;}
+    .excerpt-en{font-family:Georgia,serif;font-size:18px;line-height:1.78;font-style:italic;color:#111;}
+    .translation-fold{margin-top:16px;border-top:1px solid #ddd;padding-top:12px;}
+    .translation-fold summary{display:inline-flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;font-weight:900;color:var(--red);letter-spacing:.08em;list-style:none;}
+    .translation-fold summary::-webkit-details-marker{display:none;}
+    .translation-fold summary:before{content:"+";display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border:1px solid var(--red);font-size:12px;line-height:1;}
+    .translation-fold[open] summary:before{content:"−";}
+    .translation-cn{margin-top:12px;font-size:15px;line-height:1.9;color:#333;background:#fff;padding:14px 16px;border-left:3px solid var(--red);}
+    .weak-note{border:1px solid var(--line);background:#fbfbf8;padding:18px 22px;line-height:1.8;color:#333;margin-top:12px;}
+
+  </style>
 </head>
 <body>
   <div class="page home-view">
@@ -944,23 +957,31 @@ function showHome(){
 }
 
 function renderExcerptBlocks(item){
-  const paragraphs = Array.isArray(item.paragraphs) && item.paragraphs.length ? item.paragraphs : [{en:item.excerpt || item.title, cn:item.translation || ""}];
+  const paragraphs = Array.isArray(item.paragraphs) && item.paragraphs.length
+    ? item.paragraphs
+    : [{en:item.excerpt || item.title, cn:item.translation || ""}];
+
   return `<div class="excerpt-list">` + paragraphs.slice(0,3).map((p, idx) => {
     const en = p.en || p.text || "";
-    const cn = p.cn || p.translation || "这段中文翻译需要经过人工或 AI 精译后补充。当前自动抓取只保证英文摘录，不再伪造深度翻译。";
+    const rawCn = p.cn || p.translation || "";
+    const hasRealCn = rawCn && !rawCn.includes("待精译") && rawCn.trim().length > 20;
+    const cn = hasRealCn
+      ? rawCn
+      : "待精译：这篇目前是自动抓取的原文摘录版。这里后续应放逐段中文翻译，不再用模板话硬凑。";
     return `
       <div class="excerpt-block">
-        <div class="excerpt-en">“${escapeHtml(en)}”</div>
+        <div class="excerpt-kicker">Paragraph ${String(idx + 1).padStart(2,"0")}</div>
+        <div class="excerpt-en">${escapeHtml(en)}</div>
         <details class="translation-fold">
-          <summary>展开中文翻译 / Translation ${idx + 1}</summary>
-          <p>${escapeHtml(cn)}</p>
+          <summary>展开中文翻译</summary>
+          <div class="translation-cn">${escapeHtml(cn)}</div>
         </details>
       </div>
     `;
   }).join("") + `</div>`;
 }
 
-function renderOptionalLayer(num, title, value){
+function renderOptionalLayerfunction renderOptionalLayer(num, title, value){
   if(!value || String(value).trim().length < 20) return "";
   return `
     <article class="layer">
@@ -977,7 +998,7 @@ function detailHTML(item){
     <article class="layer">
       <div class="layer-title"><span class="layer-num">01</span> Today’s Business Signal</div>
       <p>${escapeHtml(item.desc)}</p>
-      ${isDraft ? `<div class="weak-note">当前为「原文摘录版」。这篇文章已经通过正文质量门槛，但还没有经过深度中文拆解，因此不会再硬套空泛的趋势判断。适合先读原文，再人工/AI 精修成完整 1–9 层。</div>` : ""}
+      ${isDraft ? `<div class="weak-note">当前为「原文摘录版」。系统只展示已抓到的英文原文，不再硬凑空泛分析。逐段中文翻译和完整 1–9 层需要后续 AI/人工精修后再发布。</div>` : ""}
     </article>
     <article class="layer">
       <div class="layer-title"><span class="layer-num">02</span> Excerpt / 外刊摘录</div>
