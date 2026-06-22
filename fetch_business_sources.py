@@ -469,6 +469,123 @@ def dedupe(items):
     return out
 
 
+
+def json_for_prompt(obj):
+    return json.dumps(obj, ensure_ascii=False, indent=2)
+
+
+def build_ai_enrichment_prompt(item):
+    """Create one prompt that asks AI to enrich the selected article into full website JSON."""
+    source = item.get("source", {})
+    paras = source.get("paragraphs", [])
+    excerpt_payload = {
+        "id": item.get("id"),
+        "trend": item.get("trend"),
+        "signal": item.get("signal"),
+        "title": source.get("title"),
+        "sourceName": source.get("name"),
+        "sourceUrl": source.get("url"),
+        "sourceDate": item.get("sourceDate"),
+        "english": item.get("english"),
+        "paragraphs": [
+            {"en": p.get("en", "")}
+            for p in paras[:3]
+            if p.get("en")
+        ],
+    }
+
+    return f"""
+【任务：把下面这篇候选商业外刊精修成网站可直接读取的完整 JSON】
+
+你是“商业外刊工作读本”的总编辑。请根据我提供的英文摘录，生成一篇克制、具体、可用于商务英文输出的精修稿。
+
+重要约束：
+1. 只根据下方英文摘录和标题分析，不要编造文章没有说的信息。
+2. 不要写空话，不要写“降维打击”“压迫感”等夸张表达。
+3. 每段英文摘录必须保留在 JSON 的 source.paragraphs[].en 中。
+4. 每段英文摘录下面必须补充准确、自然的中文翻译，放在 source.paragraphs[].cn 中。
+5. 03–06 层必须具体，不要泛泛说“影响成本、需求、供应链”。
+6. 输出必须是一个完整 JSON 对象，不要 Markdown，不要解释。
+
+候选文章数据如下：
+{json_for_prompt(excerpt_payload)}
+
+请严格输出这个 JSON 结构：
+
+{{
+  "id": "{item.get("id")}",
+  "scenarioId": "{item.get("trend")}",
+  "trend": "{item.get("trend")}",
+  "industry": "crossborder",
+  "signal": "{item.get("signal")}",
+  "pill": "AI Enriched",
+  "sourceType": "AI Enriched",
+  "analysisStatus": "ai_enriched",
+  "deepReady": true,
+  "publishable": true,
+  "quality": "strong",
+
+  "titleCn": "用一句中文准确概括这篇文章的商业信号，不要空泛",
+  "desc": "用一段中文说明这篇文章为什么值得读，要具体到文章内容",
+  "why": "为什么读：提炼文章揭示的核心商业矛盾",
+  "action": "我能拿来做什么：给外贸/跨境/职场用户一个具体可执行动作",
+  "english": "从文章里提炼一个真实、高频、可复用的商务英文表达",
+
+  "breakdown": "Layer 03 中文拆解：具体解释文章里的商业逻辑，150-220字",
+  "judgement": "Layer 04 趋势判断：基于文章内容判断接下来可能影响什么，不要夸大，120-180字",
+  "win": "Layer 05 受益方：具体写哪类公司/岗位/经营方式更受益",
+  "lose": "Layer 05 承压方：具体写哪类公司/岗位/经营方式更承压",
+  "userUse": "Layer 06 中国用户怎么用：分别点到外贸、跨境、职场英文输出，120-180字",
+
+  "template": "Layer 08 英文邮件/briefing 模板。必须使用上面的 english 表达。80-130英文词。",
+  "practice": "Layer 09 输出练习：给一个具体英文写作任务",
+
+  "sourceDate": "{item.get("sourceDate")}",
+  "readingTime": "8 分钟",
+
+  "source": {{
+    "name": "{source.get("name", "")}",
+    "title": "{source.get("title", "").replace('"', '\\"')}",
+    "url": "{source.get("url", "")}",
+    "summary": "{source.get("summary", "").replace('"', '\\"')}",
+    "paragraphs": [
+      {{
+        "en": "保留英文摘录第1段",
+        "cn": "第1段自然中文翻译",
+        "insight": "这一段对应的商业阅读提示"
+      }},
+      {{
+        "en": "保留英文摘录第2段",
+        "cn": "第2段自然中文翻译",
+        "insight": "这一段对应的商业阅读提示"
+      }}
+    ]
+  }}
+}}
+""".strip()
+
+
+def write_ai_enrichment_files(selected):
+    """Write prompt files for the top candidate and all candidates."""
+    if not selected:
+        return
+
+    # Top candidate files
+    top = selected[0]
+    with open("business-selected-candidate.json", "w", encoding="utf-8") as f:
+        json.dump(top, f, ensure_ascii=False, indent=2)
+
+    with open("business-ai-enrich-prompt.txt", "w", encoding="utf-8") as f:
+        f.write(build_ai_enrichment_prompt(top))
+
+    # All candidate prompts, separated for manual choice
+    with open("business-ai-enrich-prompts-all.txt", "w", encoding="utf-8") as f:
+        for idx, item in enumerate(selected, 1):
+            f.write(f"\\n\\n================ 候选 {idx}: {item.get('source', {}).get('title', '')} ================\\n\\n")
+            f.write(build_ai_enrichment_prompt(item))
+            f.write("\\n")
+
+
 def main():
     all_items = []
     all_rejected = []
@@ -502,6 +619,8 @@ def main():
             f.write(f"   Why: {item['why']}\n")
             f.write(f"   English: {item['english']}\n\n")
 
+    write_ai_enrichment_files(selected)
+
     if not selected:
         print("no high-quality publishable article found; keeping existing business-english-live.json unchanged")
         print("wrote business-candidates-rejected.txt for review")
@@ -526,6 +645,9 @@ def main():
     print(f"wrote business-english-live.json with {len(selected)} strong business signal matches")
     print("wrote business-candidates.txt")
     print("wrote business-candidates-rejected.txt")
+    print("wrote business-selected-candidate.json")
+    print("wrote business-ai-enrich-prompt.txt")
+    print("wrote business-ai-enrich-prompts-all.txt")
 
 
 if __name__ == "__main__":
