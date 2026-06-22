@@ -703,6 +703,17 @@
     .email-box.compact-email{max-height:260px;overflow:auto;}
     @media(max-width:900px){.brief-grid,.split-list,.use-grid,.term-grid{grid-template-columns:1fr;}}
 
+  
+    /* Business Signal Brief product structure */
+    .evidence-grid,.risk-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:14px;}
+    .evidence-card,.risk-card{border:1px solid var(--line);background:#fafaf7;padding:14px 15px;line-height:1.55;}
+    .evidence-card b,.risk-card b{display:block;color:var(--red);font-size:12px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:7px;}
+    .money-tag{display:inline-block;border:1px solid var(--line);background:#fff;padding:3px 8px;font-size:12px;font-weight:900;color:var(--red);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;}
+    .brief-one-line{font-size:18px;line-height:1.6;font-weight:900;margin:0 0 12px;}
+    .section-subnote{font-size:13px;color:#777;margin-top:8px;line-height:1.6;}
+    .compact-practice{border:1px solid var(--line);background:#fafaf7;padding:14px 16px;margin-top:14px;line-height:1.65;}
+    @media(max-width:900px){.evidence-grid,.risk-grid{grid-template-columns:1fr;}}
+
   </style>
 </head>
 <body>
@@ -711,7 +722,7 @@
       <div>
         <div class="kicker">Global Business Intelligence &<br>Language Output</div>
         <h1 class="brand serif">Business<br>Briefing</h1>
-        <div class="subtitle">商业外刊工作读本 · Real Work Edition</div>
+        <div class="subtitle">商业趋势拆解读本 · Real Work Edition</div>
       </div>
 
       <nav class="nav">
@@ -832,7 +843,7 @@
       <div>
         <div class="kicker">Global Business Intelligence &<br>Language Output</div>
         <h1 class="brand serif">Business<br>Briefing</h1>
-        <div class="subtitle">商业外刊工作读本 · Real Work Edition</div>
+        <div class="subtitle">商业趋势拆解读本 · Real Work Edition</div>
       </div>
       <nav class="nav">
         <button class="active" onclick="showHome()">返回首页</button>
@@ -1025,6 +1036,7 @@ function renderExcerptBlocks(item){
 }
 
 
+
 function safeId(value){
   return String(value || "item").replace(/[^a-zA-Z0-9_-]/g, "_");
 }
@@ -1077,7 +1089,7 @@ function renderSignalLayer(item, isDraft){
   ];
   return `
     <article class="layer smart-layer">
-      <div class="layer-title"><span class="layer-num">01</span> Today’s Business Signal</div>
+      <div class="layer-title"><span class="layer-num">01</span> 今日商业信号</div>
       <div class="signal-lead">${escapeHtml(item.signalLead || item.titleCn || item.desc)}</div>
       ${renderBriefCards(cards)}
       ${item.desc ? `<details class="smart-more"><summary>展开完整说明</summary><p>${escapeHtml(item.desc)}</p></details>` : ""}
@@ -1086,12 +1098,39 @@ function renderSignalLayer(item, isDraft){
   `;
 }
 
+function renderEvidenceLayer(item){
+  const cards = item.evidenceCards || [];
+  const sourceLine = item.source || item.sourceUrl ? [{label:"Source", text:[item.source,item.date].filter(Boolean).join(" · ")}] : [];
+  const all = cards.length ? cards : sourceLine;
+  if(!all.length) return "";
+  return `
+    <article class="layer smart-layer">
+      <div class="layer-title"><span class="layer-num">02</span> 原文证据</div>
+      <div class="evidence-grid">
+        ${all.slice(0,3).map(c => `<div class="evidence-card"><b>${escapeHtml(c.label || c.title || "证据")}</b><span>${escapeHtml(c.text || c.value || "")}</span></div>`).join("")}
+      </div>
+      ${item.sourceUrl ? `<p class="section-subnote"><a href="${escapeAttr(item.sourceUrl)}" target="_blank" rel="noopener">查看原文来源 →</a></p>` : ""}
+    </article>
+  `;
+}
+
+function renderExcerptLayer(item){
+  const sourceUrl = item.sourceUrl ? `<p class="section-subnote"><a href="${escapeAttr(item.sourceUrl)}" target="_blank" rel="noopener">查看原文来源 →</a></p>` : "";
+  return `
+    <article class="layer smart-layer">
+      <div class="layer-title"><span class="layer-num">03</span> Excerpt / 外刊摘录</div>
+      ${renderExcerptBlocks(item)}
+      ${sourceUrl}
+    </article>
+  `;
+}
+
 function renderBreakdownLayer(item){
   if(item.breakdownMatrix || item.breakdownConclusion || item.breakdownAction){
     return `
       <article class="layer smart-layer">
-        <div class="layer-title"><span class="layer-num">03</span> 中文拆解</div>
-        ${item.breakdownConclusion ? `<div class="signal-lead">${escapeHtml(item.breakdownConclusion)}</div>` : ""}
+        <div class="layer-title"><span class="layer-num">04</span> 中文拆解</div>
+        ${item.breakdownConclusion ? `<div class="brief-one-line">${escapeHtml(item.breakdownConclusion)}</div>` : ""}
         ${renderMatrix(item.breakdownMatrix)}
         ${item.breakdownAction ? `<div class="smart-callout">${escapeHtml(item.breakdownAction)}</div>` : ""}
       </article>
@@ -1100,27 +1139,20 @@ function renderBreakdownLayer(item){
   if(!item.breakdown) return "";
   return `
     <article class="layer smart-layer">
-      <div class="layer-title"><span class="layer-num">03</span> 中文拆解</div>
+      <div class="layer-title"><span class="layer-num">04</span> 中文拆解</div>
       ${renderSmartText(item.breakdown)}
     </article>
   `;
 }
 
-function renderTrendLayer(item){
-  if(item.trendMatrix || item.trendConclusion){
-    return `
-      <article class="layer smart-layer">
-        <div class="layer-title"><span class="layer-num">04</span> 趋势判断</div>
-        ${item.trendConclusion ? `<div class="signal-lead">${escapeHtml(item.trendConclusion)}</div>` : ""}
-        ${renderMatrix(item.trendMatrix)}
-      </article>
-    `;
-  }
-  if(!item.judgement) return "";
+function renderMoneyLayer(item){
+  if(!item.moneyMatrix && !item.moneyTakeaway) return "";
   return `
     <article class="layer smart-layer">
-      <div class="layer-title"><span class="layer-num">04</span> 趋势判断</div>
-      ${renderSmartText(item.judgement)}
+      <div class="layer-title"><span class="layer-num">05</span> 钱在哪里</div>
+      ${item.moneyLead ? `<div class="brief-one-line">${escapeHtml(item.moneyLead)}</div>` : ""}
+      ${renderMatrix(item.moneyMatrix)}
+      ${item.moneyTakeaway ? `<div class="smart-callout">${escapeHtml(item.moneyTakeaway)}</div>` : ""}
     </article>
   `;
 }
@@ -1129,7 +1161,7 @@ function renderIndustryLayer(item, isDraft){
   if(item.industryMatrix){
     return `
       <article class="layer smart-layer">
-        <div class="layer-title"><span class="layer-num">05</span> Industry Impact / 影响行业</div>
+        <div class="layer-title"><span class="layer-num">06</span> 影响行业</div>
         ${renderMatrix(item.industryMatrix)}
         ${item.industryTakeaway ? `<div class="smart-callout">${escapeHtml(item.industryTakeaway)}</div>` : ""}
       </article>
@@ -1138,7 +1170,7 @@ function renderIndustryLayer(item, isDraft){
   if(item.win && item.lose && !isDraft){
     return `
       <article class="layer smart-layer">
-        <div class="layer-title"><span class="layer-num">05</span> Industry Impact / 影响行业</div>
+        <div class="layer-title"><span class="layer-num">06</span> 影响行业</div>
         <div class="split-list">
           <div class="split-box"><h3>受益</h3><p>${escapeHtml(item.win)}</p></div>
           <div class="split-box"><h3>承压</h3><p>${escapeHtml(item.lose)}</p></div>
@@ -1154,7 +1186,7 @@ function renderUseAdvice(value){
   if(typeof value === "string"){
     return `
       <article class="layer smart-layer">
-        <div class="layer-title"><span class="layer-num">06</span> 使用建议</div>
+        <div class="layer-title"><span class="layer-num">07</span> 使用建议</div>
         ${renderSmartText(value)}
       </article>
     `;
@@ -1199,8 +1231,20 @@ function renderUseAdvice(value){
   if(!cards.length) return "";
   return `
     <article class="layer smart-layer">
-      <div class="layer-title"><span class="layer-num">06</span> 使用建议</div>
+      <div class="layer-title"><span class="layer-num">07</span> 使用建议</div>
       <div class="use-grid">${cards.join("")}</div>
+    </article>
+  `;
+}
+
+function renderRiskLayer(item){
+  const cards = item.riskCards || [];
+  if(!cards.length && !item.riskTakeaway) return "";
+  return `
+    <article class="layer smart-layer">
+      <div class="layer-title"><span class="layer-num">08</span> 风险边界</div>
+      ${cards.length ? `<div class="risk-grid">` + cards.slice(0,3).map(c => `<div class="risk-card"><b>${escapeHtml(c.label || c.title || "风险")}</b><span>${escapeHtml(c.text || c.value || "")}</span></div>`).join("") + `</div>` : ""}
+      ${item.riskTakeaway ? `<div class="smart-callout">${escapeHtml(item.riskTakeaway)}</div>` : ""}
     </article>
   `;
 }
@@ -1209,7 +1253,7 @@ function renderBusinessEnglish(item){
   if(Array.isArray(item.terms) && item.terms.length){
     return `
       <article class="layer smart-layer">
-        <div class="layer-title"><span class="layer-num">07</span> Business English</div>
+        <div class="layer-title"><span class="layer-num">09</span> Business English</div>
         <div class="term-grid">
           ${item.terms.map(t => `
             <div class="term-card">
@@ -1225,25 +1269,22 @@ function renderBusinessEnglish(item){
   }
   return `
     <article class="layer smart-layer">
-      <div class="layer-title"><span class="layer-num">07</span> Business English</div>
+      <div class="layer-title"><span class="layer-num">09</span> Business English</div>
       <h3 class="serif">${escapeHtml(item.english)}</h3>
     </article>
   `;
 }
 
-function renderEmailLayer(item, isDraft){
-  if(isDraft || !item.template) return "";
+function renderTemplatePracticeLayer(item, isDraft){
   const id = "tpl_" + safeId(item.id);
-  const core = item.templateCore || [];
   return `
     <article class="layer smart-layer">
-      <div class="layer-title"><span class="layer-num">08</span> Email / Briefing Template</div>
-      ${core.length ? `<div class="template-core">` + core.map(x => `<div class="template-line">${escapeHtml(x)}</div>`).join("") + `</div>` : ""}
-      <button class="copy-btn" onclick="copyTemplate('${id}')">Copy Template</button>
-      <details class="full-template">
-        <summary>展开完整模板</summary>
-        <pre id="${id}" class="email-box compact-email">${escapeHtml(item.template)}</pre>
-      </details>
+      <div class="layer-title"><span class="layer-num">10</span> 模板 / 输出练习</div>
+      ${(!isDraft && item.templateCore && item.templateCore.length) ? `<div class="template-core">` + item.templateCore.map(x => `<div class="template-line">${escapeHtml(x)}</div>`).join("") + `</div>` : ""}
+      ${(!isDraft && item.template) ? `<button class="copy-btn" onclick="copyTemplate('${id}')">Copy Template</button>
+      <details class="full-template"><summary>展开完整模板</summary><pre id="${id}" class="email-box compact-email">${escapeHtml(item.template)}</pre></details>` : ""}
+      <div class="compact-practice"><b>Output Practice</b><br>${escapeHtml(item.practice || "读完 2–3 段原文后，用英文写 2 句话概括它对业务的影响。")}</div>
+      <textarea placeholder="在这里写你的今日商务英文输出..."></textarea>
     </article>
   `;
 }
@@ -1255,26 +1296,18 @@ function copyTemplate(id){
 }
 
 function detailHTML(item){
-  const sourceUrl = item.sourceUrl ? `<p><a href="${escapeAttr(item.sourceUrl)}" target="_blank" rel="noopener">查看原文来源 →</a></p>` : "";
   const isDraft = item.analysisStatus === "needs_ai_enrichment" || item.deepReady === false;
   return `
     ${renderSignalLayer(item, isDraft)}
-    <article class="layer smart-layer">
-      <div class="layer-title"><span class="layer-num">02</span> Excerpt / 外刊摘录</div>
-      ${renderExcerptBlocks(item)}
-      ${sourceUrl}
-    </article>
+    ${renderEvidenceLayer(item)}
+    ${renderExcerptLayer(item)}
     ${renderBreakdownLayer(item)}
-    ${renderTrendLayer(item)}
+    ${renderMoneyLayer(item)}
     ${renderIndustryLayer(item, isDraft)}
     ${renderUseAdvice(item.userUse)}
+    ${renderRiskLayer(item)}
     ${renderBusinessEnglish(item)}
-    ${renderEmailLayer(item, isDraft)}
-    <article class="layer smart-layer">
-      <div class="layer-title"><span class="layer-num">09</span> Output Practice</div>
-      <p>${escapeHtml(item.practice || "读完 2–3 段原文后，用英文写 2 句话概括它对业务的影响。")}</p>
-      <textarea placeholder="在这里写你的今日商务英文输出..."></textarea>
-    </article>
+    ${renderTemplatePracticeLayer(item, isDraft)}
   `;
 }
 
@@ -1391,14 +1424,20 @@ function liveToArticle(live, idx){
     english: live.english || fallback.english,
     signalLead: live.signalLead || live.titleCn || source.titleCn || fallback.titleCn,
     signalCards: live.signalCards || [],
+    evidenceCards: live.evidenceCards || [],
     breakdownConclusion: live.breakdownConclusion || "",
     breakdownMatrix: live.breakdownMatrix || null,
     breakdownAction: live.breakdownAction || "",
     trendConclusion: live.trendConclusion || "",
     trendMatrix: live.trendMatrix || null,
+    moneyLead: live.moneyLead || "",
+    moneyMatrix: live.moneyMatrix || null,
+    moneyTakeaway: live.moneyTakeaway || "",
     industryMatrix: live.industryMatrix || null,
     industryTakeaway: live.industryTakeaway || "",
     terms: live.terms || [],
+    riskCards: live.riskCards || [],
+    riskTakeaway: live.riskTakeaway || "",
     templateCore: live.templateCore || [],
     template: live.template || `Hi [Name],
 
