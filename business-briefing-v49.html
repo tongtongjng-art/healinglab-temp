@@ -661,21 +661,47 @@
     .weak-note{border:1px solid var(--line);background:#fbfbf8;padding:18px 22px;line-height:1.8;color:#333;margin-top:12px;}
 
   
-    .text-block{display:flex;flex-direction:column;gap:12px;}
-    .text-block p{margin:0;line-height:1.85;}
-    .use-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;}
-    .use-card{border:1px solid var(--line);background:#fafaf7;padding:18px 18px 16px;}
+    /* Smart Brevity reading system */
+    .smart-layer{padding:28px 34px;}
+    .signal-lead{font-size:20px;line-height:1.55;font-weight:900;margin:0 0 14px;}
+    .brief-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:14px;}
+    .brief-card{border:1px solid var(--line);background:#fafaf7;padding:14px 15px;line-height:1.55;}
+    .brief-card b{display:block;margin-bottom:6px;font-size:13px;}
+    .brief-card span{font-size:14px;color:#222;}
+    .smart-more{margin-top:14px;border:1px solid var(--line);background:#fbfbf8;padding:12px 14px;}
+    .smart-more summary{cursor:pointer;font-size:12px;font-weight:900;color:var(--red);letter-spacing:.08em;text-transform:uppercase;}
+    .smart-more p{margin:10px 0 0;line-height:1.75;}
+    .smart-matrix{width:100%;border-collapse:collapse;margin-top:14px;font-size:15px;}
+    .smart-matrix th{font-size:12px;letter-spacing:.12em;text-transform:uppercase;text-align:left;border-bottom:2px solid #111;padding:10px 12px;color:#111;}
+    .smart-matrix td{border-bottom:1px solid var(--line);padding:13px 12px;vertical-align:top;line-height:1.55;}
+    .smart-matrix td:first-child{font-weight:900;width:22%;}
+    .smart-matrix .redline{color:var(--red);font-weight:900;}
+    .smart-callout{margin-top:16px;border-left:4px solid var(--red);background:#fafaf7;padding:13px 16px;line-height:1.65;font-weight:800;}
+    .split-list{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:14px;}
+    .split-box{border:1px solid var(--line);background:#fafaf7;padding:16px;}
+    .split-box h3{margin:0 0 10px;font-size:16px;}
+    .split-box ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:7px;line-height:1.55;}
+    .use-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:8px;}
+    .use-card{border:1px solid var(--line);background:#fafaf7;padding:16px 17px;}
     .use-card h3{margin:0 0 10px;font-size:16px;font-weight:900;}
-    .use-card ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:8px;}
-    .use-card li{line-height:1.65;}
-    .sentence-list{display:flex;flex-direction:column;gap:10px;margin-top:8px;}
+    .use-card ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:8px;line-height:1.58;}
+    .use-card details{margin-top:10px;border-top:1px solid var(--line);padding-top:9px;}
+    .use-card summary{cursor:pointer;font-size:12px;font-weight:900;color:var(--red);letter-spacing:.08em;text-transform:uppercase;}
+    .sentence-list{display:flex;flex-direction:column;gap:10px;}
     .sentence-item{background:#fff;border-left:3px solid var(--red);padding:10px 12px;font-family:Georgia,serif;font-weight:700;line-height:1.55;}
     .term-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;}
-    .term-card{border:1px solid var(--line);background:#fafaf7;padding:16px;}
+    .term-card{border:1px solid var(--line);background:#fafaf7;padding:15px;}
+    .term-card .scenario{font-size:11px;font-weight:900;color:var(--red);letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px;}
     .term-card h3{margin:0 0 8px;font-family:Georgia,serif;font-size:18px;}
-    .term-card p{margin:0 0 8px;line-height:1.65;}
+    .term-card p{margin:0 0 8px;line-height:1.6;}
     .term-card .example{font-family:Georgia,serif;font-style:italic;background:#fff;padding:9px 10px;border-left:3px solid var(--red);}
-    @media(max-width:800px){.use-grid,.term-grid{grid-template-columns:1fr;}}
+    .template-core{display:grid;gap:10px;margin-bottom:14px;}
+    .template-line{background:#111;color:#fff;padding:12px 14px;font-family:ui-monospace,Consolas,monospace;line-height:1.55;}
+    .copy-btn{border:1px solid #111;background:#111;color:#fff;font-weight:900;padding:10px 14px;cursor:pointer;margin:8px 0 12px;}
+    .full-template{margin-top:10px;}
+    .full-template summary{cursor:pointer;font-size:12px;font-weight:900;color:var(--red);letter-spacing:.08em;text-transform:uppercase;}
+    .email-box.compact-email{max-height:260px;overflow:auto;}
+    @media(max-width:900px){.brief-grid,.split-list,.use-grid,.term-grid{grid-template-columns:1fr;}}
 
   </style>
 </head>
@@ -999,24 +1025,137 @@ function renderExcerptBlocks(item){
 }
 
 
-function renderTextBlock(value){
+function safeId(value){
+  return String(value || "item").replace(/[^a-zA-Z0-9_-]/g, "_");
+}
+
+function renderSmartText(value){
   if(!value) return "";
   if(Array.isArray(value)){
-    return `<div class="text-block">` + value.map(x => `<p>${escapeHtml(x)}</p>`).join("") + `</div>`;
+    return value.map(x => `<div class="smart-callout">${escapeHtml(x)}</div>`).join("");
   }
-  const text = String(value);
-  const parts = text.split(/\n{2,}/).map(x => x.trim()).filter(Boolean);
-  if(parts.length <= 1) return `<p>${escapeHtml(text)}</p>`;
-  return `<div class="text-block">` + parts.map(x => `<p>${escapeHtml(x)}</p>`).join("") + `</div>`;
+  const txt = String(value);
+  const parts = txt.split(/\n{2,}/).map(x => x.trim()).filter(Boolean);
+  if(parts.length > 1){
+    return parts.map(x => `<div class="smart-callout">${escapeHtml(x)}</div>`).join("");
+  }
+  return `<div class="smart-callout">${escapeHtml(txt)}</div>`;
+}
+
+function renderBriefCards(cards){
+  if(!Array.isArray(cards) || !cards.length) return "";
+  return `<div class="brief-grid">` + cards.slice(0,3).map(c => `
+    <div class="brief-card">
+      <b>${escapeHtml(c.label || c.title || "")}</b>
+      <span>${escapeHtml(c.text || c.value || "")}</span>
+    </div>
+  `).join("") + `</div>`;
+}
+
+function renderMatrix(matrix){
+  if(!matrix || !Array.isArray(matrix.rows) || !matrix.rows.length) return "";
+  const cols = matrix.columns || ["维度","判断","动作"];
+  const rows = matrix.rows;
+  return `
+    <table class="smart-matrix">
+      <thead><tr>${cols.map(c => `<th>${escapeHtml(c)}</th>`).join("")}</tr></thead>
+      <tbody>
+        ${rows.map(r => {
+          const cells = Array.isArray(r) ? r : cols.map(c => r[c] || r[c.toLowerCase()] || "");
+          return `<tr>${cells.map((x,i) => `<td${i===0 ? ' class="redline"' : ""}>${escapeHtml(x)}</td>`).join("")}</tr>`;
+        }).join("")}
+      </tbody>
+    </table>
+  `;
+}
+
+function renderSignalLayer(item, isDraft){
+  const cards = item.signalCards || [
+    {label:"商业问题", text:item.why || "这条新闻说明一个可转化为工作判断的商业变化。"},
+    {label:"真正风险", text:item.action || "判断哪些任务可以自动化，哪些必须保留人工。"},
+    {label:"可用场景", text:item.english || "用于英文汇报和客户沟通。"}
+  ];
+  return `
+    <article class="layer smart-layer">
+      <div class="layer-title"><span class="layer-num">01</span> Today’s Business Signal</div>
+      <div class="signal-lead">${escapeHtml(item.signalLead || item.titleCn || item.desc)}</div>
+      ${renderBriefCards(cards)}
+      ${item.desc ? `<details class="smart-more"><summary>展开完整说明</summary><p>${escapeHtml(item.desc)}</p></details>` : ""}
+      ${isDraft ? `<div class="weak-note">当前为「原文摘录版」。系统只展示已抓到的英文原文，不再硬凑空泛分析。</div>` : ""}
+    </article>
+  `;
+}
+
+function renderBreakdownLayer(item){
+  if(item.breakdownMatrix || item.breakdownConclusion || item.breakdownAction){
+    return `
+      <article class="layer smart-layer">
+        <div class="layer-title"><span class="layer-num">03</span> 中文拆解</div>
+        ${item.breakdownConclusion ? `<div class="signal-lead">${escapeHtml(item.breakdownConclusion)}</div>` : ""}
+        ${renderMatrix(item.breakdownMatrix)}
+        ${item.breakdownAction ? `<div class="smart-callout">${escapeHtml(item.breakdownAction)}</div>` : ""}
+      </article>
+    `;
+  }
+  if(!item.breakdown) return "";
+  return `
+    <article class="layer smart-layer">
+      <div class="layer-title"><span class="layer-num">03</span> 中文拆解</div>
+      ${renderSmartText(item.breakdown)}
+    </article>
+  `;
+}
+
+function renderTrendLayer(item){
+  if(item.trendMatrix || item.trendConclusion){
+    return `
+      <article class="layer smart-layer">
+        <div class="layer-title"><span class="layer-num">04</span> 趋势判断</div>
+        ${item.trendConclusion ? `<div class="signal-lead">${escapeHtml(item.trendConclusion)}</div>` : ""}
+        ${renderMatrix(item.trendMatrix)}
+      </article>
+    `;
+  }
+  if(!item.judgement) return "";
+  return `
+    <article class="layer smart-layer">
+      <div class="layer-title"><span class="layer-num">04</span> 趋势判断</div>
+      ${renderSmartText(item.judgement)}
+    </article>
+  `;
+}
+
+function renderIndustryLayer(item, isDraft){
+  if(item.industryMatrix){
+    return `
+      <article class="layer smart-layer">
+        <div class="layer-title"><span class="layer-num">05</span> Industry Impact / 影响行业</div>
+        ${renderMatrix(item.industryMatrix)}
+        ${item.industryTakeaway ? `<div class="smart-callout">${escapeHtml(item.industryTakeaway)}</div>` : ""}
+      </article>
+    `;
+  }
+  if(item.win && item.lose && !isDraft){
+    return `
+      <article class="layer smart-layer">
+        <div class="layer-title"><span class="layer-num">05</span> Industry Impact / 影响行业</div>
+        <div class="split-list">
+          <div class="split-box"><h3>受益</h3><p>${escapeHtml(item.win)}</p></div>
+          <div class="split-box"><h3>承压</h3><p>${escapeHtml(item.lose)}</p></div>
+        </div>
+      </article>
+    `;
+  }
+  return "";
 }
 
 function renderUseAdvice(value){
   if(!value) return "";
   if(typeof value === "string"){
     return `
-      <article class="layer">
+      <article class="layer smart-layer">
         <div class="layer-title"><span class="layer-num">06</span> 使用建议</div>
-        ${renderTextBlock(value)}
+        ${renderSmartText(value)}
       </article>
     `;
   }
@@ -1031,13 +1170,23 @@ function renderUseAdvice(value){
     let body = "";
 
     if(points.length){
-      body += `<ul>` + points.map(p => `<li>${escapeHtml(p)}</li>`).join("") + `</ul>`;
+      const primary = points.slice(0,2);
+      const more = points.slice(2);
+      body += `<ul>` + primary.map(p => `<li>${escapeHtml(p)}</li>`).join("") + `</ul>`;
+      if(more.length){
+        body += `<details><summary>展开更多建议</summary><ul>` + more.map(p => `<li>${escapeHtml(p)}</li>`).join("") + `</ul></details>`;
+      }
     }
     if(sentences.length){
-      body += `<div class="sentence-list">` + sentences.map(s => `<div class="sentence-item">${escapeHtml(s)}</div>`).join("") + `</div>`;
+      const primary = sentences.slice(0,2);
+      const more = sentences.slice(2);
+      body += `<div class="sentence-list">` + primary.map(s => `<div class="sentence-item">${escapeHtml(s)}</div>`).join("") + `</div>`;
+      if(more.length){
+        body += `<details><summary>展开更多句式</summary><div class="sentence-list">` + more.map(s => `<div class="sentence-item">${escapeHtml(s)}</div>`).join("") + `</div></details>`;
+      }
     }
     if(data.text){
-      body += renderTextBlock(data.text);
+      body += renderSmartText(data.text);
     }
     cards.push(`<div class="use-card"><h3>${escapeHtml(title)}</h3>${body}</div>`);
   };
@@ -1049,7 +1198,7 @@ function renderUseAdvice(value){
 
   if(!cards.length) return "";
   return `
-    <article class="layer">
+    <article class="layer smart-layer">
       <div class="layer-title"><span class="layer-num">06</span> 使用建议</div>
       <div class="use-grid">${cards.join("")}</div>
     </article>
@@ -1059,11 +1208,12 @@ function renderUseAdvice(value){
 function renderBusinessEnglish(item){
   if(Array.isArray(item.terms) && item.terms.length){
     return `
-      <article class="layer">
+      <article class="layer smart-layer">
         <div class="layer-title"><span class="layer-num">07</span> Business English</div>
         <div class="term-grid">
           ${item.terms.map(t => `
             <div class="term-card">
+              ${t.scenario ? `<div class="scenario">${escapeHtml(t.scenario)}</div>` : ""}
               <h3>${escapeHtml(t.term || "")}</h3>
               <p>${escapeHtml(t.desc || "")}</p>
               ${t.example ? `<div class="example">${escapeHtml(t.example)}</div>` : ""}
@@ -1074,54 +1224,53 @@ function renderBusinessEnglish(item){
     `;
   }
   return `
-    ${renderBusinessEnglish(item)}
+    <article class="layer smart-layer">
+      <div class="layer-title"><span class="layer-num">07</span> Business English</div>
+      <h3 class="serif">${escapeHtml(item.english)}</h3>
+    </article>
   `;
 }
 
-function renderOptionalLayer(num, title, value){
-  if(!value) return "";
-  const text = Array.isArray(value) ? value.join(" ") : String(value);
-  if(text.trim().length < 20) return "";
+function renderEmailLayer(item, isDraft){
+  if(isDraft || !item.template) return "";
+  const id = "tpl_" + safeId(item.id);
+  const core = item.templateCore || [];
   return `
-    <article class="layer">
-      <div class="layer-title"><span class="layer-num">${num}</span> ${title}</div>
-      ${renderTextBlock(value)}
+    <article class="layer smart-layer">
+      <div class="layer-title"><span class="layer-num">08</span> Email / Briefing Template</div>
+      ${core.length ? `<div class="template-core">` + core.map(x => `<div class="template-line">${escapeHtml(x)}</div>`).join("") + `</div>` : ""}
+      <button class="copy-btn" onclick="copyTemplate('${id}')">Copy Template</button>
+      <details class="full-template">
+        <summary>展开完整模板</summary>
+        <pre id="${id}" class="email-box compact-email">${escapeHtml(item.template)}</pre>
+      </details>
     </article>
   `;
+}
+
+function copyTemplate(id){
+  const el = document.getElementById(id);
+  if(!el) return;
+  navigator.clipboard && navigator.clipboard.writeText(el.innerText);
 }
 
 function detailHTML(item){
   const sourceUrl = item.sourceUrl ? `<p><a href="${escapeAttr(item.sourceUrl)}" target="_blank" rel="noopener">查看原文来源 →</a></p>` : "";
   const isDraft = item.analysisStatus === "needs_ai_enrichment" || item.deepReady === false;
   return `
-    <article class="layer">
-      <div class="layer-title"><span class="layer-num">01</span> Today’s Business Signal</div>
-      <p>${escapeHtml(item.desc)}</p>
-      ${isDraft ? `<div class="weak-note">当前为「原文摘录版」。系统只展示已抓到的英文原文，不再硬凑空泛分析。逐段中文翻译和完整 1–9 层需要后续 AI/人工精修后再发布。</div>` : ""}
-    </article>
-    <article class="layer">
+    ${renderSignalLayer(item, isDraft)}
+    <article class="layer smart-layer">
       <div class="layer-title"><span class="layer-num">02</span> Excerpt / 外刊摘录</div>
       ${renderExcerptBlocks(item)}
       ${sourceUrl}
     </article>
-    ${renderOptionalLayer("03", "中文拆解", item.breakdown)}
-    ${renderOptionalLayer("04", "趋势判断", item.judgement)}
-    ${(item.win && item.lose && !isDraft) ? `
-    <article class="layer">
-      <div class="layer-title"><span class="layer-num">05</span> Industry Impact / 影响行业</div>
-      <div class="two-col">
-        <div class="impact"><b>受益：</b><br>${escapeHtml(item.win)}</div>
-        <div class="impact"><b>承压：</b><br>${escapeHtml(item.lose)}</div>
-      </div>
-    </article>` : ""}
+    ${renderBreakdownLayer(item)}
+    ${renderTrendLayer(item)}
+    ${renderIndustryLayer(item, isDraft)}
     ${renderUseAdvice(item.userUse)}
     ${renderBusinessEnglish(item)}
-    ${(!isDraft && item.template) ? `
-    <article class="layer">
-      <div class="layer-title"><span class="layer-num">08</span> Email / Briefing Template</div>
-      <div class="email-box">${escapeHtml(item.template)}</div>
-    </article>` : ""}
-    <article class="layer">
+    ${renderEmailLayer(item, isDraft)}
+    <article class="layer smart-layer">
       <div class="layer-title"><span class="layer-num">09</span> Output Practice</div>
       <p>${escapeHtml(item.practice || "读完 2–3 段原文后，用英文写 2 句话概括它对业务的影响。")}</p>
       <textarea placeholder="在这里写你的今日商务英文输出..."></textarea>
@@ -1240,7 +1389,17 @@ function liveToArticle(live, idx){
     lose: live.lose || "",
     userUse: live.userUse || "",
     english: live.english || fallback.english,
+    signalLead: live.signalLead || live.titleCn || source.titleCn || fallback.titleCn,
+    signalCards: live.signalCards || [],
+    breakdownConclusion: live.breakdownConclusion || "",
+    breakdownMatrix: live.breakdownMatrix || null,
+    breakdownAction: live.breakdownAction || "",
+    trendConclusion: live.trendConclusion || "",
+    trendMatrix: live.trendMatrix || null,
+    industryMatrix: live.industryMatrix || null,
+    industryTakeaway: live.industryTakeaway || "",
     terms: live.terms || [],
+    templateCore: live.templateCore || [],
     template: live.template || `Hi [Name],
 
 We are monitoring this trend closely and will adjust our plan accordingly. I will share a more detailed update once we have confirmed the potential impact on cost, demand and delivery.
