@@ -478,6 +478,7 @@ def build_ai_enrichment_prompt(item):
     """Create one prompt that asks AI to enrich the selected article into full website JSON."""
     source = item.get("source", {})
     paras = source.get("paragraphs", [])
+
     excerpt_payload = {
         "id": item.get("id"),
         "trend": item.get("trend"),
@@ -492,6 +493,57 @@ def build_ai_enrichment_prompt(item):
             for p in paras[:3]
             if p.get("en")
         ],
+    }
+
+    output_schema = {
+        "id": item.get("id"),
+        "scenarioId": item.get("trend"),
+        "trend": item.get("trend"),
+        "industry": "crossborder",
+        "signal": item.get("signal"),
+        "pill": "AI Enriched",
+        "sourceType": "AI Enriched",
+        "analysisStatus": "ai_enriched",
+        "deepReady": True,
+        "publishable": True,
+        "quality": "strong",
+
+        "titleCn": "用一句中文准确概括这篇文章的商业信号，不要空泛",
+        "desc": "用一段中文说明这篇文章为什么值得读，要具体到文章内容",
+        "why": "为什么读：提炼文章揭示的核心商业矛盾",
+        "action": "我能拿来做什么：给外贸/跨境/职场用户一个具体可执行动作",
+        "english": "从文章里提炼一个真实、高频、可复用的商务英文表达",
+
+        "breakdown": "Layer 03 中文拆解：具体解释文章里的商业逻辑，150-220字",
+        "judgement": "Layer 04 趋势判断：基于文章内容判断接下来可能影响什么，不要夸大，120-180字",
+        "win": "Layer 05 受益方：具体写哪类公司/岗位/经营方式更受益",
+        "lose": "Layer 05 承压方：具体写哪类公司/岗位/经营方式更承压",
+        "userUse": "Layer 06 中国用户怎么用：分别点到外贸、跨境、职场英文输出，120-180字",
+
+        "template": "Layer 08 英文邮件/briefing 模板。必须使用上面的 english 表达。80-130英文词。",
+        "practice": "Layer 09 输出练习：给一个具体英文写作任务",
+
+        "sourceDate": item.get("sourceDate"),
+        "readingTime": "8 分钟",
+
+        "source": {
+            "name": source.get("name", ""),
+            "title": source.get("title", ""),
+            "url": source.get("url", ""),
+            "summary": source.get("summary", ""),
+            "paragraphs": [
+                {
+                    "en": "保留英文摘录第1段",
+                    "cn": "第1段自然中文翻译",
+                    "insight": "这一段对应的商业阅读提示"
+                },
+                {
+                    "en": "保留英文摘录第2段",
+                    "cn": "第2段自然中文翻译",
+                    "insight": "这一段对应的商业阅读提示"
+                }
+            ]
+        }
     }
 
     return f"""
@@ -511,57 +563,7 @@ def build_ai_enrichment_prompt(item):
 {json_for_prompt(excerpt_payload)}
 
 请严格输出这个 JSON 结构：
-
-{{
-  "id": "{item.get("id")}",
-  "scenarioId": "{item.get("trend")}",
-  "trend": "{item.get("trend")}",
-  "industry": "crossborder",
-  "signal": "{item.get("signal")}",
-  "pill": "AI Enriched",
-  "sourceType": "AI Enriched",
-  "analysisStatus": "ai_enriched",
-  "deepReady": true,
-  "publishable": true,
-  "quality": "strong",
-
-  "titleCn": "用一句中文准确概括这篇文章的商业信号，不要空泛",
-  "desc": "用一段中文说明这篇文章为什么值得读，要具体到文章内容",
-  "why": "为什么读：提炼文章揭示的核心商业矛盾",
-  "action": "我能拿来做什么：给外贸/跨境/职场用户一个具体可执行动作",
-  "english": "从文章里提炼一个真实、高频、可复用的商务英文表达",
-
-  "breakdown": "Layer 03 中文拆解：具体解释文章里的商业逻辑，150-220字",
-  "judgement": "Layer 04 趋势判断：基于文章内容判断接下来可能影响什么，不要夸大，120-180字",
-  "win": "Layer 05 受益方：具体写哪类公司/岗位/经营方式更受益",
-  "lose": "Layer 05 承压方：具体写哪类公司/岗位/经营方式更承压",
-  "userUse": "Layer 06 中国用户怎么用：分别点到外贸、跨境、职场英文输出，120-180字",
-
-  "template": "Layer 08 英文邮件/briefing 模板。必须使用上面的 english 表达。80-130英文词。",
-  "practice": "Layer 09 输出练习：给一个具体英文写作任务",
-
-  "sourceDate": "{item.get("sourceDate")}",
-  "readingTime": "8 分钟",
-
-  "source": {{
-    "name": "{source.get("name", "")}",
-    "title": "{source.get("title", "").replace('"', '\\"')}",
-    "url": "{source.get("url", "")}",
-    "summary": "{source.get("summary", "").replace('"', '\\"')}",
-    "paragraphs": [
-      {{
-        "en": "保留英文摘录第1段",
-        "cn": "第1段自然中文翻译",
-        "insight": "这一段对应的商业阅读提示"
-      }},
-      {{
-        "en": "保留英文摘录第2段",
-        "cn": "第2段自然中文翻译",
-        "insight": "这一段对应的商业阅读提示"
-      }}
-    ]
-  }}
-}}
+{json_for_prompt(output_schema)}
 """.strip()
 
 
