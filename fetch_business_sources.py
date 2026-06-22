@@ -518,9 +518,17 @@ def build_ai_enrichment_prompt(item):
         "judgement": "Layer 04 趋势判断：基于文章内容判断接下来可能影响什么，不要夸大，120-180字",
         "win": "Layer 05 受益方：具体写哪类公司/岗位/经营方式更受益",
         "lose": "Layer 05 承压方：具体写哪类公司/岗位/经营方式更承压",
-        "userUse": "Layer 06 中国用户怎么用：分别点到外贸、跨境、职场英文输出，120-180字",
+        "userUse": {
+    "foreignTrade": {"title": "外贸业务员", "points": ["给2-4条具体动作，不要空泛"]},
+    "crossBorder": {"title": "跨境卖家", "points": ["给2-4条具体动作，不要空泛"]},
+    "workplaceEnglish": {"title": "职场英文输出", "sentences": ["给3-5句可直接复用的英文句式"]},
+    "toolAdvice": {"title": "AI工具选择", "points": ["给2-4条工具选择建议，说明国内/国外模型、网页/API、成本和稳定性取舍"]}
+  },
 
-        "template": "Layer 08 英文邮件/briefing 模板。必须使用上面的 english 表达。80-130英文词。",
+        "terms": [
+    {"term": "一个高频商务表达", "desc": "中文解释", "example": "英文例句"}
+  ],
+  "template": "Layer 08 英文邮件/briefing 模板。必须使用上面的 english 表达。80-130英文词。",
         "practice": "Layer 09 输出练习：给一个具体英文写作任务",
 
         "sourceDate": item.get("sourceDate"),
@@ -557,6 +565,7 @@ def build_ai_enrichment_prompt(item):
 3. 每段英文摘录必须保留在 JSON 的 source.paragraphs[].en 中。
 4. 每段英文摘录下面必须补充准确、自然的中文翻译，放在 source.paragraphs[].cn 中。
 5. 03–06 层必须具体，不要泛泛说“影响成本、需求、供应链”。
+6. userUse 必须输出结构化对象，包含 foreignTrade / crossBorder / workplaceEnglish / toolAdvice 四块；workplaceEnglish 用 sentences 数组给完整英文句式。
 6. 输出必须是一个完整 JSON 对象，不要 Markdown，不要解释。
 
 候选文章数据如下：

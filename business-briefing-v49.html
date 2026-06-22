@@ -660,6 +660,23 @@
     .translation-cn{margin-top:12px;font-size:15px;line-height:1.9;color:#333;background:#fff;padding:14px 16px;border-left:3px solid var(--red);}
     .weak-note{border:1px solid var(--line);background:#fbfbf8;padding:18px 22px;line-height:1.8;color:#333;margin-top:12px;}
 
+  
+    .text-block{display:flex;flex-direction:column;gap:12px;}
+    .text-block p{margin:0;line-height:1.85;}
+    .use-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;}
+    .use-card{border:1px solid var(--line);background:#fafaf7;padding:18px 18px 16px;}
+    .use-card h3{margin:0 0 10px;font-size:16px;font-weight:900;}
+    .use-card ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:8px;}
+    .use-card li{line-height:1.65;}
+    .sentence-list{display:flex;flex-direction:column;gap:10px;margin-top:8px;}
+    .sentence-item{background:#fff;border-left:3px solid var(--red);padding:10px 12px;font-family:Georgia,serif;font-weight:700;line-height:1.55;}
+    .term-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;}
+    .term-card{border:1px solid var(--line);background:#fafaf7;padding:16px;}
+    .term-card h3{margin:0 0 8px;font-family:Georgia,serif;font-size:18px;}
+    .term-card p{margin:0 0 8px;line-height:1.65;}
+    .term-card .example{font-family:Georgia,serif;font-style:italic;background:#fff;padding:9px 10px;border-left:3px solid var(--red);}
+    @media(max-width:800px){.use-grid,.term-grid{grid-template-columns:1fr;}}
+
   </style>
 </head>
 <body>
@@ -981,12 +998,94 @@ function renderExcerptBlocks(item){
   }).join("") + `</div>`;
 }
 
+
+function renderTextBlock(value){
+  if(!value) return "";
+  if(Array.isArray(value)){
+    return `<div class="text-block">` + value.map(x => `<p>${escapeHtml(x)}</p>`).join("") + `</div>`;
+  }
+  const text = String(value);
+  const parts = text.split(/\n{2,}/).map(x => x.trim()).filter(Boolean);
+  if(parts.length <= 1) return `<p>${escapeHtml(text)}</p>`;
+  return `<div class="text-block">` + parts.map(x => `<p>${escapeHtml(x)}</p>`).join("") + `</div>`;
+}
+
+function renderUseAdvice(value){
+  if(!value) return "";
+  if(typeof value === "string"){
+    return `
+      <article class="layer">
+        <div class="layer-title"><span class="layer-num">06</span> 使用建议</div>
+        ${renderTextBlock(value)}
+      </article>
+    `;
+  }
+
+  const cards = [];
+  const addCard = (key, fallbackTitle) => {
+    const data = value[key];
+    if(!data) return;
+    const title = data.title || fallbackTitle;
+    const points = data.points || data.items || [];
+    const sentences = data.sentences || [];
+    let body = "";
+
+    if(points.length){
+      body += `<ul>` + points.map(p => `<li>${escapeHtml(p)}</li>`).join("") + `</ul>`;
+    }
+    if(sentences.length){
+      body += `<div class="sentence-list">` + sentences.map(s => `<div class="sentence-item">${escapeHtml(s)}</div>`).join("") + `</div>`;
+    }
+    if(data.text){
+      body += renderTextBlock(data.text);
+    }
+    cards.push(`<div class="use-card"><h3>${escapeHtml(title)}</h3>${body}</div>`);
+  };
+
+  addCard("foreignTrade", "外贸业务员");
+  addCard("crossBorder", "跨境卖家");
+  addCard("workplaceEnglish", "职场英文");
+  addCard("toolAdvice", "AI工具选择");
+
+  if(!cards.length) return "";
+  return `
+    <article class="layer">
+      <div class="layer-title"><span class="layer-num">06</span> 使用建议</div>
+      <div class="use-grid">${cards.join("")}</div>
+    </article>
+  `;
+}
+
+function renderBusinessEnglish(item){
+  if(Array.isArray(item.terms) && item.terms.length){
+    return `
+      <article class="layer">
+        <div class="layer-title"><span class="layer-num">07</span> Business English</div>
+        <div class="term-grid">
+          ${item.terms.map(t => `
+            <div class="term-card">
+              <h3>${escapeHtml(t.term || "")}</h3>
+              <p>${escapeHtml(t.desc || "")}</p>
+              ${t.example ? `<div class="example">${escapeHtml(t.example)}</div>` : ""}
+            </div>
+          `).join("")}
+        </div>
+      </article>
+    `;
+  }
+  return `
+    ${renderBusinessEnglish(item)}
+  `;
+}
+
 function renderOptionalLayer(num, title, value){
-  if(!value || String(value).trim().length < 20) return "";
+  if(!value) return "";
+  const text = Array.isArray(value) ? value.join(" ") : String(value);
+  if(text.trim().length < 20) return "";
   return `
     <article class="layer">
       <div class="layer-title"><span class="layer-num">${num}</span> ${title}</div>
-      <p>${escapeHtml(value)}</p>
+      ${renderTextBlock(value)}
     </article>
   `;
 }
@@ -1015,11 +1114,8 @@ function detailHTML(item){
         <div class="impact"><b>承压：</b><br>${escapeHtml(item.lose)}</div>
       </div>
     </article>` : ""}
-    ${renderOptionalLayer("06", "中国用户怎么用", item.userUse)}
-    <article class="layer">
-      <div class="layer-title"><span class="layer-num">07</span> Business English</div>
-      <h3 class="serif">${escapeHtml(item.english)}</h3>
-    </article>
+    ${renderUseAdvice(item.userUse)}
+    ${renderBusinessEnglish(item)}
     ${(!isDraft && item.template) ? `
     <article class="layer">
       <div class="layer-title"><span class="layer-num">08</span> Email / Briefing Template</div>
@@ -1144,6 +1240,7 @@ function liveToArticle(live, idx){
     lose: live.lose || "",
     userUse: live.userUse || "",
     english: live.english || fallback.english,
+    terms: live.terms || [],
     template: live.template || `Hi [Name],
 
 We are monitoring this trend closely and will adjust our plan accordingly. I will share a more detailed update once we have confirmed the potential impact on cost, demand and delivery.

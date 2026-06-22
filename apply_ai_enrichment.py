@@ -50,9 +50,16 @@ def validate_article(article):
         require(p.get("en") and len(p.get("en", "")) > 80, f"paragraph {i} missing enough English")
         require(p.get("cn") and len(p.get("cn", "")) > 30, f"paragraph {i} missing Chinese translation")
 
-    required = ["titleCn", "desc", "why", "action", "breakdown", "judgement", "win", "lose", "userUse", "english", "template", "practice"]
+    required = ["titleCn", "desc", "why", "action", "breakdown", "judgement", "win", "lose", "english", "template", "practice"]
     for key in required:
         require(article.get(key) and len(str(article.get(key))) >= 10, f"missing or too short: {key}")
+
+    user_use = article.get("userUse")
+    require(user_use, "missing userUse")
+    if isinstance(user_use, dict):
+        require(any(k in user_use for k in ["foreignTrade", "crossBorder", "workplaceEnglish", "toolAdvice"]), "structured userUse missing use-case sections")
+    else:
+        require(len(str(user_use)) >= 20, "userUse too short")
 
     article["analysisStatus"] = "ai_enriched"
     article["deepReady"] = True
