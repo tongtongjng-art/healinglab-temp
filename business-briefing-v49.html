@@ -714,6 +714,225 @@
     .compact-practice{border:1px solid var(--line);background:#fafaf7;padding:14px 16px;margin-top:14px;line-height:1.65;}
     @media(max-width:900px){.evidence-grid,.risk-grid{grid-template-columns:1fr;}}
 
+  
+    /* Detail reading: original paragraphs first, translations controlled by right dropdown, analysis folded below */
+    .reading-mode-select{
+      width:100%;
+      border:0;
+      background:transparent;
+      color:var(--muted);
+      font:inherit;
+      outline:none;
+      cursor:pointer;
+    }
+    .detail-source-line{
+      color:var(--muted);
+      font-size:12px;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      font-weight:900;
+      margin:0 0 22px;
+    }
+    .today-take-row{
+      border-left:4px solid var(--red);
+      background:var(--paper);
+      padding:18px 22px;
+      display:grid;
+      grid-template-columns:130px minmax(0,1fr);
+      gap:16px;
+      align-items:start;
+      margin:0 0 28px;
+    }
+    .today-take-label{
+      color:var(--red);
+      font-size:12px;
+      font-weight:900;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+    }
+    .today-take-text{
+      font-size:16px;
+      line-height:1.75;
+      font-weight:900;
+      color:#111;
+    }
+    .paragraph-reading{
+      margin-top:4px;
+    }
+    .paragraph-reading-head{
+      display:flex;
+      align-items:baseline;
+      gap:12px;
+      padding-bottom:16px;
+      border-bottom:1px solid var(--line);
+    }
+    .paragraph-reading-head .num{
+      font-family:Georgia,"Times New Roman",serif;
+      font-size:24px;
+      font-weight:900;
+      color:#111;
+    }
+    .paragraph-reading-head .text{
+      color:var(--red);
+      font-size:12px;
+      font-weight:900;
+      letter-spacing:.16em;
+      text-transform:uppercase;
+    }
+    .paragraph-row{
+      padding:22px 0 24px;
+      border-bottom:1px solid var(--line);
+    }
+    .paragraph-kicker{
+      color:var(--red);
+      font-size:12px;
+      letter-spacing:.18em;
+      text-transform:uppercase;
+      font-weight:900;
+      margin-bottom:12px;
+    }
+    .paragraph-en{
+      font-family:Georgia,"Times New Roman",serif;
+      font-style:italic;
+      font-size:20px;
+      line-height:1.78;
+      color:#111;
+      max-width:900px;
+    }
+    .paragraph-cn{
+      display:none;
+      margin-top:14px;
+      padding-top:14px;
+      border-top:1px solid var(--line);
+      color:#222;
+      font-size:15.5px;
+      line-height:1.85;
+      max-width:900px;
+    }
+    body.bilingual-mode .paragraph-cn{
+      display:block;
+    }
+    .analysis-rule{
+      border-top:3px solid #111;
+      margin:30px 0 20px;
+    }
+    .analysis-intro{
+      margin-bottom:16px;
+    }
+    .analysis-intro h2{
+      margin:0 0 8px;
+      font-family:Georgia,"Times New Roman",serif;
+      font-size:32px;
+      line-height:1.12;
+      color:#111;
+    }
+    .analysis-intro p{
+      margin:0;
+      color:var(--muted);
+      line-height:1.65;
+      font-size:15px;
+    }
+    .analysis-accordion{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .acc-panel{
+      border:1px solid var(--line);
+      background:transparent;
+      margin:0;
+    }
+    .acc-panel>summary{
+      cursor:pointer;
+      list-style:none;
+      display:grid;
+      grid-template-columns:44px minmax(0,1fr) 20px;
+      align-items:center;
+      gap:14px;
+      min-height:64px;
+      padding:0 18px;
+    }
+    .acc-panel>summary::-webkit-details-marker{display:none;}
+    .acc-num{
+      color:var(--red);
+      font-size:13px;
+      font-weight:900;
+      letter-spacing:.08em;
+    }
+    .acc-main{
+      min-width:0;
+      display:flex;
+      align-items:baseline;
+      gap:6px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .acc-title{
+      color:#111;
+      font-weight:900;
+      font-size:18px;
+    }
+    .acc-sub{
+      color:var(--muted);
+      font-size:14px;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .acc-arrow{
+      color:var(--muted);
+      font-size:18px;
+      transition:transform .16s ease;
+    }
+    .acc-panel[open] .acc-arrow{
+      transform:rotate(90deg);
+    }
+    .acc-body{
+      padding:0 18px 20px 76px;
+    }
+    .acc-body>.layer{
+      margin:0;
+      border:0;
+      padding:18px 0 0;
+      background:transparent;
+    }
+    .acc-body>.layer>.layer-title{
+      display:none;
+    }
+    @media(max-width:760px){
+      .today-take-row{grid-template-columns:1fr;gap:8px;}
+      .paragraph-en{font-size:18.5px;}
+      .acc-panel>summary{grid-template-columns:34px minmax(0,1fr) 18px;padding:0 14px;}
+      .acc-body{padding:0 14px 18px;}
+      .acc-main{display:block;}
+      .acc-sub{display:block;margin-top:3px;}
+    }
+
+  
+    .paragraph-reading-head{
+      display:grid !important;
+      grid-template-columns:auto 1fr auto;
+      align-items:center;
+      column-gap:12px;
+    }
+    .paragraph-mode-inline{
+      justify-self:end;
+      border:1px solid var(--line);
+      background:var(--paper);
+      padding:8px 12px;
+      color:var(--muted);
+      font:inherit;
+      outline:none;
+      cursor:pointer;
+      min-width:132px;
+    }
+    body:not(.bilingual-mode) .paragraph-cn{
+      display:none !important;
+    }
+    body.bilingual-mode .paragraph-cn{
+      display:block !important;
+    }
+
   </style>
 </head>
 <body>
@@ -851,7 +1070,7 @@
         <button>趋势判断</button>
         <button>商务英文</button>
       </nav>
-      <div class="search">Detail Reading View</div>
+      <div class="search">Paragraph Reading View</div>
     </header>
 
     <main class="detail-wrap">
@@ -883,6 +1102,7 @@ const DEFAULT_ARTICLES = [
     date:"2026.06.17",
     readingTime:"5 分钟",
     excerpt:"Companies are rethinking sourcing routes, cost structures and supplier resilience as tariff pressure changes the economics of global manufacturing.",
+    translation:"随着关税压力改变全球制造业的经济逻辑，企业正在重新思考采购路线、成本结构和供应商韧性。",
     breakdown:"这类新闻表面是关税变化，本质是企业成本结构、供应链稳定性和客户报价逻辑在重新排列。",
     judgement:"未来客户沟通不能只谈价格，还要解释成本来源、交付风险和替代方案。",
     win:"本地化供应商、供应链透明度工具、能提供稳定交付的制造商。",
@@ -907,6 +1127,7 @@ const DEFAULT_ARTICLES = [
     date:"2026.06.15",
     readingTime:"4 分钟",
     excerpt:"Premium care brands increasingly position daily protection as a lifestyle barrier rather than a purely clinical repair function.",
+    translation:"高端护理品牌越来越倾向于把日常防护表达为一种生活方式屏障，而不是单纯的临床修复功能。",
     breakdown:"这说明消费者购买的不只是功效，而是更高级、更日常、更像生活方式的保护感。",
     judgement:"功能型产品如果只说修复，容易陷入低价竞争；如果表达为 barrier、protection、daily defence，溢价空间更大。",
     win:"宠物护理、美妆个护、健康消费、生活方式品牌。",
@@ -931,6 +1152,7 @@ const DEFAULT_ARTICLES = [
     date:"2026.06.12",
     readingTime:"4 分钟",
     excerpt:"Automation is increasingly embedded in support workflows, helping teams reduce repetitive tasks and improve response consistency.",
+    translation:"自动化正在越来越多地嵌入客服和支持流程，帮助团队减少重复任务，并提高回复的一致性。",
     breakdown:"企业真正关心的不是 AI 酷不酷，而是它能不能减少重复工作、降低人力压力、提高响应稳定性。",
     judgement:"未来 AI 工具的竞争重点会从生成内容转向流程嵌入。",
     win:"SaaS、跨境客服、运营团队、知识库系统。",
@@ -1295,19 +1517,123 @@ function copyTemplate(id){
   navigator.clipboard && navigator.clipboard.writeText(el.innerText);
 }
 
+
+function setReadingMode(mode){
+  document.body.classList.toggle("bilingual-mode", mode === "bi");
+}
+
+function getDetailSourceLine(item){
+  const sourceName = item.sourceName || (typeof item.source === "string" ? item.source : (item.source && item.source.name)) || "Source";
+  const date = item.sourceDate || item.date || "";
+  const readingTime = item.readingTime || "";
+  return `Source: ${sourceName}${date ? " · " + date : ""}${readingTime ? " · " + readingTime : ""}`;
+}
+
+function renderCleanParagraphs(item){
+  const paragraphs =
+    (Array.isArray(item.paragraphs) && item.paragraphs.length)
+      ? item.paragraphs
+      : (Array.isArray(item.source?.paragraphs) && item.source.paragraphs.length)
+        ? item.source.paragraphs
+        : [{en:item.excerpt || item.title || "", cn:item.translation || item.cn || ""}];
+
+  const parallelCn = item.paragraphsChn || item.paragraphsCn || item.translations || item.source?.paragraphsChn || item.source?.paragraphsCn || [];
+
+  return `
+    <section class="paragraph-reading">
+      <div class="paragraph-reading-head">
+        <span class="num">01</span>
+        <span class="text">外刊原文 · 完整原文</span>
+        <select class="paragraph-mode-inline" onchange="setReadingMode(this.value)">
+          <option value="en">全英模式</option>
+          <option value="bi">中英对照</option>
+        </select>
+      </div>
+      ${paragraphs.slice(0,3).map((p, idx) => {
+        const en = p.en || p.text || p.paragraph || "";
+        const cn = p.cn || p.zh || p.translation || p.chinese || parallelCn[idx] || (paragraphs.length === 1 ? (item.translation || item.cn || item.source?.translation || "") : "");
+        return `
+          <div class="paragraph-row">
+            <div class="paragraph-kicker">Paragraph ${String(idx + 1).padStart(2,"0")}</div>
+            <div class="paragraph-en">${escapeHtml(en)}</div>
+            ${cn ? `<div class="paragraph-cn">${escapeHtml(cn)}</div>` : ""}
+          </div>
+        `;
+      }).join("")}
+    </section>
+  `;
+}
+
+function accPanel(num, title, subtitle, innerHtml){
+  if(!innerHtml) return "";
+  return `
+    <details class="acc-panel">
+      <summary>
+        <span class="acc-num">${num}</span>
+        <span class="acc-main">
+          <span class="acc-title">${title}</span>
+          <span class="acc-sub">${subtitle || ""}</span>
+        </span>
+        <span class="acc-arrow">›</span>
+      </summary>
+      <div class="acc-body">${innerHtml}</div>
+    </details>
+  `;
+}
+
+function renderTrendLayer(item){
+  if(item.trendMatrix || item.trendConclusion){
+    return `
+      <article class="layer smart-layer">
+        <div class="layer-title"><span class="layer-num">05</span> 趋势判断</div>
+        ${item.trendConclusion ? `<div class="brief-one-line">${escapeHtml(item.trendConclusion)}</div>` : ""}
+        ${renderMatrix(item.trendMatrix)}
+      </article>
+    `;
+  }
+  if(item.judgement){
+    return `
+      <article class="layer smart-layer">
+        <div class="layer-title"><span class="layer-num">05</span> 趋势判断</div>
+        ${renderSmartText(item.judgement)}
+      </article>
+    `;
+  }
+  return "";
+}
+
 function detailHTML(item){
   const isDraft = item.analysisStatus === "needs_ai_enrichment" || item.deepReady === false;
+  const templatePractice = renderTemplatePracticeLayer(item, isDraft);
+  const sourceUrl = item.sourceUrl ? `<p class="section-subnote"><a href="${escapeAttr(item.sourceUrl)}" target="_blank" rel="noopener">查看原文来源 →</a></p>` : "";
+
   return `
-    ${renderSignalLayer(item, isDraft)}
-    ${renderEvidenceLayer(item)}
-    ${renderExcerptLayer(item)}
-    ${renderBreakdownLayer(item)}
-    ${renderMoneyLayer(item)}
-    ${renderIndustryLayer(item, isDraft)}
-    ${renderUseAdvice(item.userUse)}
-    ${renderRiskLayer(item)}
-    ${renderBusinessEnglish(item)}
-    ${renderTemplatePracticeLayer(item, isDraft)}
+    <div class="detail-source-line">${escapeHtml(getDetailSourceLine(item))}</div>
+
+    <section class="today-take-row">
+      <div class="today-take-label">Today's Take</div>
+      <div class="today-take-text">${escapeHtml(item.signalLead || item.titleCn || item.desc || "")}</div>
+    </section>
+
+    ${renderCleanParagraphs(item)}
+    ${sourceUrl}
+
+    <div class="analysis-rule"></div>
+    <section class="analysis-intro">
+      <h2>深度拆解</h2>
+      <p>下面内容默认折叠。想看商业判断、钱在哪里、行业影响、使用建议时再展开。</p>
+    </section>
+
+    <section class="analysis-accordion">
+      ${accPanel("02", "商业判断", "核心判断 + 问题类型矩阵", renderBreakdownLayer(item))}
+      ${accPanel("03", "钱在哪里", "谁省钱 / 谁赚钱 / 谁被压价 / 谁升值", renderMoneyLayer(item))}
+      ${accPanel("04", "趋势判断", "岗位分层 / 企业能力变化", renderTrendLayer(item))}
+      ${accPanel("05", "影响行业", "跨境 / 外贸 / SaaS / 外包客服", renderIndustryLayer(item, isDraft))}
+      ${accPanel("06", "使用建议", "外贸 / 跨境 / 职场英文 / AI工具", renderUseAdvice(item.userUse))}
+      ${accPanel("07", "风险边界", "哪些问题不适合 AI 单独处理", renderRiskLayer(item))}
+      ${accPanel("08", "Business English", "场景标签 + 可直接复用句式", renderBusinessEnglish(item))}
+      ${accPanel("09", "模板 / 输出练习", "骨架句先显示，完整模板再展开", templatePractice)}
+    </section>
   `;
 }
 
@@ -1408,12 +1734,13 @@ function liveToArticle(live, idx){
     desc: live.desc || source.summaryCn || fallback.titleCn,
     why: live.why || source.why || fallback.why,
     action: live.action || source.action || fallback.action,
-    source: source.name || live.sourceName || "Live Source",
+    sourceName: source.name || live.sourceName || "Live Source",
     sourceUrl: source.url || live.sourceUrl || "",
+    source: live.source || source || {},
     date: live.sourceDate || live.date || "",
     readingTime: live.readingTime || "5 分钟",
     excerpt: firstExcerpt,
-    paragraphs: rawParas.length ? rawParas : [{en:firstExcerpt, cn:firstPara.cn || ""}],
+    paragraphs: rawParas.length ? rawParas : [{en:firstExcerpt, cn:firstPara.cn || live.translation || source.translation || source.summaryCn || ""}],
     analysisStatus: live.analysisStatus || "needs_ai_enrichment",
     deepReady: live.deepReady === true,
     breakdown: live.breakdown || "",
