@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>Business Briefing Mobile</title>
+<title>Business Briefing Mobile · Image Fix</title>
 <style>
   :root{
     --paper:#fbfaf7;
@@ -88,15 +88,29 @@
   }
   .hero-img{
     height:150px;
-    background:
-      linear-gradient(90deg,rgba(0,0,0,.08),rgba(0,0,0,.10)),
-      url("/daily/business-briefing-hero.png");
-    background-size:cover;
-    background-position:center;
-    display:flex;
-    align-items:flex-start;
-    justify-content:flex-end;
-    padding:14px;
+    position:relative;
+    overflow:hidden;
+    background:#ecebea;
+  }
+  .hero-img img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    object-position:center;
+    display:block;
+  }
+  .hero-img:after{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:linear-gradient(90deg,rgba(0,0,0,.04),rgba(0,0,0,.12));
+    pointer-events:none;
+  }
+  .hero-img-text{
+    position:absolute;
+    top:14px;
+    right:14px;
+    z-index:2;
     color:#fff;
     font-family:Georgia,"Times New Roman",serif;
     font-weight:900;
@@ -507,7 +521,10 @@
       <div class="home-content">
         <div class="section-title">Today's Pick · 今日外刊</div>
         <article class="hero-card">
-          <div class="hero-img">GLOBAL<br>BUSINESS<br>SIGNAL</div>
+          <div class="hero-img">
+            <img src="/daily/business-briefing-hero.png?v=1" alt="Global Business Signal">
+            <div class="hero-img-text">GLOBAL<br>BUSINESS<br>SIGNAL</div>
+          </div>
           <div class="hero-body">
             <div class="tag-row">
               <span class="tag-main" id="heroTag">★ AI PRODUCTIVITY</span>
