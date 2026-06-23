@@ -933,6 +933,62 @@
       display:block !important;
     }
 
+  
+    /* Paid-value refinement: lower red density, stronger hierarchy */
+    .smart-matrix .redline,
+    .matrix .redline{
+      color:#111 !important;
+    }
+    .smart-matrix td:first-child,
+    .matrix td:first-child{
+      color:#111 !important;
+      font-weight:900;
+    }
+    .term-card .scenario,
+    .scene{
+      color:var(--muted) !important;
+    }
+    .brief-card b,
+    .signal-card .label{
+      color:#111;
+    }
+    .audience-strip{
+      margin:0 0 28px;
+      padding:14px 16px;
+      border:1px solid var(--line);
+      background:var(--paper);
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+    .audience-label{
+      font-size:12px;
+      color:var(--muted);
+      font-weight:900;
+      letter-spacing:.1em;
+      text-transform:uppercase;
+      margin-right:2px;
+    }
+    .audience-pill{
+      display:inline-flex;
+      align-items:center;
+      border:1px solid var(--line);
+      background:#fff;
+      padding:6px 10px;
+      font-size:13px;
+      font-weight:800;
+      color:#111;
+    }
+    .brief-one-line{
+      border-left:4px solid var(--red);
+      background:#fffaf7;
+      padding:13px 16px;
+      line-height:1.65;
+      font-weight:900;
+      margin:0 0 14px;
+    }
+
   </style>
 </head>
 <body>
@@ -1602,6 +1658,18 @@ function renderTrendLayer(item){
   return "";
 }
 
+
+function renderAudienceStrip(item){
+  const people = item.suitableAudience || item.audience || [];
+  if(!Array.isArray(people) || !people.length) return "";
+  return `
+    <div class="audience-strip">
+      <span class="audience-label">适合谁看</span>
+      ${people.map(x => `<span class="audience-pill">${escapeHtml(x)}</span>`).join("")}
+    </div>
+  `;
+}
+
 function detailHTML(item){
   const isDraft = item.analysisStatus === "needs_ai_enrichment" || item.deepReady === false;
   const templatePractice = renderTemplatePracticeLayer(item, isDraft);
@@ -1616,6 +1684,7 @@ function detailHTML(item){
       <div class="today-take-text">${escapeHtml(item.signalLead || item.titleCn || item.desc || "")}</div>
     </section>
 
+    ${renderAudienceStrip(item)}
     ${renderCleanParagraphs(item)}
     ${sourceUrl}
 
@@ -1749,6 +1818,7 @@ function liveToArticle(live, idx){
     lose: live.lose || "",
     userUse: live.userUse || "",
     english: live.english || fallback.english,
+    suitableAudience: live.suitableAudience || live.audience || source.suitableAudience || [],
     signalLead: live.signalLead || live.titleCn || source.titleCn || fallback.titleCn,
     signalCards: live.signalCards || [],
     evidenceCards: live.evidenceCards || [],
