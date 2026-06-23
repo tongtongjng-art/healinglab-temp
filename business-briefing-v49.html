@@ -1034,6 +1034,13 @@
       max-width:660px;
     }
 
+  
+    .judgement-label{
+      color:#8d1111;
+      font-weight:900;
+      margin-right:2px;
+    }
+
   </style>
 </head>
 <body>
@@ -1098,7 +1105,7 @@
 
               <h2 class="hero-title serif" id="heroTitle">Gig workers are endlessly exploited. AI could make more of us share their fate</h2>
               <div class="hero-translation" id="heroTranslation">零工劳动者一直被剥削，AI可能让更多人也变成这样。</div>
-              <div class="hero-cn" id="heroCn">AI客服省的是标准工单，真正值钱的是异常处理和客户挽回</div>
+              <div class="hero-cn"><span class="judgement-label">今日判断：</span><span id="heroCn">AI客服省的是标准工单，真正值钱的是异常处理和客户挽回</span></div>
 
               <div class="mini-grid">
                 <div class="mini">
@@ -1330,9 +1337,9 @@ function renderHero(){
   document.getElementById("heroTitle").textContent = item.title;
   document.getElementById("heroCn").textContent = item.titleCn;
   const heroTranslation = document.getElementById("heroTranslation");
-  if(heroTranslation) heroTranslation.textContent = item.titleTranslation || "";
+  if(heroTranslation) heroTranslation.textContent = item.titleTranslation || "零工劳动者一直被剥削，AI可能让更多人也落入同样处境。";
   const heroMeaning = document.getElementById("heroMeaning");
-  if(heroMeaning) heroMeaning.textContent = item.meaning || "";
+  if(heroMeaning) heroMeaning.textContent = item.meaning || "AI可能把更多工作拆成低价、零散、可替代的任务。";
   const heroDesc = document.getElementById("heroDesc");
   if(heroDesc) heroDesc.textContent = item.desc || "";
   const heroWhy = document.getElementById("heroWhy");
