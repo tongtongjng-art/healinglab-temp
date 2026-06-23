@@ -1017,6 +1017,12 @@
       letter-spacing:.02em;
     }
 
+  
+    .mini-grid.single{
+      grid-template-columns:1fr !important;
+      max-width:560px;
+    }
+
   </style>
 </head>
 <body>
@@ -1081,13 +1087,8 @@
 
               <h2 class="hero-title serif" id="heroTitle">Tariff Pressure Reshapes Global Manufacturing and Supply Chains</h2>
               <div class="hero-cn" id="heroCn">关税压力正在重塑全球制造与供应链布局</div>
-              <p class="hero-desc" id="heroDesc">今天先读这篇：它不是单纯政策新闻，而是关于成本、交付、供应商选择和客户沟通方式正在发生变化。</p>
 
-              <div class="mini-grid">
-                <div class="mini">
-                  <h4>为什么读？</h4>
-                  <p id="heroWhy">看懂关税与成本压力如何影响采购路线、报价逻辑和供应链稳定性。</p>
-                </div>
+              <div class="mini-grid single">
                 <div class="mini">
                   <h4>我能拿来做什么？</h4>
                   <p id="heroAction">转成客户开发、报价解释、交期说明和英文汇报中的可用表达。</p>
@@ -1312,8 +1313,10 @@ function renderHero(){
   document.getElementById("heroPillA").textContent = item.pill || "Global Trade";
   document.getElementById("heroTitle").textContent = item.title;
   document.getElementById("heroCn").textContent = item.titleCn;
-  document.getElementById("heroDesc").textContent = item.desc;
-  document.getElementById("heroWhy").textContent = item.why;
+  const heroDesc = document.getElementById("heroDesc");
+  if(heroDesc) heroDesc.textContent = item.desc || "";
+  const heroWhy = document.getElementById("heroWhy");
+  if(heroWhy) heroWhy.textContent = item.why || "";
   document.getElementById("heroAction").textContent = item.action;
   document.getElementById("heroSource").textContent = formatHomeSource(item);
   const heroCta = document.getElementById("heroCta");
