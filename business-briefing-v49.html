@@ -989,6 +989,34 @@
       margin:0 0 14px;
     }
 
+  
+    .source-meta-grid{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin:0 0 22px;
+    }
+    .source-chip{
+      border:1px solid var(--line);
+      background:var(--paper);
+      padding:7px 10px;
+      font-size:12px;
+      color:#111;
+      font-weight:800;
+    }
+    .source-chip b{
+      color:var(--muted);
+      font-weight:800;
+      margin-right:4px;
+    }
+    .card-date{
+      margin-top:10px;
+      font-size:12px;
+      color:var(--muted);
+      font-weight:800;
+      letter-spacing:.02em;
+    }
+
   </style>
 </head>
 <body>
@@ -1234,6 +1262,50 @@ function filteredArticles(){
   });
 }
 
+
+function sourceDisplayName(item){
+  const s = item.source;
+  if(typeof s === "string") return s;
+  if(s && typeof s === "object") return s.name || s.source || s.publisher || item.sourceName || "Unknown Source";
+  return item.sourceName || "Unknown Source";
+}
+
+function normalizeDateText(value){
+  if(!value) return "";
+  const text = String(value).slice(0,10);
+  return text.replaceAll("-", ".");
+}
+
+function siteUpdateDate(item){
+  return normalizeDateText(item.updatedAt || item.publishDate || item.siteUpdatedAt || new Date().toISOString().slice(0,10));
+}
+
+function renderSourceMeta(item){
+  const sourceName = sourceDisplayName(item);
+  const originalDate = normalizeDateText(item.sourceDate || item.date || item.originalDate || "");
+  const updated = siteUpdateDate(item);
+  const readingTime = item.readingTime || "";
+  return `
+    <div class="source-meta-grid">
+      <span class="source-chip"><b>来源</b>${escapeHtml(sourceName)}</span>
+      ${originalDate ? `<span class="source-chip"><b>原文日期</b>${escapeHtml(originalDate)}</span>` : ""}
+      <span class="source-chip"><b>本站更新</b>${escapeHtml(updated)}</span>
+      ${readingTime ? `<span class="source-chip"><b>阅读时间</b>${escapeHtml(readingTime)}</span>` : ""}
+    </div>
+  `;
+}
+
+function formatHomeSource(item){
+  const sourceName = sourceDisplayName(item);
+  const originalDate = normalizeDateText(item.sourceDate || item.date || item.originalDate || "");
+  const readingTime = item.readingTime || "";
+  return [
+    `来源：${sourceName}`,
+    originalDate ? `原文日期：${originalDate}` : "",
+    readingTime ? `阅读时间：${readingTime}` : ""
+  ].filter(Boolean).join(" · ");
+}
+
 function renderHero(){
   const item = state.current || state.articles[0];
   document.getElementById("heroSignal").textContent = item.signal || "Business Signal";
@@ -1243,7 +1315,7 @@ function renderHero(){
   document.getElementById("heroDesc").textContent = item.desc;
   document.getElementById("heroWhy").textContent = item.why;
   document.getElementById("heroAction").textContent = item.action;
-  document.getElementById("heroSource").textContent = `Source: ${item.source} · ${item.date} · 阅读时间 ${item.readingTime}`;
+  document.getElementById("heroSource").textContent = formatHomeSource(item);
   const heroCta = document.getElementById("heroCta");
   heroCta.href = "#article-" + encodeURIComponent(item.id);
   heroCta.onclick = (e) => { e.preventDefault(); openDetail(item.id); };
@@ -1258,6 +1330,7 @@ function renderCards(){
     card.className = "card";
     card.innerHTML = `
       <div class="card-code">${String(idx+1).padStart(2,"0")} / ${escapeHtml(categoryText(item))}</div>
+      <div class="card-date">原文发布：${escapeHtml(normalizeDateText(item.sourceDate || item.date || item.originalDate || "未标注"))}</div>
       <h3 class="serif">${escapeHtml(item.title)}</h3>
       <p>${escapeHtml(item.titleCn || item.desc)}</p>
       <div class="english">${escapeHtml(item.english || "work-ready business expression")}</div>
@@ -1378,7 +1451,7 @@ function renderSignalLayer(item, isDraft){
 
 function renderEvidenceLayer(item){
   const cards = item.evidenceCards || [];
-  const sourceLine = item.source || item.sourceUrl ? [{label:"Source", text:[item.source,item.date].filter(Boolean).join(" · ")}] : [];
+  const sourceLine = item.source || item.sourceUrl ? [{label:"Source", text:[sourceDisplayName(item), normalizeDateText(item.sourceDate || item.date)].filter(Boolean).join(" · ")}] : [];
   const all = cards.length ? cards : sourceLine;
   if(!all.length) return "";
   return `
@@ -1579,10 +1652,12 @@ function setReadingMode(mode){
 }
 
 function getDetailSourceLine(item){
-  const sourceName = item.sourceName || (typeof item.source === "string" ? item.source : (item.source && item.source.name)) || "Source";
-  const date = item.sourceDate || item.date || "";
-  const readingTime = item.readingTime || "";
-  return `Source: ${sourceName}${date ? " · " + date : ""}${readingTime ? " · " + readingTime : ""}`;
+  return [
+    `来源：${sourceDisplayName(item)}`,
+    (item.sourceDate || item.date || item.originalDate) ? `原文日期：${normalizeDateText(item.sourceDate || item.date || item.originalDate)}` : "",
+    `本站更新：${siteUpdateDate(item)}`,
+    item.readingTime ? `阅读时间：${item.readingTime}` : ""
+  ].filter(Boolean).join(" · ");
 }
 
 function renderCleanParagraphs(item){
@@ -1677,7 +1752,7 @@ function detailHTML(item){
   const businessJudgement = renderBreakdownLayer(item) + renderTrendLayer(item);
 
   return `
-    <div class="detail-source-line">${escapeHtml(getDetailSourceLine(item))}</div>
+    ${renderSourceMeta(item)}
 
     <section class="today-take-row">
       <div class="today-take-label">Today's Take</div>
@@ -1806,7 +1881,9 @@ function liveToArticle(live, idx){
     sourceName: source.name || live.sourceName || "Live Source",
     sourceUrl: source.url || live.sourceUrl || "",
     source: live.source || source || {},
-    date: live.sourceDate || live.date || "",
+    sourceDate: live.sourceDate || source.sourceDate || source.date || live.date || "",
+    date: live.sourceDate || source.sourceDate || source.date || live.date || "",
+    updatedAt: live.updatedAt || live.publishDate || live.siteUpdatedAt || "",
     readingTime: live.readingTime || "5 分钟",
     excerpt: firstExcerpt,
     paragraphs: rawParas.length ? rawParas : [{en:firstExcerpt, cn:firstPara.cn || live.translation || source.translation || source.summaryCn || ""}],
