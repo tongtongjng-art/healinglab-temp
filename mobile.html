@@ -1,0 +1,760 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Business Briefing Mobile</title>
+<style>
+  :root{
+    --paper:#fbfaf7;
+    --card:#ffffff;
+    --ink:#111;
+    --muted:#747474;
+    --line:#dedbd3;
+    --soft:#f2f0eb;
+    --red:#b11218;
+    --shadow:0 18px 60px rgba(0,0,0,.08);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;min-height:100%;background:#e8e5dd;color:var(--ink)}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",Arial,sans-serif;
+  }
+  a{color:inherit}
+  .phone{
+    width:100%;
+    min-height:100svh;
+    background:var(--paper);
+    position:relative;
+  }
+  .topbar{
+    background:rgba(251,250,247,.97);
+    border-bottom:1px solid var(--line);
+    padding:10px 14px 9px;
+  }
+  .brand-row{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:10px;
+  }
+  .brand-kicker{
+    color:var(--red);
+    font-size:9px;
+    font-weight:900;
+    letter-spacing:.2em;
+    text-transform:uppercase;
+  }
+  .brand{
+    margin-top:2px;
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:25px;
+    line-height:.86;
+    font-weight:900;
+  }
+  .menu-btn{
+    border:1px solid var(--line);
+    background:#fff;
+    padding:8px 10px;
+    font-weight:900;
+    font-size:12px;
+  }
+  .page{display:none}
+  .page.active{display:block}
+  .home-content{
+    padding:10px 12px 14px;
+  }
+  .section-title{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin:8px 0 9px;
+    color:var(--red);
+    font-size:11px;
+    letter-spacing:.14em;
+    font-weight:900;
+    text-transform:uppercase;
+  }
+  .section-title:before{
+    content:"";
+    width:24px;
+    height:2px;
+    background:var(--red);
+  }
+
+  .hero-card{
+    border:1px solid #111;
+    background:#fff;
+  }
+  .hero-img{
+    height:150px;
+    background:
+      linear-gradient(90deg,rgba(0,0,0,.08),rgba(0,0,0,.10)),
+      url("/daily/business-briefing-hero.png");
+    background-size:cover;
+    background-position:center;
+    display:flex;
+    align-items:flex-start;
+    justify-content:flex-end;
+    padding:14px;
+    color:#fff;
+    font-family:Georgia,"Times New Roman",serif;
+    font-weight:900;
+    text-align:right;
+    font-size:20px;
+    line-height:.92;
+    text-shadow:0 2px 12px rgba(0,0,0,.55);
+  }
+  .hero-body{
+    padding:12px 13px 8px;
+  }
+  .tag-row{
+    display:flex;
+    gap:6px;
+    align-items:center;
+    flex-wrap:wrap;
+    margin-bottom:9px;
+  }
+  .tag-main{
+    color:var(--red);
+    font-size:10px;
+    font-weight:900;
+    letter-spacing:.15em;
+  }
+  .tag-pill{
+    border:1px solid var(--line);
+    padding:5px 8px;
+    font-size:10px;
+    font-weight:900;
+    background:#fff;
+  }
+  .en-title{
+    margin:0;
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:26px;
+    line-height:1.03;
+    letter-spacing:-.035em;
+    font-weight:900;
+  }
+  .translation{
+    margin-top:7px;
+    font-size:13px;
+    line-height:1.45;
+    color:#333;
+    font-weight:800;
+  }
+  .judgement{
+    margin-top:7px;
+    font-size:13px;
+    line-height:1.45;
+    font-weight:900;
+  }
+  .judgement b{
+    color:var(--red);
+    margin-right:3px;
+  }
+  .mini-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:7px;
+    margin-top:9px;
+  }
+  .mini{
+    border:1px solid var(--line);
+    background:var(--paper);
+    padding:8px;
+    min-height:70px;
+  }
+  .mini h4{
+    margin:0 0 5px;
+    font-size:11.5px;
+    font-weight:900;
+  }
+  .mini p{
+    margin:0;
+    font-size:11.5px;
+    line-height:1.4;
+    color:#333;
+  }
+  .source-bar{
+    border-top:1px solid var(--line);
+    padding:8px 13px;
+    font-size:10.5px;
+    color:var(--muted);
+    line-height:1.45;
+    font-weight:800;
+  }
+  .source-bar b{color:#222}
+  .cta{
+    display:block;
+    margin:0 13px 12px;
+    background:#111;
+    color:#fff;
+    text-align:center;
+    text-decoration:none;
+    font-weight:900;
+    padding:11px;
+    letter-spacing:.03em;
+    font-size:13px;
+  }
+
+  /* drawer */
+  .drawer-mask{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.28);
+    opacity:0;
+    pointer-events:none;
+    transition:.2s;
+    z-index:40;
+  }
+  .drawer{
+    position:fixed;
+    top:0;
+    right:0;
+    width:84%;
+    max-width:340px;
+    height:100%;
+    background:#fff;
+    border-left:1px solid #111;
+    transform:translateX(100%);
+    transition:.25s;
+    z-index:50;
+    padding:18px 16px;
+    overflow:auto;
+  }
+  .drawer.open{transform:translateX(0)}
+  .drawer-mask.open{
+    opacity:1;
+    pointer-events:auto;
+  }
+  .drawer-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    padding-bottom:14px;
+    border-bottom:1px solid var(--line);
+  }
+  .drawer-head h2{
+    margin:0;
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:26px;
+    line-height:1;
+  }
+  .close-btn{
+    border:1px solid var(--line);
+    background:#fff;
+    padding:7px 10px;
+    font-weight:900;
+  }
+  .drawer-section{margin-top:18px}
+  .drawer-kicker{
+    color:var(--red);
+    font-size:11px;
+    font-weight:900;
+    letter-spacing:.16em;
+    margin-bottom:10px;
+    text-transform:uppercase;
+  }
+  .menu-list{
+    display:grid;
+    gap:8px;
+  }
+  .menu-item{
+    border:1px solid var(--line);
+    background:var(--paper);
+    padding:12px;
+  }
+  .menu-item .date{
+    color:var(--muted);
+    font-size:11px;
+    font-weight:900;
+    margin-bottom:5px;
+  }
+  .menu-item h3{
+    margin:0;
+    font-size:15px;
+    line-height:1.35;
+  }
+  .menu-row{
+    border:1px solid var(--line);
+    background:#fff;
+    padding:12px;
+    font-weight:900;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+  }
+
+  /* detail */
+  .detail-head{
+    border-bottom:1px solid var(--line);
+    padding:18px 16px 16px;
+    background:#fff;
+  }
+  .back{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    color:#111;
+    text-decoration:none;
+    font-size:12px;
+    font-weight:900;
+    margin-bottom:14px;
+  }
+  .detail-head h1{
+    margin:0;
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:31px;
+    line-height:1.05;
+    letter-spacing:-.03em;
+  }
+  .detail-translation{
+    margin-top:12px;
+    font-weight:800;
+    line-height:1.55;
+    color:#333;
+  }
+  .meta-chips{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    margin-top:14px;
+  }
+  .chip{
+    border:1px solid var(--line);
+    background:var(--paper);
+    padding:7px 9px;
+    font-size:12px;
+    color:#333;
+    font-weight:800;
+  }
+  .take{
+    margin:14px 0 0;
+    border-left:4px solid var(--red);
+    background:#fff7f4;
+    padding:12px 13px;
+    font-size:14px;
+    line-height:1.6;
+    font-weight:900;
+  }
+  .audience{
+    display:flex;
+    flex-wrap:wrap;
+    gap:7px;
+    padding:14px 16px 0;
+  }
+  .audience span{
+    border:1px solid var(--line);
+    background:#fff;
+    padding:7px 9px;
+    font-size:12px;
+    font-weight:900;
+  }
+  .read-section{
+    margin:16px;
+    border:1px solid #111;
+    background:#fff;
+  }
+  .read-head{
+    display:grid;
+    grid-template-columns:auto 1fr auto;
+    align-items:center;
+    gap:8px;
+    padding:13px;
+    border-bottom:1px solid var(--line);
+  }
+  .read-head .num{
+    color:var(--red);
+    font-weight:900;
+  }
+  .read-head .text{
+    font-weight:900;
+  }
+  select{
+    border:1px solid var(--line);
+    background:#fff;
+    padding:7px 8px;
+    font-weight:800;
+    font-size:12px;
+  }
+  .para{
+    padding:14px 13px;
+    border-bottom:1px solid var(--line);
+  }
+  .para:last-child{border-bottom:0}
+  .para-k{
+    font-size:11px;
+    color:var(--muted);
+    letter-spacing:.12em;
+    font-weight:900;
+    margin-bottom:7px;
+    text-transform:uppercase;
+  }
+  .para-en{
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:18px;
+    line-height:1.58;
+  }
+  .para-cn{
+    margin-top:10px;
+    border-left:3px solid var(--line);
+    padding-left:10px;
+    color:#333;
+    line-height:1.75;
+    font-size:14px;
+  }
+  body.en-only .para-cn{display:none}
+  .analysis-title{
+    padding:6px 16px 4px;
+  }
+  .analysis-title h2{
+    margin:0 0 4px;
+    font-size:20px;
+  }
+  .analysis-title p{
+    margin:0;
+    color:var(--muted);
+    font-size:13px;
+  }
+  .accordion{
+    margin:12px 16px 26px;
+    border:1px solid var(--line);
+    background:#fff;
+  }
+  details{
+    border-bottom:1px solid var(--line);
+  }
+  details:last-child{border-bottom:0}
+  summary{
+    list-style:none;
+    cursor:pointer;
+    padding:16px 14px;
+    display:grid;
+    grid-template-columns:auto 1fr auto;
+    gap:10px;
+    align-items:center;
+    font-weight:900;
+  }
+  summary::-webkit-details-marker{display:none}
+  .acc-num{
+    color:var(--red);
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:18px;
+  }
+  .acc-sub{
+    display:block;
+    margin-top:3px;
+    color:var(--muted);
+    font-size:12px;
+    font-weight:700;
+  }
+  .plus{font-size:18px;color:#555}
+  details[open] .plus{transform:rotate(45deg)}
+  .acc-body{
+    padding:0 14px 16px 42px;
+    color:#333;
+    font-size:14px;
+    line-height:1.75;
+  }
+  .acc-body table{
+    border-collapse:collapse;
+    width:100%;
+    margin-top:8px;
+    font-size:13px;
+  }
+  .acc-body th,.acc-body td{
+    border:1px solid var(--line);
+    padding:8px;
+    vertical-align:top;
+  }
+  .acc-body ul{margin:8px 0 0;padding-left:18px}
+
+  @media (min-width:700px){
+    body{display:flex;justify-content:center}
+    .phone{
+      width:430px;
+      min-height:100vh;
+      border-left:1px solid #111;
+      border-right:1px solid #111;
+    }
+  }
+  @media (max-height:760px){
+    .hero-img{height:126px}
+    .en-title{font-size:24px}
+    .translation{font-size:12.5px;margin-top:6px}
+    .judgement{font-size:12.5px;margin-top:6px}
+    .mini{min-height:58px}
+    .mini h4{font-size:11.5px}
+    .mini p{font-size:10.8px}
+  }
+</style>
+</head>
+<body>
+  <main class="phone">
+    <div class="topbar">
+      <div class="brand-row">
+        <div>
+          <div class="brand-kicker">Language Output</div>
+          <div class="brand">Business<br>Briefing</div>
+        </div>
+        <button class="menu-btn" onclick="openMenu()">菜单</button>
+      </div>
+    </div>
+
+    <section id="home" class="page active">
+      <div class="home-content">
+        <div class="section-title">Today's Pick · 今日外刊</div>
+        <article class="hero-card">
+          <div class="hero-img">GLOBAL<br>BUSINESS<br>SIGNAL</div>
+          <div class="hero-body">
+            <div class="tag-row">
+              <span class="tag-main" id="heroTag">★ AI PRODUCTIVITY</span>
+              <span class="tag-pill">AI Enriched</span>
+              <span class="tag-pill">Business English</span>
+            </div>
+            <h1 class="en-title" id="heroTitle">Gig workers are endlessly exploited. AI could make more of us share their fate</h1>
+            <div class="translation" id="heroTranslation">零工劳动者一直被剥削，AI可能让更多人也落入同样处境。</div>
+            <div class="judgement"><b>今日判断：</b><span id="heroJudgement">AI省掉的是标准化任务，真正值钱的是异常处理和客户挽回。</span></div>
+
+            <div class="mini-grid">
+              <div class="mini">
+                <h4>原文在说什么？</h4>
+                <p id="heroMeaning">AI可能把更多工作拆成低价、零散、可替代的任务。</p>
+              </div>
+              <div class="mini">
+                <h4>我能拿来做什么？</h4>
+                <p id="heroAction">做客服SOP、售后模板、客户挽回话术。</p>
+              </div>
+            </div>
+          </div>
+          <div class="source-bar" id="heroSource">来源：<b>The Guardian Business</b> · 原文日期：<b>2026.06.18</b> · 阅读：<b>10 分钟</b></div>
+          <a href="javascript:showPage('detail')" class="cta">进入今日全文 →</a>
+        </article>
+      </div>
+    </section>
+
+    <section id="detail" class="page">
+      <div class="detail-head">
+        <a class="back" href="javascript:showPage('home')">← 返回今日 Briefing</a>
+        <h1 id="detailTitle">Gig workers are endlessly exploited. AI could make more of us share their fate</h1>
+        <div class="detail-translation" id="detailTranslation">零工劳动者一直被剥削，AI可能让更多人也落入同样处境。</div>
+        <div class="meta-chips" id="detailMeta"></div>
+        <div class="take" id="detailTake">Today's Take：AI省掉的是标准化任务，真正值钱的是异常处理、客户挽回和复杂判断。</div>
+      </div>
+
+      <div class="audience" id="audience"></div>
+
+      <section class="read-section">
+        <div class="read-head">
+          <span class="num">01</span>
+          <span class="text">外刊摘录</span>
+          <select onchange="setMode(this.value)">
+            <option value="bi">中英对照</option>
+            <option value="en">全英模式</option>
+          </select>
+        </div>
+        <div id="paragraphs"></div>
+      </section>
+
+      <div class="analysis-title">
+        <h2>深度拆解</h2>
+        <p>手机端默认折叠，先读原文，再按需展开。</p>
+      </div>
+      <section class="accordion" id="accordion"></section>
+    </section>
+
+    <div class="drawer-mask" id="drawerMask" onclick="closeMenu()"></div>
+    <aside class="drawer" id="drawer">
+      <div class="drawer-head">
+        <h2>Menu</h2>
+        <button class="close-btn" onclick="closeMenu()">关闭</button>
+      </div>
+
+      <div class="drawer-section">
+        <div class="drawer-kicker">Navigation</div>
+        <div class="menu-list">
+          <div class="menu-row" onclick="showPage('home'); closeMenu();">今日 Briefing <span>→</span></div>
+          <div class="menu-row" onclick="showPage('detail'); closeMenu();">今日全文 <span>→</span></div>
+          <div class="menu-row">商业信号 <span>→</span></div>
+          <div class="menu-row">商务英文 <span>→</span></div>
+          <div class="menu-row">收藏夹 <span>→</span></div>
+        </div>
+      </div>
+
+      <div class="drawer-section">
+        <div class="drawer-kicker">历史文章</div>
+        <div class="menu-list" id="historyList"></div>
+      </div>
+    </aside>
+  </main>
+
+<script>
+const fallbackArticle = {
+  title:"Gig workers are endlessly exploited. AI could make more of us share their fate",
+  titleTranslation:"零工劳动者一直被剥削，AI可能让更多人也落入同样处境。",
+  titleCn:"AI省掉的是标准化任务，真正值钱的是异常处理和客户挽回。",
+  category:"AI PRODUCTIVITY",
+  source:"The Guardian Business",
+  sourceDate:"2026-06-18",
+  readingTime:"10 分钟",
+  signalLead:"AI省掉的是标准化任务，真正值钱的是异常处理、客户挽回和复杂判断。",
+  meaning:"AI可能把更多工作拆成低价、零散、可替代的任务。",
+  action:"做客服SOP、售后模板、客户挽回话术。",
+  suitableAudience:["跨境卖家","外贸业务员","客服主管","SaaS运营"],
+  paragraphs:[
+    {en:"Klarna once presented AI customer service as a way to reduce support roles and cut costs.",cn:"Klarna曾把AI客服视为减少客服岗位、降低成本的方法。"},
+    {en:"The more important shift is not that human support disappears completely, but that human work is pulled in only when automation reaches its limit.",cn:"更重要的变化不是人工客服完全消失，而是人工只在自动化触及边界时才被接入。"},
+    {en:"Automation should be designed as part of a service system, not as a blunt cost-cutting tool.",cn:"自动化应该被设计成服务系统的一部分，而不是粗暴的降本工具。"}
+  ],
+  breakdownConclusion:"AI不是简单替代人工，而是把工作分成“标准化任务”和“复杂判断”。标准任务被压价，复杂处理更值钱。",
+  moneyTakeaway:"AI压低标准服务价格，但抬高异常处理、客户挽回和高价值沟通的价格。",
+  industryTakeaway:"跨境电商可以自动化标准咨询，但退款、破损、差评和高客单价订单必须转人工。",
+  riskTakeaway:"退款争议、质量投诉、平台纠纷、大客户压价和高情绪客户，都不能只靠AI自动回复。",
+  templateCore:["AI can handle standard tickets, but high-risk customer cases still require human judgment."]
+};
+
+let article = fallbackArticle;
+let allArticles = [fallbackArticle];
+
+function escapeHtml(v){
+  return String(v ?? "").replace(/[&<>"']/g, s => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  }[s]));
+}
+function sourceName(item){
+  const s = item.source;
+  if(typeof s === "string") return s;
+  if(s && typeof s === "object") return s.name || s.publisher || s.source || "Unknown Source";
+  return item.sourceName || "Unknown Source";
+}
+function dateText(v){
+  return v ? String(v).slice(0,10).replaceAll("-",".") : "";
+}
+function normalizeArticle(raw){
+  const source = raw.source && typeof raw.source === "object" ? raw.source : {};
+  const firstPara = Array.isArray(source.paragraphs) ? source.paragraphs[0] : {};
+  const paragraphs = raw.paragraphs || source.paragraphs || [];
+  return {
+    ...raw,
+    title: raw.title || source.title || fallbackArticle.title,
+    titleCn: raw.titleCn || raw.businessJudgment?.conclusion || raw.breakdownConclusion || fallbackArticle.titleCn,
+    titleTranslation: raw.titleTranslation || source.titleTranslation || fallbackArticle.titleTranslation,
+    category: raw.category || raw.tag || "AI PRODUCTIVITY",
+    source: raw.source || raw.sourceName || source.name || fallbackArticle.source,
+    sourceDate: raw.sourceDate || raw.originalDate || raw.date || source.sourceDate || source.date || fallbackArticle.sourceDate,
+    readingTime: raw.readingTime || "10 分钟",
+    signalLead: raw.signalLead || raw.desc || fallbackArticle.signalLead,
+    meaning: raw.meaning || fallbackArticle.meaning,
+    action: raw.action || fallbackArticle.action,
+    suitableAudience: raw.suitableAudience || raw.audience || fallbackArticle.suitableAudience,
+    paragraphs: paragraphs.length ? paragraphs.map((p,idx)=>({
+      en:p.en || p.text || p.paragraph || "",
+      cn:p.cn || p.zh || p.translation || p.chinese || ""
+    })) : fallbackArticle.paragraphs
+  };
+}
+async function loadData(){
+  try{
+    const res = await fetch("/daily/business-english-live.json?v=" + Date.now(), {cache:"no-store"});
+    if(!res.ok) throw new Error("json not found");
+    const data = await res.json();
+    const list = Array.isArray(data) ? data : (Array.isArray(data.articles) ? data.articles : [data]);
+    allArticles = list.map(normalizeArticle);
+    article = allArticles[0] || fallbackArticle;
+  }catch(e){
+    article = fallbackArticle;
+    allArticles = [fallbackArticle];
+  }
+  render();
+}
+function render(){
+  document.getElementById("heroTag").textContent = "★ " + (article.category || "BUSINESS SIGNAL");
+  document.getElementById("heroTitle").textContent = article.title;
+  document.getElementById("heroTranslation").textContent = article.titleTranslation || fallbackArticle.titleTranslation;
+  document.getElementById("heroJudgement").textContent = article.titleCn || fallbackArticle.titleCn;
+  document.getElementById("heroMeaning").textContent = article.meaning || fallbackArticle.meaning;
+  document.getElementById("heroAction").textContent = article.action || fallbackArticle.action;
+  document.getElementById("heroSource").innerHTML = `来源：<b>${escapeHtml(sourceName(article))}</b> · 原文日期：<b>${escapeHtml(dateText(article.sourceDate))}</b> · 阅读：<b>${escapeHtml(article.readingTime || "10 分钟")}</b>`;
+
+  document.getElementById("detailTitle").textContent = article.title;
+  document.getElementById("detailTranslation").textContent = article.titleTranslation || fallbackArticle.titleTranslation;
+  document.getElementById("detailMeta").innerHTML = `
+    <span class="chip">来源：${escapeHtml(sourceName(article))}</span>
+    <span class="chip">原文日期：${escapeHtml(dateText(article.sourceDate))}</span>
+    <span class="chip">阅读时间：${escapeHtml(article.readingTime || "10 分钟")}</span>
+  `;
+  document.getElementById("detailTake").textContent = "Today's Take：" + (article.signalLead || article.titleCn || fallbackArticle.signalLead);
+
+  document.getElementById("audience").innerHTML = (article.suitableAudience || []).map(x=>`<span>${escapeHtml(x)}</span>`).join("");
+
+  document.getElementById("paragraphs").innerHTML = (article.paragraphs || fallbackArticle.paragraphs).slice(0,3).map((p,idx)=>`
+    <div class="para">
+      <div class="para-k">Paragraph ${String(idx+1).padStart(2,"0")}</div>
+      <div class="para-en">${escapeHtml(p.en || "")}</div>
+      ${p.cn ? `<div class="para-cn">${escapeHtml(p.cn)}</div>` : ""}
+    </div>
+  `).join("");
+
+  renderAccordion();
+  renderHistory();
+}
+function panel(num,title,sub,body,open=false){
+  return `
+    <details ${open ? "open" : ""}>
+      <summary><span class="acc-num">${num}</span><span>${escapeHtml(title)}<span class="acc-sub">${escapeHtml(sub)}</span></span><span class="plus">＋</span></summary>
+      <div class="acc-body">${body}</div>
+    </details>
+  `;
+}
+function renderAccordion(){
+  const terms = Array.isArray(article.terms) ? article.terms : [];
+  const termHtml = terms.length ? terms.slice(0,4).map(t=>`<p><b>${escapeHtml(t.term)}</b>：${escapeHtml(t.desc || t.scenario || "")}<br>${escapeHtml(t.example || "")}</p>`).join("") : "<p><b>customer escalation</b>：客户问题升级。We need a clear customer escalation rule for refund disputes.</p>";
+  const template = Array.isArray(article.templateCore) ? article.templateCore.map(x=>`<li>${escapeHtml(x)}</li>`).join("") : `<li>${escapeHtml(article.template || fallbackArticle.templateCore[0])}</li>`;
+  document.getElementById("accordion").innerHTML =
+    panel("02","商业判断","核心判断 + 一句话结论", escapeHtml(article.breakdownConclusion || article.signalLead || fallbackArticle.breakdownConclusion), true) +
+    panel("03","钱在哪里","谁省钱 / 谁赚钱 / 谁升值", escapeHtml(article.moneyTakeaway || fallbackArticle.moneyTakeaway)) +
+    panel("04","影响行业","跨境 / 外贸 / SaaS / 服务外包", escapeHtml(article.industryTakeaway || fallbackArticle.industryTakeaway)) +
+    panel("05","使用建议","外贸 / 跨境 / 职场英文", renderUseAdvice()) +
+    panel("06","风险边界","哪些不能全交给AI", escapeHtml(article.riskTakeaway || fallbackArticle.riskTakeaway)) +
+    panel("07","Business English","表达 + 场景 + 例句", termHtml) +
+    panel("08","模板 / 输出练习","可复制商务英文", `<ul>${template}</ul>`);
+}
+function renderUseAdvice(){
+  const u = article.userUse || {};
+  if(!u || !Object.keys(u).length) return "标准询盘让AI写初稿；报价、账期、赔偿和质量争议必须人工确认。";
+  return Object.values(u).map(block=>{
+    const pts = Array.isArray(block.points) ? block.points : (Array.isArray(block.sentences) ? block.sentences : []);
+    return `<p><b>${escapeHtml(block.title || "建议")}</b></p><ul>${pts.slice(0,4).map(x=>`<li>${escapeHtml(x)}</li>`).join("")}</ul>`;
+  }).join("");
+}
+function renderHistory(){
+  const list = allArticles.slice(0,8);
+  document.getElementById("historyList").innerHTML = list.map((item,idx)=>`
+    <div class="menu-item" onclick="article=allArticles[${idx}]; render(); showPage('detail'); closeMenu();">
+      <div class="date">${escapeHtml(dateText(item.sourceDate))} · ${escapeHtml(item.category || "BUSINESS")}</div>
+      <h3>${escapeHtml(item.titleCn || item.title)}</h3>
+    </div>
+  `).join("");
+}
+function showPage(name){
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  document.getElementById(name).classList.add("active");
+  window.scrollTo(0,0);
+}
+function setMode(value){
+  document.body.classList.toggle("en-only", value==="en");
+}
+function openMenu(){
+  document.getElementById("drawer").classList.add("open");
+  document.getElementById("drawerMask").classList.add("open");
+}
+function closeMenu(){
+  document.getElementById("drawer").classList.remove("open");
+  document.getElementById("drawerMask").classList.remove("open");
+}
+loadData();
+</script>
+</body>
+</html>
