@@ -1327,7 +1327,7 @@ function renderEvidenceLayer(item){
   if(!all.length) return "";
   return `
     <article class="layer smart-layer">
-      <div class="layer-title"><span class="layer-num">02</span> 原文证据</div>
+      <div class="layer-title"><span class="layer-num">02</span> 外刊依据</div>
       <div class="evidence-grid">
         ${all.slice(0,3).map(c => `<div class="evidence-card"><b>${escapeHtml(c.label || c.title || "证据")}</b><span>${escapeHtml(c.text || c.value || "")}</span></div>`).join("")}
       </div>
@@ -1543,7 +1543,7 @@ function renderCleanParagraphs(item){
     <section class="paragraph-reading">
       <div class="paragraph-reading-head">
         <span class="num">01</span>
-        <span class="text">外刊原文 · 完整原文</span>
+        <span class="text">外刊摘录</span>
         <select class="paragraph-mode-inline" onchange="setReadingMode(this.value)">
           <option value="en">全英模式</option>
           <option value="bi">中英对照</option>
@@ -1606,6 +1606,7 @@ function detailHTML(item){
   const isDraft = item.analysisStatus === "needs_ai_enrichment" || item.deepReady === false;
   const templatePractice = renderTemplatePracticeLayer(item, isDraft);
   const sourceUrl = item.sourceUrl ? `<p class="section-subnote"><a href="${escapeAttr(item.sourceUrl)}" target="_blank" rel="noopener">查看原文来源 →</a></p>` : "";
+  const businessJudgement = renderBreakdownLayer(item) + renderTrendLayer(item);
 
   return `
     <div class="detail-source-line">${escapeHtml(getDetailSourceLine(item))}</div>
@@ -1625,14 +1626,13 @@ function detailHTML(item){
     </section>
 
     <section class="analysis-accordion">
-      ${accPanel("02", "商业判断", "核心判断 + 问题类型矩阵", renderBreakdownLayer(item))}
+      ${accPanel("02", "商业判断", "这件事说明什么趋势", businessJudgement)}
       ${accPanel("03", "钱在哪里", "谁省钱 / 谁赚钱 / 谁被压价 / 谁升值", renderMoneyLayer(item))}
-      ${accPanel("04", "趋势判断", "岗位分层 / 企业能力变化", renderTrendLayer(item))}
-      ${accPanel("05", "影响行业", "跨境 / 外贸 / SaaS / 外包客服", renderIndustryLayer(item, isDraft))}
-      ${accPanel("06", "使用建议", "外贸 / 跨境 / 职场英文 / AI工具", renderUseAdvice(item.userUse))}
-      ${accPanel("07", "风险边界", "哪些问题不适合 AI 单独处理", renderRiskLayer(item))}
-      ${accPanel("08", "Business English", "场景标签 + 可直接复用句式", renderBusinessEnglish(item))}
-      ${accPanel("09", "模板 / 输出练习", "骨架句先显示，完整模板再展开", templatePractice)}
+      ${accPanel("04", "影响行业", "跨境 / 外贸 / SaaS / 外包客服", renderIndustryLayer(item, isDraft))}
+      ${accPanel("05", "使用建议", "外贸 / 跨境 / 职场英文 / AI工具", renderUseAdvice(item.userUse))}
+      ${accPanel("06", "风险边界", "哪些问题不适合 AI 单独处理", renderRiskLayer(item))}
+      ${accPanel("07", "Business English", "场景标签 + 可直接复用句式", renderBusinessEnglish(item))}
+      ${accPanel("08", "模板 / 输出练习", "骨架句先显示，完整模板再展开", templatePractice)}
     </section>
   `;
 }
