@@ -1,0 +1,283 @@
+{
+  "scenarios": [
+    {
+      "id": "article-ai-gig-work-final-deep",
+      "scenarioId": "ai-gig-work-final",
+      "trend": "ai-productivity",
+      "industry": "crossborder",
+      "signal": "AI Productivity / Work Fragmentation",
+      "pill": "AI Productivity",
+      "sourceType": "AI Enriched",
+      "analysisStatus": "ready",
+      "deepReady": true,
+      "publishable": true,
+      "quality": "strong",
+      "title": "Gig workers are endlessly exploited. AI could make more of us share their fate",
+      "titleCn": "零工劳动者一直被剥削，AI可能让更多人也落入同样处境。",
+      "signalLead": "AI最危险的不是替代你，而是把完整工作拆成更小、更便宜、更不稳定的任务。",
+      "desc": "这篇外刊真正值得看的是：AI如何让更多白领工作走向碎片化、按需化和零工化。",
+      "why": "判断自己的工作哪些部分会被AI压价，哪些能力反而会升值。",
+      "action": "用它检查自己的岗位：标准化任务、异常处理、客户关系和判断权分别在哪里。",
+      "english": "AI can reduce repetitive work, but it cannot replace human judgment in high-risk cases.",
+      "readingTime": "8 分钟",
+      "sourceDate": "2026.06.18",
+      "originalDate": "2026.06.18",
+      "updatedAt": "2026.06.24",
+      "siteUpdatedAt": "2026.06.24",
+      "suitableAudience": [
+        "外贸业务员",
+        "跨境卖家",
+        "客服主管",
+        "运营",
+        "想用AI提高效率的人"
+      ],
+      "source": {
+        "name": "The Guardian",
+        "title": "Gig workers are endlessly exploited. AI could make more of us share their fate",
+        "url": "https://www.theguardian.com/technology/2026/jun/18/ai-threatens-gig-work-rise",
+        "date": "2026.06.18",
+        "summary": "The article discusses how AI may reshape customer service and other roles into more fragmented, flexible and less stable forms of work.",
+        "paragraphs": [
+          {
+            "en": "Klarna’s AI customer-service push showed how routine support work can be shifted from full-time teams to automated systems.",
+            "cn": "Klarna 的 AI 客服案例说明：企业会先把常规支持工作从完整团队转移到自动化系统。"
+          },
+          {
+            "en": "When automation reaches its limits, human support does not simply disappear; it is pulled in for the harder, messier and higher-risk cases.",
+            "cn": "当自动化触及边界时，人工并不是完全消失，而是被拉回来处理更难、更乱、风险更高的问题。"
+          },
+          {
+            "en": "The broader risk is that AI can replace parts of many jobs, making it easier for companies to split work into smaller and less secure tasks.",
+            "cn": "更大的风险是：AI 会替代许多工作的部分环节，让公司更容易把岗位拆成更小、更不稳定的任务。"
+          }
+        ]
+      },
+      "evidenceCards": [
+        {
+          "label": "原文依据 1｜Klarna 案例",
+          "text": "AI先接管基础客服和标准问题，企业用它降低支持岗位成本。"
+        },
+        {
+          "label": "原文依据 2｜人工回归",
+          "text": "问题不是人工完全消失，而是人工只在AI处理不了时被按需接入。"
+        },
+        {
+          "label": "原文依据 3｜更大风险",
+          "text": "AI可能替代许多岗位的一部分，使完整工作更容易被拆碎、外包和零工化。"
+        }
+      ],
+      "breakdownConclusion": "核心判断：AI真正改变的不是单个岗位，而是企业拆分工作的方式。",
+      "breakdownMatrix": {
+        "columns": [
+          "层级",
+          "AI会接管什么",
+          "人还守什么",
+          "商业含义"
+        ],
+        "rows": [
+          [
+            "标准化任务",
+            "查单、FAQ、资料整理、基础邮件、简单客服",
+            "维护知识库和质检规则",
+            "重复劳动会被压价，岗位里的低价值部分先被拆走"
+          ],
+          [
+            "临时补位",
+            "先筛问题、整理背景、生成初稿",
+            "在AI处理不了时介入",
+            "完整全职岗位减少，按需接入的人力增加"
+          ],
+          [
+            "复杂判断",
+            "提供信息和备选方案",
+            "判断责任、赔偿、情绪、客户关系和风险边界",
+            "真正升值的是判断权、升级权和关系处理能力"
+          ]
+        ]
+      },
+      "breakdownAction": "不要只问AI会不会替代我，要问：我的工作里哪些部分可以被拆走？哪些部分必须由我判断？",
+      "trendConclusion": "趋势判断：白领工作的风险不只是失业，而是被拆成更碎、更便宜、更不稳定的任务。",
+      "trendMatrix": {
+        "columns": [
+          "变化",
+          "过去",
+          "AI之后",
+          "职场影响"
+        ],
+        "rows": [
+          [
+            "岗位结构",
+            "一个人负责一整套流程",
+            "流程被拆成若干任务",
+            "完整岗位价值被重新计算"
+          ],
+          [
+            "用工方式",
+            "稳定雇一个人",
+            "AI先做，人工按需补位",
+            "零工化、外包化、项目化增加"
+          ],
+          [
+            "能力定价",
+            "看执行速度",
+            "看风险判断和问题升级",
+            "只会执行的人被压价，会判断的人更值钱"
+          ]
+        ]
+      },
+      "moneyLead": "钱不在“会用AI”这句话里，而在帮企业重新设计AI之后的工作分层。",
+      "moneyMatrix": {
+        "columns": [
+          "角色",
+          "钱在哪里",
+          "具体机会",
+          "普通人能做什么"
+        ],
+        "rows": [
+          [
+            "企业",
+            "降标准任务成本",
+            "把查单、FAQ、基础邮件、简单售后交给AI",
+            "整理知识库、FAQ和标准回复"
+          ],
+          [
+            "服务提供者",
+            "卖流程重构",
+            "帮商家设计AI分流SOP、转人工规则、质检清单",
+            "做小型SOP、英文模板、客户挽回话术"
+          ],
+          [
+            "承压者",
+            "低端执行被压价",
+            "只会复制粘贴、整理信息、套模板的人被替代",
+            "转向异常处理、复盘、质检和客户沟通"
+          ],
+          [
+            "升值者",
+            "复杂问题处理",
+            "退款争议、差评、大客户、平台纠纷、续费挽回",
+            "训练判断边界、谈判、安抚和跨部门协调"
+          ]
+        ]
+      },
+      "moneyTakeaway": "最小可卖服务不是“接一个AI客服”，而是：FAQ整理 + 英文模板 + 转人工规则 + 质检清单。",
+      "industryMatrix": {
+        "columns": [
+          "行业",
+          "会被AI拆走的部分",
+          "不能交给AI的部分",
+          "具体动作"
+        ],
+        "rows": [
+          [
+            "跨境电商",
+            "物流查询、尺码说明、安装教程、普通FAQ",
+            "退款、破损、差评、高客单价订单",
+            "设置 refund / broken / negative review 等关键词自动转人工"
+          ],
+          [
+            "外贸业务",
+            "询盘初稿、参数说明、邮件润色、资料整理",
+            "价格让步、账期、赔偿、交期变更",
+            "AI只写草稿，人决定底线、语气和让步边界"
+          ],
+          [
+            "SaaS运营",
+            "基础支持、操作说明、简单工单",
+            "续费、升级、企业客户投诉、复杂集成",
+            "按客户等级设置不同升级规则"
+          ],
+          [
+            "内容/助理岗位",
+            "资料整理、摘要、改写、基础表格",
+            "判断选题价值、客户意图、最终交付质量",
+            "从执行者转向编辑、质检、流程设计者"
+          ]
+        ]
+      },
+      "industryTakeaway": "行业变化不是AI替代某个岗位，而是岗位内部被重新拆分。",
+      "userUse": {
+        "foreignTrade": {
+          "title": "外贸业务员",
+          "points": [
+            "标准询盘、参数说明、付款方式可以让AI先写英文初稿。",
+            "报价、账期、赔偿、交期变更必须人工判断。",
+            "不要只提升回复速度，要掌握价格边界、责任边界和客户关系。"
+          ]
+        },
+        "crossBorder": {
+          "title": "跨境卖家",
+          "points": [
+            "可自动化：物流查询、尺码说明、普通FAQ、基础退换货。",
+            "必须转人工：退款争议、破损投诉、差评、高客单价订单。",
+            "客户连续追问三次仍未解决，应自动转人工。"
+          ]
+        },
+        "workplaceEnglish": {
+          "title": "职场英文",
+          "sentences": [
+            "AI can reduce repetitive work, but it cannot replace human judgment in complex customer situations.",
+            "Before expanding automation, we need to draw a clear line between routine tasks and high-risk cases.",
+            "The goal is not to remove people from the process, but to let people focus on judgment, trust and customer retention."
+          ]
+        },
+        "toolAdvice": {
+          "title": "AI工具使用",
+          "points": [
+            "用AI写初稿、整理背景、归纳问题。",
+            "涉及赔偿、责任、价格和客户关系时，必须人工复核。",
+            "每周复盘一次AI回复是否引发误解、投诉或过度承诺。"
+          ]
+        }
+      },
+      "riskCards": [
+        {
+          "label": "不要自动决策",
+          "text": "退款争议、质量投诉、破损赔偿、延期交付。"
+        },
+        {
+          "label": "必须人工确认",
+          "text": "涉及价格让步、责任归属、客户情绪和平台纠纷。"
+        },
+        {
+          "label": "最大误区",
+          "text": "把AI当成廉价替代品，而不是工作分层工具。"
+        }
+      ],
+      "riskTakeaway": "如果AI回复错了会导致退款、差评、投诉、赔偿或客户流失，就必须转人工。",
+      "terms": [
+        {
+          "term": "fragmented workforce",
+          "scenario": "组织变化",
+          "desc": "碎片化劳动力，指工作被拆成更小、更不稳定的任务。",
+          "example": "AI may push more companies toward a fragmented workforce."
+        },
+        {
+          "term": "gigified work",
+          "scenario": "AI与零工化",
+          "desc": "被零工化的工作，指原本完整的岗位被拆成临时任务。",
+          "example": "Some white-collar jobs may become gigified as AI takes over routine tasks."
+        },
+        {
+          "term": "human judgment",
+          "scenario": "复杂判断",
+          "desc": "人的判断力，用于责任、赔偿、情绪和长期客户关系。",
+          "example": "High-risk customer cases still require human judgment."
+        },
+        {
+          "term": "escalation rule",
+          "scenario": "转人工规则",
+          "desc": "升级处理规则，用来界定什么时候必须由真人介入。",
+          "example": "We need a clear escalation rule before expanding automation."
+        }
+      ],
+      "templateCore": [
+        "AI can reduce repetitive work, but it cannot replace human judgment in high-risk cases.",
+        "Before expanding automation, we need to define which tasks can be automated and which cases must be escalated.",
+        "The goal is not to remove people from the process, but to let people focus on judgment, trust and customer retention."
+      ],
+      "template": "Hi Team,\n\nAI can help us reduce repetitive work such as order checks, basic FAQs and simple email drafts. However, high-risk cases still require human judgment.\n\nBefore expanding automation, we need to define which tasks can be handled by AI and which cases must be escalated to a human agent. This is especially important for refund disputes, quality complaints, delivery delays and high-value customers.\n\nThe goal is not to remove people from the process, but to let people focus on judgment, trust and customer retention.\n\nBest,\n[Your Name]",
+      "practice": "用英文写3句话：说明哪些任务可以AI处理，哪些客户问题必须转人工，以及为什么。"
+    }
+  ]
+}
