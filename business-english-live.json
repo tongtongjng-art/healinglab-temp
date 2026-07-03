@@ -1,284 +1,397 @@
 {
-  "scenarios": [
-    {
-      "id": "article-ai-gig-work-fixed-desktop",
-      "scenarioId": "ai-gig-work-fixed-desktop",
-      "trend": "ai-productivity",
-      "industry": "crossborder",
-      "signal": "AI Productivity / Work Fragmentation",
-      "pill": "AI Productivity",
-      "sourceType": "AI Enriched",
-      "analysisStatus": "ready",
-      "deepReady": true,
-      "publishable": true,
-      "quality": "strong",
-      "title": "Gig workers are endlessly exploited. AI could make more of us share their fate",
-      "titleCn": "零工劳动者一直被剥削，AI可能让更多人也落入同样处境。",
-      "titleTranslation": "零工劳动者一直被剥削，AI可能让更多人也落入同样处境。",
-      "signalLead": "AI最危险的不是替代你，而是把完整工作拆成更小、更便宜、更不稳定的任务。",
-      "desc": "这篇外刊真正值得看的是：AI如何让更多白领工作走向碎片化、按需化和零工化。",
-      "why": "判断自己的工作哪些部分会被AI压价，哪些能力反而会升值。",
-      "action": "用它检查自己的岗位：标准化任务、异常处理、客户关系和判断权分别在哪里。",
-      "english": "AI can reduce repetitive work, but it cannot replace human judgment in high-risk cases.",
-      "readingTime": "10 分钟",
-      "sourceDate": "2026.06.18",
-      "originalDate": "2026.06.18",
-      "updatedAt": "2026.06.24",
-      "siteUpdatedAt": "2026.06.24",
-      "suitableAudience": [
-        "外贸业务员",
-        "跨境卖家",
-        "客服主管",
-        "运营",
-        "想用AI提高效率的人"
-      ],
-      "source": {
-        "name": "The Guardian Business",
-        "title": "Gig workers are endlessly exploited. AI could make more of us share their fate",
-        "url": "https://www.theguardian.com/technology/2026/jun/18/ai-threatens-gig-work-rise",
-        "date": "2026.06.18",
-        "summary": "The article discusses how AI may reshape customer service and other work into more fragmented, flexible and less secure forms.",
-        "paragraphs": [
-          {
-            "en": "Klarna’s case shows how companies first use AI to handle high-volume customer-service work and reduce support costs. When customers became dissatisfied with the quality of automated support, human agents had to be brought back into the process. But the key point is not simply that AI failed or that human workers returned. The real change is that customer-service work was split into different layers: basic queries handled by software, and more complex cases handled by people.",
-            "cn": "Klarna 的案例说明，企业会先把高频、重复、标准化的客服工作交给 AI，以降低支持成本。后来客户对自动化服务质量不满，公司又把人工客服重新带回流程里。但真正关键的不是“AI失败了”或“人工回来了”，而是客服工作被重新分层：基础问题由软件处理，更复杂的问题才交给人。"
-          },
-          {
-            "en": "The more important shift is that human work is pulled in only when automation reaches its limit. AI can deal with routine questions, but human workers are needed for harder, messier and higher-risk cases. This creates a new employment structure: fewer people doing the full job from beginning to end, and more people being brought in only for escalation, exception handling and customer recovery.",
-            "cn": "更重要的变化是：人工只在自动化触及边界时才被接入。AI 可以处理常规问题，但更难、更乱、风险更高的情况仍然需要人工。这会创造一种新的用工结构：负责完整流程的人变少，更多人只在问题升级、异常处理、客户挽回时被调用。"
-          },
-          {
-            "en": "The broader risk is not only that AI will replace workers, but that it will replace parts of many jobs. Once companies can separate routine tasks from judgment-heavy work, full-time roles become easier to dismantle. Work that used to belong to one stable position can be divided into automated replies, temporary human support, outsourced tasks and a smaller group of people responsible for judgment and escalation.",
-            "cn": "更大的风险不只是 AI 替代人，而是 AI 会替代许多工作中的一部分。一旦企业能把重复性任务和高判断任务分开，完整的全职岗位就更容易被拆解。过去属于一个稳定岗位的工作，可能被拆成自动回复、临时人工支持、外包任务，以及少数负责判断和升级处理的人。"
-          }
-        ]
-      },
-      "evidenceCards": [
-        {
-          "label": "原文依据 1｜Klarna 案例",
-          "text": "企业先用 AI 处理高频基础客服问题，核心动机是降低支持成本。"
-        },
-        {
-          "label": "原文依据 2｜人工回归但岗位变化",
-          "text": "客户不满后人工被带回流程，但人工不再负责所有环节，而是处理更复杂的问题。"
-        },
-        {
-          "label": "原文依据 3｜岗位被拆分",
-          "text": "AI 不一定一次性替代整个岗位，而是先拆走岗位中的标准化部分。"
-        }
-      ],
-      "breakdownConclusion": "核心判断：AI真正改变的不是单个岗位，而是企业拆分工作的方式。",
-      "breakdownMatrix": {
-        "columns": [
-          "层级",
-          "AI会接管什么",
-          "人还守什么",
-          "商业含义"
-        ],
-        "rows": [
-          [
-            "标准化任务",
-            "查单、FAQ、资料整理、基础邮件、简单客服",
-            "维护知识库和质检规则",
-            "重复劳动会被压价，岗位里的低价值部分先被拆走"
-          ],
-          [
-            "临时补位",
-            "先筛问题、整理背景、生成初稿",
-            "在AI处理不了时介入，判断是否升级",
-            "完整全职岗位减少，按需接入的人力增加"
-          ],
-          [
-            "复杂判断",
-            "提供信息和备选方案",
-            "判断责任、赔偿、情绪、客户关系和风险边界",
-            "真正升值的是判断权、升级权和关系处理能力"
-          ]
-        ]
-      },
-      "breakdownAction": "不要只问“AI会不会替代我”，要问：我的工作里哪些部分会被拆走？哪些部分必须由我判断？",
-      "trendConclusion": "趋势判断：白领工作的风险不只是失业，而是被拆成更碎、更便宜、更不稳定的任务。",
-      "trendMatrix": {
-        "columns": [
-          "变化",
-          "过去",
-          "AI之后",
-          "职场影响"
-        ],
-        "rows": [
-          [
-            "岗位结构",
-            "一个人负责一整套流程",
-            "流程被拆成若干任务",
-            "完整岗位价值被重新计算"
-          ],
-          [
-            "用工方式",
-            "稳定雇一个人",
-            "AI先做，人工按需补位",
-            "零工化、外包化、项目化增加"
-          ],
-          [
-            "能力定价",
-            "看执行速度",
-            "看风险判断和问题升级",
-            "只会执行的人被压价，会判断的人更值钱"
-          ]
-        ]
-      },
-      "moneyLead": "钱不在“会用AI”这句话里，而在帮企业重新设计 AI 之后的工作分层。",
-      "moneyMatrix": {
-        "columns": [
-          "角色",
-          "钱在哪里",
-          "具体机会",
-          "普通人能做什么"
-        ],
-        "rows": [
-          [
-            "企业",
-            "降低标准任务成本",
-            "把查单、FAQ、基础邮件、简单售后交给AI",
-            "整理知识库、FAQ和标准回复"
-          ],
-          [
-            "服务提供者",
-            "卖流程重构",
-            "帮商家设计AI分流SOP、转人工规则、质检清单",
-            "做小型SOP、英文模板、客户挽回话术"
-          ],
-          [
-            "承压者",
-            "低端执行被压价",
-            "只会复制粘贴、整理信息、套模板的人会被替代",
-            "转向异常处理、复盘、质检和客户沟通"
-          ],
-          [
-            "升值者",
-            "复杂问题处理",
-            "退款争议、差评、大客户、平台纠纷、续费挽回",
-            "训练判断边界、谈判、安抚和跨部门协调"
-          ]
-        ]
-      },
-      "moneyTakeaway": "最小可卖服务不是“接一个AI客服”，而是：FAQ整理 + 英文模板 + 转人工规则 + 质检清单。",
-      "industryMatrix": {
-        "columns": [
-          "行业",
-          "会被AI拆走的部分",
-          "不能交给AI的部分",
-          "具体动作"
-        ],
-        "rows": [
-          [
-            "跨境电商",
-            "物流查询、尺码说明、安装教程、普通FAQ",
-            "退款、破损、差评、高客单价订单、平台纠纷",
-            "设置 refund / broken / negative review / chargeback 等关键词自动转人工"
-          ],
-          [
-            "外贸业务",
-            "询盘初稿、参数说明、邮件润色、资料整理",
-            "价格让步、账期、赔偿、交期变更、老客户关系维护",
-            "AI只写草稿，人决定底线、语气和让步边界"
-          ],
-          [
-            "SaaS运营",
-            "基础支持、操作说明、简单工单",
-            "续费、升级、企业客户投诉、复杂集成",
-            "按客户等级设置不同升级规则"
-          ],
-          [
-            "内容/助理岗位",
-            "资料整理、摘要、改写、基础表格",
-            "判断选题价值、客户意图、最终交付质量",
-            "从执行者转向编辑、质检、流程设计者"
-          ]
-        ]
-      },
-      "industryTakeaway": "行业变化不是AI替代某个岗位，而是岗位内部被重新拆分。",
-      "userUse": {
-        "foreignTrade": {
-          "title": "外贸业务员",
-          "points": [
-            "标准询盘、参数说明、付款方式，可以让AI先写英文初稿。",
-            "报价、账期、赔偿、交期变更，必须人工判断。",
-            "不要只提升回复速度，要掌握价格边界、责任边界和客户关系。"
-          ]
-        },
-        "crossBorder": {
-          "title": "跨境卖家",
-          "points": [
-            "可自动化：物流查询、尺码说明、普通FAQ、基础退换货。",
-            "必须转人工：退款争议、破损投诉、差评、高客单价订单。",
-            "客户连续追问三次仍未解决，应自动转人工。"
-          ]
-        },
-        "workplaceEnglish": {
-          "title": "职场英文",
-          "sentences": [
-            "AI can reduce repetitive work, but it cannot replace human judgment in complex customer situations.",
-            "Before expanding automation, we need to draw a clear line between routine tasks and high-risk cases.",
-            "The goal is not to remove people from the process, but to let people focus on judgment, trust and customer retention."
-          ]
-        },
-        "toolAdvice": {
-          "title": "AI工具使用",
-          "points": [
-            "用AI写初稿、整理背景、归纳问题。",
-            "涉及赔偿、责任、价格和客户关系时，必须人工复核。",
-            "每周复盘一次AI回复是否引发误解、投诉或过度承诺。"
-          ]
-        }
-      },
-      "riskCards": [
-        {
-          "label": "不能自动决策",
-          "text": "退款争议、质量投诉、破损赔偿、延期交付。"
-        },
-        {
-          "label": "必须人工确认",
-          "text": "价格让步、责任归属、客户情绪、平台纠纷。"
-        },
-        {
-          "label": "最大误区",
-          "text": "把AI当成廉价替代品，而不是工作分层工具。"
-        }
-      ],
-      "riskTakeaway": "判断规则：低风险 + 标准答案 + 可复核 = 可以AI先处理；高风险 + 情绪强 + 涉及钱或责任 = 必须人工介入。",
-      "terms": [
-        {
-          "term": "fragmented workforce",
-          "scenario": "组织变化",
-          "desc": "碎片化劳动力，指工作被拆成更小、更不稳定的任务。",
-          "example": "AI may push more companies toward a fragmented workforce."
-        },
-        {
-          "term": "gigified work",
-          "scenario": "AI与零工化",
-          "desc": "被零工化的工作，指原本完整的岗位被拆成临时任务。",
-          "example": "Some white-collar jobs may become gigified as AI takes over routine tasks."
-        },
-        {
-          "term": "human judgment",
-          "scenario": "复杂判断",
-          "desc": "人的判断力，用于责任、赔偿、情绪和长期客户关系。",
-          "example": "High-risk customer cases still require human judgment."
-        },
-        {
-          "term": "escalation rule",
-          "scenario": "转人工规则",
-          "desc": "升级处理规则，用来界定什么时候必须由真人介入。",
-          "example": "We need a clear escalation rule before expanding automation."
-        }
-      ],
-      "templateCore": [
-        "AI can reduce repetitive work, but it cannot replace human judgment in high-risk cases.",
-        "Before expanding automation, we need to define which tasks can be automated and which cases must be escalated.",
-        "The goal is not to remove people from the process, but to let people focus on judgment, trust and customer retention."
-      ],
-      "template": "Hi Team,\n\nAI can help us reduce repetitive work such as order checks, basic FAQs and simple email drafts. However, high-risk cases still require human judgment.\n\nBefore expanding automation, we need to define which tasks can be handled by AI and which cases must be escalated to a human agent. This is especially important for refund disputes, quality complaints, delivery delays and high-value customers.\n\nThe goal is not to remove people from the process, but to let people focus on judgment, trust and customer retention.\n\nBest,\n[Your Name]",
-      "practice": "请用英文写3句话：1. 哪些任务可以交给AI处理？2. 哪些客户问题必须转人工？3. 为什么不能只看降本，还要看客户信任和风险？"
-    }
-  ]
+    "scenarios":  [
+                      {
+                          "id":  "biz-20260702-prime-day-pinched-wallets",
+                          "score":  34,
+                          "quality":  "strong",
+                          "publishable":  true,
+                          "qualityMeta":  {
+                                              "bodyParagraphs":  3,
+                                              "bodyWords":  1120,
+                                              "categoryScore":  10
+                                          },
+                          "sourceDate":  "2026-06-27",
+                          "category":  "Consumer Demand",
+                          "signal":  "Consumer Demand",
+                          "sourceType":  "AI Enriched",
+                          "pill":  "Consumer Demand",
+                          "readingTime":  "8分钟",
+                          "source":  {
+                                         "name":  "Reuters",
+                                         "title":  "Amazon Prime Day offers a glimpse into U.S. consumer as shoppers navigate with pinched wallets",
+                                         "url":  "https://www.reuters.com/business/retail-consumer/amazon-prime-day-offers-glimpse-into-us-consumer-shoppers-navigate-with-pinched-2026-06-27/",
+                                         "summary":  "Prime Day spending rose, but the deeper signal is weaker consumer confidence: shoppers waited for discounts, bought planned essentials, and placed smaller average orders.",
+                                         "paragraphs":  [
+                                                            {
+                                                                "en":  "U.S. online shoppers spent more than $26.4 billion during Amazon Prime Day, up 9.3% from a year earlier. But the headline number does not mean consumers were suddenly relaxed about spending. Adobe Analytics said strong discounts pushed shoppers to buy higher-priced categories such as electronics, toys, appliances and personal care products. In other words, the event worked less like proof of a carefree consumer and more like a release window for purchases people had delayed until the price felt low enough.",
+                                                                "cn":  "美国消费者在 Amazon Prime Day 期间线上消费超过264亿美元，同比增长9.3%。但这个表面数字不能简单理解成消费者突然愿意花钱了。Adobe Analytics 的数据说明，强折扣推动消费者购买电子产品、玩具、家电、个护品等较高客单商品。换句话说，Prime Day 更像是一个“延迟消费释放窗口”：很多人不是不买，而是在等价格低到足够划算时再买。",
+                                                                "insight":  "这一段要告诉跨境卖家和小老板：消费没消失，但购买时机变了。用户越来越依赖折扣、平台大促和价格确定性。以后不能只看销售额，要同时看折扣深度、广告成本、退货成本和促销后的真实利润。"
+                                                            },
+                                                            {
+                                                                "en":  "The buying pattern also leaned toward practical categories. Shoppers stocked up on children’s items, apparel, personal hygiene products and home goods ahead of the back-to-school season. Retail analysts said many consumers were using the event to buy products they were already planning to purchase. That points to a demand shift: money is moving toward clearer use cases, family needs, everyday replenishment and value-driven spending, rather than purely visual, impulsive or advertising-driven products.",
+                                                                "cn":  "这次消费流向也更偏实用场景。消费者在返校季前囤购儿童用品、服装、个人护理产品和家居用品。零售分析人士认为，很多消费者是在借 Prime Day 购买原本就计划要买的东西。这说明需求正在变化：钱更容易流向明确用途、家庭需要、日常补货和高性价比消费，而不是只靠视觉冲动或广告硬推的产品。",
+                                                                "insight":  "这一段可以直接拆成赚钱方向：低决策成本、明确用途、可组合销售、可复购、可囤货。比如家庭清洁、个护补货、儿童返校、宠物日用、厨房小工具、收纳耗材。普通人做小生意，不要只问什么爆，要问用户为什么现在必须买。"
+                                                            },
+                                                            {
+                                                                "en":  "A separate survey by Numerator, based on more than 178,000 Prime Day orders, showed average order size fell to $47.66 from $53.34 a year earlier. That is the warning hidden under the strong sales headline: total spending can rise while individual baskets get smaller. Consumers are still participating in major sales events, but they are stretching limited budgets across more selective purchases. For retailers and small sellers, higher traffic does not automatically mean better margins; the key question is whether each order still makes money after discounts, ads, storage and returns.",
+                                                                "cn":  "另一项来自 Numerator、覆盖超过17.8万笔 Prime Day 订单的调查显示，平均订单金额从上一年的53.34美元降到47.66美元。这是强销售额背后真正值得警惕的信号：总消费额可以上涨，但单笔订单却在变小。消费者仍然参加大促，但他们是在把有限预算拆成更小、更谨慎的购买。对零售商和小卖家来说，流量变高不等于利润变好，关键是每一单扣掉折扣、广告、仓储和退货后还赚不赚钱。",
+                                                                "insight":  "这一段决定了文章的商业判断：销量上涨不等于利润变好。未来真正重要的是组合装设计、低门槛套装、复购装、促销节奏、库存周转和净利润模型。只会跟着大促降价，但不会算账的小卖家，最容易被“看起来很热闹”的销量拖垮。"
+                                                            }
+                                                        ]
+                                     },
+                          "titleCn":  "海外消费者不是不买了，是只等折扣再买",
+                          "desc":  "Prime Day销售额增长，但平均订单变小。这个信号比表面销售额更重要：海外消费者还在花钱，但他们更依赖折扣、更偏向刚需、更倾向计划内采购。消费没有消失，钱只是变得更挑了。",
+                          "why":  "这篇外刊不是亚马逊大促复盘，而是一次海外消费压力测试。总消费额上升说明需求还在，客单价下降说明预算变紧；刚需品类和家庭场景走强，说明钱正在流向确定价值。它适合告诉普通人、小老板、跨境卖家：接下来不是所有产品都好卖，而是“有明确用途、能解释省钱、能组合销售、打折后仍有利润”的产品更有机会。",
+                          "action":  "接下来不要盲目追爆品，要重新检查产品是否同时满足四个条件：有明确使用场景、有复购或囤货理由、有可解释的省钱价值、有促销后仍能保住利润的空间。用户不是不买，而是更难被说服。谁能把“为什么现在买、为什么买你的、为什么这笔钱花得值”讲清楚，谁更容易拿到订单。",
+                          "breakdown":  "深度看，这条新闻背后有三层趋势。第一，海外消费正在从即时冲动转向延迟购买，用户愿意等到大促再下单。第二，需求正在从泛泛消费转向具体场景，返校、家庭、个护、家居、补货、儿童用品这类场景更稳。第三，零售商和卖家会进入更残酷的利润管理阶段：折扣要给，广告要投，库存要备，退货和仓储还要算。未来不是谁卖得多谁赢，而是谁能在促销环境下仍然保住净利润。",
+                          "judgement":  "我的判断：海外消费不是熄火，而是进入“精打细算型消费”。消费者仍然会为刚需、折扣、家庭场景、可囤货和高性价比组合付钱，但会减少随意下单和高溢价冲动消费。对创业者来说，机会不在空喊消费升级或消费降级，而在找到预算变紧后仍然必须购买的细分场景。",
+                          "win":  "更受益的是折扣零售、刚需日用品、返校用品、儿童用品、个护家居、家庭补货、可囤货组合装、低决策成本产品，以及能在大促前做好库存、毛利、广告和退货测算的卖家。内容创业者也可以围绕“折扣经济、海外消费者变谨慎、家庭刚需、返校消费、低预算高价值”做选题。",
+                          "lose":  "承压的是没有明确使用场景的冲动消费品、只靠审美或情绪溢价的产品、利润太薄却被迫参加大促的商家、库存周转慢的高客单商品、不会算广告费和退货成本的小卖家，以及只能靠降价但没有差异化价值的品牌。",
+                          "english":  [
+                                          "value-driven spending｜消费者更看重性价比和实际用途｜Consumers are becoming more value-driven, so we should highlight practicality, durability and bundle savings.",
+                                          "stretch limited budgets｜用有限预算买更多东西｜Shoppers are using promotions to stretch limited budgets.",
+                                          "deal-seeking shoppers｜专门寻找折扣的消费者｜Deal-seeking shoppers are more likely to wait for major sales events.",
+                                          "average order size｜平均订单金额/客单价｜Average order size fell, suggesting consumers are buying more selectively.",
+                                          "planned purchases｜计划内购买｜Prime Day is increasingly used for planned purchases rather than impulse buying."
+                                      ],
+                          "template":  "Hi [Name],\n\nWe are seeing more value-driven demand this season, especially around essentials, bundles and promotion-led purchases.\n\nCould we review bundle options, discount tiers and inventory plans for the next sales campaign?\n\nBest,\n[Your Name]",
+                          "practice":  [
+                                           {
+                                               "title":  "一句话复述",
+                                               "task":  "Use English to explain: Prime Day spending increased, but shoppers became more discount-driven and selective."
+                                           },
+                                           {
+                                               "title":  "商务表达练习",
+                                               "task":  "Use value-driven spending in a sentence about consumer demand."
+                                           },
+                                           {
+                                               "title":  "场景练习",
+                                               "task":  "Write one sentence to a supplier asking about bundle options, discount tiers and inventory plans."
+                                           }
+                                       ],
+                          "industryTakeaway":  "每篇外刊必须拆出：一个趋势、一个赚钱位置、一个风险提醒、几句能直接用的商务英文。这篇的趋势是精打细算型消费；赚钱位置是刚需、家庭场景、返校用品、个护家居、组合装和可囤货产品；风险是销量增长但利润被折扣、广告、退货和库存吃掉。",
+                          "userUse":  {
+                                          "foreignTrade":  {
+                                                               "title":  "外贸人怎么用",
+                                                               "points":  [
+                                                                              "和客户谈产品时，不要只讲低价，要讲终端消费者为什么愿意在折扣期集中购买。",
+                                                                              "报价要预留促销和渠道折扣空间，否则看似有订单，最后利润会被大促吃掉。",
+                                                                              "优先关注返校、家庭补货、个护家居、儿童用品等有明确销售节点的需求。",
+                                                                              "给客户提供组合装、补货装、节日装方案，比只给单品报价更有竞争力。"
+                                                                          ]
+                                                           },
+                                          "crossBorder":  {
+                                                              "title":  "跨境卖家怎么用",
+                                                              "points":  [
+                                                                             "选品时优先测试可复购、可囤货、可组合销售的产品。",
+                                                                             "主图和文案要讲清楚省钱、耐用、一次买够、家庭刚需，而不是只讲好看。",
+                                                                             "大促前先算折扣、广告、退货、仓储和平台费，避免销量上涨但利润变薄。",
+                                                                             "把产品绑定具体场景：返校、家庭清洁、个护补货、宠物日用、厨房收纳。"
+                                                                         ]
+                                                          },
+                                          "workplaceEnglish":  {
+                                                                   "title":  "商务英语怎么用",
+                                                                   "points":  [
+                                                                                  "value-driven spending：消费者更看重性价比和实际用途。可用于选品分析和客户沟通。",
+                                                                                  "stretch limited budgets：用有限预算买更多东西。适合描述折扣期消费者心理。",
+                                                                                  "deal-seeking shoppers：专门寻找折扣的消费者。适合写市场洞察或促销分析。",
+                                                                                  "average order size：平均订单金额，也就是客单价。适合分析利润和订单质量。"
+                                                                              ]
+                                                               },
+                                          "toolAdvice":  {
+                                                             "title":  "普通人/创业者怎么用",
+                                                             "points":  [
+                                                                            "做小生意先看用户是否有必须买的场景，再看价格和流量。",
+                                                                            "消费变谨慎时，刚需、补货、省钱、组合装比单纯情绪价值更稳。",
+                                                                            "可以关注家庭清洁、个护补货、返校用品、宠物日用、厨房小工具、收纳耗材等方向。",
+                                                                            "不要只问能不能卖，要问打折后、投流后、退货后，还能不能赚钱。"
+                                                                        ]
+                                                         }
+                                      },
+                          "analysisStatus":  "ai_enriched",
+                          "deepReady":  true
+                      },
+                      {
+                          "id":  "article-ai-gig-work-final-deep",
+                          "scenarioId":  "ai-gig-work-final",
+                          "trend":  "ai-productivity",
+                          "industry":  "crossborder",
+                          "signal":  "AI Productivity / Work Fragmentation",
+                          "pill":  "AI Productivity",
+                          "sourceType":  "AI Enriched",
+                          "analysisStatus":  "ready",
+                          "deepReady":  true,
+                          "publishable":  true,
+                          "quality":  "strong",
+                          "title":  "Gig workers are endlessly exploited. AI could make more of us share their fate",
+                          "titleCn":  "零工劳动者一直被剥削，AI可能让更多人也落入同样处境。",
+                          "signalLead":  "AI最危险的不是替代你，而是把完整工作拆成更小、更便宜、更不稳定的任务。",
+                          "desc":  "这篇外刊真正值得看的是：AI如何让更多白领工作走向碎片化、按需化和零工化。",
+                          "why":  "判断自己的工作哪些部分会被AI压价，哪些能力反而会升值。",
+                          "action":  "用它检查自己的岗位：标准化任务、异常处理、客户关系和判断权分别在哪里。",
+                          "english":  "AI can reduce repetitive work, but it cannot replace human judgment in high-risk cases.",
+                          "readingTime":  "8 分钟",
+                          "sourceDate":  "2026.06.18",
+                          "originalDate":  "2026.06.18",
+                          "updatedAt":  "2026.06.24",
+                          "siteUpdatedAt":  "2026.06.24",
+                          "suitableAudience":  [
+                                                   "外贸业务员",
+                                                   "跨境卖家",
+                                                   "客服主管",
+                                                   "运营",
+                                                   "想用AI提高效率的人"
+                                               ],
+                          "source":  {
+                                         "name":  "The Guardian",
+                                         "title":  "Gig workers are endlessly exploited. AI could make more of us share their fate",
+                                         "url":  "https://www.theguardian.com/technology/2026/jun/18/ai-threatens-gig-work-rise",
+                                         "date":  "2026.06.18",
+                                         "summary":  "The article discusses how AI may reshape customer service and other roles into more fragmented, flexible and less stable forms of work.",
+                                         "paragraphs":  [
+                                                            {
+                                                                "en":  "Klarna’s AI customer-service push showed how routine support work can be shifted from full-time teams to automated systems.",
+                                                                "cn":  "Klarna 的 AI 客服案例说明：企业会先把常规支持工作从完整团队转移到自动化系统。"
+                                                            },
+                                                            {
+                                                                "en":  "When automation reaches its limits, human support does not simply disappear; it is pulled in for the harder, messier and higher-risk cases.",
+                                                                "cn":  "当自动化触及边界时，人工并不是完全消失，而是被拉回来处理更难、更乱、风险更高的问题。"
+                                                            },
+                                                            {
+                                                                "en":  "The broader risk is that AI can replace parts of many jobs, making it easier for companies to split work into smaller and less secure tasks.",
+                                                                "cn":  "更大的风险是：AI 会替代许多工作的部分环节，让公司更容易把岗位拆成更小、更不稳定的任务。"
+                                                            }
+                                                        ]
+                                     },
+                          "evidenceCards":  [
+                                                {
+                                                    "label":  "原文依据 1｜Klarna 案例",
+                                                    "text":  "AI先接管基础客服和标准问题，企业用它降低支持岗位成本。"
+                                                },
+                                                {
+                                                    "label":  "原文依据 2｜人工回归",
+                                                    "text":  "问题不是人工完全消失，而是人工只在AI处理不了时被按需接入。"
+                                                },
+                                                {
+                                                    "label":  "原文依据 3｜更大风险",
+                                                    "text":  "AI可能替代许多岗位的一部分，使完整工作更容易被拆碎、外包和零工化。"
+                                                }
+                                            ],
+                          "breakdownConclusion":  "核心判断：AI真正改变的不是单个岗位，而是企业拆分工作的方式。",
+                          "breakdownMatrix":  {
+                                                  "columns":  [
+                                                                  "层级",
+                                                                  "AI会接管什么",
+                                                                  "人还守什么",
+                                                                  "商业含义"
+                                                              ],
+                                                  "rows":  [
+                                                               [
+                                                                   "标准化任务",
+                                                                   "查单、FAQ、资料整理、基础邮件、简单客服",
+                                                                   "维护知识库和质检规则",
+                                                                   "重复劳动会被压价，岗位里的低价值部分先被拆走"
+                                                               ],
+                                                               [
+                                                                   "临时补位",
+                                                                   "先筛问题、整理背景、生成初稿",
+                                                                   "在AI处理不了时介入",
+                                                                   "完整全职岗位减少，按需接入的人力增加"
+                                                               ],
+                                                               [
+                                                                   "复杂判断",
+                                                                   "提供信息和备选方案",
+                                                                   "判断责任、赔偿、情绪、客户关系和风险边界",
+                                                                   "真正升值的是判断权、升级权和关系处理能力"
+                                                               ]
+                                                           ]
+                                              },
+                          "breakdownAction":  "不要只问AI会不会替代我，要问：我的工作里哪些部分可以被拆走？哪些部分必须由我判断？",
+                          "trendConclusion":  "趋势判断：白领工作的风险不只是失业，而是被拆成更碎、更便宜、更不稳定的任务。",
+                          "trendMatrix":  {
+                                              "columns":  [
+                                                              "变化",
+                                                              "过去",
+                                                              "AI之后",
+                                                              "职场影响"
+                                                          ],
+                                              "rows":  [
+                                                           [
+                                                               "岗位结构",
+                                                               "一个人负责一整套流程",
+                                                               "流程被拆成若干任务",
+                                                               "完整岗位价值被重新计算"
+                                                           ],
+                                                           [
+                                                               "用工方式",
+                                                               "稳定雇一个人",
+                                                               "AI先做，人工按需补位",
+                                                               "零工化、外包化、项目化增加"
+                                                           ],
+                                                           [
+                                                               "能力定价",
+                                                               "看执行速度",
+                                                               "看风险判断和问题升级",
+                                                               "只会执行的人被压价，会判断的人更值钱"
+                                                           ]
+                                                       ]
+                                          },
+                          "moneyLead":  "钱不在“会用AI”这句话里，而在帮企业重新设计AI之后的工作分层。",
+                          "moneyMatrix":  {
+                                              "columns":  [
+                                                              "角色",
+                                                              "钱在哪里",
+                                                              "具体机会",
+                                                              "普通人能做什么"
+                                                          ],
+                                              "rows":  [
+                                                           [
+                                                               "企业",
+                                                               "降标准任务成本",
+                                                               "把查单、FAQ、基础邮件、简单售后交给AI",
+                                                               "整理知识库、FAQ和标准回复"
+                                                           ],
+                                                           [
+                                                               "服务提供者",
+                                                               "卖流程重构",
+                                                               "帮商家设计AI分流SOP、转人工规则、质检清单",
+                                                               "做小型SOP、英文模板、客户挽回话术"
+                                                           ],
+                                                           [
+                                                               "承压者",
+                                                               "低端执行被压价",
+                                                               "只会复制粘贴、整理信息、套模板的人被替代",
+                                                               "转向异常处理、复盘、质检和客户沟通"
+                                                           ],
+                                                           [
+                                                               "升值者",
+                                                               "复杂问题处理",
+                                                               "退款争议、差评、大客户、平台纠纷、续费挽回",
+                                                               "训练判断边界、谈判、安抚和跨部门协调"
+                                                           ]
+                                                       ]
+                                          },
+                          "moneyTakeaway":  "最小可卖服务不是“接一个AI客服”，而是：FAQ整理 + 英文模板 + 转人工规则 + 质检清单。",
+                          "industryMatrix":  {
+                                                 "columns":  [
+                                                                 "行业",
+                                                                 "会被AI拆走的部分",
+                                                                 "不能交给AI的部分",
+                                                                 "具体动作"
+                                                             ],
+                                                 "rows":  [
+                                                              [
+                                                                  "跨境电商",
+                                                                  "物流查询、尺码说明、安装教程、普通FAQ",
+                                                                  "退款、破损、差评、高客单价订单",
+                                                                  "设置 refund / broken / negative review 等关键词自动转人工"
+                                                              ],
+                                                              [
+                                                                  "外贸业务",
+                                                                  "询盘初稿、参数说明、邮件润色、资料整理",
+                                                                  "价格让步、账期、赔偿、交期变更",
+                                                                  "AI只写草稿，人决定底线、语气和让步边界"
+                                                              ],
+                                                              [
+                                                                  "SaaS运营",
+                                                                  "基础支持、操作说明、简单工单",
+                                                                  "续费、升级、企业客户投诉、复杂集成",
+                                                                  "按客户等级设置不同升级规则"
+                                                              ],
+                                                              [
+                                                                  "内容/助理岗位",
+                                                                  "资料整理、摘要、改写、基础表格",
+                                                                  "判断选题价值、客户意图、最终交付质量",
+                                                                  "从执行者转向编辑、质检、流程设计者"
+                                                              ]
+                                                          ]
+                                             },
+                          "industryTakeaway":  "行业变化不是AI替代某个岗位，而是岗位内部被重新拆分。",
+                          "userUse":  {
+                                          "foreignTrade":  {
+                                                               "title":  "外贸业务员",
+                                                               "points":  [
+                                                                              "标准询盘、参数说明、付款方式可以让AI先写英文初稿。",
+                                                                              "报价、账期、赔偿、交期变更必须人工判断。",
+                                                                              "不要只提升回复速度，要掌握价格边界、责任边界和客户关系。"
+                                                                          ]
+                                                           },
+                                          "crossBorder":  {
+                                                              "title":  "跨境卖家",
+                                                              "points":  [
+                                                                             "可自动化：物流查询、尺码说明、普通FAQ、基础退换货。",
+                                                                             "必须转人工：退款争议、破损投诉、差评、高客单价订单。",
+                                                                             "客户连续追问三次仍未解决，应自动转人工。"
+                                                                         ]
+                                                          },
+                                          "workplaceEnglish":  {
+                                                                   "title":  "职场英文",
+                                                                   "sentences":  [
+                                                                                     "AI can reduce repetitive work, but it cannot replace human judgment in complex customer situations.",
+                                                                                     "Before expanding automation, we need to draw a clear line between routine tasks and high-risk cases.",
+                                                                                     "The goal is not to remove people from the process, but to let people focus on judgment, trust and customer retention."
+                                                                                 ]
+                                                               },
+                                          "toolAdvice":  {
+                                                             "title":  "AI工具使用",
+                                                             "points":  [
+                                                                            "用AI写初稿、整理背景、归纳问题。",
+                                                                            "涉及赔偿、责任、价格和客户关系时，必须人工复核。",
+                                                                            "每周复盘一次AI回复是否引发误解、投诉或过度承诺。"
+                                                                        ]
+                                                         }
+                                      },
+                          "riskCards":  [
+                                            {
+                                                "label":  "不要自动决策",
+                                                "text":  "退款争议、质量投诉、破损赔偿、延期交付。"
+                                            },
+                                            {
+                                                "label":  "必须人工确认",
+                                                "text":  "涉及价格让步、责任归属、客户情绪和平台纠纷。"
+                                            },
+                                            {
+                                                "label":  "最大误区",
+                                                "text":  "把AI当成廉价替代品，而不是工作分层工具。"
+                                            }
+                                        ],
+                          "riskTakeaway":  "如果AI回复错了会导致退款、差评、投诉、赔偿或客户流失，就必须转人工。",
+                          "terms":  [
+                                        {
+                                            "term":  "fragmented workforce",
+                                            "scenario":  "组织变化",
+                                            "desc":  "碎片化劳动力，指工作被拆成更小、更不稳定的任务。",
+                                            "example":  "AI may push more companies toward a fragmented workforce."
+                                        },
+                                        {
+                                            "term":  "gigified work",
+                                            "scenario":  "AI与零工化",
+                                            "desc":  "被零工化的工作，指原本完整的岗位被拆成临时任务。",
+                                            "example":  "Some white-collar jobs may become gigified as AI takes over routine tasks."
+                                        },
+                                        {
+                                            "term":  "human judgment",
+                                            "scenario":  "复杂判断",
+                                            "desc":  "人的判断力，用于责任、赔偿、情绪和长期客户关系。",
+                                            "example":  "High-risk customer cases still require human judgment."
+                                        },
+                                        {
+                                            "term":  "escalation rule",
+                                            "scenario":  "转人工规则",
+                                            "desc":  "升级处理规则，用来界定什么时候必须由真人介入。",
+                                            "example":  "We need a clear escalation rule before expanding automation."
+                                        }
+                                    ],
+                          "templateCore":  [
+                                               "AI can reduce repetitive work, but it cannot replace human judgment in high-risk cases.",
+                                               "Before expanding automation, we need to define which tasks can be automated and which cases must be escalated.",
+                                               "The goal is not to remove people from the process, but to let people focus on judgment, trust and customer retention."
+                                           ],
+                          "template":  "Hi Team,\n\nAI can help us reduce repetitive work such as order checks, basic FAQs and simple email drafts. However, high-risk cases still require human judgment.\n\nBefore expanding automation, we need to define which tasks can be handled by AI and which cases must be escalated to a human agent. This is especially important for refund disputes, quality complaints, delivery delays and high-value customers.\n\nThe goal is not to remove people from the process, but to let people focus on judgment, trust and customer retention.\n\nBest,\n[Your Name]",
+                          "practice":  "用英文写3句话：说明哪些任务可以AI处理，哪些客户问题必须转人工，以及为什么。"
+                      }
+                  ],
+    "count":  2,
+    "generated_at":  "2026-07-03T01:16:09.4315813Z",
+    "method":  "rss_candidates_plus_ai_enrichment"
 }
