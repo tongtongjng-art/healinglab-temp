@@ -1,0 +1,346 @@
+{
+  "scenarios": [
+    {
+      "id": "biz-20260706-ft-freight-tariff-frontloading",
+      "score": 38,
+      "quality": "strong",
+      "publishable": true,
+      "qualityMeta": {
+        "bodyParagraphs": 3,
+        "bodyWords": 980,
+        "categoryScore": 10
+      },
+      "sourceDate": "2026-06-29",
+      "category": "Supply Chain / Cost Pressure",
+      "trend": "supply",
+      "industry": "crossborder",
+      "signal": "Supply Chain / Cost Pressure",
+      "sourceType": "Commercial Press",
+      "pill": "Tariff & Freight",
+      "readingTime": "7分钟",
+      "source": {
+        "name": "Financial Times",
+        "title": "Freight shipping costs surge as companies race to beat new Trump tariffs",
+        "url": "https://www.ft.com/content/8bf7cfa4-5412-41d3-b84e-e89f84265fe8",
+        "summary": "Companies are pulling shipments forward before possible US tariff changes, pushing freight rates higher and moving cost pressure into the supply chain before the policy is fully settled.",
+        "paragraphs": [
+          {
+            "en": "Financial Times reports that companies are rushing to move goods before new US tariff decisions take effect. The rush has pushed freight rates to their highest level since the 2024 Red Sea shipping disruption.",
+            "cn": "FT 报道称，企业正在赶在美国新关税安排落地前发货。集中出货推高了运价，货运成本升至 2024 年红海航运扰动以来的高位。",
+            "insight": "重点不在单次运费上涨，而在企业行为提前变化。政策预期已经进入订舱、备货、库存和现金流。"
+          },
+          {
+            "en": "The price of a 40-foot container from China to the US east coast rose 62 percent in a month to $7,880. The China-to-Mediterranean route rose 47 percent to $6,431, according to the report.",
+            "cn": "报道中的核心数字是：中国到美国东海岸的 40 英尺集装箱价格一个月上涨 62%，达到 7,880 美元；中国到地中海航线上涨 47%，达到 6,431 美元。",
+            "insight": "这些数字说明，成本压力已经先于终端消费变化出现。货还没到货架，运输成本已经重写了后面的定价空间。"
+          },
+          {
+            "en": "Reuters also reports a similar pattern: US retailers have frontloaded China orders by four to six weeks ahead of the holiday season to reduce exposure to possible tariff increases.",
+            "cn": "Reuters 的同题材报道也提到，美国零售商把中国来源的假日季订单提前了 4–6 周，目的在于降低潜在关税上调带来的成本风险。",
+            "insight": "短期出货变多，不能直接理解为需求变强。部分订单只是被提前释放，后面可能转化为库存压力。"
+          }
+        ]
+      },
+      "titleCn": "关税还没落地，运费先涨了",
+      "titleTranslation": "Freight shipping costs surge before new tariff decisions",
+      "meaning": "政策预期已经提前推高物流成本，企业开始用抢发货和囤库存来对冲不确定性。",
+      "desc": "FT 报道显示，美国新关税安排尚未完全落地，企业已经开始提前发货。中国到美国东海岸 40 英尺集装箱价格一个月上涨 62%，达到 7,880 美元。这个信号说明，政策不确定性会先进入物流、库存和现金流，再传导到商品价格。",
+      "why": "这篇适合放在“海外商业信号”主线里。它讲清楚了一个很现实的链条：关税预期改变企业节奏，企业集中发货推高运价，运价上涨压缩后面的定价和促销空间。",
+      "action": "接下来观察三件事：客户是否提前下单，物流成本是否继续上行，后续库存是否积压。短期订单增加时，除了看需求，还要判断这些订单有没有从未来几个月提前挪过来。",
+      "suitableAudience": [
+        "外贸人",
+        "做海外客户的小老板",
+        "跨境卖家",
+        "供应链/物流从业者",
+        "关注海外市场的人"
+      ],
+      "signalLead": "关税政策还没完全落地，企业已经先行动。提前发货、集中订舱、抢关税窗口，正在把成本压力推到供应链前端。",
+      "signalCards": [
+        {
+          "label": "核心事件",
+          "text": "企业赶在美国新关税前提前发货，海运需求被集中释放。"
+        },
+        {
+          "label": "关键数字",
+          "text": "中国到美国东海岸 40 英尺箱价一个月上涨 62%，达到 7,880 美元。"
+        },
+        {
+          "label": "商业信号",
+          "text": "政策预期本身会制造成本，影响订舱、库存、现金流和终端定价。"
+        }
+      ],
+      "evidenceCards": [
+        {
+          "label": "主文来源",
+          "text": "Financial Times · 2026.06.29"
+        },
+        {
+          "label": "运价变化",
+          "text": "China → US East Coast：+62% 至 $7,880 / 40ft container"
+        },
+        {
+          "label": "辅助验证",
+          "text": "Reuters 报道美国零售商将中国假日季订单提前 4–6 周。"
+        }
+      ],
+      "breakdownConclusion": "这篇文章的价值在于：它把“关税预期”如何变成真实商业成本讲清楚了。",
+      "breakdownMatrix": {
+        "columns": [
+          "层级",
+          "发生了什么",
+          "商业含义"
+        ],
+        "rows": [
+          [
+            "政策层",
+            "美国新关税存在时间窗口和不确定性",
+            "企业需要提前判断成本风险"
+          ],
+          [
+            "物流层",
+            "企业集中发货，订舱需求上升",
+            "运力变紧，海运价格上行"
+          ],
+          [
+            "库存层",
+            "零售商把未来订单提前",
+            "短期出货好看，后期可能出现库存压力"
+          ],
+          [
+            "价格层",
+            "运输和关税成本进入商品总成本",
+            "终端价格、促销空间和利润率都会被重新计算"
+          ]
+        ]
+      },
+      "breakdownAction": "看这类新闻时，不能只问订单多不多。更有用的问题是：订单为什么提前？成本谁承担？后面库存和价格会不会变？",
+      "trendConclusion": "大促看消费者有没有预算，关税和运费看商家还有没有低价空间。",
+      "trendMatrix": {
+        "columns": [
+          "观察点",
+          "短期信号",
+          "后续风险"
+        ],
+        "rows": [
+          [
+            "出货量",
+            "提前发货会让短期数据变强",
+            "未来订单可能被提前透支"
+          ],
+          [
+            "运费",
+            "集中订舱推高现货价格",
+            "利润薄的产品更难维持原价"
+          ],
+          [
+            "库存",
+            "企业先把货运进来",
+            "仓储费、周转压力和清货折扣可能增加"
+          ],
+          [
+            "报价",
+            "客户会重新评估 landed cost",
+            "外贸报价需要预留政策和物流波动空间"
+          ]
+        ]
+      },
+      "moneyLead": "这笔钱最先流向物流环节，随后进入进口商、品牌方和消费者之间的成本分摊。",
+      "moneyMatrix": {
+        "columns": [
+          "位置",
+          "谁受益/承压",
+          "原因"
+        ],
+        "rows": [
+          [
+            "船公司/货代",
+            "短期受益",
+            "订舱需求集中释放，现货运价上行"
+          ],
+          [
+            "进口商/零售商",
+            "现金流承压",
+            "提前备货占用资金，还要承担更高运费"
+          ],
+          [
+            "外贸工厂",
+            "订单节奏不稳定",
+            "客户可能提前下单，也可能后续放慢补货"
+          ],
+          [
+            "消费者",
+            "部分成本会传导",
+            "企业若有定价能力，会把部分运输和关税成本放进售价"
+          ]
+        ]
+      },
+      "moneyTakeaway": "短期看，物流环节先收钱；中期看，品牌和零售商重新算价格；长期看，消费者承担其中一部分成本。",
+      "industryMatrix": {
+        "columns": [
+          "对象",
+          "会发生什么",
+          "应该关注什么"
+        ],
+        "rows": [
+          [
+            "外贸人",
+            "客户可能突然提前下单或压价",
+            "问清楚客户是在补真实需求，还是抢关税窗口"
+          ],
+          [
+            "做海外客户的小老板",
+            "成本波动会影响报价和交期承诺",
+            "把运费、关税、汇率和交期写进报价解释"
+          ],
+          [
+            "跨境卖家",
+            "备货时间和物流成本更难判断",
+            "谨慎扩大库存，重点看现金周转"
+          ],
+          [
+            "普通消费者",
+            "部分进口商品可能涨价",
+            "价格变化来自运输、关税、库存等多重因素"
+          ]
+        ]
+      },
+      "industryTakeaway": "这篇不只服务跨境卖家。它影响的是整条海外生意链：外贸报价、客户备货、零售库存、物流成本和终端价格。",
+      "userUse": {
+        "foreignTrade": {
+          "title": "外贸人怎么用",
+          "points": [
+            "客户突然集中下单时，先问清楚是否在抢关税窗口。",
+            "报价里不要只写产品单价，要解释运费、关税和交期变化。",
+            "如果客户要求锁价，最好同步确认有效期、汇率和运费假设。"
+          ]
+        },
+        "crossBorder": {
+          "title": "跨境卖家",
+          "points": [
+            "不要把短期物流紧张直接理解成需求变强。",
+            "大批量备货前，先测算运费上涨后的净利润和库存周转。",
+            "低客单、低毛利、体积大的产品更容易被运费吞掉利润。"
+          ]
+        },
+        "workplaceEnglish": {
+          "title": "职场英文",
+          "sentences": [
+            "We need to reassess the landed cost before confirming the next shipment.",
+            "Some customers are frontloading orders ahead of possible tariff changes.",
+            "Higher freight rates may reduce our promotion flexibility in the next quarter."
+          ]
+        },
+        "toolAdvice": {
+          "title": "业务判断",
+          "points": [
+            "把关税时间点、运价、客户订单节奏放在同一张表里看。",
+            "区分真实需求增长和订单提前。",
+            "每次看到出货上升，都要检查后面是否可能出现库存回落。"
+          ]
+        }
+      },
+      "riskCards": [
+        {
+          "label": "不要误判",
+          "text": "短期订单增加不一定代表需求恢复，可能只是订单前置。"
+        },
+        {
+          "label": "不要硬囤",
+          "text": "提前备货会占用现金流，也会带来库存和仓储压力。"
+        },
+        {
+          "label": "不要只看单价",
+          "text": "真实成本要看 landed cost：产品、运费、关税、汇率、仓储。"
+        }
+      ],
+      "riskTakeaway": "成本最容易在看不见的地方上升。运费、关税和库存一旦叠加，低利润产品会先被挤压。",
+      "terms": [
+        {
+          "term": "freight shipping costs",
+          "scenario": "物流成本",
+          "desc": "货运成本，尤其常用于海运、空运、跨境运输。",
+          "example": "Freight shipping costs have surged ahead of new tariff deadlines."
+        },
+        {
+          "term": "frontload orders",
+          "scenario": "提前下单",
+          "desc": "把未来订单提前到现在，以应对政策或成本风险。",
+          "example": "Retailers are frontloading orders to avoid potential tariff increases."
+        },
+        {
+          "term": "stockpile inventory",
+          "scenario": "库存管理",
+          "desc": "提前囤货、增加库存。",
+          "example": "Some companies are stockpiling inventory before new trade measures take effect."
+        },
+        {
+          "term": "landed cost",
+          "scenario": "报价核算",
+          "desc": "到岸总成本，包含产品、运费、关税、保险、仓储等。",
+          "example": "We need to recalculate the landed cost before sending the final quote."
+        }
+      ],
+      "templateCore": [
+        "We need to reassess the landed cost before confirming the next shipment.",
+        "Some customers are frontloading orders ahead of possible tariff changes.",
+        "Higher freight rates may reduce our promotion flexibility in the next quarter."
+      ],
+      "template": "Hi [Name],\n\nGiven the recent rise in freight rates and the uncertainty around tariff changes, I suggest we reassess the landed cost before confirming the next shipment.\n\nSome customers may be frontloading orders ahead of possible tariff changes, so we should separate real demand growth from early inventory moves.\n\nBest,\n[Your Name]",
+      "practice": "用英文写 3 句话：说明客户为什么提前下单、运费上涨会影响什么、报价前为什么要重算 landed cost。"
+    },
+    {
+      "id": "biz-20260702-prime-day-pinched-wallets",
+      "score": 34,
+      "quality": "strong",
+      "publishable": true,
+      "qualityMeta": {
+        "bodyParagraphs": 3,
+        "bodyWords": 800,
+        "categoryScore": 10
+      },
+      "sourceDate": "2026-06-27",
+      "category": "Consumer Demand",
+      "trend": "consumer",
+      "industry": "crossborder",
+      "signal": "Consumer Demand",
+      "sourceType": "Business News",
+      "pill": "Consumer Demand",
+      "readingTime": "8分钟",
+      "source": {
+        "name": "Reuters",
+        "title": "Amazon Prime Day offers a glimpse into U.S. consumer as shoppers navigate with pinched wallets",
+        "url": "https://www.reuters.com/business/retail-consumer/amazon-prime-day-offers-glimpse-into-us-consumer-shoppers-navigate-with-pinched-2026-06-27/",
+        "summary": "Prime Day spending rose, while average order size fell and shoppers focused on discounted, planned purchases.",
+        "paragraphs": [
+          {
+            "en": "U.S. online shoppers spent more than $26.4 billion during Amazon Prime Day, up 9.3% from a year earlier.",
+            "cn": "Prime Day 期间，美国线上消费超过 264 亿美元，同比增长 9.3%。"
+          },
+          {
+            "en": "Shoppers stocked up on practical categories such as children's items, apparel, personal hygiene products and home goods.",
+            "cn": "消费者更多购买儿童用品、服装、个护产品和家居用品等实用类目。"
+          },
+          {
+            "en": "Numerator data showed average order size fell to $47.66 from $53.34 a year earlier.",
+            "cn": "Numerator 数据显示，平均订单金额从上一年的 53.34 美元降至 47.66 美元。"
+          }
+        ]
+      },
+      "titleCn": "海外消费者开始精打细算",
+      "titleTranslation": "Prime Day shows a more selective US consumer",
+      "meaning": "销售额上涨与客单价下降同时出现，说明消费者仍在买，但更依赖折扣和计划内消费。",
+      "desc": "Prime Day 销售额增长，但平均订单金额下降。消费者仍会参与大促，购买更集中在折扣明确、用途清楚、家庭和日常补货相关的商品上。",
+      "why": "这篇适合观察海外消费压力：总额上升说明需求还在，客单价下降说明预算更谨慎。",
+      "action": "看大促数据时，把销售额、客单价、品类流向和净利润放在一起看。",
+      "signalLead": "Prime Day 的关键不只是销售额上涨，平均订单金额下降更值得留意。",
+      "breakdown": "这条新闻说明海外消费进入更谨慎的阶段。消费者愿意等折扣，也更偏向计划内购买和实用场景。对小生意来说，产品需要有明确用途、复购理由和可承受的促销空间。",
+      "judgement": "海外消费还在，但钱更集中地流向刚需、家庭场景、折扣明确和可囤货的商品。",
+      "english": "value-driven spending",
+      "template": "Hi [Name],\n\nWe are seeing more value-driven demand this season, especially around essentials, bundles and promotion-led purchases.\n\nBest,\n[Your Name]",
+      "practice": "Use value-driven spending in a sentence about consumer demand."
+    }
+  ],
+  "count": 2,
+  "generated_at": "2026-07-06T06:45:00+08:00",
+  "method": "manual_business_briefing_update"
+}
