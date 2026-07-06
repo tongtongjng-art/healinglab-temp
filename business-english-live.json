@@ -1,402 +1,346 @@
 {
-    "scenarios":  [
-                      {
-                          "id":  "biz-20260702-prime-day-pinched-wallets",
-                          "score":  34,
-                          "quality":  "strong",
-                          "publishable":  true,
-                          "qualityMeta":  {
-                                              "bodyParagraphs":  3,
-                                              "bodyWords":  1120,
-                                              "categoryScore":  10
-                                          },
-                          "sourceDate":  "2026-06-27",
-                          "category":  "Consumer Demand",
-                          "signal":  "Consumer Demand",
-                          "sourceType":  "AI Enriched",
-                          "pill":  "Consumer Demand",
-                          "readingTime":  "8分钟",
-                          "source":  {
-                                         "name":  "Reuters",
-                                         "title":  "Amazon Prime Day offers a glimpse into U.S. consumer as shoppers navigate with pinched wallets",
-                                         "url":  "https://www.reuters.com/business/retail-consumer/amazon-prime-day-offers-glimpse-into-us-consumer-shoppers-navigate-with-pinched-2026-06-27/",
-                                         "summary":  "Prime Day spending rose, but the deeper signal is weaker consumer confidence: shoppers waited for discounts, bought planned essentials, and placed smaller average orders.",
-                                         "paragraphs":  [
-                                                            {
-                                                                "en":  "U.S. online shoppers spent more than $26.4 billion during Amazon Prime Day, up 9.3% from a year earlier. But the headline number does not mean consumers were suddenly relaxed about spending. Adobe Analytics said strong discounts pushed shoppers to buy higher-priced categories such as electronics, toys, appliances and personal care products. In other words, the event worked less like proof of a carefree consumer and more like a release window for purchases people had delayed until the price felt low enough.",
-                                                                "cn":  "美国消费者在 Amazon Prime Day 期间线上消费超过264亿美元，同比增长9.3%。但这个表面数字不能简单理解成消费者突然愿意花钱了。Adobe Analytics 的数据说明，强折扣推动消费者购买电子产品、玩具、家电、个护品等较高客单商品。换句话说，Prime Day 更像是一个“延迟消费释放窗口”：很多人不是不买，而是在等价格低到足够划算时再买。",
-                                                                "insight":  "这一段要告诉跨境卖家和小老板：消费没消失，但购买时机变了。用户越来越依赖折扣、平台大促和价格确定性。以后不能只看销售额，要把折扣深度、广告成本、平台费、退货率和仓储周期放在一起算，否则GMV越高，现金流压力可能越大。"
-                                                            },
-                                                            {
-                                                                "en":  "The buying pattern also leaned toward practical categories. Shoppers stocked up on children’s items, apparel, personal hygiene products and home goods ahead of the back-to-school season. Retail analysts said many consumers were using the event to buy products they were already planning to purchase. That points to a demand shift: money is moving toward clearer use cases, family needs, everyday replenishment and value-driven spending, rather than purely visual, impulsive or advertising-driven products.",
-                                                                "cn":  "这次消费流向也更偏实用场景。消费者在返校季前囤购儿童用品、服装、个人护理产品和家居用品。零售分析人士认为，很多消费者是在借 Prime Day 购买原本就计划要买的东西。这说明需求正在变化：钱更容易流向明确用途、家庭需要、日常补货和高性价比消费，而不是只靠视觉冲动或广告硬推的产品。",
-                                                                "insight":  "这一段可以直接拆成赚钱方向：低决策成本、明确用途、可组合销售、可复购、可囤货。比如家庭清洁、个护补货、儿童返校、宠物日用、厨房小工具、收纳耗材。普通人做小生意，不要只问什么爆，要问用户为什么现在必须买、为什么会复购、为什么愿意一次买多件。"
-                                                            },
-                                                            {
-                                                                "en":  "A separate survey by Numerator, based on more than 178,000 Prime Day orders, showed average order size fell to $47.66 from $53.34 a year earlier. That is the warning hidden under the strong sales headline: total spending can rise while individual baskets get smaller. Consumers are still participating in major sales events, but they are stretching limited budgets across more selective purchases. For retailers and small sellers, higher traffic does not automatically mean better margins; the key question is whether each order still makes money after discounts, ads, storage and returns.",
-                                                                "cn":  "另一项来自 Numerator、覆盖超过17.8万笔 Prime Day 订单的调查显示，平均订单金额从上一年的53.34美元降到47.66美元。这是强销售额背后真正值得警惕的信号：总消费额可以上涨，但单笔订单却在变小。消费者仍然参加大促，但他们是在把有限预算拆成更小、更谨慎的购买。对零售商和小卖家来说，流量变高不等于利润变好，关键是每一单扣掉折扣、广告、仓储和退货后还赚不赚钱。",
-                                                                "insight":  "这一段决定了文章的商业判断：销量上涨不等于利润变好。未来真正重要的是组合装设计、低门槛套装、复购装、促销节奏、库存周转和净利润模型。只会跟着大促降价、却不会算广告费和退货损耗的小卖家，最容易被“看起来很热闹”的销量拖垮。"
-                                                            }
-                                                        ]
-                                     },
-                          "titleCn":  "海外消费者不是不买了，是只等折扣再买",
-                          "desc":  "Prime Day销售额增长，但平均订单变小。这个信号比表面销售额更重要：海外消费者还在花钱，但钱只流向折扣足够明确、用途足够刚需、购买理由足够好算账的产品。消费没有消失，用户只是从冲动下单变成了精打细算。",
-                          "why":  "这篇外刊不是亚马逊大促复盘，而是一次海外消费压力测试。总消费额上升说明需求还在，客单价下降说明预算变紧；刚需品类和家庭场景走强，说明钱正在流向确定价值。对普通人、小老板、跨境卖家来说，真正要看的不是GMV有多热闹，而是折扣、广告、平台费、仓储费和退货损耗之后，每一单还剩多少净利润。",
-                          "action":  "接下来不要盲目追爆品，要把产品放进一张更现实的筛选表：用户是否必须买？是否会重复买？是否能一次买多件？是否适合组合装或补货装？打8折后是否还有毛利？退货率是否可控？如果一个产品只能靠大促降价才卖得动，但扣掉广告、仓储和退货后不赚钱，那它不是机会，而是库存风险。",
-                          "breakdown":  "深度看，这条新闻背后有四层商业信号。第一，海外消费正在从即时冲动转向延迟购买，用户愿意等到大促再下单。第二，需求正在从泛泛消费转向具体场景，返校、家庭、个护、家居、补货、儿童用品这类场景更稳。第三，平台和大卖会更受益于流量集中、广告预算和库存能力，小卖家如果只是跟着降价，很容易被广告费、仓储费和退货成本吃掉利润。第四，未来不是谁卖得多谁赢，而是谁能在促销环境下仍然算清楚真实利润：成交价减去采购、折扣、广告、平台、物流、仓储、退货之后，还有没有钱赚。",
-                          "judgement":  "我的判断：海外消费不是熄火，而是进入“精打细算型消费”。消费者仍然会为刚需、折扣、家庭场景、可囤货和高性价比组合付钱，但会减少随意下单和高溢价冲动消费。对创业者来说，机会不在空喊消费升级或消费降级，而在找到预算变紧后仍然必须购买、会复购、能组合、打折后还有利润的细分场景。",
-                          "win":  "更受益的是折扣零售、刚需日用品、返校用品、儿童用品、个护家居、家庭补货、可囤货组合装、低决策成本产品，以及能提前算好库存、毛利、广告、退货和现金周转的卖家。平台和大卖也会更强，因为它们有流量、数据、广告预算和供应链议价能力，能把大促变成库存周转和用户复购的工具。",
-                          "lose":  "承压的是没有明确使用场景的冲动消费品、只靠审美或情绪溢价的产品、利润太薄却被迫参加大促的商家、库存周转慢的高客单商品、不会算广告费和退货成本的小卖家，以及只能靠降价但没有差异化价值的品牌。最危险的是“看起来销量涨了”，但每单实际亏钱，最后把现金流、库存和广告预算一起拖住。",
-                          "english":  [
-                                          "value-driven spending｜消费者更看重性价比和实际用途｜Consumers are becoming more value-driven, so we should highlight practicality, durability and bundle savings.",
-                                          "stretch limited budgets｜用有限预算买更多东西｜Shoppers are using promotions to stretch limited budgets.",
-                                          "deal-seeking shoppers｜专门寻找折扣的消费者｜Deal-seeking shoppers are more likely to wait for major sales events.",
-                                          "average order size｜平均订单金额/客单价｜Average order size fell, suggesting consumers are buying more selectively.",
-                                          "planned purchases｜计划内购买｜Prime Day is increasingly used for planned purchases rather than impulse buying."
-                                      ],
-                          "template":  "Hi [Name],\n\nWe are seeing more value-driven demand this season, especially around essentials, bundles and promotion-led purchases.\n\nCould we review bundle options, discount tiers and inventory plans for the next sales campaign?\n\nBest,\n[Your Name]",
-                          "practice":  [
-                                           {
-                                               "title":  "一句话复述",
-                                               "task":  "Use English to explain: Prime Day spending increased, but shoppers became more discount-driven and selective."
-                                           },
-                                           {
-                                               "title":  "商务表达练习",
-                                               "task":  "Use value-driven spending in a sentence about consumer demand."
-                                           },
-                                           {
-                                               "title":  "场景练习",
-                                               "task":  "Write one sentence to a supplier asking about bundle options, discount tiers and inventory plans."
-                                           }
-                                       ],
-                          "industryTakeaway":  "每篇外刊必须拆出：一个趋势、一个赚钱位置、一个风险提醒、几句能直接用的商务英文。这篇的趋势是精打细算型消费；赚钱位置是刚需、家庭场景、返校用品、个护家居、组合装、补货装和可囤货产品；风险是销量增长但利润被折扣、广告、退货、仓储和库存周转吃掉。真正的判断标准不是“能不能卖”，而是“打折后还能不能稳定赚钱”。",
-                          "userUse":  {
-                                          "foreignTrade":  {
-                                                               "title":  "外贸人怎么用",
-                                                               "points":  [
-                                                                              "和客户谈产品时，不要只讲低价，要讲终端消费者为什么愿意在折扣期集中购买，以及这个产品对应什么刚需场景。",
-                                                                              "报价要预留促销、渠道折扣、平台费用和退货损耗空间，否则看似有订单，最后利润会被大促吃掉。",
-                                                                              "给客户推荐返校、家庭补货、个护家居、儿童用品等有明确销售节点和复购理由的产品线。",
-                                                                              "与其只报单品价格，不如提供组合装、补货装、节日装方案，帮助客户提高客单价和库存周转。",
-                                                                              "和客户沟通时可以直接问：目标折扣是多少？广告预算是多少？退货率按多少测算？最低净利润线在哪里？"
-                                                                          ]
-                                                           },
-                                          "crossBorder":  {
-                                                              "title":  "跨境卖家怎么用",
-                                                              "points":  [
-                                                                             "选品时优先测试可复购、可囤货、可组合销售、退货率低的产品。",
-                                                                             "主图和文案要讲清楚省钱、耐用、一次买够、家庭刚需，而不是只讲好看。",
-                                                                             "大促前先算真实利润：成交价 - 采购成本 - 平台费 - 广告费 - 物流仓储 - 退货损耗。",
-                                                                             "把产品绑定具体场景：返校、家庭清洁、个护补货、宠物日用、厨房收纳，而不是泛泛说“热卖”。",
-                                                                             "不要为了排名盲目降价。如果打折后每单利润太薄，就改做组合装、加量装、补货装，而不是硬拼低价。"
-                                                                         ]
-                                                          },
-                                          "workplaceEnglish":  {
-                                                                   "title":  "商务英语怎么用",
-                                                                   "points":  [
-                                                                                  "value-driven spending：消费者更看重性价比和实际用途。可用于选品分析和客户沟通。",
-                                                                                  "stretch limited budgets：用有限预算买更多东西。适合描述折扣期消费者心理。",
-                                                                                  "deal-seeking shoppers：专门寻找折扣的消费者。适合写市场洞察或促销分析。",
-                                                                                  "average order size：平均订单金额，也就是客单价。适合分析利润和订单质量。",
-                                                                                  "net margin after promotions：促销后的净利润。适合提醒团队不要只看销售额。",
-                                                                                  "inventory turnover：库存周转。适合讨论大促前备货和现金流压力。"
-                                                                              ]
-                                                               },
-                                          "toolAdvice":  {
-                                                             "title":  "普通人/创业者怎么用",
-                                                             "points":  [
-                                                                            "做小生意先看用户是否有必须买的场景，再看价格和流量。",
-                                                                            "消费变谨慎时，刚需、补货、省钱、组合装比单纯情绪价值更稳。",
-                                                                            "可以关注家庭清洁、个护补货、返校用品、宠物日用、厨房小工具、收纳耗材等方向。",
-                                                                            "不要只问能不能卖，要问打折后、投流后、退货后，还能不能赚钱。",
-                                                                            "用一张表记录每个产品的采购价、最低促销价、广告成本、退货率、仓储周期和净利润，不达标就不要盲目备货。"
-                                                                        ]
-                                                         }
-                                      },
-                          "analysisStatus":  "ai_enriched",
-                          "deepReady":  true
-                      },
-                      {
-                          "id":  "article-ai-gig-work-final-deep",
-                          "scenarioId":  "ai-gig-work-final",
-                          "trend":  "ai-productivity",
-                          "industry":  "crossborder",
-                          "signal":  "AI Productivity / Work Fragmentation",
-                          "pill":  "AI Productivity",
-                          "sourceType":  "AI Enriched",
-                          "analysisStatus":  "ready",
-                          "deepReady":  true,
-                          "publishable":  true,
-                          "quality":  "strong",
-                          "title":  "Gig workers are endlessly exploited. AI could make more of us share their fate",
-                          "titleCn":  "零工劳动者一直被剥削，AI可能让更多人也落入同样处境。",
-                          "signalLead":  "AI最危险的不是替代你，而是把完整工作拆成更小、更便宜、更不稳定的任务。",
-                          "desc":  "这篇外刊真正值得看的是：AI如何让更多白领工作走向碎片化、按需化和零工化。",
-                          "why":  "判断自己的工作哪些部分会被AI压价，哪些能力反而会升值。",
-                          "action":  "用它检查自己的岗位：标准化任务、异常处理、客户关系和判断权分别在哪里。",
-                          "english":  "AI can reduce repetitive work, but it cannot replace human judgment in high-risk cases.",
-                          "readingTime":  "8 分钟",
-                          "sourceDate":  "2026.06.18",
-                          "originalDate":  "2026.06.18",
-                          "updatedAt":  "2026.06.24",
-                          "siteUpdatedAt":  "2026.06.24",
-                          "suitableAudience":  [
-                                                   "外贸业务员",
-                                                   "跨境卖家",
-                                                   "客服主管",
-                                                   "运营",
-                                                   "想用AI提高效率的人"
-                                               ],
-                          "source":  {
-                                         "name":  "The Guardian",
-                                         "title":  "Gig workers are endlessly exploited. AI could make more of us share their fate",
-                                         "url":  "https://www.theguardian.com/technology/2026/jun/18/ai-threatens-gig-work-rise",
-                                         "date":  "2026.06.18",
-                                         "summary":  "The article discusses how AI may reshape customer service and other roles into more fragmented, flexible and less stable forms of work.",
-                                         "paragraphs":  [
-                                                            {
-                                                                "en":  "Klarna’s AI customer-service push showed how routine support work can be shifted from full-time teams to automated systems.",
-                                                                "cn":  "Klarna 的 AI 客服案例说明：企业会先把常规支持工作从完整团队转移到自动化系统。"
-                                                            },
-                                                            {
-                                                                "en":  "When automation reaches its limits, human support does not simply disappear; it is pulled in for the harder, messier and higher-risk cases.",
-                                                                "cn":  "当自动化触及边界时，人工并不是完全消失，而是被拉回来处理更难、更乱、风险更高的问题。"
-                                                            },
-                                                            {
-                                                                "en":  "The broader risk is that AI can replace parts of many jobs, making it easier for companies to split work into smaller and less secure tasks.",
-                                                                "cn":  "更大的风险是：AI 会替代许多工作的部分环节，让公司更容易把岗位拆成更小、更不稳定的任务。"
-                                                            }
-                                                        ]
-                                     },
-                          "evidenceCards":  [
-                                                {
-                                                    "label":  "原文依据 1｜Klarna 案例",
-                                                    "text":  "AI先接管基础客服和标准问题，企业用它降低支持岗位成本。"
-                                                },
-                                                {
-                                                    "label":  "原文依据 2｜人工回归",
-                                                    "text":  "问题不是人工完全消失，而是人工只在AI处理不了时被按需接入。"
-                                                },
-                                                {
-                                                    "label":  "原文依据 3｜更大风险",
-                                                    "text":  "AI可能替代许多岗位的一部分，使完整工作更容易被拆碎、外包和零工化。"
-                                                }
-                                            ],
-                          "breakdownConclusion":  "核心判断：AI真正改变的不是单个岗位，而是企业拆分工作的方式。",
-                          "breakdownMatrix":  {
-                                                  "columns":  [
-                                                                  "层级",
-                                                                  "AI会接管什么",
-                                                                  "人还守什么",
-                                                                  "商业含义"
-                                                              ],
-                                                  "rows":  [
-                                                               [
-                                                                   "标准化任务",
-                                                                   "查单、FAQ、资料整理、基础邮件、简单客服",
-                                                                   "维护知识库和质检规则",
-                                                                   "重复劳动会被压价，岗位里的低价值部分先被拆走"
-                                                               ],
-                                                               [
-                                                                   "临时补位",
-                                                                   "先筛问题、整理背景、生成初稿",
-                                                                   "在AI处理不了时介入",
-                                                                   "完整全职岗位减少，按需接入的人力增加"
-                                                               ],
-                                                               [
-                                                                   "复杂判断",
-                                                                   "提供信息和备选方案",
-                                                                   "判断责任、赔偿、情绪、客户关系和风险边界",
-                                                                   "真正升值的是判断权、升级权和关系处理能力"
-                                                               ]
-                                                           ]
-                                              },
-                          "breakdownAction":  "不要只问AI会不会替代我，要问：我的工作里哪些部分可以被拆走？哪些部分必须由我判断？",
-                          "trendConclusion":  "趋势判断：白领工作的风险不只是失业，而是被拆成更碎、更便宜、更不稳定的任务。",
-                          "trendMatrix":  {
-                                              "columns":  [
-                                                              "变化",
-                                                              "过去",
-                                                              "AI之后",
-                                                              "职场影响"
-                                                          ],
-                                              "rows":  [
-                                                           [
-                                                               "岗位结构",
-                                                               "一个人负责一整套流程",
-                                                               "流程被拆成若干任务",
-                                                               "完整岗位价值被重新计算"
-                                                           ],
-                                                           [
-                                                               "用工方式",
-                                                               "稳定雇一个人",
-                                                               "AI先做，人工按需补位",
-                                                               "零工化、外包化、项目化增加"
-                                                           ],
-                                                           [
-                                                               "能力定价",
-                                                               "看执行速度",
-                                                               "看风险判断和问题升级",
-                                                               "只会执行的人被压价，会判断的人更值钱"
-                                                           ]
-                                                       ]
-                                          },
-                          "moneyLead":  "钱不在“会用AI”这句话里，而在帮企业重新设计AI之后的工作分层。",
-                          "moneyMatrix":  {
-                                              "columns":  [
-                                                              "角色",
-                                                              "钱在哪里",
-                                                              "具体机会",
-                                                              "普通人能做什么"
-                                                          ],
-                                              "rows":  [
-                                                           [
-                                                               "企业",
-                                                               "降标准任务成本",
-                                                               "把查单、FAQ、基础邮件、简单售后交给AI",
-                                                               "整理知识库、FAQ和标准回复"
-                                                           ],
-                                                           [
-                                                               "服务提供者",
-                                                               "卖流程重构",
-                                                               "帮商家设计AI分流SOP、转人工规则、质检清单",
-                                                               "做小型SOP、英文模板、客户挽回话术"
-                                                           ],
-                                                           [
-                                                               "承压者",
-                                                               "低端执行被压价",
-                                                               "只会复制粘贴、整理信息、套模板的人被替代",
-                                                               "转向异常处理、复盘、质检和客户沟通"
-                                                           ],
-                                                           [
-                                                               "升值者",
-                                                               "复杂问题处理",
-                                                               "退款争议、差评、大客户、平台纠纷、续费挽回",
-                                                               "训练判断边界、谈判、安抚和跨部门协调"
-                                                           ]
-                                                       ]
-                                          },
-                          "moneyTakeaway":  "最小可卖服务不是“接一个AI客服”，而是：FAQ整理 + 英文模板 + 转人工规则 + 质检清单。",
-                          "industryMatrix":  {
-                                                 "columns":  [
-                                                                 "行业",
-                                                                 "会被AI拆走的部分",
-                                                                 "不能交给AI的部分",
-                                                                 "具体动作"
-                                                             ],
-                                                 "rows":  [
-                                                              [
-                                                                  "跨境电商",
-                                                                  "物流查询、尺码说明、安装教程、普通FAQ",
-                                                                  "退款、破损、差评、高客单价订单",
-                                                                  "设置 refund / broken / negative review 等关键词自动转人工"
-                                                              ],
-                                                              [
-                                                                  "外贸业务",
-                                                                  "询盘初稿、参数说明、邮件润色、资料整理",
-                                                                  "价格让步、账期、赔偿、交期变更",
-                                                                  "AI只写草稿，人决定底线、语气和让步边界"
-                                                              ],
-                                                              [
-                                                                  "SaaS运营",
-                                                                  "基础支持、操作说明、简单工单",
-                                                                  "续费、升级、企业客户投诉、复杂集成",
-                                                                  "按客户等级设置不同升级规则"
-                                                              ],
-                                                              [
-                                                                  "内容/助理岗位",
-                                                                  "资料整理、摘要、改写、基础表格",
-                                                                  "判断选题价值、客户意图、最终交付质量",
-                                                                  "从执行者转向编辑、质检、流程设计者"
-                                                              ]
-                                                          ]
-                                             },
-                          "industryTakeaway":  "行业变化不是AI替代某个岗位，而是岗位内部被重新拆分。",
-                          "userUse":  {
-                                          "foreignTrade":  {
-                                                               "title":  "外贸业务员",
-                                                               "points":  [
-                                                                              "标准询盘、参数说明、付款方式可以让AI先写英文初稿。",
-                                                                              "报价、账期、赔偿、交期变更必须人工判断。",
-                                                                              "不要只提升回复速度，要掌握价格边界、责任边界和客户关系。"
-                                                                          ]
-                                                           },
-                                          "crossBorder":  {
-                                                              "title":  "跨境卖家",
-                                                              "points":  [
-                                                                             "可自动化：物流查询、尺码说明、普通FAQ、基础退换货。",
-                                                                             "必须转人工：退款争议、破损投诉、差评、高客单价订单。",
-                                                                             "客户连续追问三次仍未解决，应自动转人工。"
-                                                                         ]
-                                                          },
-                                          "workplaceEnglish":  {
-                                                                   "title":  "职场英文",
-                                                                   "sentences":  [
-                                                                                     "AI can reduce repetitive work, but it cannot replace human judgment in complex customer situations.",
-                                                                                     "Before expanding automation, we need to draw a clear line between routine tasks and high-risk cases.",
-                                                                                     "The goal is not to remove people from the process, but to let people focus on judgment, trust and customer retention."
-                                                                                 ]
-                                                               },
-                                          "toolAdvice":  {
-                                                             "title":  "AI工具使用",
-                                                             "points":  [
-                                                                            "用AI写初稿、整理背景、归纳问题。",
-                                                                            "涉及赔偿、责任、价格和客户关系时，必须人工复核。",
-                                                                            "每周复盘一次AI回复是否引发误解、投诉或过度承诺。"
-                                                                        ]
-                                                         }
-                                      },
-                          "riskCards":  [
-                                            {
-                                                "label":  "不要自动决策",
-                                                "text":  "退款争议、质量投诉、破损赔偿、延期交付。"
-                                            },
-                                            {
-                                                "label":  "必须人工确认",
-                                                "text":  "涉及价格让步、责任归属、客户情绪和平台纠纷。"
-                                            },
-                                            {
-                                                "label":  "最大误区",
-                                                "text":  "把AI当成廉价替代品，而不是工作分层工具。"
-                                            }
-                                        ],
-                          "riskTakeaway":  "如果AI回复错了会导致退款、差评、投诉、赔偿或客户流失，就必须转人工。",
-                          "terms":  [
-                                        {
-                                            "term":  "fragmented workforce",
-                                            "scenario":  "组织变化",
-                                            "desc":  "碎片化劳动力，指工作被拆成更小、更不稳定的任务。",
-                                            "example":  "AI may push more companies toward a fragmented workforce."
-                                        },
-                                        {
-                                            "term":  "gigified work",
-                                            "scenario":  "AI与零工化",
-                                            "desc":  "被零工化的工作，指原本完整的岗位被拆成临时任务。",
-                                            "example":  "Some white-collar jobs may become gigified as AI takes over routine tasks."
-                                        },
-                                        {
-                                            "term":  "human judgment",
-                                            "scenario":  "复杂判断",
-                                            "desc":  "人的判断力，用于责任、赔偿、情绪和长期客户关系。",
-                                            "example":  "High-risk customer cases still require human judgment."
-                                        },
-                                        {
-                                            "term":  "escalation rule",
-                                            "scenario":  "转人工规则",
-                                            "desc":  "升级处理规则，用来界定什么时候必须由真人介入。",
-                                            "example":  "We need a clear escalation rule before expanding automation."
-                                        }
-                                    ],
-                          "templateCore":  [
-                                               "AI can reduce repetitive work, but it cannot replace human judgment in high-risk cases.",
-                                               "Before expanding automation, we need to define which tasks can be automated and which cases must be escalated.",
-                                               "The goal is not to remove people from the process, but to let people focus on judgment, trust and customer retention."
-                                           ],
-                          "template":  "Hi Team,\n\nAI can help us reduce repetitive work such as order checks, basic FAQs and simple email drafts. However, high-risk cases still require human judgment.\n\nBefore expanding automation, we need to define which tasks can be handled by AI and which cases must be escalated to a human agent. This is especially important for refund disputes, quality complaints, delivery delays and high-value customers.\n\nThe goal is not to remove people from the process, but to let people focus on judgment, trust and customer retention.\n\nBest,\n[Your Name]",
-                          "practice":  "用英文写3句话：说明哪些任务可以AI处理，哪些客户问题必须转人工，以及为什么。"
-                      }
-                  ],
-    "count":  2,
-    "generated_at":  "2026-07-03T01:16:09.4315813Z",
-    "method":  "rss_candidates_plus_ai_enrichment"
+  "scenarios": [
+    {
+      "id": "biz-20260706-ft-freight-tariff-frontloading",
+      "score": 38,
+      "quality": "strong",
+      "publishable": true,
+      "qualityMeta": {
+        "bodyParagraphs": 3,
+        "bodyWords": 980,
+        "categoryScore": 10
+      },
+      "sourceDate": "2026-06-29",
+      "category": "Supply Chain / Cost Pressure",
+      "trend": "supply",
+      "industry": "crossborder",
+      "signal": "Supply Chain / Cost Pressure",
+      "sourceType": "Commercial Press",
+      "pill": "Tariff & Freight",
+      "readingTime": "7分钟",
+      "source": {
+        "name": "Financial Times",
+        "title": "Freight shipping costs surge as companies race to beat new Trump tariffs",
+        "url": "https://www.ft.com/content/8bf7cfa4-5412-41d3-b84e-e89f84265fe8",
+        "summary": "Companies are pulling shipments forward before possible US tariff changes, pushing freight rates higher and moving cost pressure into the supply chain before the policy is fully settled.",
+        "paragraphs": [
+          {
+            "en": "Financial Times reports that companies are rushing to move goods before new US tariff decisions take effect. The rush has pushed freight rates to their highest level since the 2024 Red Sea shipping disruption.",
+            "cn": "FT 报道称，企业正在赶在美国新关税安排落地前发货。集中出货推高了运价，货运成本升至 2024 年红海航运扰动以来的高位。",
+            "insight": "重点不在单次运费上涨，而在企业行为提前变化。政策预期已经进入订舱、备货、库存和现金流。"
+          },
+          {
+            "en": "The price of a 40-foot container from China to the US east coast rose 62 percent in a month to $7,880. The China-to-Mediterranean route rose 47 percent to $6,431, according to the report.",
+            "cn": "报道中的核心数字是：中国到美国东海岸的 40 英尺集装箱价格一个月上涨 62%，达到 7,880 美元；中国到地中海航线上涨 47%，达到 6,431 美元。",
+            "insight": "这些数字说明，成本压力已经先于终端消费变化出现。货还没到货架，运输成本已经重写了后面的定价空间。"
+          },
+          {
+            "en": "Reuters also reports a similar pattern: US retailers have frontloaded China orders by four to six weeks ahead of the holiday season to reduce exposure to possible tariff increases.",
+            "cn": "Reuters 的同题材报道也提到，美国零售商把中国来源的假日季订单提前了 4–6 周，目的在于降低潜在关税上调带来的成本风险。",
+            "insight": "短期出货变多，不能直接理解为需求变强。部分订单只是被提前释放，后面可能转化为库存压力。"
+          }
+        ]
+      },
+      "titleCn": "关税还没落地，运费先涨了",
+      "titleTranslation": "Freight shipping costs surge before new tariff decisions",
+      "meaning": "政策预期已经提前推高物流成本，企业开始用抢发货和囤库存来对冲不确定性。",
+      "desc": "FT 报道显示，美国新关税安排尚未完全落地，企业已经开始提前发货。中国到美国东海岸 40 英尺集装箱价格一个月上涨 62%，达到 7,880 美元。这个信号说明，政策不确定性会先进入物流、库存和现金流，再传导到商品价格。",
+      "why": "这篇适合放在“海外商业信号”主线里。它讲清楚了一个很现实的链条：关税预期改变企业节奏，企业集中发货推高运价，运价上涨压缩后面的定价和促销空间。",
+      "action": "接下来观察三件事：客户是否提前下单，物流成本是否继续上行，后续库存是否积压。短期订单增加时，除了看需求，还要判断这些订单有没有从未来几个月提前挪过来。",
+      "suitableAudience": [
+        "外贸人",
+        "做海外客户的小老板",
+        "跨境卖家",
+        "供应链/物流从业者",
+        "关注海外市场的人"
+      ],
+      "signalLead": "关税政策还没完全落地，企业已经先行动。提前发货、集中订舱、抢关税窗口，正在把成本压力推到供应链前端。",
+      "signalCards": [
+        {
+          "label": "核心事件",
+          "text": "企业赶在美国新关税前提前发货，海运需求被集中释放。"
+        },
+        {
+          "label": "关键数字",
+          "text": "中国到美国东海岸 40 英尺箱价一个月上涨 62%，达到 7,880 美元。"
+        },
+        {
+          "label": "商业信号",
+          "text": "政策预期本身会制造成本，影响订舱、库存、现金流和终端定价。"
+        }
+      ],
+      "evidenceCards": [
+        {
+          "label": "主文来源",
+          "text": "Financial Times · 2026.06.29"
+        },
+        {
+          "label": "运价变化",
+          "text": "China → US East Coast：+62% 至 $7,880 / 40ft container"
+        },
+        {
+          "label": "辅助验证",
+          "text": "Reuters 报道美国零售商将中国假日季订单提前 4–6 周。"
+        }
+      ],
+      "breakdownConclusion": "这篇文章的价值在于：它把“关税预期”如何变成真实商业成本讲清楚了。",
+      "breakdownMatrix": {
+        "columns": [
+          "层级",
+          "发生了什么",
+          "商业含义"
+        ],
+        "rows": [
+          [
+            "政策层",
+            "美国新关税存在时间窗口和不确定性",
+            "企业需要提前判断成本风险"
+          ],
+          [
+            "物流层",
+            "企业集中发货，订舱需求上升",
+            "运力变紧，海运价格上行"
+          ],
+          [
+            "库存层",
+            "零售商把未来订单提前",
+            "短期出货好看，后期可能出现库存压力"
+          ],
+          [
+            "价格层",
+            "运输和关税成本进入商品总成本",
+            "终端价格、促销空间和利润率都会被重新计算"
+          ]
+        ]
+      },
+      "breakdownAction": "看这类新闻时，不能只问订单多不多。更有用的问题是：订单为什么提前？成本谁承担？后面库存和价格会不会变？",
+      "trendConclusion": "大促看消费者有没有预算，关税和运费看商家还有没有低价空间。",
+      "trendMatrix": {
+        "columns": [
+          "观察点",
+          "短期信号",
+          "后续风险"
+        ],
+        "rows": [
+          [
+            "出货量",
+            "提前发货会让短期数据变强",
+            "未来订单可能被提前透支"
+          ],
+          [
+            "运费",
+            "集中订舱推高现货价格",
+            "利润薄的产品更难维持原价"
+          ],
+          [
+            "库存",
+            "企业先把货运进来",
+            "仓储费、周转压力和清货折扣可能增加"
+          ],
+          [
+            "报价",
+            "客户会重新评估 landed cost",
+            "外贸报价需要预留政策和物流波动空间"
+          ]
+        ]
+      },
+      "moneyLead": "这笔钱最先流向物流环节，随后进入进口商、品牌方和消费者之间的成本分摊。",
+      "moneyMatrix": {
+        "columns": [
+          "位置",
+          "谁受益/承压",
+          "原因"
+        ],
+        "rows": [
+          [
+            "船公司/货代",
+            "短期受益",
+            "订舱需求集中释放，现货运价上行"
+          ],
+          [
+            "进口商/零售商",
+            "现金流承压",
+            "提前备货占用资金，还要承担更高运费"
+          ],
+          [
+            "外贸工厂",
+            "订单节奏不稳定",
+            "客户可能提前下单，也可能后续放慢补货"
+          ],
+          [
+            "消费者",
+            "部分成本会传导",
+            "企业若有定价能力，会把部分运输和关税成本放进售价"
+          ]
+        ]
+      },
+      "moneyTakeaway": "短期看，物流环节先收钱；中期看，品牌和零售商重新算价格；长期看，消费者承担其中一部分成本。",
+      "industryMatrix": {
+        "columns": [
+          "对象",
+          "会发生什么",
+          "应该关注什么"
+        ],
+        "rows": [
+          [
+            "外贸人",
+            "客户可能突然提前下单或压价",
+            "问清楚客户是在补真实需求，还是抢关税窗口"
+          ],
+          [
+            "做海外客户的小老板",
+            "成本波动会影响报价和交期承诺",
+            "把运费、关税、汇率和交期写进报价解释"
+          ],
+          [
+            "跨境卖家",
+            "备货时间和物流成本更难判断",
+            "谨慎扩大库存，重点看现金周转"
+          ],
+          [
+            "普通消费者",
+            "部分进口商品可能涨价",
+            "价格变化来自运输、关税、库存等多重因素"
+          ]
+        ]
+      },
+      "industryTakeaway": "这篇不只服务跨境卖家。它影响的是整条海外生意链：外贸报价、客户备货、零售库存、物流成本和终端价格。",
+      "userUse": {
+        "foreignTrade": {
+          "title": "外贸人怎么用",
+          "points": [
+            "客户突然集中下单时，先问清楚是否在抢关税窗口。",
+            "报价里不要只写产品单价，要解释运费、关税和交期变化。",
+            "如果客户要求锁价，最好同步确认有效期、汇率和运费假设。"
+          ]
+        },
+        "crossBorder": {
+          "title": "跨境卖家",
+          "points": [
+            "不要把短期物流紧张直接理解成需求变强。",
+            "大批量备货前，先测算运费上涨后的净利润和库存周转。",
+            "低客单、低毛利、体积大的产品更容易被运费吞掉利润。"
+          ]
+        },
+        "workplaceEnglish": {
+          "title": "职场英文",
+          "sentences": [
+            "We need to reassess the landed cost before confirming the next shipment.",
+            "Some customers are frontloading orders ahead of possible tariff changes.",
+            "Higher freight rates may reduce our promotion flexibility in the next quarter."
+          ]
+        },
+        "toolAdvice": {
+          "title": "业务判断",
+          "points": [
+            "把关税时间点、运价、客户订单节奏放在同一张表里看。",
+            "区分真实需求增长和订单提前。",
+            "每次看到出货上升，都要检查后面是否可能出现库存回落。"
+          ]
+        }
+      },
+      "riskCards": [
+        {
+          "label": "不要误判",
+          "text": "短期订单增加不一定代表需求恢复，可能只是订单前置。"
+        },
+        {
+          "label": "不要硬囤",
+          "text": "提前备货会占用现金流，也会带来库存和仓储压力。"
+        },
+        {
+          "label": "不要只看单价",
+          "text": "真实成本要看 landed cost：产品、运费、关税、汇率、仓储。"
+        }
+      ],
+      "riskTakeaway": "成本最容易在看不见的地方上升。运费、关税和库存一旦叠加，低利润产品会先被挤压。",
+      "terms": [
+        {
+          "term": "freight shipping costs",
+          "scenario": "物流成本",
+          "desc": "货运成本，尤其常用于海运、空运、跨境运输。",
+          "example": "Freight shipping costs have surged ahead of new tariff deadlines."
+        },
+        {
+          "term": "frontload orders",
+          "scenario": "提前下单",
+          "desc": "把未来订单提前到现在，以应对政策或成本风险。",
+          "example": "Retailers are frontloading orders to avoid potential tariff increases."
+        },
+        {
+          "term": "stockpile inventory",
+          "scenario": "库存管理",
+          "desc": "提前囤货、增加库存。",
+          "example": "Some companies are stockpiling inventory before new trade measures take effect."
+        },
+        {
+          "term": "landed cost",
+          "scenario": "报价核算",
+          "desc": "到岸总成本，包含产品、运费、关税、保险、仓储等。",
+          "example": "We need to recalculate the landed cost before sending the final quote."
+        }
+      ],
+      "templateCore": [
+        "We need to reassess the landed cost before confirming the next shipment.",
+        "Some customers are frontloading orders ahead of possible tariff changes.",
+        "Higher freight rates may reduce our promotion flexibility in the next quarter."
+      ],
+      "template": "Hi [Name],\n\nGiven the recent rise in freight rates and the uncertainty around tariff changes, I suggest we reassess the landed cost before confirming the next shipment.\n\nSome customers may be frontloading orders ahead of possible tariff changes, so we should separate real demand growth from early inventory moves.\n\nBest,\n[Your Name]",
+      "practice": "用英文写 3 句话：说明客户为什么提前下单、运费上涨会影响什么、报价前为什么要重算 landed cost。"
+    },
+    {
+      "id": "biz-20260702-prime-day-pinched-wallets",
+      "score": 34,
+      "quality": "strong",
+      "publishable": true,
+      "qualityMeta": {
+        "bodyParagraphs": 3,
+        "bodyWords": 800,
+        "categoryScore": 10
+      },
+      "sourceDate": "2026-06-27",
+      "category": "Consumer Demand",
+      "trend": "consumer",
+      "industry": "crossborder",
+      "signal": "Consumer Demand",
+      "sourceType": "Business News",
+      "pill": "Consumer Demand",
+      "readingTime": "8分钟",
+      "source": {
+        "name": "Reuters",
+        "title": "Amazon Prime Day offers a glimpse into U.S. consumer as shoppers navigate with pinched wallets",
+        "url": "https://www.reuters.com/business/retail-consumer/amazon-prime-day-offers-glimpse-into-us-consumer-shoppers-navigate-with-pinched-2026-06-27/",
+        "summary": "Prime Day spending rose, while average order size fell and shoppers focused on discounted, planned purchases.",
+        "paragraphs": [
+          {
+            "en": "U.S. online shoppers spent more than $26.4 billion during Amazon Prime Day, up 9.3% from a year earlier.",
+            "cn": "Prime Day 期间，美国线上消费超过 264 亿美元，同比增长 9.3%。"
+          },
+          {
+            "en": "Shoppers stocked up on practical categories such as children's items, apparel, personal hygiene products and home goods.",
+            "cn": "消费者更多购买儿童用品、服装、个护产品和家居用品等实用类目。"
+          },
+          {
+            "en": "Numerator data showed average order size fell to $47.66 from $53.34 a year earlier.",
+            "cn": "Numerator 数据显示，平均订单金额从上一年的 53.34 美元降至 47.66 美元。"
+          }
+        ]
+      },
+      "titleCn": "海外消费者开始精打细算",
+      "titleTranslation": "Prime Day shows a more selective US consumer",
+      "meaning": "销售额上涨与客单价下降同时出现，说明消费者仍在买，但更依赖折扣和计划内消费。",
+      "desc": "Prime Day 销售额增长，但平均订单金额下降。消费者仍会参与大促，购买更集中在折扣明确、用途清楚、家庭和日常补货相关的商品上。",
+      "why": "这篇适合观察海外消费压力：总额上升说明需求还在，客单价下降说明预算更谨慎。",
+      "action": "看大促数据时，把销售额、客单价、品类流向和净利润放在一起看。",
+      "signalLead": "Prime Day 的关键不只是销售额上涨，平均订单金额下降更值得留意。",
+      "breakdown": "这条新闻说明海外消费进入更谨慎的阶段。消费者愿意等折扣，也更偏向计划内购买和实用场景。对小生意来说，产品需要有明确用途、复购理由和可承受的促销空间。",
+      "judgement": "海外消费还在，但钱更集中地流向刚需、家庭场景、折扣明确和可囤货的商品。",
+      "english": "value-driven spending",
+      "template": "Hi [Name],\n\nWe are seeing more value-driven demand this season, especially around essentials, bundles and promotion-led purchases.\n\nBest,\n[Your Name]",
+      "practice": "Use value-driven spending in a sentence about consumer demand."
+    }
+  ],
+  "count": 2,
+  "generated_at": "2026-07-06T06:45:00+08:00",
+  "method": "manual_business_briefing_update"
 }
