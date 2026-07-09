@@ -1,6 +1,251 @@
 {
   "scenarios": [
     {
+      "id": "biz-20260709-reuters-ustr-forced-labor-tariff-hearing",
+      "score": 42,
+      "quality": "strong",
+      "publishable": true,
+      "qualityMeta": {
+        "bodyParagraphs": 3,
+        "bodyWords": 1080,
+        "categoryScore": 10
+      },
+      "sourceDate": "2026-07-07",
+      "category": "Tariff / Compliance Pressure",
+      "trend": "tariff",
+      "industry": "crossborder",
+      "signal": "Tariff / Compliance Pressure",
+      "sourceType": "Commercial Press",
+      "pill": "Tariff & Compliance",
+      "readingTime": "7分钟",
+      "source": {
+        "name": "Reuters",
+        "title": "Latin American countries, some steelmakers argue for US tariff exemptions",
+        "url": "https://www.reuters.com/business/latin-american-countries-some-steelmakers-argue-us-tariff-exemptions-2026-07-07/",
+        "summary": "USTR hearings show the US is testing a new legal route for tariffs tied to forced-labor concerns, with proposed rates of 10% to 12.5% and many trading partners seeking exemptions.",
+        "paragraphs": [
+          {
+            "en": "Reuters reports that the Office of the U.S. Trade Representative is holding hearings on proposed tariffs tied to forced-labor concerns, with several Latin American countries and some steelmakers seeking exemptions.",
+            "cn": "Reuters 报道称，美国贸易代表办公室正在就“强迫劳动”相关关税方案举行听证，多个拉美国家和部分钢铁企业正在争取豁免。",
+            "insight": "这不是普通的关税新闻，而是美国在寻找新的加税理由。临时关税快到期，新的法律路径正在被测试。"
+          },
+          {
+            "en": "The proposed tariffs would range from 10% to 12.5% and target countries accused of failing to prevent imports made with forced labor.",
+            "cn": "拟议税率在 10% 到 12.5% 之间，目标是被指未能有效阻止强迫劳动商品进口的国家和经济体。",
+            "insight": "税率本身不是唯一重点。更关键的是，关税理由从临时政策转向合规与劳动标准，企业以后要同时看成本和合规。"
+          },
+          {
+            "en": "A separate Reuters report says 22 Democratic attorneys general opposed the plan, arguing it could raise consumer prices and misuse Section 301 authority.",
+            "cn": "Reuters 另一篇报道提到，22 名民主党州检察长反对该方案，认为它可能推高消费者价格，并涉嫌滥用 Section 301 权限。",
+            "insight": "这说明关税仍有争议，但也意味着企业不能只等最终公告。报价、原产地、供应链和合规文件都要提前检查。"
+          }
+        ]
+      },
+      "titleCn": "美国10%关税快到期，新理由已经找好了",
+      "titleTranslation": "USTR tests a new tariff route as temporary duties near expiry",
+      "meaning": "美国临时关税快到期，但新方案正在用“强迫劳动”合规理由接上。企业面对的不是一次性税率变化，而是关税理由和合规边界的变化。",
+      "desc": "Reuters 报道显示，USTR 正在就一项与强迫劳动有关的新关税方案举行听证。拟议税率为 10% 到 12.5%，多个经济体和企业正在争取豁免。这个信号说明：美国关税不是简单结束，而是在寻找新的接续理由。",
+      "why": "这篇适合作为上一条“企业抢关税窗口”的后续。上一条讲企业为什么提前发货，这一条讲美国政府可能用什么法律理由把关税继续接下去。",
+      "action": "接下来不要只盯船期。更重要的是看三件事：税率最后怎么定，哪些国家或品类能豁免，原产地和强迫劳动合规文件是否经得起检查。",
+      "suitableAudience": [
+        "外贸人",
+        "跨境卖家",
+        "做美国客户的小老板",
+        "供应链/采购",
+        "商务英文学习者"
+      ],
+      "signalLead": "临时 10% 关税快到期，新的关税理由正在浮出水面。USTR 把“强迫劳动”变成听证主题，说明关税可能从短期政策变成更长期的合规成本。",
+      "signalCards": [
+        {
+          "label": "核心事件",
+          "text": "USTR 就强迫劳动相关关税举行听证，多个经济体和企业争取豁免。"
+        },
+        {
+          "label": "关键税率",
+          "text": "拟议税率为 10% 到 12.5%，不是单一国家问题，而是覆盖广泛经济体。"
+        },
+        {
+          "label": "商业信号",
+          "text": "关税理由从短期政策转向劳动合规，供应链成本和合规成本会一起上升。"
+        }
+      ],
+      "evidenceCards": [
+        {
+          "label": "主文来源",
+          "text": "Reuters · 2026.07.07"
+        },
+        {
+          "label": "相关报道",
+          "text": "Reuters · 2026.07.06"
+        },
+        {
+          "label": "关键词",
+          "text": "USTR / forced labor / Section 301 / tariff exemptions"
+        }
+      ],
+      "breakdownConclusion": "这篇文章的价值在于：它解释了关税为什么可能继续存在，以及新的风险点为什么从“税率”扩展到“合规理由”。",
+      "breakdownMatrix": {
+        "columns": [
+          "外刊事实",
+          "商业判断",
+          "要盯什么"
+        ],
+        "rows": [
+          [
+            "USTR 举行听证",
+            "新关税理由正在成形",
+            "听证结果、最终规则、豁免名单"
+          ],
+          [
+            "税率 10%–12.5%",
+            "临时关税可能被新机制接上",
+            "成本测算和报价有效期"
+          ],
+          [
+            "强迫劳动成为理由",
+            "合规从后台文件变成前台成本",
+            "原产地、供应商证明、合规文件"
+          ]
+        ]
+      },
+      "breakdownAction": "看这类新闻时，不要只问会不会加税。更有用的问题是：用什么法律条款加？哪些国家受影响？哪些品类可能被点名？哪些文件要提前准备？",
+      "trendConclusion": "上一轮是抢关税窗口，下一轮要看关税理由。供应链不只被成本重写，也会被合规重写。",
+      "trendMatrix": {
+        "columns": [
+          "过去",
+          "现在",
+          "影响"
+        ],
+        "rows": [
+          [
+            "只盯税率",
+            "还要看法律理由",
+            "报价不能只按单一税率算"
+          ],
+          [
+            "只看发货时间",
+            "还要看合规文件",
+            "清关和客户沟通成本上升"
+          ],
+          [
+            "只看中国",
+            "覆盖多经济体",
+            "第三国转口也未必能完全避开风险"
+          ]
+        ]
+      },
+      "moneyLead": "这笔钱表面上是关税，实际会在进口商、品牌方、供应链和消费者之间重新分摊。",
+      "moneyMatrix": {
+        "columns": [
+          "环节",
+          "可能新增成本",
+          "谁先承压"
+        ],
+        "rows": [
+          [
+            "进口商",
+            "关税和合规审查",
+            "现金流和到岸成本"
+          ],
+          [
+            "品牌/卖家",
+            "文件准备、供应商核查",
+            "低毛利商品"
+          ],
+          [
+            "消费者",
+            "终端价格上涨",
+            "价格敏感品类"
+          ]
+        ]
+      },
+      "moneyTakeaway": "如果最终税率落地，低毛利商品会先被挤压；如果豁免条件复杂，合规成本会先上升。",
+      "industryMatrix": {
+        "columns": [
+          "人群",
+          "影响",
+          "动作"
+        ],
+        "rows": [
+          [
+            "外贸人",
+            "客户报价和交期更不确定",
+            "缩短报价有效期，提前说明关税变量"
+          ],
+          [
+            "跨境卖家",
+            "美国市场低价品利润被压缩",
+            "核算 landed cost，排查高风险供应链"
+          ],
+          [
+            "小老板",
+            "客户可能提前或推迟下单",
+            "问清订单是否真实需求，别误判补货节奏"
+          ],
+          [
+            "供应链/采购",
+            "第三国采购也可能被纳入审查",
+            "检查原产地、供应商证明和合规文件"
+          ]
+        ]
+      },
+      "industryTakeaway": "这篇不只影响跨境卖家。只要供应链涉及美国市场、第三国采购、纺织服装、钢铁或低价进口商品，都要重新看关税和合规风险。",
+      "userUse": {
+        "foreignTrade": "客户问报价时，不要只报产品单价。要说明税率和合规规则仍未最终确定，报价有效期应缩短。",
+        "crossBorder": "低毛利、低客单价、对美国市场依赖高的 SKU，要重新计算 landed cost 和退货后的利润空间。",
+        "workplaceEnglish": "可以把这篇转成内部提醒：The tariff framework is still evolving, so we need to reassess landed cost and compliance exposure before confirming new orders.",
+        "toolAdvice": "建立一个税率/原产地/供应商证明检查表。每次客户询价时同步更新，不要等政策落地后再补文件。"
+      },
+      "riskCards": [
+        {
+          "label": "不要误判",
+          "text": "临时关税快到期，不等于关税压力会消失。"
+        },
+        {
+          "label": "不要只看税率",
+          "text": "新的风险点是合规理由、原产地、供应商证明和豁免条件。"
+        },
+        {
+          "label": "不要硬抢发货",
+          "text": "如果订单不确定、毛利薄、文件不齐，抢发货可能只是提前放大风险。"
+        }
+      ],
+      "riskTakeaway": "最大的风险不是某个税率本身，而是把临时关税误判为马上结束。政策可能换一个理由继续存在。",
+      "terms": [
+        {
+          "term": "forced-labor concerns",
+          "scenario": "合规风险",
+          "desc": "强迫劳动相关担忧，常用于供应链合规和贸易限制语境。",
+          "example": "The proposed tariffs are tied to forced-labor concerns."
+        },
+        {
+          "term": "tariff exemptions",
+          "scenario": "关税豁免",
+          "desc": "关税豁免，指部分国家、企业或商品申请不适用某项关税。",
+          "example": "Several countries are seeking tariff exemptions."
+        },
+        {
+          "term": "Section 301 authority",
+          "scenario": "贸易法工具",
+          "desc": "美国贸易法中的调查和制裁工具，常用于不公平贸易做法争议。",
+          "example": "The plan may rely on Section 301 authority."
+        },
+        {
+          "term": "landed cost",
+          "scenario": "到岸成本",
+          "desc": "商品到达目的地后的总成本，包括货价、运费、关税、清关、仓储等。",
+          "example": "We need to reassess the landed cost before confirming the order."
+        }
+      ],
+      "templateCore": [
+        "The tariff framework is still evolving.",
+        "We need to reassess landed cost and compliance exposure before confirming new orders.",
+        "Please note that the quotation may need to be adjusted if the final tariff rules change."
+      ],
+      "template": "Hi [Name],\n\nThe current tariff framework is still evolving, and the final rules have not been confirmed yet.\n\nBefore we confirm the next shipment, I suggest we reassess the landed cost, origin documentation and compliance exposure.\n\nTo reduce risk, we may need to shorten the quotation validity period and update the price once the final tariff rules are clear.\n\nBest,\n[Your Name]",
+      "practice": "用英文写 3 句话：说明当前关税方案仍未最终确定、合规文件需要提前核查、报价有效期应缩短。"
+    },
+    {
       "id": "biz-20260706-ft-freight-tariff-frontloading",
       "score": 38,
       "quality": "strong",
@@ -340,7 +585,7 @@
       "practice": "Use value-driven spending in a sentence about consumer demand."
     }
   ],
-  "count": 2,
-  "generated_at": "2026-07-06T06:45:00+08:00",
+  "count": 3,
+  "generated_at": "2026-07-09T11:20:00+08:00",
   "method": "manual_business_briefing_update"
 }
