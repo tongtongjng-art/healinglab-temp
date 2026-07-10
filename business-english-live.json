@@ -48,19 +48,19 @@
       ],
       "paragraphs": [
         {
-          "en": "The U.S. Trade Representative is holding hearings on a proposed tariff mechanism tied to forced-labor concerns, as an existing temporary 10% tariff approaches a July 24 deadline. The hearings could give Washington another route to keep import duties in place after the temporary window closes.",
-          "cn": "美国贸易代表办公室正在举行听证会，讨论一套和强迫劳动问题有关的新关税机制。背景是，现有10%临时关税正接近7月24日到期点。听证会可能给美国一个新的政策路径，让进口关税在临时窗口结束后继续存在。"
+          "en": "The U.S. Trade Representative is holding hearings on a proposed tariff mechanism tied to forced-labor concerns, as an existing temporary 10% tariff approaches a July 24 deadline. The hearing is being watched because it could give Washington a new policy route for keeping import duties in place.",
+          "cn": "美国贸易代表办公室正在举行听证会，讨论一套和“强迫劳动问题”有关的新关税机制。背景是，美国现有的一笔10%临时关税快到7月24日这个关键到期点。外界关注这场听证会，是因为它可能给美国继续收关税提供新理由。"
         },
         {
-          "en": "The proposed duties could apply to dozens of countries and the European Union, with rates discussed around 10% to 12.5%. Countries and industry groups are using the hearing process to argue for exemptions, narrower coverage or more time before final rules take effect.",
-          "cn": "这项拟议关税可能覆盖几十个国家和欧盟，讨论中的税率大约在10%到12.5%之间。各国和行业组织正在利用听证程序争取豁免、缩小覆盖范围，或者争取在最终规则生效前获得更多时间。"
+          "en": "The proposed duties could apply to dozens of countries and the European Union, with rates discussed around 10% to 12.5%. Countries and industry groups are using the hearing process to ask for exemptions, narrower product coverage, or more time before final rules take effect.",
+          "cn": "这项拟议关税可能覆盖几十个国家和欧盟，讨论中的税率大约在10%到12.5%之间。各国政府和行业组织正在听证会上争取豁免、缩小适用范围，或者给企业更多过渡时间。"
         },
         {
-          "en": "The hearings come before the July 24 deadline for the existing temporary 10% tariff. Importers and suppliers are watching whether the issue stays as a short-term tariff measure, or becomes part of a longer supply-chain compliance rule affecting customs checks and documentation.",
-          "cn": "这场听证会发生在现有10%临时关税7月24日到期之前。进口商和供应商正在关注，这件事到底只是短期关税安排，还是会变成更长期的供应链合规规则，影响清关审查和文件准备。"
+          "en": "For importers and suppliers, the issue matters before the final rules are announced. If the tariff window turns into a longer supply-chain compliance rule, companies may need to review shipment timing, quotation validity, landed cost and documents showing where products and materials come from.",
+          "cn": "对进口商和供应商来说，这件事不用等最终规则出来才有影响。如果这个关税窗口变成更长期的供应链合规规则，企业就要提前检查发货时间、报价有效期、到岸成本，以及能不能说清产品和材料来源。"
         }
       ],
-      "breakdownConclusion": "先别急着判断要不要抢发货。先把订单、报价和成本这三件事查清楚。",
+      "breakdownConclusion": "先别急着判断要不要抢发货。先把未发货订单、报价有效期和到岸成本这三件事查清楚。",
       "breakdownMatrix": {
         "columns": [
           "先查什么",
@@ -85,7 +85,7 @@
           ]
         ]
       },
-      "breakdownAction": "03页只做提醒：先把未发货订单、报价有效期、到岸成本查清楚。具体报价话术、备货判断和成本测算放到后面的使用建议里。",
+      "breakdownAction": "先查清楚，再决定。订单是否确定、报价能锁多久、到岸成本会变多少，这三件事比单纯猜税率更重要。",
       "industryMatrix": {
         "columns": [
           "品类/业务",
@@ -115,7 +115,7 @@
           ]
         ]
       },
-      "industryTakeaway": "这篇不要写成市场大全。美国市场还能做，但更适合高毛利、有差异化、供应链资料清楚的产品。低毛利和低价小包要开始降低对单一市场的依赖。",
+      "industryTakeaway": "美国市场还能做，但更适合高毛利、有差异化、供应链资料清楚的产品。低毛利和低价小包要开始降低对单一市场的依赖。",
       "userUse": {
         "foreignTrade": {
           "title": "正在报价的人",
