@@ -2,7 +2,7 @@
   "scenarios": [
     {
       "id": "biz-20260709-reuters-ustr-forced-labor-tariff-hearing",
-      "score": 49,
+      "score": 52,
       "quality": "strong",
       "publishable": true,
       "qualityMeta": {
@@ -11,13 +11,13 @@
         "categoryScore": 10
       },
       "sourceDate": "2026-07-07",
-      "category": "Tariff / Supply Chain",
+      "category": "Tariff / Supply Chain Compliance",
       "trend": "tariff",
       "industry": "crossborder",
       "signal": "Tariff / Compliance Pressure",
       "sourceType": "Commercial Press",
-      "pill": "USTR / Tariff",
-      "readingTime": "8分钟",
+      "pill": "Tariff & Compliance",
+      "readingTime": "7分钟",
       "source": {
         "name": "Reuters",
         "title": "USTR hearings examine proposed tariffs tied to forced-labor concerns",
@@ -26,25 +26,12 @@
       },
       "sourceUrl": "https://www.reuters.com/",
       "title": "USTR forced-labor tariff hearings signal a new route for keeping US import duties alive",
-      "titleCn": "美国10%关税快到期，新理由已经找好了",
-      "desc": "美国从2026年2月下旬开始临时收一笔10%关税，关键到期时间是7月24日。现在美国不想让它自然结束，所以USTR开听证会，研究能不能用“强迫劳动和供应链合规”这个新理由，把这笔关税继续收下去。",
-      "why": "这篇的重点不是让人马上预测最终税率，而是提醒做美国方向的人：发货、报价、库存和客户沟通，都要开始按政策窗口重新检查。",
-      "action": "先把订单分成三类：已经发货、还没发货、正在报价。已发货重算到岸成本；未发货看确定性；正在报价的人缩短美国方向报价有效期。",
-      "signalLead": "美国从2026年2月下旬开始临时收一笔10%关税，关键到期时间是7月24日。现在美国不想让它自然结束，所以USTR开听证会，研究能不能用“强迫劳动和供应链合规”这个新理由，把这笔关税继续收下去。",
-      "signalCards": [
-        {
-          "label": "原来怎么回事",
-          "text": "美国原来临时收着一笔10%关税，关键到期时间是7月24日。"
-        },
-        {
-          "label": "现在在做什么",
-          "text": "美国不想让这笔关税自然结束，所以USTR开听证会，研究新的继续收税理由。"
-        },
-        {
-          "label": "新理由是什么",
-          "text": "新理由指向强迫劳动和供应链合规，也就是把进口关税和供应链审查绑在一起。"
-        }
-      ],
+      "titleCn": "美国10%临时关税快到期，新理由已经找好了",
+      "desc": "美国10%临时关税接近7月24日到期点，USTR正通过听证会讨论能否用强迫劳动和供应链合规作新理由，让这笔关税继续存在。",
+      "why": "这不是单纯税率新闻，而是美国方向订单、报价、清关文件和库存节奏都要提前检查的政策窗口。",
+      "action": "先查未发货订单、报价有效期和到岸成本，再决定是否抢发货、调报价或保留低毛利SKU。",
+      "signalLead": "美国这笔10%临时关税，是2月下旬接上的，关键到期点是7月24日。到期前，美国不想让它结束，所以USTR开听证会，研究能否用“强迫劳动和供应链合规”作新理由，继续对几十个国家和欧盟收10%–12.5%的税。",
+      "signalCards": [],
       "evidenceCards": [
         {
           "label": "关键日期",
@@ -61,11 +48,11 @@
       ],
       "paragraphs": [
         {
-          "en": "The U.S. Trade Representative is holding hearings on a proposed tariff mechanism tied to forced-labor concerns, as an existing temporary 10% tariff approaches a July 24 deadline. The hearings could give Washington another legal route to keep import duties in place after the temporary window closes.",
+          "en": "The U.S. Trade Representative is holding hearings on a proposed tariff mechanism tied to forced-labor concerns, as an existing temporary 10% tariff approaches a July 24 deadline. The hearings could give Washington another route to keep import duties in place after the temporary window closes.",
           "cn": "美国贸易代表办公室正在举行听证会，讨论一套和强迫劳动问题有关的新关税机制。背景是，现有10%临时关税正接近7月24日到期点。听证会可能给美国一个新的政策路径，让进口关税在临时窗口结束后继续存在。"
         },
         {
-          "en": "The proposed duties could apply to dozens of countries and the European Union, with rates discussed around 10% to 12.5%. Countries and industry groups are using the hearing process to argue for exemptions, narrower coverage or more time before any final rules take effect.",
+          "en": "The proposed duties could apply to dozens of countries and the European Union, with rates discussed around 10% to 12.5%. Countries and industry groups are using the hearing process to argue for exemptions, narrower coverage or more time before final rules take effect.",
           "cn": "这项拟议关税可能覆盖几十个国家和欧盟，讨论中的税率大约在10%到12.5%之间。各国和行业组织正在利用听证程序争取豁免、缩小覆盖范围，或者争取在最终规则生效前获得更多时间。"
         },
         {
@@ -73,42 +60,37 @@
           "cn": "这场听证会发生在现有10%临时关税7月24日到期之前。进口商和供应商正在关注，这件事到底只是短期关税安排，还是会变成更长期的供应链合规规则，影响清关审查和文件准备。"
         }
       ],
-      "breakdownConclusion": "美国从2026年2月下旬开始临时收一笔10%关税，关键到期时间是7月24日。现在美国不想让它自然结束，所以USTR开听证会，研究能不能用“强迫劳动和供应链合规”这个新理由，把这笔关税继续收下去。",
+      "breakdownConclusion": "先别急着判断要不要抢发货。先把订单、报价和成本这三件事查清楚。",
       "breakdownMatrix": {
         "columns": [
-          "接下来哪些事要变",
-          "人话解释",
-          "现在怎么做"
+          "先查什么",
+          "为什么查",
+          "怎么查"
         ],
         "rows": [
           [
-            "已经发出去的货",
-            "货在路上，不代表风险结束。到港后如果税费、清关或仓储成本变化，利润会重新被挤。",
-            "重算到岸成本，把产品价、运费、关税、清关费、仓储费、平台费和广告费都放进去。"
+            "未发货订单",
+            "先分清哪些是真正确定的订单，哪些只是客户还在问价。",
+            "把确定订单、高毛利、快周转的货列出来；客户未确认、低毛利、大体积、慢动销的货先压住。"
           ],
           [
-            "还没发出去的货",
-            "不要一听关税就抢船。提前发货可能抢到窗口，也可能提前占住现金流。",
-            "确定订单、高毛利、快周转的货优先；低毛利、大体积、需求不稳的货先压住。"
+            "报价有效期",
+            "美国方向政策和清关要求还没完全定，报价锁太久会把风险留给自己。",
+            "把报价有效期缩到7–15天，并写清政策、运费或清关要求变化时价格需要重新确认。"
           ],
           [
-            "正在报给客户的价格",
-            "客户想锁价，但关税、运费和清关要求还可能变。价格锁太久，风险会留给自己。",
-            "美国方向报价有效期缩短到7到15天，并写清政策变化时价格需要重新确认。"
-          ],
-          [
-            "客户突然提前下单",
-            "客户提前下单不一定是需求变好了，也可能是在抢政策窗口。",
-            "看定金、交期、复购和客户库存，不要把一次性提前采购当成长期需求恢复。"
+            "到岸成本",
+            "不能只看产品价，要先知道最轻和最重两种情况分别会亏多少。",
+            "一套按10%变12.5%算；一套按额外叠加12.5%算。等最终规则出来，再决定提价、换物流、做组合装或停掉低毛利SKU。"
           ]
         ]
       },
-      "breakdownAction": "这件事先影响的不是新闻标题，而是发货、报价、库存和客户沟通。做美国方向的人，先把手里的订单按已发货、未发货、正在报价三类重新过一遍。",
+      "breakdownAction": "03页只做提醒：先把未发货订单、报价有效期、到岸成本查清楚。具体报价话术、备货判断和成本测算放到后面的使用建议里。",
       "industryMatrix": {
         "columns": [
           "品类/业务",
-          "为什么要小心",
-          "建议"
+          "为什么更敏感",
+          "现在先做什么"
         ],
         "rows": [
           [
@@ -118,80 +100,69 @@
           ],
           [
             "低价小商品、小包直邮",
-            "毛利薄，10%到12.5%的额外成本会直接吃利润。",
-            "提高客单价，做组合装，减少纯低价SKU。"
+            "毛利薄，运费、平台费、广告费和退货成本已经在压利润，关税或清关成本变化会更明显。",
+            "减少纯低价SKU，尝试组合装、提高客单价，或测试其他市场。"
           ],
           [
             "小家电、个护、宠物、家居用品",
-            "美国需求仍在，但广告、物流、合规和退货成本都要算进去。",
-            "只保留高毛利、评价稳定、周转快的SKU。"
+            "美国需求还在，但广告、物流、退货、合规和清关都要一起算。",
+            "保留评价稳定、毛利较高、周转较快的SKU，不要把低毛利慢动销一起压进去。"
           ],
           [
             "高毛利、差异化产品",
-            "有价格空间，可以吸收一部分政策和物流波动。",
-            "美国还能做，但报价有效期和供应链资料要跟上。"
+            "有价格空间，更能承受一部分政策和物流波动。",
+            "美国仍然可以做，但报价有效期、客户沟通和供应链文件要跟上。"
           ]
         ]
       },
-      "industryTakeaway": "这篇不用写成市场大全。美国还能做，但更适合高毛利、有差异化、供应链资料清楚的产品；低毛利和低价小包，要开始降低对单一市场的依赖。",
+      "industryTakeaway": "这篇不要写成市场大全。美国市场还能做，但更适合高毛利、有差异化、供应链资料清楚的产品。低毛利和低价小包要开始降低对单一市场的依赖。",
       "userUse": {
         "foreignTrade": {
-          "title": "外贸业务员：报价别锁太久",
+          "title": "正在报价的人",
           "points": [
-            "美国方向报价有效期建议缩短到7到15天。",
-            "报价里写清：如果关税、运费或清关要求变化，最终价格需要重新确认。",
-            "客户突然提前下单时，先问清是真实补货，还是为了赶7月24日前后的政策窗口。"
+            "美国方向报价有效期可以缩短到7–15天。",
+            "报价里提前写清：如果关税、运费或清关要求变化，最终价格需要重新确认。",
+            "不要等客户催单时才解释成本变化，把价格调整说成业务事实，不要说成临时涨价。"
           ],
           "sentences": [
-            "This quotation is valid for 7 days due to possible changes in tariff policy and customs requirements.",
-            "If there are changes in tariff policy, freight rates or customs requirements, the final price may need to be adjusted."
+            "This quotation is valid for 7 days due to possible changes in tariff policy, freight rates and customs requirements.",
+            "If there are changes in tariff policy or customs requirements, the final price may need to be adjusted."
           ]
         },
         "crossBorder": {
-          "title": "跨境卖家：备货先分层",
+          "title": "正在备货的人",
           "points": [
-            "已发货的货，重算到岸成本和库存周转。",
-            "未发货的货，优先走确定订单、高毛利、快周转、客户确认交期的SKU。",
-            "低毛利、大体积、慢动销、测试款，不要为了赶政策窗口盲目备货。"
+            "先别问要不要全部提前发，先问这批货是不是确定订单、毛利够不够厚、周转是不是够快。",
+            "确定订单、高毛利、快周转的货可以优先安排。",
+            "低毛利、大体积、需求不稳、慢动销或测试款，先别为了赶政策窗口盲目备货。"
           ]
         },
         "workplaceEnglish": {
-          "title": "客户沟通：提前说清会重算",
+          "title": "正在算成本的人",
           "points": [
-            "不要等客户催单时才解释成本变化。",
-            "提前说明：政策窗口和进口成本正在变化，后续报价有效期会缩短。",
-            "把成本变化说成业务事实，不要说成临时涨价。"
+            "不要直接把12.5%当成确定新增成本，要先看最终规则是替代旧税还是额外叠加。",
+            "第一套按原来10%临时关税变成12.5%新关税算：80元货值增加约2元成本。",
+            "第二套按额外叠加12.5%新关税算：80元货值可能多出接近10元成本。",
+            "两种情况差很多，先算清楚最轻和最重结果，再决定提价、换物流、做组合装或停掉低毛利SKU。"
           ],
           "sentences": [
             "We need to reassess the landed cost before confirming the next shipment.",
-            "The current tariff window may affect our pricing and shipping schedule."
-          ]
-        },
-        "toolAdvice": {
-          "title": "AI工具：别只让它总结新闻",
-          "points": [
-            "让AI把订单分成已发货、未发货、正在报价三类。",
-            "让AI做一个到岸成本核算表，把产品价、运费、关税、清关费、仓储费都放进去。",
-            "让AI生成给美国客户的报价有效期说明和价格调整条款。"
+            "The final impact will depend on whether the new duty replaces the existing tariff or is added on top of current costs."
           ]
         }
       },
       "riskCards": [
         {
           "label": "别盲目加仓",
-          "text": "政策窗口会让很多人想提前发货，但提前发货会占用现金流。确定订单、高毛利、快周转的货可以优先，低毛利和慢动销先压住。"
+          "text": "政策窗口会让很多人想提前发货，但提前发货会占用现金流。确定订单、高毛利、快周转的货可以优先；低毛利和慢动销的货先别往前挤。"
         },
         {
           "label": "别长期锁价",
-          "text": "美国方向报价不要给太长有效期。关税、运费、清关要求一旦变化，长报价周期会把风险留给自己。"
+          "text": "美国方向报价不要给太长有效期。关税、运费、清关要求一旦变化，长期报价会把风险留给自己。"
         },
         {
           "label": "别只看美国",
-          "text": "美国还能做，但更适合高毛利、有差异化、资料清楚的产品。低价小包和低毛利产品，要开始测试欧洲、东南亚、中东或拉美。"
-        },
-        {
-          "label": "别只让AI总结",
-          "text": "这类文章不适合只做新闻摘要。更有用的是让AI拆成成本表、报价话术、客户沟通邮件和SKU分层清单。"
+          "text": "美国市场还能做，但不能把美国当唯一市场。低毛利、小包直邮、纯低价SKU，要开始看欧洲、东南亚、中东、拉美的适配度。"
         }
       ],
       "riskTakeaway": "这篇关税新闻最后落到一个很实际的问题：不要把所有风险都压在一个市场、一批库存、一个报价周期上。",
@@ -223,10 +194,10 @@
       ],
       "english": "We need to reassess the landed cost before confirming the next shipment.",
       "template": "Hi [Name],\n\nDue to possible changes in tariff policy, freight rates and customs requirements, this quotation will remain valid for 7 days. If there are changes in tariff policy or customs requirements, the final price may need to be adjusted.\n\nBefore confirming the next shipment, we also suggest reassessing the landed cost, including product cost, freight, duties, customs clearance and warehousing.\n\nBest,\n[Your Name]",
-      "practice": "把你手里的一个美国方向订单分成三类：已发货、未发货、正在报价。分别写出下一步该做什么。"
+      "practice": "把你手里的一个美国方向订单分成三类：已发货、未发货、正在报价。分别写出下一步该查什么。"
     }
   ],
   "count": 1,
-  "generated_at": "2026-07-10T09:45:00+08:00",
-  "method": "manual_editor_clean_v3"
+  "generated_at": "2026-07-10T14:40:00+08:00",
+  "method": "manual_business_briefing_update_no_ai_content"
 }
