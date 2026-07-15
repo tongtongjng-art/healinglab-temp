@@ -240,10 +240,11 @@
       ],
       "english": "The category is expanding beyond children's play into adult crafting, gifting and home décor.",
       "template": "Hi [Name],\n\nWe are researching an adult-oriented craft kit for the gifting and home décor market. The product should provide a complete hands-on experience and produce a finished piece that is attractive enough to display.\n\nCould you please share your available materials, customization options, MOQ, packaging choices and relevant safety documents? We would also like to know whether you can support a small pilot order before mass production.\n\nBest,\n[Your Name]",
-      "practice": "任选一个成人手作或感官产品，记录它的目标人群、购买场景、价格带、评论中的前三个购买理由，以及你准备先验证的一个最小产品方案。"
+      "practice": "任选一个成人手作或感官产品，记录它的目标人群、购买场景、价格带、评论中的前三个购买理由，以及你准备先验证的一个最小产品方案。",
+      "meaning": "Hasbro推出了首个专门面向成年人的Play-Doh系列。与此同时，美国玩具市场的增长，越来越多来自成年人和女性消费者。"
     }
   ],
   "count": 1,
-  "generated_at": "2026-07-15T10:30:00+08:00",
-  "method": "manual_business_signal_consumer_trend_update"
+  "generated_at": "2026-07-15T13:05:00+08:00",
+  "method": "minimal_copy_and_hero_image_fix"
 }

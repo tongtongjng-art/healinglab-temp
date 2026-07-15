@@ -1,0 +1,2007 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>商业外刊工作读本 | Business Briefing for Real Work</title>
+<style>
+  :root {
+    --bg:#f7f7f4;
+    --paper:#ffffff;
+    --ink:#111111;
+    --muted:#6c727b;
+    --line:#dfdfd8;
+    --light:#eeeeea;
+    --red:#c9121f;
+    --black:#111111;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",Arial,sans-serif;
+    border-top:6px solid var(--red);
+  }
+
+  body.detail-open .home-view { display:none; }
+  body:not(.detail-open) .detail-view { display:none; }
+
+  button, input, textarea { font:inherit; }
+  button { cursor:pointer; border:0; background:none; }
+  .serif { font-family:Georgia,"Times New Roman","Songti SC","SimSun",serif; }
+  .mono { font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
+
+  .page {
+    width:1680px;
+    max-width:calc(100vw - 80px);
+    margin:0 auto;
+    padding:24px 0 80px;
+  }
+
+  /* Header */
+  .top {
+    display:grid;
+    grid-template-columns:300px 1fr 330px;
+    gap:36px;
+    align-items:end;
+    padding-bottom:20px;
+    border-bottom:3px solid var(--black);
+  }
+
+  .kicker {
+    color:var(--red);
+    font-size:12px;
+    font-weight:900;
+    letter-spacing:.28em;
+    text-transform:uppercase;
+    line-height:1.45;
+  }
+
+  .brand {
+    margin:8px 0 8px;
+    font-size:58px;
+    line-height:.88;
+    font-weight:900;
+    letter-spacing:-0.04em;
+  }
+
+  .subtitle {
+    color:#4b5058;
+    font-size:15px;
+  }
+
+  .nav {
+    display:flex;
+    justify-content:center;
+    gap:34px;
+    padding-bottom:10px;
+  }
+
+  .nav button {
+    color:#20242b;
+    font-size:15px;
+    font-weight:900;
+    position:relative;
+    padding:10px 0 12px;
+    white-space:nowrap;
+  }
+
+  .nav button::before {
+    content:"";
+    display:inline-block;
+    width:8px;height:8px;
+    border-radius:50%;
+    background:#b5bac2;
+    margin-right:10px;
+    transform:translateY(-1px);
+  }
+
+  .nav button.active::before { background:var(--red); }
+
+  .nav button.active::after {
+    content:"";
+    position:absolute;
+    left:18px;
+    right:0;
+    bottom:0;
+    height:3px;
+    background:var(--red);
+  }
+
+  .search {
+    height:44px;
+    border:1px solid var(--line);
+    background:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    color:#a0a0a0;
+    padding:0 14px;
+    font-size:14px;
+  }
+
+  .search input {
+    width:100%;
+    border:0;
+    outline:0;
+    background:transparent;
+    color:var(--ink);
+  }
+
+  .main {
+    display:grid;
+    grid-template-columns:235px 1fr;
+    gap:36px;
+    margin-top:28px;
+  }
+
+  .sidebar {
+    padding-right:28px;
+    border-right:1px solid var(--line);
+  }
+
+  .filter {
+    border-top:2px solid var(--black);
+    padding-top:14px;
+    margin-bottom:34px;
+  }
+
+  .filter-title {
+    color:#8f949b;
+    font-size:12px;
+    font-weight:900;
+    letter-spacing:.24em;
+    text-transform:uppercase;
+    margin-bottom:12px;
+  }
+
+  .filter-title span {
+    color:#8f949b;
+    margin-left:10px;
+    letter-spacing:.10em;
+  }
+
+  .filter-item {
+    width:100%;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:11px 12px;
+    border-left:4px solid transparent;
+    font-size:14px;
+    font-weight:900;
+    text-align:left;
+  }
+
+  .filter-item.active {
+    background:var(--light);
+    border-left-color:var(--red);
+  }
+
+  .filter-item small {
+    color:#a0a6ad;
+    font-size:11px;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+
+  .favorites {
+    height:48px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border:1.5px solid var(--black);
+    font-weight:900;
+    background:#fff;
+    margin-top:46px;
+  }
+
+  .content { min-width:0; }
+
+  .content-top-line {
+    height:1px;
+    background:var(--line);
+    margin-bottom:18px;
+  }
+
+  .today-label {
+    display:flex;
+    align-items:center;
+    gap:10px;
+    color:var(--red);
+    font-size:13px;
+    font-weight:900;
+    letter-spacing:.22em;
+    text-transform:uppercase;
+    margin-bottom:14px;
+  }
+
+  .today-label::before {
+    content:"";
+    width:42px;
+    height:2px;
+    background:var(--red);
+  }
+
+  /* Hero exactly follows accepted reference: upper left text + right image; source line below; RJO below. */
+  .hero-card {
+    background:#fff;
+    border:1.5px solid var(--black);
+  }
+
+  .hero-upper {
+    display:grid;
+    grid-template-columns:62% 38%;
+    min-height:340px;
+  }
+
+  .hero-text {
+    padding:32px 36px 24px;
+  }
+
+  .hero-tags {
+    display:flex;
+    gap:10px;
+    align-items:center;
+    flex-wrap:wrap;
+    margin-bottom:16px;
+  }
+
+  .hero-star { color:var(--red); font-weight:900; }
+
+  .hero-signal {
+    color:var(--red);
+    font-size:12px;
+    font-weight:900;
+    letter-spacing:.22em;
+    text-transform:uppercase;
+  }
+
+  .pill {
+    border:1px solid var(--line);
+    background:#fbfbf8;
+    padding:7px 12px;
+    font-size:12px;
+    font-weight:800;
+  }
+
+  .hero-title {
+    margin:0 0 12px;
+    max-width:720px;
+    font-size:42px;
+    line-height:.98;
+    letter-spacing:-0.035em;
+    font-weight:900;
+  }
+
+  .hero-cn {
+    font-size:18px;
+    font-weight:900;
+    margin-bottom:14px;
+  }
+
+  .hero-desc {
+    margin:0 0 22px;
+    max-width:720px;
+    color:#4e535b;
+    font-size:14px;
+    line-height:1.75;
+  }
+
+  .mini-grid {
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:0;
+    border:1px solid var(--line);
+    background:#fff;
+    max-width:720px;
+  }
+
+  .mini {
+    min-height:92px;
+    padding:14px 15px 14px;
+    border-right:1px solid var(--line);
+  }
+
+  .mini:last-child { border-right:0; }
+
+  .mini h4 {
+    margin:0 0 6px;
+    font-size:14px;
+    font-weight:900;
+  }
+
+  .mini p {
+    margin:0;
+    font-size:12px;
+    line-height:1.5;
+    color:#4f545b;
+  }
+
+  .hero-image {
+    position:relative;
+    border-left:1.5px solid var(--black);
+    background-image:
+      linear-gradient(110deg, rgba(255,255,255,.12) 0%, rgba(255,255,255,.05) 36%, rgba(0,0,0,.12) 100%),
+      url("https://hips.hearstapps.com/hmg-prod/images/068050ed-90a1-4051-b04a-c8427a196b5a.png?crop=0.5xw%3A1xh%3B0.5xw%2C0xh&resize=1200%3A%2A");
+    background-size:cover;
+    background-position:center 42%;
+    min-height:340px;
+    overflow:hidden;
+    filter:saturate(.46) contrast(.93) brightness(1.03);
+  }
+
+  .hero-image::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:rgba(236,232,226,.20);
+    pointer-events:none;
+  }
+
+  .hero-image > *{
+    position:relative;
+    z-index:1;
+  }
+
+  .ghost {
+    position:absolute;
+    top:28px;
+    left:38px;
+    color:rgba(255,255,255,.18);
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:58px;
+    font-weight:900;
+    letter-spacing:.08em;
+  }
+
+  .image-word {
+    position:absolute;
+    top:38px;
+    right:34px;
+    text-align:right;
+    color:#fff;
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:27px;
+    line-height:1.06;
+    font-weight:900;
+    letter-spacing:.06em;
+    text-shadow:0 2px 16px rgba(0,0,0,.55);
+  }
+
+  .image-word::after {
+    content:"";
+    display:block;
+    width:56px;
+    height:3px;
+    background:var(--red);
+    margin:16px 0 0 auto;
+  }
+
+  .hero-bottom {
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:24px;
+    padding:14px 36px 18px;
+    border-top:1px solid var(--line);
+  }
+
+  .source-line {
+    color:#8a9098;
+    font-size:12px;
+    font-weight:800;
+    letter-spacing:.10em;
+    text-transform:uppercase;
+  }
+
+  .cta {
+    background:#111;
+    color:#fff;
+    padding:13px 24px;
+    text-decoration:none;
+    font-size:14px;
+    font-weight:900;
+    white-space:nowrap;
+  }
+
+  .cta span { color:var(--red); margin-left:10px; }
+
+  .rjo {
+    margin-top:14px;
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    border:1px solid var(--line);
+    background:#fff;
+  }
+
+  .rjo-item {
+    min-height:56px;
+    display:flex;
+    align-items:center;
+    gap:16px;
+    padding:10px 22px;
+    border-right:1px solid var(--line);
+  }
+
+  .rjo-item:last-child { border-right:0; }
+
+  .rjo-badge {
+    width:42px;height:42px;border-radius:50%;
+    border:1.5px solid var(--black);
+    display:flex;align-items:center;justify-content:center;
+    font-family:Georgia,"Times New Roman",serif;
+    color:var(--red);
+    font-size:22px;font-weight:900;
+    flex:0 0 auto;
+  }
+
+  .rjo-item h4 { margin:0; font-size:16px; font-weight:900; }
+
+  .rjo-item h4 span { font-size:13px; margin-left:6px; }
+
+  .rjo-item p {
+    margin:4px 0 0;
+    color:#6a7078;
+    font-size:13px;
+  }
+
+  .signals-head {
+    margin:26px 0 16px;
+    display:flex;
+    align-items:end;
+    justify-content:space-between;
+  }
+
+  .signals-title {
+    margin:0;
+    font-size:34px;
+    line-height:1;
+    font-weight:900;
+  }
+
+  .signals-title span {
+    margin-left:12px;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    font-size:16px;
+    color:#8e939b;
+    font-weight:600;
+  }
+
+  .view-all {
+    color:#111;
+    text-decoration:none;
+    font-weight:900;
+    font-size:14px;
+  }
+
+  .cards {
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:16px;
+  }
+
+  .card {
+    background:#fff;
+    border:1px solid var(--line);
+    padding:20px 22px 26px;
+    min-height:246px;
+    position:relative;
+  }
+
+  .card-code {
+    margin-bottom:12px;
+    color:var(--red);
+    font-size:12px;
+    font-weight:900;
+    letter-spacing:.22em;
+    text-transform:uppercase;
+  }
+
+  .card h3 {
+    margin:0 0 12px;
+    font-size:25px;
+    line-height:1.05;
+    font-weight:900;
+    letter-spacing:-0.02em;
+  }
+
+  .card p {
+    margin:0 0 14px;
+    color:#51565d;
+    font-size:14px;
+    line-height:1.6;
+  }
+
+  .english {
+    border-left:3px solid var(--red);
+    background:#f6f6f2;
+    padding:11px 14px;
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:15px;
+    line-height:1.35;
+    max-width:100%;
+  }
+
+  .heart {
+    position:absolute;
+    right:18px; bottom:14px;
+    color:#9aa0a7;
+    font-size:24px;
+  }
+
+  /* Detail view */
+  .detail-wrap {
+    max-width:1120px;
+    margin:34px auto 0;
+  }
+
+  .back-btn {
+    margin-bottom:18px;
+    padding:10px 14px;
+    border:1px solid var(--line);
+    background:#fff;
+    color:#111;
+    font-weight:900;
+  }
+
+  .detail-head {
+    border-bottom:3px solid var(--black);
+    padding-bottom:24px;
+    margin-bottom:24px;
+  }
+
+  .detail-kicker {
+    color:var(--red);
+    font-size:12px;
+    font-weight:900;
+    letter-spacing:.22em;
+    text-transform:uppercase;
+    margin-bottom:10px;
+  }
+
+  .detail-title {
+    margin:0 0 12px;
+    font-size:44px;
+    line-height:1.02;
+    font-weight:900;
+  }
+
+  .detail-cn {
+    font-size:20px;
+    font-weight:900;
+    color:#222;
+  }
+
+  .pipeline {
+    display:grid;
+    gap:22px;
+  }
+
+  .layer {
+    background:#fff;
+    border:1px solid var(--line);
+    padding:24px 28px;
+  }
+
+  .layer-title {
+    display:flex;
+    gap:10px;
+    align-items:center;
+    color:var(--red);
+    font-size:12px;
+    font-weight:900;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    margin-bottom:14px;
+  }
+
+  .layer-num {
+    color:#111;
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:22px;
+    letter-spacing:.05em;
+  }
+
+  .excerpt {
+    border-left:4px solid var(--red);
+    background:#f7f7f3;
+    padding:18px 20px;
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:18px;
+    line-height:1.7;
+    font-style:italic;
+  }
+
+  .two-col {
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:18px;
+  }
+
+  .impact {
+    padding:16px;
+    border:1px solid var(--line);
+    background:#fafafa;
+  }
+
+  .email-box {
+    background:#111;
+    color:#f4f4f0;
+    padding:20px;
+    white-space:pre-wrap;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    font-size:13px;
+    line-height:1.7;
+  }
+
+  textarea {
+    width:100%;
+    min-height:120px;
+    border:1px solid var(--line);
+    padding:14px;
+    resize:vertical;
+    outline:none;
+  }
+
+  @media (max-width: 1100px) {
+    .page { width:auto; max-width:none; padding:20px; }
+    .top { grid-template-columns:1fr; gap:18px; }
+    .nav { justify-content:flex-start; overflow:auto; }
+    .main { grid-template-columns:1fr; }
+    .sidebar { display:none; }
+    .hero-upper { grid-template-columns:1fr; }
+    .hero-image { min-height:260px; border-left:0; border-top:1.5px solid #111; }
+    .mini-grid, .rjo, .cards, .two-col { grid-template-columns:1fr; }
+    .rjo-item, .mini { border-right:0; border-bottom:1px solid var(--line); }
+    .rjo-item:last-child, .mini:last-child { border-bottom:0; }
+    .hero-bottom { flex-direction:column; align-items:flex-start; }
+    .hero-title { font-size:34px; }
+    .detail-title { font-size:34px; }
+  }
+
+    .excerpt-list{display:flex;flex-direction:column;gap:20px;margin-top:8px;}
+    .excerpt-block{border:1px solid var(--line);background:#f8f8f5;padding:20px 24px;}
+    .excerpt-kicker{font-size:11px;font-weight:900;letter-spacing:.18em;color:var(--red);text-transform:uppercase;margin-bottom:10px;}
+    .excerpt-en{font-family:Georgia,serif;font-size:18px;line-height:1.78;font-style:italic;color:#111;}
+    .translation-fold{margin-top:16px;border-top:1px solid #ddd;padding-top:12px;}
+    .translation-fold summary{display:inline-flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;font-weight:900;color:var(--red);letter-spacing:.08em;list-style:none;}
+    .translation-fold summary::-webkit-details-marker{display:none;}
+    .translation-fold summary:before{content:"+";display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border:1px solid var(--red);font-size:12px;line-height:1;}
+    .translation-fold[open] summary:before{content:"−";}
+    .translation-cn{margin-top:12px;font-size:15px;line-height:1.9;color:#333;background:#fff;padding:14px 16px;border-left:3px solid var(--red);}
+    .weak-note{border:1px solid var(--line);background:#fbfbf8;padding:18px 22px;line-height:1.8;color:#333;margin-top:12px;}
+
+  
+    /* Smart Brevity reading system */
+    .smart-layer{padding:28px 34px;}
+    .signal-lead{font-size:20px;line-height:1.55;font-weight:900;margin:0 0 14px;}
+    .brief-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:14px;}
+    .brief-card{border:1px solid var(--line);background:#fafaf7;padding:14px 15px;line-height:1.55;}
+    .brief-card b{display:block;margin-bottom:6px;font-size:13px;}
+    .brief-card span{font-size:14px;color:#222;}
+    .smart-more{margin-top:14px;border:1px solid var(--line);background:#fbfbf8;padding:12px 14px;}
+    .smart-more summary{cursor:pointer;font-size:12px;font-weight:900;color:var(--red);letter-spacing:.08em;text-transform:uppercase;}
+    .smart-more p{margin:10px 0 0;line-height:1.75;}
+    .smart-matrix{width:100%;border-collapse:collapse;margin-top:14px;font-size:15px;}
+    .smart-matrix th{font-size:12px;letter-spacing:.12em;text-transform:uppercase;text-align:left;border-bottom:2px solid #111;padding:10px 12px;color:#111;}
+    .smart-matrix td{border-bottom:1px solid var(--line);padding:13px 12px;vertical-align:top;line-height:1.55;}
+    .smart-matrix td:first-child{font-weight:900;width:22%;}
+    .smart-matrix .redline{color:var(--red);font-weight:900;}
+    .smart-callout{margin-top:16px;border-left:4px solid var(--red);background:#fafaf7;padding:13px 16px;line-height:1.65;font-weight:800;}
+    .split-list{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:14px;}
+    .split-box{border:1px solid var(--line);background:#fafaf7;padding:16px;}
+    .split-box h3{margin:0 0 10px;font-size:16px;}
+    .split-box ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:7px;line-height:1.55;}
+    .use-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:8px;}
+    .use-card{border:1px solid var(--line);background:#fafaf7;padding:16px 17px;}
+    .use-card h3{margin:0 0 10px;font-size:16px;font-weight:900;}
+    .use-card ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:8px;line-height:1.58;}
+    .use-card details{margin-top:10px;border-top:1px solid var(--line);padding-top:9px;}
+    .use-card summary{cursor:pointer;font-size:12px;font-weight:900;color:var(--red);letter-spacing:.08em;text-transform:uppercase;}
+    .sentence-list{display:flex;flex-direction:column;gap:10px;}
+    .sentence-item{background:#fff;border-left:3px solid var(--red);padding:10px 12px;font-family:Georgia,serif;font-weight:700;line-height:1.55;}
+    .term-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;}
+    .term-card{border:1px solid var(--line);background:#fafaf7;padding:15px;}
+    .term-card .scenario{font-size:11px;font-weight:900;color:var(--red);letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px;}
+    .term-card h3{margin:0 0 8px;font-family:Georgia,serif;font-size:18px;}
+    .term-card p{margin:0 0 8px;line-height:1.6;}
+    .term-card .example{font-family:Georgia,serif;font-style:italic;background:#fff;padding:9px 10px;border-left:3px solid var(--red);}
+    .template-core{display:grid;gap:10px;margin-bottom:14px;}
+    .template-line{background:#111;color:#fff;padding:12px 14px;font-family:ui-monospace,Consolas,monospace;line-height:1.55;}
+    .copy-btn{border:1px solid #111;background:#111;color:#fff;font-weight:900;padding:10px 14px;cursor:pointer;margin:8px 0 12px;}
+    .full-template{margin-top:10px;}
+    .full-template summary{cursor:pointer;font-size:12px;font-weight:900;color:var(--red);letter-spacing:.08em;text-transform:uppercase;}
+    .email-box.compact-email{max-height:260px;overflow:auto;}
+    @media(max-width:900px){.brief-grid,.split-list,.use-grid,.term-grid{grid-template-columns:1fr;}}
+
+  
+    /* Business Signal Brief product structure */
+    .evidence-grid,.risk-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:14px;}
+    .evidence-card,.risk-card{border:1px solid var(--line);background:#fafaf7;padding:14px 15px;line-height:1.55;}
+    .evidence-card b,.risk-card b{display:block;color:var(--red);font-size:12px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:7px;}
+    .money-tag{display:inline-block;border:1px solid var(--line);background:#fff;padding:3px 8px;font-size:12px;font-weight:900;color:var(--red);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;}
+    .brief-one-line{font-size:18px;line-height:1.6;font-weight:900;margin:0 0 12px;}
+    .section-subnote{font-size:13px;color:#777;margin-top:8px;line-height:1.6;}
+    .compact-practice{border:1px solid var(--line);background:#fafaf7;padding:14px 16px;margin-top:14px;line-height:1.65;}
+    @media(max-width:900px){.evidence-grid,.risk-grid{grid-template-columns:1fr;}}
+
+  
+    /* Detail reading: original paragraphs first, translations controlled by right dropdown, analysis folded below */
+    .reading-mode-select{
+      width:100%;
+      border:0;
+      background:transparent;
+      color:var(--muted);
+      font:inherit;
+      outline:none;
+      cursor:pointer;
+    }
+    .detail-source-line{
+      color:var(--muted);
+      font-size:12px;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      font-weight:900;
+      margin:0 0 22px;
+    }
+    .today-take-row{
+      border-left:4px solid var(--red);
+      background:var(--paper);
+      padding:18px 22px;
+      display:grid;
+      grid-template-columns:130px minmax(0,1fr);
+      gap:16px;
+      align-items:start;
+      margin:0 0 28px;
+    }
+    .today-take-label{
+      color:var(--red);
+      font-size:12px;
+      font-weight:900;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+    }
+    .today-take-text{
+      font-size:16px;
+      line-height:1.75;
+      font-weight:900;
+      color:#111;
+    }
+    .paragraph-reading{
+      margin-top:4px;
+    }
+    .paragraph-reading-head{
+      display:flex;
+      align-items:baseline;
+      gap:12px;
+      padding-bottom:16px;
+      border-bottom:1px solid var(--line);
+    }
+    .paragraph-reading-head .num{
+      font-family:Georgia,"Times New Roman",serif;
+      font-size:24px;
+      font-weight:900;
+      color:#111;
+    }
+    .paragraph-reading-head .text{
+      color:var(--red);
+      font-size:12px;
+      font-weight:900;
+      letter-spacing:.16em;
+      text-transform:uppercase;
+    }
+    .paragraph-row{
+      padding:22px 0 24px;
+      border-bottom:1px solid var(--line);
+    }
+    .paragraph-kicker{
+      color:var(--red);
+      font-size:12px;
+      letter-spacing:.18em;
+      text-transform:uppercase;
+      font-weight:900;
+      margin-bottom:12px;
+    }
+    .paragraph-en{
+      font-family:Georgia,"Times New Roman",serif;
+      font-style:italic;
+      font-size:20px;
+      line-height:1.78;
+      color:#111;
+      max-width:900px;
+    }
+    .paragraph-cn{
+      display:none;
+      margin-top:14px;
+      padding-top:14px;
+      border-top:1px solid var(--line);
+      color:#222;
+      font-size:15.5px;
+      line-height:1.85;
+      max-width:900px;
+    }
+    body.bilingual-mode .paragraph-cn{
+      display:block;
+    }
+    .analysis-rule{
+      border-top:3px solid #111;
+      margin:30px 0 20px;
+    }
+    .analysis-intro{
+      margin-bottom:16px;
+    }
+    .analysis-intro h2{
+      margin:0 0 8px;
+      font-family:Georgia,"Times New Roman",serif;
+      font-size:32px;
+      line-height:1.12;
+      color:#111;
+    }
+    .analysis-intro p{
+      margin:0;
+      color:var(--muted);
+      line-height:1.65;
+      font-size:15px;
+    }
+    .analysis-accordion{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .acc-panel{
+      border:1px solid var(--line);
+      background:transparent;
+      margin:0;
+    }
+    .acc-panel>summary{
+      cursor:pointer;
+      list-style:none;
+      display:grid;
+      grid-template-columns:44px minmax(0,1fr) 20px;
+      align-items:center;
+      gap:14px;
+      min-height:64px;
+      padding:0 18px;
+    }
+    .acc-panel>summary::-webkit-details-marker{display:none;}
+    .acc-num{
+      color:var(--red);
+      font-size:13px;
+      font-weight:900;
+      letter-spacing:.08em;
+    }
+    .acc-main{
+      min-width:0;
+      display:flex;
+      align-items:baseline;
+      gap:6px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .acc-title{
+      color:#111;
+      font-weight:900;
+      font-size:18px;
+    }
+    .acc-sub{
+      color:var(--muted);
+      font-size:14px;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .acc-arrow{
+      color:var(--muted);
+      font-size:18px;
+      transition:transform .16s ease;
+    }
+    .acc-panel[open] .acc-arrow{
+      transform:rotate(90deg);
+    }
+    .acc-body{
+      padding:0 18px 20px 76px;
+    }
+    .acc-body>.layer{
+      margin:0;
+      border:0;
+      padding:18px 0 0;
+      background:transparent;
+    }
+    .acc-body>.layer>.layer-title{
+      display:none;
+    }
+    @media(max-width:760px){
+      .today-take-row{grid-template-columns:1fr;gap:8px;}
+      .paragraph-en{font-size:18.5px;}
+      .acc-panel>summary{grid-template-columns:34px minmax(0,1fr) 18px;padding:0 14px;}
+      .acc-body{padding:0 14px 18px;}
+      .acc-main{display:block;}
+      .acc-sub{display:block;margin-top:3px;}
+    }
+
+  
+    .paragraph-reading-head{
+      display:grid !important;
+      grid-template-columns:auto 1fr auto;
+      align-items:center;
+      column-gap:12px;
+    }
+    .paragraph-mode-inline{
+      justify-self:end;
+      border:1px solid var(--line);
+      background:var(--paper);
+      padding:8px 12px;
+      color:var(--muted);
+      font:inherit;
+      outline:none;
+      cursor:pointer;
+      min-width:132px;
+    }
+    body:not(.bilingual-mode) .paragraph-cn{
+      display:none !important;
+    }
+    body.bilingual-mode .paragraph-cn{
+      display:block !important;
+    }
+
+  
+    /* Paid-value refinement: lower red density, stronger hierarchy */
+    .smart-matrix .redline,
+    .matrix .redline{
+      color:#111 !important;
+    }
+    .smart-matrix td:first-child,
+    .matrix td:first-child{
+      color:#111 !important;
+      font-weight:900;
+    }
+    .term-card .scenario,
+    .scene{
+      color:var(--muted) !important;
+    }
+    .brief-card b,
+    .signal-card .label{
+      color:#111;
+    }
+    .audience-strip{
+      margin:0 0 28px;
+      padding:14px 16px;
+      border:1px solid var(--line);
+      background:var(--paper);
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+    .audience-label{
+      font-size:12px;
+      color:var(--muted);
+      font-weight:900;
+      letter-spacing:.1em;
+      text-transform:uppercase;
+      margin-right:2px;
+    }
+    .audience-pill{
+      display:inline-flex;
+      align-items:center;
+      border:1px solid var(--line);
+      background:#fff;
+      padding:6px 10px;
+      font-size:13px;
+      font-weight:800;
+      color:#111;
+    }
+    .brief-one-line{
+      border-left:4px solid var(--red);
+      background:#fffaf7;
+      padding:13px 16px;
+      line-height:1.65;
+      font-weight:900;
+      margin:0 0 14px;
+    }
+
+  
+    .source-meta-grid{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin:0 0 22px;
+    }
+    .source-chip{
+      border:1px solid var(--line);
+      background:var(--paper);
+      padding:7px 10px;
+      font-size:12px;
+      color:#111;
+      font-weight:800;
+    }
+    .source-chip b{
+      color:var(--muted);
+      font-weight:800;
+      margin-right:4px;
+    }
+    .card-date{
+      margin-top:10px;
+      font-size:12px;
+      color:var(--muted);
+      font-weight:800;
+      letter-spacing:.02em;
+    }
+
+  
+    .mini-grid.single{
+      grid-template-columns:1fr !important;
+      max-width:720px;
+    }
+
+  
+    .hero-translation{
+      margin-top:8px;
+      margin-bottom:14px;
+      font-size:17px;
+      line-height:1.55;
+      color:#333;
+      font-weight:700;
+      max-width:660px;
+    }
+
+  
+    .judgement-label{
+      color:#8d1111;
+      font-weight:900;
+      margin-right:2px;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="page home-view">
+    <header class="top">
+      <div>
+        <div class="kicker">Global Business Intelligence &<br>Language Output</div>
+        <h1 class="brand serif">Business<br>Briefing</h1>
+        <div class="subtitle">商业趋势拆解读本 · Real Work Edition</div>
+      </div>
+
+      <nav class="nav">
+        <button class="active" data-main="today">今日 Briefing</button>
+        <button data-main="signals">商业信号</button>
+        <button data-main="industry">行业机会</button>
+        <button data-main="english">商务英文</button>
+        <button data-main="archive">历史文章</button>
+      </nav>
+
+      <div class="search">
+        <input id="searchInput" placeholder="搜索趋势、行业、商务表达…" />
+        <span>⌕</span>
+      </div>
+    </header>
+
+    <main class="main">
+      <aside class="sidebar">
+        <section class="filter">
+          <div class="filter-title">Trend Tags <span>趋势标签</span></div>
+          <button class="filter-item active" data-filter-type="trend" data-filter="all"><b>全部</b><small>ALL</small></button>
+          <button class="filter-item" data-filter-type="trend" data-filter="consumer"><b>消费需求</b><small>01</small></button>
+          <button class="filter-item" data-filter-type="trend" data-filter="supply"><b>供应链与成本</b><small>02</small></button>
+          <button class="filter-item" data-filter-type="trend" data-filter="tariff"><b>关税与汇率</b><small>03</small></button>
+          <button class="filter-item" data-filter-type="trend" data-filter="ai"><b>AI效率</b><small>04</small></button>
+        </section>
+
+        <section class="filter">
+          <div class="filter-title">Industry Lens <span>行业视角</span></div>
+          <button class="filter-item active" data-filter-type="industry" data-filter="all"><b>全部</b><small>ALL</small></button>
+          <button class="filter-item" data-filter-type="industry" data-filter="pet"><b>宠物护理</b><small></small></button>
+          <button class="filter-item" data-filter-type="industry" data-filter="beauty"><b>美妆个护</b><small></small></button>
+          <button class="filter-item" data-filter-type="industry" data-filter="home"><b>家居小家电</b><small></small></button>
+          <button class="filter-item" data-filter-type="industry" data-filter="crossborder"><b>跨境零售</b><small></small></button>
+        </section>
+
+        <div class="favorites">☆ 收藏夹 Favorites</div>
+      </aside>
+
+      <section class="content">
+        <div class="content-top-line"></div>
+        <div class="today-label">Today's Pick · 今日外刊</div>
+
+        <article class="hero-card">
+          <div class="hero-upper">
+            <div class="hero-text">
+              <div class="hero-tags">
+                <span class="hero-star">★</span>
+                <span class="hero-signal" id="heroSignal">Supply Chain / Cost Pressure</span>
+                <span class="pill" id="heroPillA">Global Trade</span>
+                <span class="pill">Business English</span>
+              </div>
+
+              <h2 class="hero-title serif" id="heroTitle">Hasbro debuts Play-Doh for adults</h2>
+              <div class="hero-translation" id="heroTranslation">Hasbro把Play-Doh做成成人花艺套装，背后不是一款新品，而是一批新买家正在进入玩具市场。</div>
+              <div class="hero-cn"><span class="judgement-label">今日判断：</span><span id="heroCn">成年人正在改写玩具市场</span></div>
+
+              <div class="mini-grid">
+                <div class="mini">
+                  <h4>原文在说什么？</h4>
+                  <p id="heroMeaning">Hasbro推出了首个专门面向成年人的Play-Doh系列。与此同时，美国玩具市场的增长，越来越多来自成年人和女性消费者。</p>
+                </div>
+                <div class="mini">
+                  <h4>我能拿来做什么？</h4>
+                  <p id="heroAction">先研究成人手作、感官减压和可展示DIY产品的搜索、价格、评论与内容表现，再用一个小套装测试需求，不要看到大品牌入场就直接压货。</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="hero-image">
+              <div class="ghost">PLAY</div>
+              <div class="image-word">ADULT<br>CRAFT<br>SIGNAL</div>
+            </div>
+          </div>
+
+          <div class="hero-bottom">
+            <div class="source-line" id="heroSource">Source: WSJ · 2026.06.17 · 阅读时间 5 分钟</div>
+            <a href="#" class="cta" id="heroCta">进入今日全文 <span>→</span></a>
+          </div>
+        </article>
+
+        <section class="rjo">
+          <div class="rjo-item">
+            <div class="rjo-badge serif">R</div>
+            <div>
+              <h4>Read <span>读</span></h4>
+              <p>读真实商业外刊，不读泛新闻。</p>
+            </div>
+          </div>
+          <div class="rjo-item">
+            <div class="rjo-badge serif">J</div>
+            <div>
+              <h4>Judge <span>判</span></h4>
+              <p>判断行业、需求、成本和风险。</p>
+            </div>
+          </div>
+          <div class="rjo-item">
+            <div class="rjo-badge serif">O</div>
+            <div>
+              <h4>Output <span>用</span></h4>
+              <p>转成邮件、汇报和客户沟通英文。</p>
+            </div>
+          </div>
+        </section>
+
+        <div class="signals-head">
+          <h2 class="signals-title serif"> <span>/ 商业信号卡</span></h2>
+          <a class="view-all" href="#">查看全部信号 →</a>
+        </div>
+
+        <section class="cards" id="cards"></section>
+      </section>
+    </main>
+  </div>
+
+  <div class="page detail-view">
+    <header class="top">
+      <div>
+        <div class="kicker">Global Business Intelligence &<br>Language Output</div>
+        <h1 class="brand serif">Business<br>Briefing</h1>
+        <div class="subtitle">商业趋势拆解读本 · Real Work Edition</div>
+      </div>
+      <nav class="nav">
+        <button class="active" onclick="showHome()">返回首页</button>
+        <button>外刊摘录</button>
+        <button>趋势判断</button>
+        <button>商务英文</button>
+      </nav>
+      <div class="search">Paragraph Reading View</div>
+    </header>
+
+    <main class="detail-wrap">
+      <button class="back-btn" onclick="showHome()">← 返回今日 Briefing</button>
+      <section class="detail-head">
+        <div class="detail-kicker" id="detailSignal">Today’s Business Signal</div>
+        <h2 class="detail-title serif" id="detailTitle"></h2>
+        <div class="detail-cn" id="detailCn"></div>
+      </section>
+
+      <section class="pipeline" id="pipeline"></section>
+    </main>
+  </div>
+
+<script>
+const DEFAULT_ARTICLES = [
+  {
+    id:"biz-20260715-adults-reshape-toy-market-playdoh-blooms",
+    trend:"consumer",
+    industry:"crossborder",
+    signal:"Adult Consumer / Product Repositioning",
+    pill:"Consumer Trend",
+    title:"Hasbro debuts Play-Doh for adults",
+    titleCn:"成年人正在改写玩具市场",
+    titleTranslation:"Hasbro把Play-Doh做成成人花艺套装，背后不是一款新品，而是一批新买家正在进入玩具市场。",
+    meaning:"Hasbro推出了首个专门面向成年人的Play-Doh系列。与此同时，美国玩具市场的增长，越来越多来自成年人和女性消费者。",
+    desc:"Hasbro推出首个专门面向成年人的Blooms by Play-Doh，把橡皮泥做成可以减压、创作并长期展示的花艺套装。同期数据显示，成年人和女性正在贡献美国玩具市场的重要增量。",
+    why:"玩具正在从儿童用品，扩展为成年人的情绪消费、手工体验、家居装饰、礼物和社交内容。值得关注的不是照搬一款花艺套装，而是产品使用场景和付款理由发生了变化。",
+    action:"先研究成人手作、感官减压和可展示DIY产品的搜索、价格、评论与内容表现，再用一个小套装测试需求，不要看到大品牌入场就直接压货。",
+    source:"Retail Dive",
+    date:"2026-07-09",
+    readingTime:"8分钟",
+    excerpt:"Hasbro has launched Blooms by Play-Doh, the first Play-Doh collection created specifically for adults. Instead of making temporary toy shapes, users build realistic floral arrangements that can be preserved and displayed as home décor.",
+    translation:"Hasbro推出了Blooms by Play-Doh，这是Play-Doh首个专门面向成年人的产品系列。用户不再只是捏出短暂的玩具造型，而是制作可以定型、长期展示的仿真花艺摆件。",
+    breakdown:"这篇不只是说成年人也会买玩具。真正的变化是：玩具开始同时承担减压、创作、家居装饰、礼物和内容传播的功能，购买理由已经超出“给孩子玩”。",
+    judgement:"成年人正在改写玩具市场",
+    win:"成人手作、感官减压、礼物和家居展示型产品。",
+    lose:"只换包装、不改变使用场景和成品价值的普通儿童玩具。",
+    userUse:"用于成人手作产品开发、跨境选品和内容测试。",
+    english:"The category is expanding beyond children's play into adult crafting, gifting and home décor.",
+    template:"Hi [Name],\n\nWe are researching an adult-oriented craft kit for the gifting and home décor market. The product should provide a complete hands-on experience and produce a finished piece that is attractive enough to display.\n\nCould you please share your available materials, customization options, MOQ, packaging choices and relevant safety documents? We would also like to know whether you can support a small pilot order before mass production.\n\nBest,\n[Your Name]",
+    practice:"任选一个成人手作或感官产品，记录它的目标人群、购买场景、价格带、评论中的前三个购买理由，以及你准备先验证的一个最小产品方案。"
+  },
+  {
+    id:"premium-care",
+    trend:"consumer",
+    industry:"pet",
+    signal:"Consumer Demand",
+    pill:"Premium Care",
+    title:"The Shift Toward Lifestyle Barriers in Premium Care",
+    titleCn:"高端个护与宠物护理正在从修复功能转向生活方式防护",
+    desc:"消费者愿意为更有质感、更有防护概念的日常护理产品支付溢价。",
+    why:"看懂高端消费不只是功能升级，而是场景、审美和心理价值一起变化。",
+    action:"用于产品定位、独立站文案和高端客户开发。",
+    source:"Business Context",
+    date:"2026.06.15",
+    readingTime:"4 分钟",
+    excerpt:"Premium care brands increasingly position daily protection as a lifestyle barrier rather than a purely clinical repair function.",
+    translation:"高端护理品牌越来越倾向于把日常防护表达为一种生活方式屏障，而不是单纯的临床修复功能。",
+    breakdown:"这说明消费者购买的不只是功效，而是更高级、更日常、更像生活方式的保护感。",
+    judgement:"功能型产品如果只说修复，容易陷入低价竞争；如果表达为 barrier、protection、daily defence，溢价空间更大。",
+    win:"宠物护理、美妆个护、健康消费、生活方式品牌。",
+    lose:"只强调低价和基础功能的白牌产品。",
+    userUse:"适合用在选品判断、产品页文案和客户开发邮件中。",
+    english:"capitalize on the premiumization trend",
+    template:"Hi [Name],\\n\\nWe see a clear opportunity to capitalize on the premiumization trend by positioning this product as a daily protective barrier rather than a basic repair item.\\n\\nBest,\\n[Your Name]",
+    practice:"用 capitalize on 写一句产品升级建议。"
+  },
+  {
+    id:"ai-support-cost",
+    trend:"ai",
+    industry:"crossborder",
+    signal:"AI Productivity",
+    pill:"Automation",
+    title:"Automation Turns Support Work Into a Cost Advantage",
+    titleCn:"AI 自动化正在把客服和运营支持变成成本优势",
+    desc:"AI 不只是写文案，而是在客服、运营和流程管理里降低重复劳动。",
+    why:"看懂 AI 效率不是概念，而是具体影响运营成本和响应速度。",
+    action:"用于内部汇报、流程优化和客户服务方案说明。",
+    source:"Business Context",
+    date:"2026.06.12",
+    readingTime:"4 分钟",
+    excerpt:"Automation is increasingly embedded in support workflows, helping teams reduce repetitive tasks and improve response consistency.",
+    translation:"自动化正在越来越多地嵌入客服和支持流程，帮助团队减少重复任务，并提高回复的一致性。",
+    breakdown:"企业真正关心的不是 AI 酷不酷，而是它能不能减少重复工作、降低人力压力、提高响应稳定性。",
+    judgement:"未来 AI 工具的竞争重点会从生成内容转向流程嵌入。",
+    win:"SaaS、跨境客服、运营团队、知识库系统。",
+    lose:"完全依赖人工重复回复、没有流程沉淀的团队。",
+    userUse:"适合用于内部提案、客服 SOP 和自动回复流程设计。",
+    english:"streamline workflows and reduce manual workload",
+    template:"Hi Team,\\n\\nWe should streamline the current support workflow and reduce manual workload by introducing automated response templates for repetitive inquiries.\\n\\nBest,\\n[Your Name]",
+    practice:"写一句英文，建议团队用自动化减少重复客服工作。"
+  }
+];
+
+const state = { trend:"all", industry:"all", search:"", current: DEFAULT_ARTICLES[0], articles:[...DEFAULT_ARTICLES] };
+
+function categoryText(item){ return item.signal || "Business Signal"; }
+
+function filteredArticles(){
+  const q = state.search.trim().toLowerCase();
+  return state.articles.filter(item => {
+    const trendOk = state.trend === "all" || item.trend === state.trend;
+    const industryOk = state.industry === "all" || item.industry === state.industry;
+    const searchOk = !q || [item.title,item.titleCn,item.signal,item.english,item.desc].join(" ").toLowerCase().includes(q);
+    return trendOk && industryOk && searchOk;
+  });
+}
+
+
+function sourceDisplayName(item){
+  const s = item.source;
+  if(typeof s === "string") return s;
+  if(s && typeof s === "object") return s.name || s.source || s.publisher || item.sourceName || "Unknown Source";
+  return item.sourceName || "Unknown Source";
+}
+
+function normalizeDateText(value){
+  if(!value) return "";
+  const text = String(value).slice(0,10);
+  return text.replaceAll("-", ".");
+}
+
+function siteUpdateDate(item){
+  return normalizeDateText(item.updatedAt || item.publishDate || item.siteUpdatedAt || new Date().toISOString().slice(0,10));
+}
+
+function renderSourceMeta(item){
+  const sourceName = sourceDisplayName(item);
+  const originalDate = normalizeDateText(item.sourceDate || item.date || item.originalDate || "");
+  const updated = siteUpdateDate(item);
+  const readingTime = item.readingTime || "";
+  return `
+    <div class="source-meta-grid">
+      <span class="source-chip"><b>来源</b>${escapeHtml(sourceName)}</span>
+      ${originalDate ? `<span class="source-chip"><b>原文日期</b>${escapeHtml(originalDate)}</span>` : ""}
+      <span class="source-chip"><b>本站更新</b>${escapeHtml(updated)}</span>
+      ${readingTime ? `<span class="source-chip"><b>阅读时间</b>${escapeHtml(readingTime)}</span>` : ""}
+    </div>
+  `;
+}
+
+function formatHomeSource(item){
+  const sourceName = sourceDisplayName(item);
+  const originalDate = normalizeDateText(item.sourceDate || item.date || item.originalDate || "");
+  const readingTime = item.readingTime || "";
+  return [
+    `来源：${sourceName}`,
+    originalDate ? `原文日期：${originalDate}` : "",
+    readingTime ? `阅读时间：${readingTime}` : ""
+  ].filter(Boolean).join(" · ");
+}
+
+function renderHero(){
+  const item = state.current || state.articles[0];
+  document.getElementById("heroSignal").textContent = item.signal || "Business Signal";
+  document.getElementById("heroPillA").textContent = item.pill || "Global Trade";
+  document.getElementById("heroTitle").textContent = item.title;
+  document.getElementById("heroCn").textContent = item.titleCn;
+  const heroTranslation = document.getElementById("heroTranslation");
+  if(heroTranslation) heroTranslation.textContent = item.titleTranslation || item.desc || "";
+  const heroMeaning = document.getElementById("heroMeaning");
+  if(heroMeaning) heroMeaning.textContent = item.meaning || item.desc || "";
+  const heroDesc = document.getElementById("heroDesc");
+  if(heroDesc) heroDesc.textContent = item.desc || "";
+  const heroWhy = document.getElementById("heroWhy");
+  if(heroWhy) heroWhy.textContent = item.why || "";
+  document.getElementById("heroAction").textContent = item.action;
+  document.getElementById("heroSource").textContent = formatHomeSource(item);
+  const heroCta = document.getElementById("heroCta");
+  heroCta.href = "#article-" + encodeURIComponent(item.id);
+  heroCta.onclick = (e) => { e.preventDefault(); openDetail(item.id); };
+}
+
+function renderCards(){
+  const box = document.getElementById("cards");
+  const list = filteredArticles();
+  box.innerHTML = "";
+  list.slice(0, 9).forEach((item, idx) => {
+    const card = document.createElement("article");
+    card.className = "card";
+    card.innerHTML = `
+      <div class="card-code">${String(idx+1).padStart(2,"0")} / ${escapeHtml(categoryText(item))}</div>
+      <div class="card-date">原文发布：${escapeHtml(normalizeDateText(item.sourceDate || item.date || item.originalDate || "未标注"))}</div>
+      <h3 class="serif">${escapeHtml(item.title)}</h3>
+      <p>${escapeHtml(item.titleCn || item.desc)}</p>
+      <div class="english">${escapeHtml(item.english || "work-ready business expression")}</div>
+      <div class="heart">♡</div>
+    `;
+    card.onclick = () => openDetail(item.id); card.setAttribute("data-open", item.id);
+    box.appendChild(card);
+  });
+}
+
+function openDetail(id){
+  const item = state.articles.find(a => a.id === id) || state.current;
+  state.current = item;
+  document.body.classList.add("detail-open");
+  document.getElementById("detailSignal").textContent = item.signal || "Today’s Business Signal";
+  document.getElementById("detailTitle").textContent = item.title;
+  document.getElementById("detailCn").textContent = item.titleCn;
+  document.getElementById("pipeline").innerHTML = detailHTML(item);
+  window.scrollTo(0,0);
+  if(location.hash !== "#article-" + encodeURIComponent(item.id)) history.replaceState(null, "", "#article-" + encodeURIComponent(item.id));
+}
+
+function showHome(){
+  if(location.hash) history.replaceState(null, "", location.pathname + location.search);
+  document.body.classList.remove("detail-open");
+  renderHero();
+  renderCards();
+  window.scrollTo(0,0);
+}
+
+function renderExcerptBlocks(item){
+  const paragraphs = Array.isArray(item.paragraphs) && item.paragraphs.length
+    ? item.paragraphs
+    : [{en:item.excerpt || item.title, cn:item.translation || ""}];
+
+  return `<div class="excerpt-list">` + paragraphs.slice(0,3).map((p, idx) => {
+    const en = p.en || p.text || "";
+    const rawCn = p.cn || p.translation || "";
+    const hasRealCn = rawCn && !rawCn.includes("待精译") && rawCn.trim().length > 20;
+    const cn = hasRealCn
+      ? rawCn
+      : "待精译：这篇目前是自动抓取的原文摘录版。这里后续应放逐段中文翻译，不再用模板话硬凑。";
+    return `
+      <div class="excerpt-block">
+        <div class="excerpt-kicker">Paragraph ${String(idx + 1).padStart(2,"0")}</div>
+        <div class="excerpt-en">${escapeHtml(en)}</div>
+        <details class="translation-fold">
+          <summary>展开中文翻译</summary>
+          <div class="translation-cn">${escapeHtml(cn)}</div>
+        </details>
+      </div>
+    `;
+  }).join("") + `</div>`;
+}
+
+
+
+function safeId(value){
+  return String(value || "item").replace(/[^a-zA-Z0-9_-]/g, "_");
+}
+
+function renderSmartText(value){
+  if(!value) return "";
+  if(Array.isArray(value)){
+    return value.map(x => `<div class="smart-callout">${escapeHtml(x)}</div>`).join("");
+  }
+  const txt = String(value);
+  const parts = txt.split(/\n{2,}/).map(x => x.trim()).filter(Boolean);
+  if(parts.length > 1){
+    return parts.map(x => `<div class="smart-callout">${escapeHtml(x)}</div>`).join("");
+  }
+  return `<div class="smart-callout">${escapeHtml(txt)}</div>`;
+}
+
+function renderBriefCards(cards){
+  if(!Array.isArray(cards) || !cards.length) return "";
+  return `<div class="brief-grid">` + cards.slice(0,3).map(c => `
+    <div class="brief-card">
+      <b>${escapeHtml(c.label || c.title || "")}</b>
+      <span>${escapeHtml(c.text || c.value || "")}</span>
+    </div>
+  `).join("") + `</div>`;
+}
+
+function renderMatrix(matrix){
+  if(!matrix || !Array.isArray(matrix.rows) || !matrix.rows.length) return "";
+  const cols = matrix.columns || ["维度","判断","动作"];
+  const rows = matrix.rows;
+  return `
+    <table class="smart-matrix">
+      <thead><tr>${cols.map(c => `<th>${escapeHtml(c)}</th>`).join("")}</tr></thead>
+      <tbody>
+        ${rows.map(r => {
+          const cells = Array.isArray(r) ? r : cols.map(c => r[c] || r[c.toLowerCase()] || "");
+          return `<tr>${cells.map((x,i) => `<td${i===0 ? ' class="redline"' : ""}>${escapeHtml(x)}</td>`).join("")}</tr>`;
+        }).join("")}
+      </tbody>
+    </table>
+  `;
+}
+
+function renderSignalLayer(item, isDraft){
+  const cards = item.signalCards || [
+    {label:"商业问题", text:item.why || "这条新闻说明一个可转化为工作判断的商业变化。"},
+    {label:"真正风险", text:item.action || "判断哪些任务可以自动化，哪些必须保留人工。"},
+    {label:"可用场景", text:item.english || "用于英文汇报和客户沟通。"}
+  ];
+  return `
+    <article class="layer smart-layer">
+      <div class="layer-title"><span class="layer-num">01</span> 今日商业信号</div>
+      <div class="signal-lead">${escapeHtml(item.signalLead || item.titleCn || item.desc)}</div>
+      ${renderBriefCards(cards)}
+      ${item.desc ? `<details class="smart-more"><summary>展开完整说明</summary><p>${escapeHtml(item.desc)}</p></details>` : ""}
+      ${isDraft ? `<div class="weak-note">当前为「原文摘录版」。系统只展示已抓到的英文原文，不再硬凑空泛分析。</div>` : ""}
+    </article>
+  `;
+}
+
+function renderEvidenceLayer(item){
+  const cards = item.evidenceCards || [];
+  const sourceLine = item.source || item.sourceUrl ? [{label:"Source", text:[sourceDisplayName(item), normalizeDateText(item.sourceDate || item.date)].filter(Boolean).join(" · ")}] : [];
+  const all = cards.length ? cards : sourceLine;
+  if(!all.length) return "";
+  return `
+    <article class="layer smart-layer">
+      <div class="layer-title"><span class="layer-num">02</span> 外刊依据</div>
+      <div class="evidence-grid">
+        ${all.slice(0,3).map(c => `<div class="evidence-card"><b>${escapeHtml(c.label || c.title || "证据")}</b><span>${escapeHtml(c.text || c.value || "")}</span></div>`).join("")}
+      </div>
+      ${item.sourceUrl ? `<p class="section-subnote"><a href="${escapeAttr(item.sourceUrl)}" target="_blank" rel="noopener">查看原文来源 →</a></p>` : ""}
+    </article>
+  `;
+}
+
+function renderExcerptLayer(item){
+  const sourceUrl = item.sourceUrl ? `<p class="section-subnote"><a href="${escapeAttr(item.sourceUrl)}" target="_blank" rel="noopener">查看原文来源 →</a></p>` : "";
+  return `
+    <article class="layer smart-layer">
+      <div class="layer-title"><span class="layer-num">03</span> Excerpt / 外刊摘录</div>
+      ${renderExcerptBlocks(item)}
+      ${sourceUrl}
+    </article>
+  `;
+}
+
+function renderBreakdownLayer(item){
+  if(item.breakdownMatrix || item.breakdownConclusion || item.breakdownAction){
+    return `
+      <article class="layer smart-layer">
+        <div class="layer-title"><span class="layer-num">04</span> 中文拆解</div>
+        ${item.breakdownConclusion ? `<div class="brief-one-line">${escapeHtml(item.breakdownConclusion)}</div>` : ""}
+        ${renderMatrix(item.breakdownMatrix)}
+        ${item.breakdownAction ? `<div class="smart-callout">${escapeHtml(item.breakdownAction)}</div>` : ""}
+      </article>
+    `;
+  }
+  if(!item.breakdown) return "";
+  return `
+    <article class="layer smart-layer">
+      <div class="layer-title"><span class="layer-num">04</span> 中文拆解</div>
+      ${renderSmartText(item.breakdown)}
+    </article>
+  `;
+}
+
+function renderMoneyLayer(item){
+  if(!item.moneyMatrix && !item.moneyTakeaway) return "";
+  return `
+    <article class="layer smart-layer">
+      <div class="layer-title"><span class="layer-num">05</span> 钱在哪里</div>
+      ${item.moneyLead ? `<div class="brief-one-line">${escapeHtml(item.moneyLead)}</div>` : ""}
+      ${renderMatrix(item.moneyMatrix)}
+      ${item.moneyTakeaway ? `<div class="smart-callout">${escapeHtml(item.moneyTakeaway)}</div>` : ""}
+    </article>
+  `;
+}
+
+function renderIndustryLayer(item, isDraft){
+  if(item.industryMatrix){
+    return `
+      <article class="layer smart-layer">
+        <div class="layer-title"><span class="layer-num">06</span> 影响行业</div>
+        ${renderMatrix(item.industryMatrix)}
+        ${item.industryTakeaway ? `<div class="smart-callout">${escapeHtml(item.industryTakeaway)}</div>` : ""}
+      </article>
+    `;
+  }
+  if(item.win && item.lose && !isDraft){
+    return `
+      <article class="layer smart-layer">
+        <div class="layer-title"><span class="layer-num">06</span> 影响行业</div>
+        <div class="split-list">
+          <div class="split-box"><h3>受益</h3><p>${escapeHtml(item.win)}</p></div>
+          <div class="split-box"><h3>承压</h3><p>${escapeHtml(item.lose)}</p></div>
+        </div>
+      </article>
+    `;
+  }
+  return "";
+}
+
+function renderUseAdvice(value){
+  if(!value) return "";
+  if(typeof value === "string"){
+    return `
+      <article class="layer smart-layer">
+        <div class="layer-title"><span class="layer-num">07</span> 使用建议</div>
+        ${renderSmartText(value)}
+      </article>
+    `;
+  }
+
+  const cards = [];
+  const addCard = (key, fallbackTitle) => {
+    const data = value[key];
+    if(!data) return;
+    const title = data.title || fallbackTitle;
+    const points = data.points || data.items || [];
+    const sentences = data.sentences || [];
+    let body = "";
+
+    if(points.length){
+      const primary = points.slice(0,2);
+      const more = points.slice(2);
+      body += `<ul>` + primary.map(p => `<li>${escapeHtml(p)}</li>`).join("") + `</ul>`;
+      if(more.length){
+        body += `<details><summary>展开更多建议</summary><ul>` + more.map(p => `<li>${escapeHtml(p)}</li>`).join("") + `</ul></details>`;
+      }
+    }
+    if(sentences.length){
+      const primary = sentences.slice(0,2);
+      const more = sentences.slice(2);
+      body += `<div class="sentence-list">` + primary.map(s => `<div class="sentence-item">${escapeHtml(s)}</div>`).join("") + `</div>`;
+      if(more.length){
+        body += `<details><summary>展开更多句式</summary><div class="sentence-list">` + more.map(s => `<div class="sentence-item">${escapeHtml(s)}</div>`).join("") + `</div></details>`;
+      }
+    }
+    if(data.text){
+      body += renderSmartText(data.text);
+    }
+    cards.push(`<div class="use-card"><h3>${escapeHtml(title)}</h3>${body}</div>`);
+  };
+
+  addCard("foreignTrade", "外贸业务员");
+  addCard("crossBorder", "跨境卖家");
+  addCard("workplaceEnglish", "职场英文");
+  addCard("toolAdvice", "AI工具选择");
+
+  if(!cards.length) return "";
+  return `
+    <article class="layer smart-layer">
+      <div class="layer-title"><span class="layer-num">07</span> 使用建议</div>
+      <div class="use-grid">${cards.join("")}</div>
+    </article>
+  `;
+}
+
+function renderRiskLayer(item){
+  const cards = item.riskCards || [];
+  if(!cards.length && !item.riskTakeaway) return "";
+  return `
+    <article class="layer smart-layer">
+      <div class="layer-title"><span class="layer-num">08</span> 风险边界</div>
+      ${cards.length ? `<div class="risk-grid">` + cards.slice(0,3).map(c => `<div class="risk-card"><b>${escapeHtml(c.label || c.title || "风险")}</b><span>${escapeHtml(c.text || c.value || "")}</span></div>`).join("") + `</div>` : ""}
+      ${item.riskTakeaway ? `<div class="smart-callout">${escapeHtml(item.riskTakeaway)}</div>` : ""}
+    </article>
+  `;
+}
+
+function renderBusinessEnglish(item){
+  if(Array.isArray(item.terms) && item.terms.length){
+    return `
+      <article class="layer smart-layer">
+        <div class="layer-title"><span class="layer-num">09</span> Business English</div>
+        <div class="term-grid">
+          ${item.terms.map(t => `
+            <div class="term-card">
+              ${t.scenario ? `<div class="scenario">${escapeHtml(t.scenario)}</div>` : ""}
+              <h3>${escapeHtml(t.term || "")}</h3>
+              <p>${escapeHtml(t.desc || "")}</p>
+              ${t.example ? `<div class="example">${escapeHtml(t.example)}</div>` : ""}
+            </div>
+          `).join("")}
+        </div>
+      </article>
+    `;
+  }
+  return `
+    <article class="layer smart-layer">
+      <div class="layer-title"><span class="layer-num">09</span> Business English</div>
+      <h3 class="serif">${escapeHtml(item.english)}</h3>
+    </article>
+  `;
+}
+
+function renderTemplatePracticeLayer(item, isDraft){
+  const id = "tpl_" + safeId(item.id);
+  return `
+    <article class="layer smart-layer">
+      <div class="layer-title"><span class="layer-num">10</span> 模板 / 输出练习</div>
+      ${(!isDraft && item.templateCore && item.templateCore.length) ? `<div class="template-core">` + item.templateCore.map(x => `<div class="template-line">${escapeHtml(x)}</div>`).join("") + `</div>` : ""}
+      ${(!isDraft && item.template) ? `<button class="copy-btn" onclick="copyTemplate('${id}')">Copy Template</button>
+      <details class="full-template"><summary>展开完整模板</summary><pre id="${id}" class="email-box compact-email">${escapeHtml(item.template)}</pre></details>` : ""}
+      <div class="compact-practice"><b>Output Practice</b><br>${escapeHtml(item.practice || "读完 2–3 段原文后，用英文写 2 句话概括它对业务的影响。")}</div>
+      <textarea placeholder="在这里写你的今日商务英文输出..."></textarea>
+    </article>
+  `;
+}
+
+function copyTemplate(id){
+  const el = document.getElementById(id);
+  if(!el) return;
+  navigator.clipboard && navigator.clipboard.writeText(el.innerText);
+}
+
+
+function setReadingMode(mode){
+  document.body.classList.toggle("bilingual-mode", mode === "bi");
+}
+
+function getDetailSourceLine(item){
+  return [
+    `来源：${sourceDisplayName(item)}`,
+    (item.sourceDate || item.date || item.originalDate) ? `原文日期：${normalizeDateText(item.sourceDate || item.date || item.originalDate)}` : "",
+    `本站更新：${siteUpdateDate(item)}`,
+    item.readingTime ? `阅读时间：${item.readingTime}` : ""
+  ].filter(Boolean).join(" · ");
+}
+
+function renderCleanParagraphs(item){
+  const paragraphs =
+    (Array.isArray(item.paragraphs) && item.paragraphs.length)
+      ? item.paragraphs
+      : (Array.isArray(item.source?.paragraphs) && item.live.paragraphs.length)
+        ? item.live.paragraphs
+        : [{en:item.excerpt || item.title || "", cn:item.translation || item.cn || ""}];
+
+  const parallelCn = item.paragraphsChn || item.paragraphsCn || item.translations || item.source?.paragraphsChn || item.source?.paragraphsCn || [];
+
+  return `
+    <section class="paragraph-reading">
+      <div class="paragraph-reading-head">
+        <span class="num">01</span>
+        <span class="text">外刊摘录</span>
+        <select class="paragraph-mode-inline" onchange="setReadingMode(this.value)">
+          <option value="en">全英模式</option>
+          <option value="bi">中英对照</option>
+        </select>
+      </div>
+      ${paragraphs.slice(0,3).map((p, idx) => {
+        const en = p.en || p.text || p.paragraph || "";
+        const cn = p.cn || p.zh || p.translation || p.chinese || parallelCn[idx] || (paragraphs.length === 1 ? (item.translation || item.cn || item.source?.translation || "") : "");
+        return `
+          <div class="paragraph-row">
+            <div class="paragraph-kicker">Paragraph ${String(idx + 1).padStart(2,"0")}</div>
+            <div class="paragraph-en">${escapeHtml(en)}</div>
+            ${cn ? `<div class="paragraph-cn">${escapeHtml(cn)}</div>` : ""}
+          </div>
+        `;
+      }).join("")}
+    </section>
+  `;
+}
+
+function accPanel(num, title, subtitle, innerHtml){
+  if(!innerHtml) return "";
+  return `
+    <details class="acc-panel">
+      <summary>
+        <span class="acc-num">${num}</span>
+        <span class="acc-main">
+          <span class="acc-title">${title}</span>
+          <span class="acc-sub">${subtitle || ""}</span>
+        </span>
+        <span class="acc-arrow">›</span>
+      </summary>
+      <div class="acc-body">${innerHtml}</div>
+    </details>
+  `;
+}
+
+function renderTrendLayer(item){
+  if(item.trendMatrix || item.trendConclusion){
+    return `
+      <article class="layer smart-layer">
+        <div class="layer-title"><span class="layer-num">05</span> 趋势判断</div>
+        ${item.trendConclusion ? `<div class="brief-one-line">${escapeHtml(item.trendConclusion)}</div>` : ""}
+        ${renderMatrix(item.trendMatrix)}
+      </article>
+    `;
+  }
+  if(item.judgement){
+    return `
+      <article class="layer smart-layer">
+        <div class="layer-title"><span class="layer-num">05</span> 趋势判断</div>
+        ${renderSmartText(item.judgement)}
+      </article>
+    `;
+  }
+  return "";
+}
+
+
+function renderAudienceStrip(item){
+  const people = item.suitableAudience || item.audience || [];
+  if(!Array.isArray(people) || !people.length) return "";
+  return `
+    <div class="audience-strip">
+      <span class="audience-label">适合谁看</span>
+      ${people.map(x => `<span class="audience-pill">${escapeHtml(x)}</span>`).join("")}
+    </div>
+  `;
+}
+
+function detailHTML(item){
+  const isDraft = item.analysisStatus === "needs_ai_enrichment" || item.deepReady === false;
+  const templatePractice = renderTemplatePracticeLayer(item, isDraft);
+  const sourceUrl = item.sourceUrl ? `<p class="section-subnote"><a href="${escapeAttr(item.sourceUrl)}" target="_blank" rel="noopener">查看原文来源 →</a></p>` : "";
+  const businessJudgement = renderBreakdownLayer(item) + renderTrendLayer(item);
+
+  return `
+    ${renderSourceMeta(item)}
+
+    <section class="today-take-row">
+      <div class="today-take-label">Today's Take</div>
+      <div class="today-take-text">${escapeHtml(item.signalLead || item.titleCn || item.desc || "")}</div>
+    </section>
+
+    ${renderAudienceStrip(item)}
+    ${renderCleanParagraphs(item)}
+    ${sourceUrl}
+
+    <div class="analysis-rule"></div>
+    <section class="analysis-intro">
+      <h2>深度拆解</h2>
+      <p>下面内容默认折叠。想看商业判断、钱在哪里、行业影响、使用建议时再展开。</p>
+    </section>
+
+    <section class="analysis-accordion">
+      ${accPanel("02", "商业判断", "这件事说明什么趋势", businessJudgement)}
+      ${accPanel("03", "钱在哪里", "谁省钱 / 谁赚钱 / 谁被压价 / 谁升值", renderMoneyLayer(item))}
+      ${accPanel("04", "影响行业", "跨境 / 外贸 / SaaS / 外包客服", renderIndustryLayer(item, isDraft))}
+      ${accPanel("05", "使用建议", "外贸 / 跨境 / 职场英文 / AI工具", renderUseAdvice(item.userUse))}
+      ${accPanel("06", "风险边界", "哪些问题不适合 AI 单独处理", renderRiskLayer(item))}
+      ${accPanel("07", "Business English", "场景标签 + 可直接复用句式", renderBusinessEnglish(item))}
+      ${accPanel("08", "模板 / 输出练习", "骨架句先显示，完整模板再展开", templatePractice)}
+    </section>
+  `;
+}
+
+function escapeHtml(value){
+  return String(value ?? "").replace(/[&<>"']/g, ch => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[ch]));
+}
+function escapeAttr(value){ return escapeHtml(value); }
+
+function setFilter(type, value, btn){
+  if(type === "trend") state.trend = value;
+  if(type === "industry") state.industry = value;
+  document.querySelectorAll(`.filter-item[data-filter-type="${type}"]`).forEach(el => el.classList.remove("active"));
+  btn.classList.add("active");
+  renderCards();
+}
+
+document.querySelectorAll(".filter-item").forEach(btn => {
+  btn.addEventListener("click", () => setFilter(btn.dataset.filterType, btn.dataset.filter, btn));
+});
+document.getElementById("searchInput").addEventListener("input", (e) => {
+  state.search = e.target.value;
+  renderCards();
+});
+
+function inferTrendFromText(text){
+  const t = text.toLowerCase();
+  if(/ai|automation|productivity|software|workflow/.test(t)) return "ai";
+  if(/tariff|currency|rate|exchange/.test(t)) return "tariff";
+  if(/supply|shipping|logistics|freight|cost|inventory/.test(t)) return "supply";
+  return "consumer";
+}
+
+function liveToArticle(live, idx){
+  const source = live.source || {};
+  const title = source.title || live.title || `Live Business Signal ${idx+1}`;
+  const firstPara = (live.paragraphs && live.paragraphs[0]) || {};
+  const text = `${title} ${firstPara.en || ""} ${live.scenarioId || ""} ${live.signal || ""} ${live.trend || ""}`;
+
+  const trend = live.trend || inferTrendFromText(text);
+  const rawParas = Array.isArray(live.paragraphs) ? live.paragraphs.filter(p => p && (p.en || p.text)) : [];
+  const firstExcerpt = firstPara.en || source.summary || live.excerpt || title;
+
+  const fallbackByTrend = {
+    "consumer-demand": {
+      signal:"Consumer Demand",
+      titleCn:"消费需求变化正在影响定价、选品和客户沟通",
+      why:"看懂消费者预算、偏好和购买动机如何变化，避免只凭感觉判断市场。",
+      action:"转成选品判断、价格解释、客户开发和销售汇报中的可用表达。",
+      english:"consumer demand is shifting toward value-conscious choices"
+    },
+    "supply-chain-cost": {
+      signal:"Supply Chain / Cost Pressure",
+      titleCn:"供应链与成本压力正在改变企业交付和利润逻辑",
+      why:"看懂成本、库存、物流和供应稳定性如何影响报价与交付。",
+      action:"转成报价解释、供应商沟通、交期说明和内部汇报中的可用表达。",
+      english:"manage cost pressure across the supply chain"
+    },
+    "tariff-currency": {
+      signal:"Tariff / Currency",
+      titleCn:"关税与汇率变化正在重塑跨境成本和报价策略",
+      why:"看懂关税、汇率和贸易政策如何影响总 landed cost。",
+      action:"转成报价重算、客户解释、采购路线调整和风险提示中的可用表达。",
+      english:"reduce exposure to tariff-related cost pressure"
+    },
+    "ai-productivity": {
+      signal:"AI Productivity",
+      titleCn:"AI 效率工具正在改变工作流程和运营成本结构",
+      why:"看懂 AI 不只是写文案，而是如何影响客服、运营、流程和生产率。",
+      action:"转成内部提案、流程优化、客服自动化和效率汇报中的可用表达。",
+      english:"streamline workflows and reduce manual workload"
+    },
+    "retail-inventory": {
+      signal:"Retail / Inventory",
+      titleCn:"零售与库存变化正在影响促销、利润和现金流",
+      why:"看懂库存压力、折扣、零售需求和品牌利润之间的关系。",
+      action:"转成库存决策、促销规划、渠道沟通和销售复盘中的可用表达。",
+      english:"rebalance inventory while protecting margins"
+    },
+    "business-strategy": {
+      signal:"Business Strategy",
+      titleCn:"企业正在重新校准增长、成本和运营韧性",
+      why:"看懂企业如何在不确定环境里调整战略、组织和资源配置。",
+      action:"转成汇报、复盘、管理沟通和商务邮件里的判断表达。",
+      english:"recalibrate our operating model"
+    }
+  };
+
+  const fallback = fallbackByTrend[trend] || fallbackByTrend["business-strategy"];
+
+  return {
+    id: live.id || `live-${idx}-${String(live.scenarioId || "signal").replace(/[^a-z0-9-]/gi,"")}`,
+    trend,
+    industry: live.industry || "crossborder",
+    signal: live.signal || fallback.signal,
+    pill: live.pill || live.sourceType || "Auto Pick",
+    title,
+    titleCn: live.titleCn || source.titleCn || fallback.titleCn,
+    titleTranslation: live.titleTranslation || live.translation || source.translation || source.summaryCn || live.desc || fallback.titleCn,
+    meaning: live.meaning || source.summaryCn || live.desc || live.titleCn || source.titleCn || fallback.titleCn,
+    desc: live.desc || source.summaryCn || fallback.titleCn,
+    why: live.why || source.why || fallback.why,
+    action: live.action || source.action || fallback.action,
+    sourceName: source.name || live.sourceName || "Live Source",
+    sourceUrl: source.url || live.sourceUrl || "",
+    source: live.source || source || {},
+    sourceDate: live.sourceDate || source.sourceDate || source.date || live.date || "",
+    date: live.sourceDate || source.sourceDate || source.date || live.date || "",
+    updatedAt: live.updatedAt || live.publishDate || live.siteUpdatedAt || "",
+    readingTime: live.readingTime || "5 分钟",
+    excerpt: firstExcerpt,
+    paragraphs: rawParas.length ? rawParas : [{en:firstExcerpt, cn:firstPara.cn || live.translation || source.translation || source.summaryCn || ""}],
+    analysisStatus: live.analysisStatus || "needs_ai_enrichment",
+    deepReady: live.deepReady === true,
+    breakdown: live.breakdown || "",
+    judgement: live.judgement || "",
+    win: live.win || "",
+    lose: live.lose || "",
+    userUse: live.userUse || "",
+    english: live.english || fallback.english,
+    suitableAudience: live.suitableAudience || live.audience || source.suitableAudience || [],
+    signalLead: live.signalLead || live.titleCn || source.titleCn || fallback.titleCn,
+    signalCards: live.signalCards || [],
+    evidenceCards: live.evidenceCards || [],
+    breakdownConclusion: live.breakdownConclusion || "",
+    breakdownMatrix: live.breakdownMatrix || null,
+    breakdownAction: live.breakdownAction || "",
+    trendConclusion: live.trendConclusion || "",
+    trendMatrix: live.trendMatrix || null,
+    moneyLead: live.moneyLead || "",
+    moneyMatrix: live.moneyMatrix || null,
+    moneyTakeaway: live.moneyTakeaway || "",
+    industryMatrix: live.industryMatrix || null,
+    industryTakeaway: live.industryTakeaway || "",
+    terms: live.terms || [],
+    riskCards: live.riskCards || [],
+    riskTakeaway: live.riskTakeaway || "",
+    templateCore: live.templateCore || [],
+    template: live.template || `Hi [Name],
+
+We are monitoring this trend closely and will adjust our plan accordingly. I will share a more detailed update once we have confirmed the potential impact on cost, demand and delivery.
+
+Best,
+[Your Name]`,
+    practice: live.practice || "用英文写 2 句话，说明这条新闻对你的业务有什么影响。"
+  };
+}
+
+async function loadLive(){
+  try{
+    const res = await fetch("business-english-live.json?ts=" + Date.now(), {cache:"no-store"});
+    if(!res.ok) return;
+    const payload = await res.json();
+    if(!payload || !Array.isArray(payload.scenarios) || !payload.scenarios.length) return;
+    const liveArticles = payload.scenarios.filter(x => x && x.publishable !== false && x.quality !== "weak").map(liveToArticle);
+    const liveIds = new Set(liveArticles.map(item => item.id));
+    state.articles = [...liveArticles, ...DEFAULT_ARTICLES.filter(item => !liveIds.has(item.id))];
+    state.current = state.articles[0];
+    renderHero();
+    renderCards();
+    openFromHash();
+  } catch(err) {
+    console.warn("live json not loaded", err);
+  }
+}
+
+
+function openFromHash(){
+  if(!location.hash || !location.hash.startsWith("#article-")) return;
+  const id = decodeURIComponent(location.hash.replace("#article-",""));
+  const item = state.articles.find(a => a.id === id);
+  if(item) openDetail(id);
+}
+window.addEventListener("hashchange", openFromHash);
+
+renderHero();
+renderCards();
+loadLive();
+openFromHash();
+</script>
+</body>
+</html>
