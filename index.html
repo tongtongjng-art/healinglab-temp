@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>商业外刊工作读本 | Business Briefing for Real Work </title>
+<title>商业外刊工作读本 | Business Briefing for Real Work</title>
 <style>
   :root {
     --bg:#f7f7f4;
@@ -324,26 +324,12 @@
     position:relative;
     border-left:1.5px solid var(--black);
     background-image:
-      linear-gradient(110deg, rgba(255,255,255,.12) 0%, rgba(255,255,255,.05) 36%, rgba(0,0,0,.12) 100%),
-      url("https://hips.hearstapps.com/hmg-prod/images/068050ed-90a1-4051-b04a-c8427a196b5a.png?crop=0.5xw%3A1xh%3B0.5xw%2C0xh&resize=1200%3A%2A");
+      linear-gradient(110deg, rgba(255,255,255,.38) 0%, rgba(255,255,255,.12) 36%, rgba(0,0,0,.48) 100%),
+      url("assets/business-briefing-hero.png");
     background-size:cover;
-    background-position:center 42%;
+    background-position:center center;
     min-height:340px;
     overflow:hidden;
-    filter:saturate(.46) contrast(.93) brightness(1.03);
-  }
-
-  .hero-image::after{
-    content:"";
-    position:absolute;
-    inset:0;
-    background:rgba(236,232,226,.20);
-    pointer-events:none;
-  }
-
-  .hero-image > *{
-    position:relative;
-    z-index:1;
   }
 
   .ghost {
@@ -352,7 +338,7 @@
     left:38px;
     color:rgba(255,255,255,.18);
     font-family:Georgia,"Times New Roman",serif;
-    font-size:58px;
+    font-size:64px;
     font-weight:900;
     letter-spacing:.08em;
   }
@@ -364,8 +350,8 @@
     text-align:right;
     color:#fff;
     font-family:Georgia,"Times New Roman",serif;
-    font-size:27px;
-    line-height:1.06;
+    font-size:32px;
+    line-height:1.03;
     font-weight:900;
     letter-spacing:.06em;
     text-shadow:0 2px 16px rgba(0,0,0,.55);
@@ -719,8 +705,8 @@
 
   
     /* Business Signal Brief product structure */
-    .evidence-grid,.risk-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:14px;}
-    .evidence-card,.risk-card{border:1px solid var(--line);background:#fafaf7;padding:14px 15px;line-height:1.55;}
+    .evidence-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:14px;}
+    .risk-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:14px;}\n    .evidence-card,.risk-card{border:1px solid var(--line);background:#fafaf7;padding:14px 15px;line-height:1.55;}
     .evidence-card b,.risk-card b{display:block;color:var(--red);font-size:12px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:7px;}
     .money-tag{display:inline-block;border:1px solid var(--line);background:#fff;padding:3px 8px;font-size:12px;font-weight:900;color:var(--red);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;}
     .brief-one-line{font-size:18px;line-height:1.6;font-weight:900;margin:0 0 12px;}
@@ -1055,7 +1041,98 @@
       margin-right:2px;
     }
 
-  </style>
+  
+  /* Per-article hero visual */
+  .hero-image.article-specific .ghost,
+  .hero-image.article-specific .image-word {
+    display:none;
+  }
+
+  .hero-image.topic-visual {
+    display:flex;
+    align-items:flex-end;
+    padding:30px 32px;
+    background:
+      radial-gradient(circle at 18% 24%, rgba(224,120,128,.75) 0 7%, transparent 7.5%),
+      radial-gradient(circle at 31% 38%, rgba(241,184,110,.72) 0 9%, transparent 9.5%),
+      radial-gradient(circle at 72% 26%, rgba(155,125,182,.72) 0 8%, transparent 8.5%),
+      radial-gradient(circle at 82% 56%, rgba(111,153,126,.68) 0 10%, transparent 10.5%),
+      linear-gradient(135deg, #efe3d8 0%, #d9c5ba 48%, #aa8f86 100%);
+  }
+
+  .topic-visual-copy {
+    display:none;
+    position:relative;
+    z-index:2;
+    max-width:90%;
+    color:#fff;
+    text-shadow:0 2px 18px rgba(0,0,0,.34);
+  }
+
+  .hero-image.topic-visual .topic-visual-copy {
+    display:block;
+  }
+
+  .topic-visual-copy small {
+    display:block;
+    margin-bottom:10px;
+    font-size:11px;
+    font-weight:900;
+    letter-spacing:.22em;
+    text-transform:uppercase;
+  }
+
+  .topic-visual-copy strong {
+    display:block;
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:34px;
+    line-height:1.02;
+    letter-spacing:.02em;
+  }
+
+  .topic-visual-copy span {
+    display:block;
+    margin-top:12px;
+    max-width:360px;
+    font-size:13px;
+    line-height:1.55;
+  }
+
+  .article-image-gallery {
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:12px;
+    margin:0 0 26px;
+  }
+
+  .article-image-card {
+    margin:0;
+    border:1px solid var(--line);
+    background:var(--paper);
+    overflow:hidden;
+  }
+
+  .article-image-card img {
+    display:block;
+    width:100%;
+    height:210px;
+    object-fit:cover;
+    background:#f1f1ed;
+  }
+
+  .article-image-card figcaption {
+    padding:9px 11px 10px;
+    color:var(--muted);
+    font-size:12px;
+    line-height:1.5;
+  }
+
+  @media(max-width:900px){
+    .article-image-gallery { grid-template-columns:1fr; }
+    .article-image-card img { height:auto; max-height:420px; }
+  }
+
+</style>
 </head>
 <body>
   <div class="page home-view">
@@ -1117,25 +1194,30 @@
                 <span class="pill">Business English</span>
               </div>
 
-              <h2 class="hero-title serif" id="heroTitle">Hasbro debuts Play-Doh for adults</h2>
-              <div class="hero-translation" id="heroTranslation">Hasbro把Play-Doh做成成人花艺套装，背后不是一款新品，而是一批新买家正在进入玩具市场。</div>
-              <div class="hero-cn"><span class="judgement-label">今日判断：</span><span id="heroCn">成年人正在改写玩具市场</span></div>
+              <h2 class="hero-title serif" id="heroTitle">Today’s overseas business signal</h2>
+              <div class="hero-translation" id="heroTranslation">用外刊和一手数据，提前看懂海外生意往哪里走。</div>
+              <div class="hero-cn"><span class="judgement-label">今日判断：</span><span id="heroCn">AI客服省的是标准工单，真正值钱的是异常处理和客户挽回</span></div>
 
               <div class="mini-grid">
                 <div class="mini">
                   <h4>原文在说什么？</h4>
-                  <p id="heroMeaning">Hasbro推出了首个专门面向成年人的Play-Doh系列。与此同时，美国玩具市场的增长，越来越多来自成年人和女性消费者。</p>
+                  <p id="heroMeaning">这篇外刊正在说明一项值得继续验证的海外商业变化。</p>
                 </div>
                 <div class="mini">
                   <h4>我能拿来做什么？</h4>
-                  <p id="heroAction">先研究成人手作、感官减压和可展示DIY产品的搜索、价格、评论与内容表现，再用一个小套装测试需求，不要看到大品牌入场就直接压货。</p>
+                  <p id="heroAction">做客服SOP、英文售后模板、客户挽回话术和AI质检流程。</p>
                 </div>
               </div>
             </div>
 
             <div class="hero-image">
-              <div class="ghost">PLAY</div>
-              <div class="image-word">ADULT<br>CRAFT<br>SIGNAL</div>
+              <div class="ghost">GLOBAL</div>
+              <div class="image-word">GLOBAL<br>TRADE<br>SIGNAL</div>
+              <div class="topic-visual-copy" aria-hidden="true">
+                <small id="heroVisualEyebrow"></small>
+                <strong id="heroVisualHeadline"></strong>
+                <span id="heroVisualNote"></span>
+              </div>
             </div>
           </div>
 
@@ -1210,31 +1292,29 @@
 <script>
 const DEFAULT_ARTICLES = [
   {
-    id:"biz-20260715-adults-reshape-toy-market-playdoh-blooms",
-    trend:"consumer",
+    id:"tariff-supply-chain",
+    trend:"supply",
     industry:"crossborder",
-    signal:"Adult Consumer / Product Repositioning",
-    pill:"Consumer Trend",
-    title:"Hasbro debuts Play-Doh for adults",
-    titleCn:"成年人正在改写玩具市场",
-    titleTranslation:"Hasbro把Play-Doh做成成人花艺套装，背后不是一款新品，而是一批新买家正在进入玩具市场。",
-    meaning:"Hasbro推出了首个专门面向成年人的Play-Doh系列。与此同时，美国玩具市场的增长，越来越多来自成年人和女性消费者。",
-    desc:"Hasbro推出首个专门面向成年人的Blooms by Play-Doh，把橡皮泥做成可以减压、创作并长期展示的花艺套装。同期数据显示，成年人和女性正在贡献美国玩具市场的重要增量。",
-    why:"玩具正在从儿童用品，扩展为成年人的情绪消费、手工体验、家居装饰、礼物和社交内容。值得关注的不是照搬一款花艺套装，而是产品使用场景和付款理由发生了变化。",
-    action:"先研究成人手作、感官减压和可展示DIY产品的搜索、价格、评论与内容表现，再用一个小套装测试需求，不要看到大品牌入场就直接压货。",
-    source:"Retail Dive",
-    date:"2026-07-09",
-    readingTime:"8分钟",
-    excerpt:"Hasbro has launched Blooms by Play-Doh, the first Play-Doh collection created specifically for adults. Instead of making temporary toy shapes, users build realistic floral arrangements that can be preserved and displayed as home décor.",
-    translation:"Hasbro推出了Blooms by Play-Doh，这是Play-Doh首个专门面向成年人的产品系列。用户不再只是捏出短暂的玩具造型，而是制作可以定型、长期展示的仿真花艺摆件。",
-    breakdown:"这篇不只是说成年人也会买玩具。真正的变化是：玩具开始同时承担减压、创作、家居装饰、礼物和内容传播的功能，购买理由已经超出“给孩子玩”。",
-    judgement:"成年人正在改写玩具市场",
-    win:"成人手作、感官减压、礼物和家居展示型产品。",
-    lose:"只换包装、不改变使用场景和成品价值的普通儿童玩具。",
-    userUse:"用于成人手作产品开发、跨境选品和内容测试。",
-    english:"The category is expanding beyond children's play into adult crafting, gifting and home décor.",
-    template:"Hi [Name],\n\nWe are researching an adult-oriented craft kit for the gifting and home décor market. The product should provide a complete hands-on experience and produce a finished piece that is attractive enough to display.\n\nCould you please share your available materials, customization options, MOQ, packaging choices and relevant safety documents? We would also like to know whether you can support a small pilot order before mass production.\n\nBest,\n[Your Name]",
-    practice:"任选一个成人手作或感官产品，记录它的目标人群、购买场景、价格带、评论中的前三个购买理由，以及你准备先验证的一个最小产品方案。"
+    signal:"Supply Chain / Cost Pressure",
+    pill:"Global Trade",
+    title:"Today’s overseas business signal",
+    titleCn:"AI客服省的是标准工单，真正值钱的是异常处理和客户挽回",
+    desc:"AI客服真正省掉的是标准工单，真正值钱的是异常处理、退款争议和客户挽回。",
+    why:"看AI如何重塑低成本岗位、服务分层和客户体验边界。",
+    action:"做客服SOP、英文售后模板、客户挽回话术和AI质检流程。",
+    source:"WSJ",
+    date:"2026.06.17",
+    readingTime:"5 分钟",
+    excerpt:"Companies are rethinking sourcing routes, cost structures and supplier resilience as tariff pressure changes the economics of global manufacturing.",
+    translation:"随着关税压力改变全球制造业的经济逻辑，企业正在重新思考采购路线、成本结构和供应商韧性。",
+    breakdown:"这类新闻表面是关税变化，本质是企业成本结构、供应链稳定性和客户报价逻辑在重新排列。",
+    judgement:"未来客户沟通不能只谈价格，还要解释成本来源、交付风险和替代方案。",
+    win:"本地化供应商、供应链透明度工具、能提供稳定交付的制造商。",
+    lose:"只靠低价接单、没有风险解释能力和替代方案的供应商。",
+    userUse:"外贸用户可用于报价解释；跨境用户可用于供应商选择；职场用户可用于汇报成本风险。",
+    english:"We are reviewing alternative sourcing routes to reduce exposure to tariff-related cost pressure.",
+    template:"Hi [Name],\\n\\nGiven the recent tariff-related cost pressure, we are reviewing alternative sourcing routes and supplier options. This will help us improve delivery stability while keeping the total landed cost under control.\\n\\nBest,\\n[Your Name]",
+    practice:"用英文写 2 句话，向客户解释为什么报价需要重新核算，同时强调你会提供替代方案。"
   },
   {
     id:"premium-care",
@@ -1353,18 +1433,90 @@ function renderHero(){
   document.getElementById("heroTitle").textContent = item.title;
   document.getElementById("heroCn").textContent = item.titleCn;
   const heroTranslation = document.getElementById("heroTranslation");
-  if(heroTranslation) heroTranslation.textContent = item.titleTranslation || item.desc || "";
+  if(heroTranslation) heroTranslation.textContent = item.titleTranslation || "用外刊和一手数据，提前看懂海外生意往哪里走。";
   const heroMeaning = document.getElementById("heroMeaning");
-  if(heroMeaning) heroMeaning.textContent = item.meaning || item.desc || "";
+  if(heroMeaning) heroMeaning.textContent = item.meaning || "这篇外刊正在说明一项值得继续验证的海外商业变化。";
   const heroDesc = document.getElementById("heroDesc");
   if(heroDesc) heroDesc.textContent = item.desc || "";
   const heroWhy = document.getElementById("heroWhy");
   if(heroWhy) heroWhy.textContent = item.why || "";
   document.getElementById("heroAction").textContent = item.action;
   document.getElementById("heroSource").textContent = formatHomeSource(item);
+  updateHeroVisual(item);
   const heroCta = document.getElementById("heroCta");
   heroCta.href = "#article-" + encodeURIComponent(item.id);
   heroCta.onclick = (e) => { e.preventDefault(); openDetail(item.id); };
+}
+
+
+function imageSrc(value){
+  if(!value) return "";
+  if(typeof value === "string") return value;
+  if(typeof value === "object") return value.src || value.url || "";
+  return "";
+}
+
+function safeCssUrl(value){
+  return String(value || "").replace(/["\\\n\r]/g, "");
+}
+
+function updateHeroVisual(item){
+  const hero = document.querySelector(".hero-image");
+  if(!hero) return;
+
+  const src = imageSrc(item.heroImage);
+  const visual = item.heroVisual && typeof item.heroVisual === "object" ? item.heroVisual : null;
+  const eyebrow = document.getElementById("heroVisualEyebrow");
+  const headline = document.getElementById("heroVisualHeadline");
+  const note = document.getElementById("heroVisualNote");
+
+  hero.classList.remove("article-specific", "topic-visual");
+  hero.style.backgroundImage = "";
+  hero.removeAttribute("role");
+  hero.removeAttribute("aria-label");
+
+  if(src){
+    hero.style.backgroundImage =
+      `linear-gradient(110deg, rgba(255,255,255,.12) 0%, rgba(255,255,255,.03) 38%, rgba(0,0,0,.18) 100%), url("${safeCssUrl(src)}")`;
+    hero.classList.add("article-specific");
+    hero.setAttribute("role", "img");
+    hero.setAttribute(
+      "aria-label",
+      (typeof item.heroImage === "object" && item.heroImage.alt)
+        ? item.heroImage.alt
+        : (item.imageAlt || item.titleCn || item.title || "文章相关图片")
+    );
+    return;
+  }
+
+  if(visual){
+    hero.classList.add("article-specific", "topic-visual");
+    if(eyebrow) eyebrow.textContent = visual.eyebrow || "";
+    if(headline) headline.textContent = visual.headline || item.titleCn || item.title || "";
+    if(note) note.textContent = visual.note || "";
+  }
+}
+
+function renderSupportImages(item){
+  const raw = Array.isArray(item.supportImages) ? item.supportImages : [];
+  const images = raw.map(img => ({
+    src:imageSrc(img),
+    alt:(img && typeof img === "object" && img.alt) || item.titleCn || item.title || "文章相关图片",
+    caption:(img && typeof img === "object" && img.caption) || ""
+  })).filter(img => img.src);
+
+  if(!images.length) return "";
+
+  return `
+    <section class="article-image-gallery" aria-label="文章相关图片">
+      ${images.slice(0,3).map(img => `
+        <figure class="article-image-card">
+          <img src="${escapeAttr(img.src)}" alt="${escapeAttr(img.alt)}" loading="lazy">
+          ${img.caption ? `<figcaption>${escapeHtml(img.caption)}</figcaption>` : ""}
+        </figure>
+      `).join("")}
+    </section>
+  `;
 }
 
 function renderCards(){
@@ -1453,7 +1605,7 @@ function renderSmartText(value){
 
 function renderBriefCards(cards){
   if(!Array.isArray(cards) || !cards.length) return "";
-  return `<div class="brief-grid">` + cards.slice(0,3).map(c => `
+  return `<div class="brief-grid">` + cards.slice(0,4).map(c => `
     <div class="brief-card">
       <b>${escapeHtml(c.label || c.title || "")}</b>
       <span>${escapeHtml(c.text || c.value || "")}</span>
@@ -1546,7 +1698,7 @@ function renderMoneyLayer(item){
   if(!item.moneyMatrix && !item.moneyTakeaway) return "";
   return `
     <article class="layer smart-layer">
-      <div class="layer-title"><span class="layer-num">05</span> 钱在哪里</div>
+      <div class="layer-title"><span class="layer-num">05</span> 可做的海外机会</div>
       ${item.moneyLead ? `<div class="brief-one-line">${escapeHtml(item.moneyLead)}</div>` : ""}
       ${renderMatrix(item.moneyMatrix)}
       ${item.moneyTakeaway ? `<div class="smart-callout">${escapeHtml(item.moneyTakeaway)}</div>` : ""}
@@ -1583,7 +1735,7 @@ function renderUseAdvice(value){
   if(typeof value === "string"){
     return `
       <article class="layer smart-layer">
-        <div class="layer-title"><span class="layer-num">07</span> 使用建议</div>
+        <div class="layer-title"><span class="layer-num">07</span> 分人群怎么做</div>
         ${renderSmartText(value)}
       </article>
     `;
@@ -1599,20 +1751,10 @@ function renderUseAdvice(value){
     let body = "";
 
     if(points.length){
-      const primary = points.slice(0,2);
-      const more = points.slice(2);
-      body += `<ul>` + primary.map(p => `<li>${escapeHtml(p)}</li>`).join("") + `</ul>`;
-      if(more.length){
-        body += `<details><summary>展开更多建议</summary><ul>` + more.map(p => `<li>${escapeHtml(p)}</li>`).join("") + `</ul></details>`;
-      }
+      body += `<ul>` + points.map(p => `<li>${escapeHtml(p)}</li>`).join("") + `</ul>`;
     }
     if(sentences.length){
-      const primary = sentences.slice(0,2);
-      const more = sentences.slice(2);
-      body += `<div class="sentence-list">` + primary.map(s => `<div class="sentence-item">${escapeHtml(s)}</div>`).join("") + `</div>`;
-      if(more.length){
-        body += `<details><summary>展开更多句式</summary><div class="sentence-list">` + more.map(s => `<div class="sentence-item">${escapeHtml(s)}</div>`).join("") + `</div></details>`;
-      }
+      body += `<details><summary>英文沟通句</summary><div class="sentence-list">` + sentences.map(s => `<div class="sentence-item">${escapeHtml(s)}</div>`).join("") + `</div></details>`;
     }
     if(data.text){
       body += renderSmartText(data.text);
@@ -1620,15 +1762,15 @@ function renderUseAdvice(value){
     cards.push(`<div class="use-card"><h3>${escapeHtml(title)}</h3>${body}</div>`);
   };
 
-  addCard("foreignTrade", "外贸业务员");
-  addCard("crossBorder", "跨境卖家");
-  addCard("workplaceEnglish", "职场英文");
-  addCard("toolAdvice", "AI工具选择");
+  addCard("foreignTrade", "外贸工厂");
+  addCard("crossBorder", "美国站跨境卖家");
+  addCard("workplaceEnglish", "独立站和海外品牌");
+  addCard("toolAdvice", "包装与供应链服务商");
 
   if(!cards.length) return "";
   return `
     <article class="layer smart-layer">
-      <div class="layer-title"><span class="layer-num">07</span> 使用建议</div>
+      <div class="layer-title"><span class="layer-num">07</span> 分人群怎么做</div>
       <div class="use-grid">${cards.join("")}</div>
     </article>
   `;
@@ -1639,8 +1781,8 @@ function renderRiskLayer(item){
   if(!cards.length && !item.riskTakeaway) return "";
   return `
     <article class="layer smart-layer">
-      <div class="layer-title"><span class="layer-num">08</span> 风险边界</div>
-      ${cards.length ? `<div class="risk-grid">` + cards.slice(0,3).map(c => `<div class="risk-card"><b>${escapeHtml(c.label || c.title || "风险")}</b><span>${escapeHtml(c.text || c.value || "")}</span></div>`).join("") + `</div>` : ""}
+      <div class="layer-title"><span class="layer-num">08</span> 核算与注意事项</div>
+      ${cards.length ? `<div class="risk-grid">` + cards.slice(0,4).map(c => `<div class="risk-card"><b>${escapeHtml(c.label || c.title || "风险")}</b><span>${escapeHtml(c.text || c.value || "")}</span></div>`).join("") + `</div>` : ""}
       ${item.riskTakeaway ? `<div class="smart-callout">${escapeHtml(item.riskTakeaway)}</div>` : ""}
     </article>
   `;
@@ -1806,23 +1948,23 @@ function detailHTML(item){
     </section>
 
     ${renderAudienceStrip(item)}
+    ${renderSupportImages(item)}
     ${renderCleanParagraphs(item)}
     ${sourceUrl}
 
     <div class="analysis-rule"></div>
     <section class="analysis-intro">
       <h2>深度拆解</h2>
-      <p>下面内容默认折叠。想看商业判断、钱在哪里、行业影响、使用建议时再展开。</p>
+      <p>按文章内容展开，只保留与文章直接相关、能够落地的模块。</p>
     </section>
 
     <section class="analysis-accordion">
-      ${accPanel("02", "商业判断", "这件事说明什么趋势", businessJudgement)}
-      ${accPanel("03", "钱在哪里", "谁省钱 / 谁赚钱 / 谁被压价 / 谁升值", renderMoneyLayer(item))}
-      ${accPanel("04", "影响行业", "跨境 / 外贸 / SaaS / 外包客服", renderIndustryLayer(item, isDraft))}
-      ${accPanel("05", "使用建议", "外贸 / 跨境 / 职场英文 / AI工具", renderUseAdvice(item.userUse))}
-      ${accPanel("06", "风险边界", "哪些问题不适合 AI 单独处理", renderRiskLayer(item))}
-      ${accPanel("07", "Business English", "场景标签 + 可直接复用句式", renderBusinessEnglish(item))}
-      ${accPanel("08", "模板 / 输出练习", "骨架句先显示，完整模板再展开", templatePractice)}
+      ${accPanel("02", "商业判断", "这篇文章对跨境和外贸有什么用", businessJudgement)}
+      ${accPanel("03", "可做的海外机会", "具体产品 / 包装 / 供应链服务", renderMoneyLayer(item))}
+      ${accPanel("04", "分人群怎么做", "跨境卖家 / 外贸工厂 / 海外品牌 / 包装服务", renderUseAdvice(item.userUse))}
+      ${accPanel("05", "核算与注意事项", "佣金 / 履约 / 包装 / 合规", renderRiskLayer(item))}
+      ${accPanel("06", "Business English", "场景词汇 + 可直接复用句式", renderBusinessEnglish(item))}
+      ${accPanel("07", "模板 / 输出练习", "供应商询价模板 + 利润测算练习", templatePractice)}
     </section>
   `;
 }
@@ -1926,6 +2068,9 @@ function liveToArticle(live, idx){
     desc: live.desc || source.summaryCn || fallback.titleCn,
     why: live.why || source.why || fallback.why,
     action: live.action || source.action || fallback.action,
+    heroImage: live.heroImage || source.heroImage || "",
+    heroVisual: live.heroVisual || source.heroVisual || null,
+    supportImages: live.supportImages || source.supportImages || [],
     sourceName: source.name || live.sourceName || "Live Source",
     sourceUrl: source.url || live.sourceUrl || "",
     source: live.source || source || {},
@@ -1978,8 +2123,7 @@ async function loadLive(){
     const payload = await res.json();
     if(!payload || !Array.isArray(payload.scenarios) || !payload.scenarios.length) return;
     const liveArticles = payload.scenarios.filter(x => x && x.publishable !== false && x.quality !== "weak").map(liveToArticle);
-    const liveIds = new Set(liveArticles.map(item => item.id));
-    state.articles = [...liveArticles, ...DEFAULT_ARTICLES.filter(item => !liveIds.has(item.id))];
+    state.articles = [...liveArticles, ...DEFAULT_ARTICLES];
     state.current = state.articles[0];
     renderHero();
     renderCards();
