@@ -1490,17 +1490,19 @@ const DEFAULT_ARTICLES = [
   }
 ];
 
-const state = { trend:"all", industry:"all", search:"", current: DEFAULT_ARTICLES[0], articles:[...DEFAULT_ARTICLES] };
+const state = { trend:"all", industry:"all", search:"", main:"today", current: DEFAULT_ARTICLES[0], articles:[...DEFAULT_ARTICLES] };
 
 function categoryText(item){ return item.signal || "Business Signal"; }
 
 function filteredArticles(){
   const q = state.search.trim().toLowerCase();
+  const latestId = state.articles[0]?.id;
   return state.articles.filter(item => {
+    const modeOk = state.main === "archive" ? item.id !== latestId : true;
     const trendOk = state.trend === "all" || item.trend === state.trend;
     const industryOk = state.industry === "all" || item.industry === state.industry;
     const searchOk = !q || [item.title,item.titleCn,item.signal,item.english,item.desc].join(" ").toLowerCase().includes(q);
-    return trendOk && industryOk && searchOk;
+    return modeOk && trendOk && industryOk && searchOk;
   });
 }
 
@@ -2224,6 +2226,40 @@ function escapeHtml(value){
 }
 function escapeAttr(value){ return escapeHtml(value); }
 
+
+function setMainView(mode, btn){
+  state.main = mode === "archive" ? "archive" : "today";
+
+  document.querySelectorAll(".nav [data-main]").forEach(el => el.classList.remove("active"));
+  if(btn) btn.classList.add("active");
+
+  const hero = document.querySelector(".hero-card");
+  const rjo = document.querySelector(".rjo");
+  const todayLabel = document.querySelector(".today-label");
+  const signalsHead = document.querySelector(".signals-head");
+
+  const archiveMode = state.main === "archive";
+  if(hero) hero.style.display = archiveMode ? "none" : "";
+  if(rjo) rjo.style.display = archiveMode ? "none" : "";
+  if(todayLabel) todayLabel.textContent = archiveMode ? "Archive · 历史文章" : "Today's Pick · 今日外刊";
+  if(signalsHead){
+    const title = signalsHead.querySelector(".signals-title");
+    if(title) title.innerHTML = archiveMode
+      ? `历史文章 <span>/ 按发布时间保存</span>`
+      : `<span>/ 商业信号卡</span>`;
+  }
+
+  renderCards();
+  window.scrollTo(0,0);
+}
+
+document.querySelectorAll(".nav [data-main]").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const mode = btn.dataset.main === "archive" ? "archive" : "today";
+    setMainView(mode, btn);
+  });
+});
+
 function setFilter(type, value, btn){
   if(type === "trend") state.trend = value;
   if(type === "industry") state.industry = value;
@@ -2379,8 +2415,17 @@ async function loadLive(){
     if(!res.ok) return;
     const payload = await res.json();
     if(!payload || !Array.isArray(payload.scenarios) || !payload.scenarios.length) return;
-    const liveArticles = payload.scenarios.filter(x => x && x.publishable !== false && x.quality !== "weak").map(liveToArticle);
-    state.articles = [...liveArticles, ...DEFAULT_ARTICLES];
+    const liveArticles = payload.scenarios
+      .filter(x => x && x.publishable !== false && x.quality !== "weak")
+      .map(liveToArticle);
+
+    const merged = [...liveArticles, ...DEFAULT_ARTICLES];
+    const seen = new Set();
+    state.articles = merged.filter(item => {
+      if(!item || !item.id || seen.has(item.id)) return false;
+      seen.add(item.id);
+      return true;
+    });
     state.current = state.articles[0];
     renderHero();
     renderCards();
