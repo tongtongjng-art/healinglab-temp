@@ -33,19 +33,18 @@
         }
       ],
       "title": "How $9.99 Became the Most Compelling Price in Retail",
-      "titleCn": "美国零售商为什么死守9.99美元",
-      "titleTranslation": "成本上涨后，美国品牌开始缩包装、减数量、改工艺，把部分商品继续留在10美元以下。",
-      "meaning": "美国消费者对10美元这个价格线更敏感。品牌会先定9.99美元，再倒推包装、数量、生产成本和利润。",
-      "desc": "Hasbro简化玩具包装，Boston Beer把6罐装改成4罐装，Michaels继续增加10美元以下商品。跨境卖家可以据此设计小规格入口款；外贸工厂可以给海外客户提供小包装、轻包装和低MOQ试单方案。",
-      "why": "9.99美元正在影响产品开发。售价、佣金、包装尺寸、运输重量和工厂成本需要一起计算。",
-      "action": "拿一个现有SKU，分别计算9.99美元、10.99美元和当前售价的单件利润，再决定是否开发小规格入口款。",
+      "titleCn": "美国零售商死守9.99美元，跨境卖家该做小规格吗？",
+      "titleTranslation": "成本继续上涨，美国品牌开始改包装、改数量和改工艺，把部分商品留在10美元以下。",
+      "meaning": "10美元是美国零售中的重要价格线。对跨境卖家来说，关键问题是小规格能否提高转化，同时保住单件贡献利润。对外贸工厂来说，机会集中在简包装、小规格和小批量试单方案。",
+      "desc": "文章列出了Hasbro、Boston Beer、Michaels和Clean Cult的具体动作。下面把事实、判断和操作步骤分开讲清楚。",
+      "why": "美国消费者更在意价格，生产、燃料和关税成本又在上涨。部分品牌开始从目标零售价倒推包装、数量和制造方式。",
+      "action": "选一个现有SKU，分别计算9.99美元、10.99美元和当前售价的单件贡献利润，再决定是否开发小规格。",
       "suitableAudience": [
         "美国站跨境卖家",
-        "外贸工厂与ODM供应商",
-        "独立站和海外品牌",
-        "包装与供应链服务商"
+        "给海外品牌供货的外贸工厂",
+        "正在设计入口SKU的海外品牌"
       ],
-      "signalLead": "美国消费者对10美元这个价格线更敏感。Hasbro简化玩具包装，Boston Beer把6罐装改成4罐装，Michaels继续增加10美元以下商品。跨境卖家可以测试9.99美元小规格SKU，外贸工厂可以给海外客户提供更轻、更小、起订量更低的包装方案。",
+      "signalLead": "美国品牌正在围绕9.99美元重新设计产品。跨境卖家需要先算清利润，再测试小规格；外贸工厂可以把简包装、小规格和低MOQ试单做成完整报价方案。",
       "signalCards": [
         {
           "label": "消费者",
@@ -76,181 +75,36 @@
       ],
       "paragraphs": [
         {
-          "en": "American retailers are treating $9.99 as more than a familiar pricing trick. With households under pressure and production costs rising, staying below ten dollars can make a product feel easier to try, gift or add to a basket.",
-          "cn": "美国零售商正在重新重视9.99美元。家庭预算承压、生产成本上涨时，10美元以下的商品更容易促成试购、送礼和顺手加购。"
+          "en": "Keeping prices under $10 has long been a strategy used by U.S. retailers, and it has become more important as many households feel stretched by inflation.",
+          "cn": "美国零售商长期重视10美元以下的价格带。通胀挤压家庭预算后，这条价格线受到更多关注。"
         },
         {
-          "en": "To protect that entry price, companies are changing the product itself. They are simplifying packaging, reducing the number of units in a pack, improving automation and accepting lower margins instead of moving every item above the threshold.",
-          "cn": "为了守住这个入口价格，企业开始调整产品：简化包装、减少每包数量、提高自动化程度，并接受更低利润。"
+          "en": "Companies are simplifying packaging, reducing pack sizes, improving manufacturing and accepting lower margins to protect the $9.99 price point.",
+          "cn": "为了保住9.99美元，企业开始简化包装、调整每包数量、改进制造流程，并接受更低的利润空间。"
         },
         {
-          "en": "For sellers, the threshold can also affect platform economics. In selected Amazon US categories, referral fees are lower when the total sales price is ten dollars or less, so product size, category placement and landed cost must be calculated together.",
-          "cn": "这个门槛还会影响平台费用。亚马逊美国站部分指定类目在总售价10美元及以下时佣金更低，因此产品规格、类目归属和到岸成本需要一起计算。"
+          "en": "The practical question for sellers is whether a lower entry price can improve conversion enough to cover the lower margin and the fixed costs of fulfillment, advertising and returns.",
+          "cn": "卖家真正需要判断的是：较低的入口价格能否带来足够的转化提升，并覆盖履约、广告、退货等成本。"
         }
       ],
-      "breakdownConclusion": "9.99美元已经进入产品开发环节。品牌会先确定目标售价，再决定包装、数量、材料和生产方式。",
-      "breakdownMatrix": {
-        "columns": [
-          "文章里的变化",
-          "实际含义",
-          "跨境和外贸可以怎么做"
-        ],
-        "rows": [
-          [
-            "Hasbro简化玩具包装",
-            "包装开始承担收纳功能，纸盒和内托可以继续减少。",
-            "外贸工厂可同时提交套袖、挂卡、收纳盒三种方案，并列出单价、重量和装箱数。"
-          ],
-          [
-            "Boston Beer把6罐装改成4罐装",
-            "减少每包数量可以保留入门价格。",
-            "跨境卖家可新增小规格ASIN，保留原规格作为标准款，分别观察转化率和单件利润。"
-          ],
-          [
-            "Michaels增加10美元以下商品",
-            "零售商需要更多低决策成本的小礼物和顺手加购品。",
-            "供应商可开发文具、手工配件、派对小物、旅行配件等轻小件系列。"
-          ],
-          [
-            "Amazon部分类目在10美元处调整佣金",
-            "价格跨过10美元后，Baby Products和Beauty, Health and Personal Care类目的佣金会从8%升至15%。",
-            "卖家先确认真实类目，再把佣金、FBA、广告、退货和到岸成本放进同一张利润表。"
-          ]
-        ]
-      },
-      "breakdownAction": "先拿一个SKU做反推：目标售价9.99美元，减去佣金、FBA、广告、退货和目标利润，剩下的金额就是可接受的到岸成本上限。",
-      "trendConclusion": "",
+      "breakdownConclusion": null,
+      "breakdownMatrix": null,
+      "breakdownAction": null,
+      "trendConclusion": null,
       "trendMatrix": null,
-      "moneyLead": "这篇文章能落地成四类机会：9.99美元入口款、小包装改造、低MOQ试单、包装降体积服务。",
-      "moneyMatrix": {
-        "columns": [
-          "具体机会",
-          "适合的产品或客户",
-          "先怎么验证"
-        ],
-        "rows": [
-          [
-            "9.99美元小规格入口款",
-            "文具、手工配件、派对小物、旅行收纳、便携小配件。",
-            "查看同类前20个商品的售价、尺寸、重量、评论和FBA费用，再计算9.99美元下的净利润。"
-          ],
-          [
-            "给海外品牌改小包装",
-            "已有产品售价接近10美元、包装偏大或每包数量偏多的客户。",
-            "做两版样品：简化外包装版和减少数量版，比较成本、重量、装箱数和破损率。"
-          ],
-          [
-            "低MOQ小批量试单",
-            "新品牌、众筹项目、季节性商品和首次测试美国市场的客户。",
-            "提供300、500、1000件三个报价档，写清印刷费、打样费、交期和补单周期。"
-          ],
-          [
-            "包装减体积与装箱优化",
-            "运费占比高、仓储体积大、外箱利用率低的产品。",
-            "对比改造前后的包装尺寸、单件毛重、每箱数量和每立方米装货量。"
-          ]
-        ]
-      },
-      "moneyTakeaway": "优先看小、轻、用途清楚、能做小规格的商品。9.99美元方案需要同时满足转化和单件利润两个条件。",
+      "moneyLead": null,
+      "moneyMatrix": null,
+      "moneyTakeaway": null,
       "industryMatrix": null,
-      "industryTakeaway": "",
-      "userUse": {
-        "foreignTrade": {
-          "title": "外贸工厂：怎么给客户做小包装方案",
-          "points": [
-            "先向客户确认目标零售价、销售平台、目标到岸成本和首单数量。",
-            "同时提供三套方案：原规格简包装、小规格减数量、补充装或组合装。",
-            "每套方案列齐单价、净重、毛重、包装尺寸、装箱数、MOQ、印刷费和交期。",
-            "样品阶段检查跌落破损、标签是否完整、开箱是否方便、收纳功能是否成立。",
-            "报价单写清每项改动节省了多少包装成本、运输重量和外箱体积。",
-            "配方、核心功能、安全要求和必要标签保持一致。"
-          ]
-        },
-        "crossBorder": {
-          "title": "美国站跨境卖家：怎么测试9.99美元",
-          "points": [
-            "先确认商品类目。10美元佣金阶梯目前适用于Baby Products和Beauty, Health and Personal Care。",
-            "分别计算9.99美元、10.99美元和当前售价的佣金、FBA、广告、退货、关税、包装和净利润。",
-            "选择小、轻、用途明确、退货率低的商品开发小规格入口款。",
-            "保留原规格，新增小规格ASIN，用少量库存测试点击率、转化率、广告单量成本和退货率。",
-            "标准款继续承担主要利润，组合装负责提高客单价，小规格负责拉低首次购买门槛。",
-            "其他类目的佣金可能没有10美元分界，测算时以Seller Central最新费率为准。"
-          ]
-        },
-        "workplaceEnglish": {
-          "title": "独立站和海外品牌：怎么做价格梯度",
-          "points": [
-            "设置入口款、标准款、组合装三个价格层，避免全店同时压到低价。",
-            "入口款保留一次完整使用体验，规格更小，使用价值要清楚。",
-            "商品页明确展示容量、尺寸、可用次数和适合场景，减少用户对缩水的误解。",
-            "跟踪入口款带来的新客比例、后续加购、复购和整体毛利。",
-            "把运费门槛、支付手续费和折扣一起计算，9.99美元单品可能需要搭配加购策略。"
-          ]
-        },
-        "toolAdvice": {
-          "title": "包装与供应链服务商：怎么接这类需求",
-          "points": [
-            "把服务写成具体结果：减多少克、缩多少体积、每箱多装多少件。",
-            "方案页同时展示改造前后结构图、材料、尺寸、重量和装箱数据。",
-            "提供打样和小批量生产，让海外客户先测试销售。",
-            "把标签位置、条码、警示语和合规信息纳入包装结构。",
-            "完成一个案例后，整理成目标售价反推包装的标准服务包。"
-          ]
-        }
-      },
-      "riskCards": [
-        {
-          "label": "佣金范围",
-          "text": "Amazon的10美元佣金阶梯目前集中在Baby Products和Beauty, Health and Personal Care。其他类目需单独核对。"
-        },
-        {
-          "label": "单件利润",
-          "text": "FBA、广告、退货和最低佣金大多按固定规则计算。售价下降后仍需逐项核算。"
-        },
-        {
-          "label": "规格说明",
-          "text": "净含量、数量、尺寸和使用次数要写清楚，避免消费者把小规格理解成隐性缩水。"
-        },
-        {
-          "label": "合规成本",
-          "text": "母婴、美妆、健康和个护类目的准入、标签、认证和运输要求较高，费率优惠需与合规成本一起评估。"
-        }
-      ],
-      "riskTakeaway": "先完成类目确认和单件利润表，再打样、备货和投放广告。",
-      "terms": [
-        {
-          "term": "target retail price",
-          "scenario": "目标零售价",
-          "desc": "产品开发前确定的最终销售价格。",
-          "example": "The target retail price for this entry SKU is $9.99."
-        },
-        {
-          "term": "landed cost ceiling",
-          "scenario": "到岸成本上限",
-          "desc": "扣除平台费用和目标利润后，产品到达销售市场时可接受的最高总成本。",
-          "example": "The landed cost ceiling is $3.20 per unit."
-        },
-        {
-          "term": "reduced pack size",
-          "scenario": "小规格包装",
-          "desc": "通过减少数量、容量或包装体积形成更低价格的SKU。",
-          "example": "We can offer a reduced pack size for the trial launch."
-        },
-        {
-          "term": "carton optimization",
-          "scenario": "装箱优化",
-          "desc": "调整包装尺寸和排列方式，提高每箱或每立方米的装货量。",
-          "example": "The new design improves carton utilization by 18%."
-        }
-      ],
-      "english": "We can develop a smaller entry SKU around the $9.99 target price.",
-      "templateCore": [
-        "Our target retail price is $9.99.",
-        "Please provide a simplified-packaging option and a reduced-pack-size option.",
-        "List the unit cost, packed weight, carton quantity, MOQ and lead time for each option."
-      ],
-      "template": "Hi [Name],\n\nOur target retail price for the U.S. entry SKU is $9.99.\n\nPlease prepare two options:\n1. The current product with simplified packaging.\n2. A smaller pack size that still provides one complete use experience.\n\nFor each option, please list the unit cost, packed weight, package dimensions, carton quantity, MOQ, printing cost and lead time.\n\nPlease also confirm that all required labels and safety information can remain on the final package.\n\nBest,\n[Your Name]",
-      "practice": "选择一个准备卖往美国的SKU，做一张三档利润表：9.99美元、10.99美元、当前售价。表中至少包含佣金、FBA、广告、退货、关税、包装成本和净利润。",
+      "industryTakeaway": null,
+      "userUse": null,
+      "riskCards": null,
+      "riskTakeaway": null,
+      "terms": null,
+      "english": null,
+      "templateCore": null,
+      "template": "Hi [Name],\n\nWe are evaluating a smaller entry SKU for the U.S. market with a target retail price of $9.99.\n\nPlease prepare two options:\n1. The current product with simplified packaging.\n2. A smaller pack size that still provides one complete use experience.\n\nFor each option, please provide:\n- Unit cost\n- Net and gross weight\n- Package dimensions\n- Carton dimensions and quantity per carton\n- MOQ\n- Printing, tooling and sample costs\n- Production lead time\n\nPlease also confirm that all required labels, barcodes and safety information can remain on the final package.\n\nBest,\n[Your Name]",
+      "practice": null,
       "heroImage": "",
       "heroVisual": {
         "eyebrow": "U.S. RETAIL / PRICING SIGNAL",
@@ -259,10 +113,210 @@
       },
       "supportImages": [],
       "analysisStatus": "ready",
-      "deepReady": true
+      "deepReady": true,
+      "practicalSections": [
+        {
+          "title": "美国品牌具体做了什么",
+          "subtitle": "先看事实，再做判断",
+          "lead": "文章里的企业都在守10美元以下的价格线，但采取的办法并不相同。",
+          "table": {
+            "columns": [
+              "企业",
+              "具体动作",
+              "这件事说明什么"
+            ],
+            "rows": [
+              [
+                "Hasbro",
+                "Connect 4从纸盒改成套袖包装；部分变形金刚产品简化包装；世界杯版Monopoly Deal直接用卡牌收纳盒承担包装功能。",
+                "包装成本、重量和体积都可以进入产品开发方案。收纳、陈列和标签功能仍要保留。"
+              ],
+              [
+                "Boston Beer",
+                "Twisted Tea原有6罐装价格超过10美元后，公司推出4罐装、每罐16盎司的入门组合。",
+                "减少整包总量可以保留入口价格。单件规格和总容量需要重新设计。"
+              ],
+              [
+                "Michaels",
+                "公司计划在年底前把10美元以下商品增加约10%，重点包括吊饰、马克笔和派对小物。",
+                "低决策成本的小礼物、手工用品和顺手加购商品仍有需求。"
+              ],
+              [
+                "Clean Cult",
+                "洗衣产品从约12.99美元促销到9.99美元以下时，销量超过平时两倍。",
+                "低价可以用于短期测试和拉新。促销销量上涨不等于长期利润一定更好。"
+              ]
+            ]
+          },
+          "callout": "这些案例共同说明：目标零售价正在影响包装、数量和制造方式。每家企业的产品、渠道和成本结构不同，不能直接照搬。"
+        },
+        {
+          "title": "为什么10美元门槛现在更受重视",
+          "subtitle": "消费压力、成本上涨和长期费率结构",
+          "bullets": [
+            "通胀让消费者更在意日常商品的价格。9.99美元更容易被接受为试用、小礼物或顺手加购。",
+            "燃料、关税和生产成本继续上涨，企业需要在涨价、减利润、改包装和改规格之间重新选择。",
+            "Amazon美国站当前费率中，Baby Products和Beauty, Health and Personal Care在总销售价格10美元及以下收8%销售佣金，超过10美元收15%。",
+            "这项Amazon低价费率从2019年已经存在，属于长期费率结构，不能写成2026年的新政策。",
+            "Toys and Games、Office Products、Home and Kitchen等常见类目没有这条10美元费率阶梯。卖家仍需按各自类目核算。"
+          ],
+          "callout": "文章的新信号来自美国品牌近期的产品调整。Amazon费率只是核算成本时需要考虑的一项长期条件。"
+        },
+        {
+          "title": "美国站跨境卖家：哪些商品可以测试小规格",
+          "subtitle": "先筛商品，再算利润，最后小批量验证",
+          "table": {
+            "columns": [
+              "检查项",
+              "适合测试的情况",
+              "需要谨慎的情况"
+            ],
+            "rows": [
+              [
+                "商品体验",
+                "小规格仍能完成一次完整使用，消费者一眼能看懂用途。",
+                "缩小后体验残缺、效果难判断或容易引发差评。"
+              ],
+              [
+                "重量与履约",
+                "体积和重量下降后，FBA或物流成本能明显减少。",
+                "履约成本基本不变，售价下降会直接压缩利润。"
+              ],
+              [
+                "购买场景",
+                "试用、旅行、礼物、派对、手工、顺手加购。",
+                "需要长期比较、安装复杂、售后较重。"
+              ],
+              [
+                "类目费率",
+                "Baby Products或Beauty, Health and Personal Care，且费用分类确认无误。",
+                "其他类目没有10美元费率优势，或费用分类可能被调整。"
+              ],
+              [
+                "合规与退货",
+                "标签简单、退货率低、没有额外认证和危险品运输。",
+                "母婴、美妆、健康类的合规、标签和运输成本较高。"
+              ]
+            ]
+          },
+          "steps": [
+            "在Seller Central确认费用分类，不能只看前台商品类目。",
+            "用Amazon Revenue Calculator分别输入9.99美元、10.99美元和当前售价。",
+            "利润表至少包含销售佣金、FBA或自配送、广告、退款退货、采购、包装、头程、关税和其他平台费用。",
+            "保留原规格，新建小规格SKU做对照。两款同时观察点击率、转化率、广告单量成本、退货率和单件贡献利润。",
+            "备货量按最小可行测试量控制，先验证数据，再扩大采购。"
+          ],
+          "callout": "小规格适合承担首次购买和试用任务。标准款继续承担主要使用价值和利润，组合装负责提高客单价。"
+        },
+        {
+          "title": "外贸工厂：怎么给客户做小包装方案",
+          "subtitle": "把报价做成客户能直接比较的方案",
+          "steps": [
+            "先问清目标零售价、销售平台、费用类目、目标到岸成本、首单数量和必须保留的产品功能。",
+            "同时提供三套方案：原产品简化外包装、小规格或减少数量、标准款搭配补充装或组合装。",
+            "每套报价写齐单价、净重、毛重、单品尺寸、外箱尺寸、装箱数、MOQ、印刷费、模具费、样品费和交期。",
+            "单独列出改造结果：每件少多少克、包装缩小多少、每箱多装多少件、预计减少多少材料和运输体积。",
+            "样品需要检查跌落破损、封口、条码扫描、标签完整性、开箱体验和收纳功能。",
+            "小包装可能增加新SKU、换线、印刷和人工装配成本。新增成本要单独报价，避免工厂利润被压缩。"
+          ],
+          "checklist": {
+            "columns": [
+              "客户需要看到的数据",
+              "报价单怎么写"
+            ],
+            "rows": [
+              [
+                "目标价格",
+                "目标零售价、目标到岸成本、客户要求的毛利空间"
+              ],
+              [
+                "产品数据",
+                "净重、毛重、尺寸、数量、材料和保留功能"
+              ],
+              [
+                "包装数据",
+                "单品包装尺寸、外箱尺寸、装箱数、每立方米装货量"
+              ],
+              [
+                "生产条件",
+                "MOQ、换线费、印刷费、模具费、样品费和交期"
+              ],
+              [
+                "验证结果",
+                "跌落测试、破损率、标签位置、条码扫描和开箱检查"
+              ]
+            ]
+          },
+          "callout": "工厂的价值体现在方案能力。客户需要看到成本、重量、装箱和交期的具体变化。"
+        },
+        {
+          "title": "利润怎么算，哪些情况不要做",
+          "subtitle": "用单件贡献利润判断，别只看售价和销量",
+          "formula": "单件贡献利润 = 售价 − 销售佣金 − 履约成本 − 广告单量成本 − 退货损失预留 − 到岸成本 − 其他成交费用",
+          "table": {
+            "columns": [
+              "成本项",
+              "数据从哪里拿",
+              "容易漏掉什么"
+            ],
+            "rows": [
+              [
+                "销售佣金",
+                "Amazon官方费率表、Seller Central费用预览",
+                "费用分类可能与前台类目不同；最低佣金也要计算"
+              ],
+              [
+                "FBA或自配送",
+                "Revenue Calculator、实际物流账单",
+                "尺寸分段、重量分段、仓储和配送附加费"
+              ],
+              [
+                "广告",
+                "最近一段时间广告花费 ÷ 广告订单量",
+                "新品测试期广告成本可能更高"
+              ],
+              [
+                "退货损失",
+                "历史退货率 × 每次退货的平均损失",
+                "不可二次销售、退回处理和退款手续费"
+              ],
+              [
+                "到岸成本",
+                "采购、包装、头程、关税、清关和质检",
+                "小批量的单件成本通常更高"
+              ],
+              [
+                "工厂新增成本",
+                "换线、印刷、模具、人工装配和小批量损耗",
+                "简包装不一定自动降低生产成本"
+              ]
+            ]
+          },
+          "bullets": [
+            "9.99美元下单件贡献利润为零或负数，停止方案。",
+            "需要极高的转化提升才能补回毛利损失，停止方案。",
+            "缩小规格后无法提供完整体验，停止方案。",
+            "新SKU带来的MOQ、换线和库存压力超过可承受范围，停止方案。",
+            "类目没有费率优势，包装和物流成本也没有明显下降，优先保留原规格。"
+          ],
+          "callout": "先完成三档利润表，再决定长期售价、促销价或放弃9.99美元方案。"
+        },
+        {
+          "title": "直接可用的英文询价模板",
+          "subtitle": "向供应商索取两套小包装方案",
+          "lead": "模板已经把目标价格、包装方案和报价字段一次说清楚。",
+          "template": "Hi [Name],\n\nWe are evaluating a smaller entry SKU for the U.S. market with a target retail price of $9.99.\n\nPlease prepare two options:\n1. The current product with simplified packaging.\n2. A smaller pack size that still provides one complete use experience.\n\nFor each option, please provide:\n- Unit cost\n- Net and gross weight\n- Package dimensions\n- Carton dimensions and quantity per carton\n- MOQ\n- Printing, tooling and sample costs\n- Production lead time\n\nPlease also confirm that all required labels, barcodes and safety information can remain on the final package.\n\nBest,\n[Your Name]",
+          "sentences": [
+            "Our target retail price is $9.99.",
+            "Please provide a simplified-packaging option and a reduced-pack-size option.",
+            "Please show the cost, weight and carton utilization changes for each option.",
+            "The smaller format adds an extra packing step, so please quote the additional labor separately."
+          ]
+        }
+      ]
     }
   ],
   "count": 1,
-  "generated_at": "2026-07-20T16:05:00+08:00",
-  "method": "manual_rewrite_plain_language_audience_actions"
+  "generated_at": "2026-07-20T16:45:00+08:00",
+  "method": "article_specific_practical_sections_v2"
 }

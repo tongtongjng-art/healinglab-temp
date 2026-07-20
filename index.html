@@ -695,6 +695,13 @@
     .term-card h3{margin:0 0 8px;font-family:Georgia,serif;font-size:18px;}
     .term-card p{margin:0 0 8px;line-height:1.6;}
     .term-card .example{font-family:Georgia,serif;font-style:italic;background:#fff;padding:9px 10px;border-left:3px solid var(--red);}
+
+    .practical-subhead{margin:18px 0 8px;font-size:13px;font-weight:900;letter-spacing:.04em;}
+    .practical-steps,.practical-points{margin:10px 0 16px;padding-left:24px;line-height:1.78;}
+    .practical-steps li,.practical-points li{margin:7px 0;}
+    .practical-formula{margin:12px 0 18px;padding:15px 16px;border:1px solid #111;background:#fff;font-weight:900;line-height:1.7;}
+    .practical-email{max-height:none;overflow:visible;white-space:pre-wrap;}
+
     .template-core{display:grid;gap:10px;margin-bottom:14px;}
     .template-line{background:#111;color:#fff;padding:12px 14px;font-family:ui-monospace,Consolas,monospace;line-height:1.55;}
     .copy-btn{border:1px solid #111;background:#111;color:#fff;font-weight:900;padding:10px 14px;cursor:pointer;margin:8px 0 12px;}
@@ -1933,10 +1940,84 @@ function renderAudienceStrip(item){
   `;
 }
 
+
+function renderPracticalSections(item){
+  const sections = Array.isArray(item.practicalSections) ? item.practicalSections : [];
+  if(!sections.length) return "";
+
+  return sections.map((section, index) => {
+    const num = String(index + 2).padStart(2, "0");
+    const id = "practical_tpl_" + safeId(item.id) + "_" + index;
+    let body = "";
+
+    if(section.lead){
+      body += `<div class="brief-one-line">${escapeHtml(section.lead)}</div>`;
+    }
+    if(section.formula){
+      body += `<div class="practical-formula">${escapeHtml(section.formula)}</div>`;
+    }
+    if(section.table){
+      body += renderMatrix(section.table);
+    }
+    if(section.checklist){
+      body += renderMatrix(section.checklist);
+    }
+    if(Array.isArray(section.steps) && section.steps.length){
+      body += `<div class="practical-subhead">具体步骤</div><ol class="practical-steps">` +
+        section.steps.map(x => `<li>${escapeHtml(x)}</li>`).join("") + `</ol>`;
+    }
+    if(Array.isArray(section.bullets) && section.bullets.length){
+      body += `<ul class="practical-points">` +
+        section.bullets.map(x => `<li>${escapeHtml(x)}</li>`).join("") + `</ul>`;
+    }
+    if(Array.isArray(section.sentences) && section.sentences.length){
+      body += `<div class="practical-subhead">可直接使用的句子</div><div class="sentence-list">` +
+        section.sentences.map(x => `<div class="sentence-item">${escapeHtml(x)}</div>`).join("") + `</div>`;
+    }
+    if(section.template){
+      body += `<button class="copy-btn" onclick="copyTemplate('${id}')">Copy Template</button>` +
+        `<pre id="${id}" class="email-box practical-email">${escapeHtml(section.template)}</pre>`;
+    }
+    if(section.callout){
+      body += `<div class="smart-callout">${escapeHtml(section.callout)}</div>`;
+    }
+
+    return accPanel(num, section.title || `Section ${num}`, section.subtitle || "", `<article class="layer smart-layer">${body}</article>`);
+  }).join("");
+}
+
 function detailHTML(item){
   const isDraft = item.analysisStatus === "needs_ai_enrichment" || item.deepReady === false;
-  const templatePractice = renderTemplatePracticeLayer(item, isDraft);
   const sourceUrl = item.sourceUrl ? `<p class="section-subnote"><a href="${escapeAttr(item.sourceUrl)}" target="_blank" rel="noopener">查看原文来源 →</a></p>` : "";
+  const practicalHtml = renderPracticalSections(item);
+
+  if(practicalHtml){
+    return `
+      ${renderSourceMeta(item)}
+
+      <section class="today-take-row">
+        <div class="today-take-label">Today's Take</div>
+        <div class="today-take-text">${escapeHtml(item.signalLead || item.titleCn || item.desc || "")}</div>
+      </section>
+
+      ${renderAudienceStrip(item)}
+      ${renderSupportImages(item)}
+      ${renderCleanParagraphs(item)}
+      ${sourceUrl}
+
+      <div class="analysis-rule"></div>
+      <section class="analysis-intro">
+        <h2>这篇只回答六个问题</h2>
+        <p>事实、判断和操作步骤分开呈现。每一部分都围绕这篇文章本身展开。</p>
+      </section>
+
+      <section class="analysis-accordion">
+        ${practicalHtml}
+      </section>
+    `;
+  }
+
+  const templatePractice = renderTemplatePracticeLayer(item, isDraft);
   const businessJudgement = renderBreakdownLayer(item) + renderTrendLayer(item);
 
   return `
