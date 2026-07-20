@@ -105,7 +105,13 @@
       "templateCore": null,
       "template": "Hi [Name],\n\nWe are evaluating a smaller entry SKU for the U.S. market with a target retail price of $9.99.\n\nPlease prepare two options:\n1. The current product with simplified packaging.\n2. A smaller pack size that still provides one complete use experience.\n\nFor each option, please provide:\n- Unit cost\n- Net and gross weight\n- Package dimensions\n- Carton dimensions and quantity per carton\n- MOQ\n- Printing, tooling and sample costs\n- Production lead time\n\nPlease also confirm that all required labels, barcodes and safety information can remain on the final package.\n\nBest,\n[Your Name]",
       "practice": null,
-      "heroImage": "",
+      "heroImage": {
+        "src": "https://images.pexels.com/photos/9592497/pexels-photo-9592497.jpeg?auto=compress&cs=tinysrgb&w=1600",
+        "alt": "美国零售货架上的小包装食品与价格标签，体现商品规格、包装和价格带之间的关系",
+        "photographer": "Erik Mclean",
+        "source": "Pexels",
+        "sourceUrl": "https://www.pexels.com/photo/products-on-shelves-9592497/"
+      },
       "heroVisual": {
         "eyebrow": "U.S. RETAIL / PRICING SIGNAL",
         "headline": "$9.99 · PRICE · PRODUCT",
@@ -313,10 +319,11 @@
             "The smaller format adds an extra packing step, so please quote the additional labor separately."
           ]
         }
-      ]
+      ],
+      "imageAlt": "美国零售货架上的小包装食品与价格标签，体现商品规格、包装和价格带之间的关系"
     }
   ],
   "count": 1,
-  "generated_at": "2026-07-20T16:45:00+08:00",
-  "method": "article_specific_practical_sections_v2"
+  "generated_at": "2026-07-20T17:05:00+08:00",
+  "method": "article_specific_practical_sections_v2_with_real_stock_photo"
 }
