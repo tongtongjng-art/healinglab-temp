@@ -1,250 +1,315 @@
 {
   "scenarios": [
     {
-      "id": "biz-20260715-adults-reshape-toy-market-playdoh-blooms",
-      "score": 55,
+      "id": "biz-20260720-us-retail-999-price-threshold",
+      "score": 68,
       "quality": "strong",
       "publishable": true,
       "qualityMeta": {
         "bodyParagraphs": 3,
-        "bodyWords": 1850,
+        "bodyWords": 1680,
         "categoryScore": 10
       },
-      "sourceDate": "2026-07-09",
-      "category": "Consumer Trend / Adult Toys",
+      "sourceDate": "2026-07-14",
+      "category": "Consumer Demand / Pricing",
       "trend": "consumer",
       "industry": "retail-crossborder",
-      "signal": "Adult Consumer / Product Repositioning",
-      "sourceType": "Retail Press + Market Data",
-      "pill": "Consumer Trend",
-      "readingTime": "8分钟",
+      "signal": "Price Threshold / Product Architecture",
+      "sourceType": "Business Press + Platform Fee Schedule",
+      "pill": "Pricing Strategy",
+      "readingTime": "9分钟",
       "source": {
-        "name": "Retail Dive",
-        "title": "Hasbro debuts Play-Doh for adults",
-        "url": "https://www.retaildive.com/news/hasbro-adult-toys-blooms-by-play-doh/824812/",
-        "summary": "Hasbro has launched Blooms by Play-Doh, its first Play-Doh line designed specifically for adults, as adult consumers and women contribute a growing share of toy-industry growth."
+        "name": "The Wall Street Journal",
+        "title": "How $9.99 Became the Most Compelling Price in Retail",
+        "url": "https://www.wsj.com/business/retail/how-9-99-became-the-most-compelling-price-in-retail-ad54da92",
+        "summary": "U.S. retailers and brands are redesigning packages, reducing pack sizes and accepting lower margins to keep selected products below the psychologically important $10 threshold."
       },
-      "sourceUrl": "https://www.retaildive.com/news/hasbro-adult-toys-blooms-by-play-doh/824812/",
+      "sourceUrl": "https://www.wsj.com/business/retail/how-9-99-became-the-most-compelling-price-in-retail-ad54da92",
       "evidenceSources": [
         {
-          "name": "Hasbro",
-          "title": "Hasbro Introduces Blooms by Play-Doh, A New Creative Experience Designed for Adults",
-          "url": "https://newsroom.hasbro.com/news-releases/news-release-details/hasbro-introduces-blooms-play-doh-new-creative-experience"
-        },
-        {
-          "name": "Circana",
-          "title": "US Toy Industry Sales Accelerate in 2026, Circana Reports",
-          "url": "https://www.circana.com/post/us-toy-industry-sales-accelerate-in-2026-circana-reports"
+          "name": "Amazon",
+          "title": "How much does it cost to sell on Amazon?",
+          "url": "https://sell.amazon.com/pricing"
         }
       ],
-      "title": "Adults are reshaping the toy market as Hasbro launches Play-Doh for grown-ups",
-      "titleCn": "成年人正在改写玩具市场",
-      "titleTranslation": "Hasbro把Play-Doh做成成人花艺套装，背后不是一款新品，而是一批新买家正在进入玩具市场。",
-      "desc": "Hasbro推出首个专门面向成年人的Blooms by Play-Doh，把橡皮泥做成可以减压、创作并长期展示的花艺套装。同期数据显示，成年人和女性正在贡献美国玩具市场的重要增量。",
-      "why": "玩具正在从儿童用品，扩展为成年人的情绪消费、手工体验、家居装饰、礼物和社交内容。值得关注的不是照搬一款花艺套装，而是产品使用场景和付款理由发生了变化。",
-      "action": "先研究成人手作、感官减压和可展示DIY产品的搜索、价格、评论与内容表现，再用一个小套装测试需求，不要看到大品牌入场就直接压货。",
-      "signalLead": "2026年前4个月，美国玩具行业销售额同比增长13%。成年人贡献了行业总增长的35%，超过一半的增长来自女性消费者。就在这个节点，Hasbro把有70年历史的Play-Doh第一次正式做成成人产品：用户制作花束，喷上定型液，再把成品当作家居摆件保存数月。",
+      "title": "How $9.99 Became the Most Compelling Price in Retail",
+      "titleCn": "美国零售商正在死守9.99美元",
+      "titleTranslation": "为了不跨过10美元门槛，美国品牌开始缩包装、减规格、改制造。",
+      "meaning": "9.99美元不只是一种尾数定价。在消费者更看重价格、平台费率又设置分界线时，它正在反过来影响产品规格、包装、成本和利润模型。",
+      "desc": "美国品牌正通过减少包装、缩小组合、改进制造和压缩利润，把部分商品留在10美元以下。对中国卖家来说，重点不是盲目降价，而是判断哪些商品值得专门设计一个9.99美元入口款。",
+      "why": "价格门槛正在从营销技巧升级为产品设计条件。一个SKU能否停在9.99美元，可能同时影响消费者试购意愿、平台佣金、包装结构、运输成本和新品获客效率。",
+      "action": "挑一个现有SKU，分别核算9.99美元入口款、原规格标准款和组合装三种方案。先验证点击率、转化率和单位利润，不要只比较售价。",
+      "suitableAudience": [
+        "美国站跨境电商卖家",
+        "给海外品牌供货的外贸工厂",
+        "正在设计新品规格和包装的小团队",
+        "经营独立站或海外消费品牌的人"
+      ],
+      "signalLead": "《华尔街日报》观察到，成本上涨之下，美国品牌仍在努力把部分日常商品留在9.99美元。Hasbro简化玩具包装，Boston Beer减少每包数量，Michaels计划继续扩大10美元以下商品。亚马逊美国站的母婴及美妆、健康和个护类目中，售价不超过10美元的销售佣金为8%，超过10美元则为15%，让这个价格分界线具有更直接的经营意义。",
       "signalCards": [
         {
-          "label": "行业增长",
-          "text": "2026年前4个月，美国玩具行业销售额同比增长13%，单位销量增长5%。"
+          "label": "消费者门槛",
+          "text": "消费者往往把10美元以下和10美元以上归入不同价格区间，哪怕实际只差1美分。"
         },
         {
-          "label": "成人增量",
-          "text": "18岁以上消费者贡献了美国玩具行业总增长的35%。"
+          "label": "产品被重做",
+          "text": "品牌正在通过简化包装、减少组合数量、改进制造和压缩营销费用来守住9.99美元。"
         },
         {
-          "label": "女性驱动",
-          "text": "超过一半的行业增长来自女性消费者。"
+          "label": "平台费率",
+          "text": "亚马逊美国站部分指定类目在10美元及以下收8%佣金，超过10美元收15%，但并非所有类目都适用。"
         }
       ],
       "evidenceCards": [
         {
-          "label": "新品定位",
-          "text": "Blooms by Play-Doh是Play-Doh首个专门为成年人设计的系列，进入成人手作和家居装饰市场。"
+          "label": "Hasbro",
+          "text": "为控制成本，部分桌游和玩具改用更简单的包装，甚至让产品收纳盒直接承担包装功能。"
         },
         {
-          "label": "产品结构",
-          "text": "套装包含材料、工具、模具、花瓶、定型喷雾和分步教程，强调新手也能完成较精致的成品。"
+          "label": "Michaels",
+          "text": "这家手工零售商计划在年底前，把10美元以下商品的供应量再提高约10%。"
         },
         {
-          "label": "价格与渠道",
-          "text": "产品24.99美元起，在Amazon、Target和Walmart销售，部分款式于7月16日在TikTok Shop首发。"
+          "label": "Clean Cult",
+          "text": "其洗衣产品促销价降到9.99美元以下时，销量超过平时的两倍，显示低门槛价格对试购的推动作用。"
         }
       ],
       "paragraphs": [
         {
-          "en": "Hasbro has launched Blooms by Play-Doh, the first Play-Doh collection created specifically for adults. Instead of making temporary toy shapes, users build realistic floral arrangements that can be preserved and displayed as home décor.",
-          "cn": "Hasbro推出了Blooms by Play-Doh，这是Play-Doh首个专门面向成年人的产品系列。用户不再只是捏出短暂的玩具造型，而是制作可以定型、长期展示的仿真花艺摆件。"
+          "en": "American retailers are treating $9.99 as more than a familiar pricing trick. With households under pressure and production costs rising, staying below ten dollars can make a product feel easier to try, gift or add to a basket.",
+          "cn": "美国零售商正在把9.99美元视为不只是常见的定价技巧。家庭预算承压、生产成本上涨时，商品留在10美元以下，会让试购、送礼和顺手加购显得更容易。"
         },
         {
-          "en": "The launch arrives as adults take a larger role in toy-market growth. Circana says consumers aged 18 and over generated 35% of U.S. toy-industry growth through April, while female recipients accounted for more than half of the total increase.",
-          "cn": "这款产品推出时，成年人正在成为玩具市场越来越重要的增量。Circana数据显示，截至4月，18岁以上消费者贡献了美国玩具行业35%的增长，女性消费者贡献了超过一半的整体增量。"
+          "en": "To protect that entry price, companies are changing the product itself. They are simplifying packaging, reducing the number of units in a pack, improving automation and accepting lower margins instead of moving every item above the threshold.",
+          "cn": "为了守住这个入口价格，企业开始直接改产品：简化包装、减少每包数量、提高自动化程度，并接受更低利润，而不是把所有商品都涨到10美元以上。"
         },
         {
-          "en": "The kits start at $24.99 and include compound, molds, tools, a vase, finishing spray and guided instructions. They are sold through major retailers, while selected products will debut on TikTok Shop, linking hands-on crafting with social discovery.",
-          "cn": "套装24.99美元起，包含橡皮泥、模具、工具、花瓶、定型喷雾和分步说明，并进入多家主流零售渠道。部分产品还将在TikTok Shop首发，把线下手作过程与社交平台发现结合起来。"
+          "en": "For sellers, the threshold can also affect platform economics. In selected Amazon US categories, referral fees are lower when the total sales price is ten dollars or less, so product size, category placement and landed cost must be calculated together.",
+          "cn": "对卖家来说，这个门槛还可能影响平台费用。亚马逊美国站部分指定类目在总售价不超过10美元时佣金更低，因此产品规格、类目归属和到岸成本必须放在一起计算。"
         }
       ],
-      "breakdownConclusion": "这篇不只是说成年人也会买玩具。真正的变化是：玩具开始同时承担减压、创作、家居装饰、礼物和内容传播的功能，购买理由已经超出“给孩子玩”。",
+      "breakdownConclusion": "真正的变化不是美国人突然迷信9.99美元，而是消费压力和平台费率让价格门槛开始反向塑造商品。企业不再只问“卖多少钱”，而是先问“为了停在这个价格带，产品应该做成什么样”。",
       "breakdownMatrix": {
         "columns": [
-          "为什么现在发生",
-          "消费者真正要什么",
-          "商业含义"
+          "为什么现在更重要",
+          "企业正在怎么改",
+          "对中国商人的含义"
         ],
         "rows": [
           [
-            "成年人需要低门槛的线下放松",
-            "暂时离开屏幕，用双手完成一件可控的小作品。",
-            "产品不能只强调功能，还要让制作过程本身令人放松。"
+            "消费者预算更紧",
+            "保留低门槛试用款、小礼物款和顺手加购款。",
+            "新品不能只有完整大规格，也要考虑一个低决策成本的入口SKU。"
           ],
           [
-            "手作不再满足于“做过就算了”",
-            "消费者希望最终结果看起来足够体面，可以留下、展示或送人。",
-            "材料包要同时设计过程体验和最终成品，不能只卖一袋原料。"
+            "燃料、关税和制造成本上涨",
+            "减包装、减数量、改材料结构和提高自动化。",
+            "供应商的价值不只是报低价，而是提出能守住目标零售价的结构方案。"
           ],
           [
-            "情绪消费与家居装饰开始交叉",
-            "买家既在购买创作体验，也在购买桌面、宿舍和居家空间里的装饰物。",
-            "传统玩具可以通过重新定义场景，进入更高价格带。"
+            "平台费率存在价格分界",
+            "在符合条件的类目里，围绕10美元重新计算售价与佣金。",
+            "先核对类目和最新费率，再决定是否值得压到9.99美元。"
           ],
           [
-            "短视频放大了过程型商品",
-            "制作、揉捏、开箱、ASMR和前后对比都适合被拍摄和分享。",
-            "产品是否“好拍、好看、好理解”，正在影响渠道效率。"
+            "品牌需要降低首次购买门槛",
+            "用入口款吸引新客，再通过标准款、组合装或补充装提高长期价值。",
+            "9.99美元更适合承担获客任务，不一定适合承担全部利润。"
           ]
         ]
       },
-      "breakdownAction": "重点不是把儿童玩具换成成人包装，而是重新设计使用场景、完成结果、价格理由和内容传播方式。",
+      "breakdownAction": "建立目标零售价反推产品的思路：先确定价格门槛，再倒推包装、重量、佣金、履约和工厂成本。",
+      "trendConclusion": "美国消费市场正在出现更清晰的价格分层：消费者仍愿意买，但更偏好用途明确、价格门槛低、试错成本小的商品。",
+      "trendMatrix": {
+        "columns": [
+          "价格层角色",
+          "主要任务",
+          "适合的商品逻辑"
+        ],
+        "rows": [
+          [
+            "9.99美元入口款",
+            "降低首次购买和送礼门槛",
+            "小规格、轻量、用途单一、无需长时间比较"
+          ],
+          [
+            "标准款",
+            "承担核心使用价值和主要利润",
+            "功能更完整、规格更合理、评价更稳定"
+          ],
+          [
+            "组合装或补充装",
+            "提高客单价和复购价值",
+            "重复消耗、多人使用、礼赠或囤货场景"
+          ]
+        ]
+      },
+      "moneyLead": "钱不只在“便宜一美分”，而在围绕价格门槛重新设计SKU：谁能把包装、重量、材料、平台费和消费者付款理由同时算清楚，谁更有机会做出既能转化又能盈利的入口款。",
+      "moneyMatrix": {
+        "columns": [
+          "谁可能赚钱",
+          "价值来自哪里",
+          "中国商人怎么参与"
+        ],
+        "rows": [
+          [
+            "能做小规格定制的工厂",
+            "帮助海外客户把产品压入目标价格带。",
+            "提供不同重量、包装和MOQ的阶梯报价，而不是只报一个成品价。"
+          ],
+          [
+            "轻小件跨境卖家",
+            "较低运输和履约成本更容易支撑低价格。",
+            "优先测试文具、手工配件、派对小物、旅行收纳等非强合规商品。"
+          ],
+          [
+            "有标准款和补充装的品牌",
+            "入口款获客，后续SKU承担利润和复购。",
+            "设计价格梯度，避免整个店铺都被锁死在低毛利区间。"
+          ],
+          [
+            "包装与结构设计服务商",
+            "通过减材、减体积和提高装箱效率帮助客户省成本。",
+            "把方案写成每件节省多少材料、运费和仓储，而不是只讲视觉设计。"
+          ]
+        ]
+      },
+      "moneyTakeaway": "9.99美元不是一个单品机会，而是一种产品架构机会：入口款负责让人第一次下单，标准款和组合装负责把生意做下去。",
       "industryMatrix": {
         "columns": [
-          "可能受益的方向",
-          "消费者买的是什么",
-          "先怎么验证"
+          "适合优先验证的方向",
+          "为什么可能适合",
+          "先查什么"
         ],
         "rows": [
           [
-            "成人手工套装",
-            "完整材料、清晰步骤、放松过程和一个看得过去的成品。",
-            "搜索adult craft kit、DIY flower kit，比较20—40美元价格带、套装完整度和差评。"
+            "文具、手工和派对小物",
+            "体积小、视觉明确、礼赠和加购场景强。",
+            "查Amazon、Walmart、Michaels的9.99美元以下畅销规格、评论和包装。"
           ],
           [
-            "感官减压产品",
-            "揉捏、触感、声音和重复动作带来的即时舒缓。",
-            "查看sensory toy、squishy、stress relief craft的视频播放、评论关键词和复购线索。"
+            "旅行收纳与便携配件",
+            "小规格本身就是使用价值，不容易被理解成单纯缩水。",
+            "比较重量、FBA费用、退货原因和同价位竞品数量。"
           ],
           [
-            "可展示的DIY产品",
-            "制作完成后能放在桌面、宿舍或家里，而不是做完就收起来。",
-            "检查评论中是否出现display、decor、gift、keepsake等高频使用场景。"
+            "家居清洁的小规格或补充装",
+            "消费者愿意低成本试用新品牌，但液体和化学品有运输与合规要求。",
+            "先核查成分、标签、危险品运输和目标类目佣金，不能只看售价。"
           ],
           [
-            "礼物型体验套装",
-            "送出的不只是成品，而是一段可一起完成的活动。",
-            "测试生日、节日、情侣、母女、朋友聚会等具体礼赠场景，不要只写“适合送礼”。"
-          ],
-          [
-            "收藏与限量产品",
-            "稀缺感、寻找过程、IP认同和社群身份。",
-            "先确认是否具备IP、社群或持续上新能力；没有这些条件，不要硬做限量。"
+            "母婴、美妆、健康和个护类商品",
+            "亚马逊指定类目存在10美元佣金分界，但合规要求更高。",
+            "先确认真实类目、准入资料、认证和退货成本，再核算8%与15%的差额。"
           ]
         ]
       },
-      "industryTakeaway": "值得研究的不是“成人版橡皮泥”这一款产品，而是成人消费正在把玩具推向手作、情绪价值、家居、礼物和社交内容的交叉地带。",
+      "industryTakeaway": "最适合的不是所有低价小商品，而是小、轻、用途清楚、无需复杂教育，并且能在9.99美元下仍保留正向单位利润的商品。",
       "userUse": {
         "foreignTrade": {
-          "title": "正在开发产品的人",
+          "title": "给海外客户做产品开发",
           "points": [
-            "先确定产品卖的是材料、制作过程，还是最终成品。三者都想卖，通常会导致卖点模糊。",
-            "套装必须减少用户自行准备工具的步骤，尽量做到开盒即可开始。",
-            "成人产品对成品审美、包装和礼物感的要求，通常高于儿童基础手工材料。",
-            "先做一个明确场景的小套装，不要一开始扩成几十个SKU。"
+            "先问客户目标零售价和销售渠道，再报产品规格。",
+            "同时给出基础包装、轻量包装和组合装三套方案。",
+            "报价时写清MOQ、单件重量、装箱数和可节省的包装成本。"
           ],
           "sentences": [
-            "The product is designed as a complete adult crafting experience rather than a basic toy.",
-            "The finished piece should be attractive enough to display or give as a gift."
+            "We can redesign the pack size to support a retail price below ten dollars.",
+            "The lighter packaging would reduce both unit cost and shipping weight."
           ]
         },
         "crossBorder": {
-          "title": "正在做跨境选品的人",
+          "title": "正在做美国站的卖家",
           "points": [
-            "在Amazon、Etsy和TikTok Shop分别搜索adult craft kit、sensory craft和DIY home décor kit。",
-            "记录前20个产品的售价、评论量、包装内容、差评和最近上新时间。",
-            "重点看评论里用户为什么买：减压、礼物、聚会、家居装饰，还是单纯跟风。",
-            "先测页面点击、收藏或小批量订单，再决定是否备货。"
-          ],
-          "sentences": [
-            "We are testing demand for adult-oriented craft kits in the gifting and home décor segments.",
-            "Before placing a large order, we need to validate the price point and the main use case."
+            "先确认类目佣金是否真的在10美元处发生变化。",
+            "把售价、佣金、FBA、广告、退货和到岸成本全部放进单件利润。",
+            "用9.99美元做小流量测试，同时保留标准款对照，不要直接全店降价。"
           ]
         },
         "workplaceEnglish": {
-          "title": "正在做内容和渠道的人",
+          "title": "和供应商沟通目标成本",
           "points": [
-            "过程型产品要优先展示从材料到成品的变化，别只拍静态包装。",
-            "揉捏、切割、组装、喷涂和摆放都可以成为短视频素材。",
-            "TikTok首发是渠道信号，但不等于所有产品都适合TikTok；先看过程是否直观、结果是否在几秒内看懂。",
-            "把“成年人为什么买”说清楚，比反复强调产品有趣更重要。"
+            "明确目标零售价和目标到岸成本，不要只说“再便宜一点”。",
+            "要求供应商分别评估包装、重量、材料和装箱效率。",
+            "确认减配后是否影响体验、破损率和合规标签。"
           ],
           "sentences": [
-            "The product combines a calming hands-on process with a displayable result.",
-            "Its visual transformation makes it well suited to short-form video and social commerce."
+            "Our target retail price is $9.99, so the landed cost must remain below the agreed ceiling.",
+            "Please propose two packaging options without reducing the core product experience."
+          ]
+        },
+        "toolAdvice": {
+          "title": "用表格先算，不靠感觉降价",
+          "points": [
+            "建立9.99美元、10.99美元和标准售价三档利润模型。",
+            "分别输入佣金、FBA、广告、退货、关税和包装成本。",
+            "只有当转化提升足以覆盖单位利润下降时，9.99美元方案才成立。"
           ]
         }
       },
       "riskCards": [
         {
-          "label": "别把儿童产品直接换包装",
-          "text": "成年人愿意付更高价格，前提是场景、步骤、成品和包装都被重新设计。只把年龄标签改成18+，很难形成真实差异。"
+          "label": "不是所有类目都有8%佣金",
+          "text": "亚马逊10美元佣金分界只适用于部分指定类目。类目放错或政策变化，都可能让利润测算失真。"
         },
         {
-          "label": "别照搬大品牌",
-          "text": "Play-Doh有品牌认知、渠道和材料体系。小卖家更适合从细分场景切入，而不是正面复制花艺橡皮泥。"
+          "label": "低价不等于低成本获客",
+          "text": "售价下降后，广告、FBA和退货不会按同样比例下降。低价SKU可能转化更高，也可能卖得越多亏得越多。"
         },
         {
-          "label": "别把播放量当复购",
-          "text": "过程视频容易获得观看，但一次性手作产品是否复购，要继续看耗材、上新、赠礼和收藏机制。"
+          "label": "别把缩水做成欺骗",
+          "text": "减少规格必须清楚标注，并保留合理使用价值。消费者发现容量缩水却没有明确说明，会伤害评价和品牌信任。"
         },
         {
-          "label": "别忽略安全与运输",
-          "text": "涉及黏土、颜料、香味、液体和工具时，要核查材料、标签、年龄提示、运输限制和目标市场要求。"
+          "label": "别忽略合规和运输",
+          "text": "液体、化妆品、健康和母婴商品虽然可能享受费率差，但准入、标签、认证、危险品运输和售后成本更高。"
         }
       ],
-      "riskTakeaway": "成年人进入玩具市场是真实信号，但机会不在“做得更幼稚”，而在把产品重新设计成一种有审美、有结果、适合分享的成人体验。",
+      "riskTakeaway": "9.99美元值得测试，但它必须是算出来的产品方案，而不是为了看起来便宜而盲目降价。",
       "terms": [
         {
-          "term": "adult crafting",
-          "scenario": "成人手作",
-          "desc": "专门面向成年人的手工创作活动，通常强调减压、审美、完成感和社交体验。",
-          "example": "The brand is expanding into adult crafting and home décor."
+          "term": "price threshold",
+          "scenario": "价格门槛",
+          "desc": "消费者或平台在某个价格点前后出现明显行为或费率差异。",
+          "example": "The ten-dollar price threshold affects both conversion and platform fees."
         },
         {
-          "term": "sensory play",
-          "scenario": "感官体验",
-          "desc": "通过触感、声音、颜色或重复动作形成沉浸体验，既可以服务儿童，也可以服务成年人的放松需求。",
-          "example": "Sensory play products are gaining attention through ASMR and short-form video."
+          "term": "entry price point",
+          "scenario": "入门价格",
+          "desc": "用来降低首次购买门槛、吸引新客尝试的价格位置。",
+          "example": "We need an entry price point that encourages first-time buyers."
         },
         {
-          "term": "displayable result",
-          "scenario": "可展示成品",
-          "desc": "制作完成后可以作为摆件、纪念品或礼物长期保留的结果。",
-          "example": "A displayable result gives consumers a stronger reason to pay for the full kit."
+          "term": "pack architecture",
+          "scenario": "包装与规格结构",
+          "desc": "不同包装、数量、重量和组合方式共同形成的SKU体系。",
+          "example": "The pack architecture should support both trial and repeat purchase."
         },
         {
-          "term": "social commerce",
-          "scenario": "社交电商",
-          "desc": "消费者在社交平台发现、了解并直接购买商品的销售模式。",
-          "example": "The TikTok Shop launch connects product discovery with social commerce."
+          "term": "landed cost ceiling",
+          "scenario": "到岸成本上限",
+          "desc": "为了达到目标零售价和利润率，商品到达销售市场后的总成本不能超过的数值。",
+          "example": "The landed cost ceiling for this SKU is four dollars."
         }
       ],
-      "english": "The category is expanding beyond children's play into adult crafting, gifting and home décor.",
-      "template": "Hi [Name],\n\nWe are researching an adult-oriented craft kit for the gifting and home décor market. The product should provide a complete hands-on experience and produce a finished piece that is attractive enough to display.\n\nCould you please share your available materials, customization options, MOQ, packaging choices and relevant safety documents? We would also like to know whether you can support a small pilot order before mass production.\n\nBest,\n[Your Name]",
-      "practice": "任选一个成人手作或感官产品，记录它的目标人群、购买场景、价格带、评论中的前三个购买理由，以及你准备先验证的一个最小产品方案。",
-      "meaning": "Hasbro推出了首个专门面向成年人的Play-Doh系列。与此同时，美国玩具市场的增长，越来越多来自成年人和女性消费者。"
+      "english": "The product must be redesigned around the target retail price, not discounted after the cost structure is fixed.",
+      "templateCore": [
+        "Our target retail price is $9.99.",
+        "Please propose two pack sizes that keep the core product experience unchanged.",
+        "We need the unit cost, packed weight, carton quantity and MOQ for each option."
+      ],
+      "template": "Hi [Name],\n\nWe are evaluating a new entry SKU for the U.S. market with a target retail price of $9.99.\n\nPlease propose two pack-size and packaging options that can reduce unit cost and shipping weight without weakening the core product experience. For each option, please provide the unit cost, packed weight, carton quantity, MOQ and estimated lead time.\n\nWe will compare the options based on landed cost, platform fees and expected margin before confirming a pilot order.\n\nBest,\n[Your Name]",
+      "practice": "任选一个准备卖往美国的SKU，分别计算售价9.99美元、10.99美元和当前售价时的佣金、履约、广告、退货和单位利润。最后写出：9.99美元应该作为长期售价、促销价，还是不适合使用。",
+      "heroImage": "",
+      "heroVisual": {
+        "eyebrow": "U.S. RETAIL / PRICING SIGNAL",
+        "headline": "$9.99 · PRICE · PRODUCT",
+        "note": "美国品牌正在围绕10美元门槛，重新设计包装、规格和利润模型。"
+      },
+      "supportImages": []
     }
   ],
   "count": 1,
-  "generated_at": "2026-07-15T13:05:00+08:00",
-  "method": "minimal_copy_and_hero_image_fix"
+  "generated_at": "2026-07-20T14:30:00+08:00",
+  "method": "manual_business_signal_pricing_strategy_update"
 }
