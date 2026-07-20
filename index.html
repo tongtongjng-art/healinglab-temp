@@ -2152,6 +2152,9 @@ function liveToArticle(live, idx){
     heroImage: live.heroImage || source.heroImage || "",
     heroVisual: live.heroVisual || source.heroVisual || null,
     supportImages: live.supportImages || source.supportImages || [],
+    practicalSections: Array.isArray(live.practicalSections)
+      ? live.practicalSections
+      : (Array.isArray(source.practicalSections) ? source.practicalSections : []),
     sourceName: source.name || live.sourceName || "Live Source",
     sourceUrl: source.url || live.sourceUrl || "",
     source: live.source || source || {},
@@ -2199,7 +2202,7 @@ Best,
 
 async function loadLive(){
   try{
-    const res = await fetch("business-english-live.json?ts=" + Date.now(), {cache:"no-store"});
+    const res = await fetch("business-english-live.json?ts=" + Date.now(), {cache:"no-store", headers:{"Cache-Control":"no-cache"}});
     if(!res.ok) return;
     const payload = await res.json();
     if(!payload || !Array.isArray(payload.scenarios) || !payload.scenarios.length) return;
